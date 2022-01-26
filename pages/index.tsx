@@ -5,9 +5,9 @@ import HeroCTA from "../layouts/HeroCTA/HeroCTA.layout";
 
 const Home: NextPage = () => {
   return (
-    <Box minH="100vh" h="full">
+    <Box minH="100vh" h="full" overflowX="hidden">
       <HeroCTA />
-      <Box p="6" />
+      <Box p="2" />
       <FeaturedEvents />
     </Box>
   );

@@ -23,18 +23,23 @@ import {
 export default function SearchBar() {
   return (
     <Flex
+      borderBottom="2px"
+      borderLeft="2px"
+      borderRight="none"
+      borderTop="none"
+      borderColor="blackAlpha.100"
       boxShadow="0px 18px 91px rgba(0, 0, 0, 0.07)"
       bg="white"
       rounded="full"
       alignItems="center"
       pl="6"
+      fontSize="lg"
       w="full"
       justify="space-between"
     >
       <Flex w="full" alignItems="center">
         <InputGroup>
           <Input
-            fontSize="lg"
             bg="transparent"
             border="none"
             _focus={{}}
@@ -52,7 +57,6 @@ export default function SearchBar() {
                 <Tag />
               </InputLeftElement>
               <Input
-                fontSize="lg"
                 bg="transparent"
                 border="none"
                 _focus={{}}
@@ -76,7 +80,6 @@ export default function SearchBar() {
                 <AttachMoney />
               </InputLeftElement>
               <Input
-                fontSize="lg"
                 bg="transparent"
                 border="none"
                 _focus={{}}
@@ -100,7 +103,6 @@ export default function SearchBar() {
                 <Apps />
               </InputLeftElement>
               <Input
-                fontSize="lg"
                 bg="transparent"
                 border="none"
                 _focus={{}}
@@ -118,8 +120,19 @@ export default function SearchBar() {
         </Menu>
       </Flex>
       <Button
-        leftIcon={<Search />}
-        _hover={{ filter: "brightness(98%)" }}
+        role="group"
+        leftIcon={
+          <Flex
+            justify="center"
+            alignItems="center"
+            _groupHover={{ transform: "scale(1.1)" }}
+            transitionDuration="200ms"
+          >
+            {" "}
+            <Search />
+          </Flex>
+        }
+        _hover={{}}
         _focus={{}}
         _active={{}}
         rounded="full"

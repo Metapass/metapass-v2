@@ -1,13 +1,34 @@
-import { AspectRatio, Box, Flex, Image, Text } from "@chakra-ui/react";
+import { AspectRatio, Box, Flex, Image, Link, Text } from "@chakra-ui/react";
+import { Event } from "../../types/Event.type";
 
-export default function EventCard() {
+export default function EventCard({ event }: { event: Event }) {
+  const months = [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ];
+
   return (
     <Box
-      rounded="xl"
+      rounded="lg"
       overflow="hidden"
       bg="white"
+      _hover={{ transform: "scale(1.01)" }}
+      _active={{ transform: "scale(1.03)" }}
+      transitionDuration="200ms"
+      cursor="pointer"
       boxShadow="0px -4px 52px rgba(0, 0, 0, 0.11)"
-      maxW="400px"
+      maxW="390px"
+      minW="390px"
       border="1px"
       position="relative"
       borderColor="blackAlpha.200"
@@ -15,66 +36,91 @@ export default function EventCard() {
       <Box
         zIndex={2}
         rounded="full"
-        fontSize="xs"
+        fontSize="10px"
         fontWeight="semibold"
         px="2"
-        py="1"
+        py="0.5"
         bg="white"
         position="absolute"
         top="2"
         left="2"
         color="blackAlpha.700"
       >
-        $200
+        {"$"}
+        {event.price}
       </Box>
-      <Box
+      <Flex
         zIndex={2}
-        rounded="full"
-        fontSize="xs"
-        fontWeight="semibold"
-        px="2"
-        py="1"
-        bg="white"
         position="absolute"
         top="2"
         right="2"
-        color="blackAlpha.500"
+        experimental_spaceX="2"
+        color="blackAlpha.600"
       >
-        Meetup
-      </Box>
+        <Box
+          rounded="full"
+          fontSize="10px"
+          fontWeight="semibold"
+          px="2"
+          py="0.5"
+          bg="white"
+        >
+          {event.type}
+        </Box>
+        <Box
+          rounded="full"
+          fontSize="10px"
+          fontWeight="semibold"
+          px="2"
+          py="0.5"
+          bg="white"
+        >
+          {event.category}
+        </Box>
+      </Flex>
       <AspectRatio ratio={428.42 / 180.98} w="full">
-        <Image
-          w="full"
-          src="https://assets.entrepreneur.com/content/3x2/2000/20160321103826-shutterstock-217119211.jpeg"
-          alt="event image"
-        />
+        <Image w="full" src={event.image} alt="event image" />
       </AspectRatio>
       <Flex p="4" alignItems="center">
         <Box
           textAlign="center"
           borderRight="2px"
           borderColor="blackAlpha.200"
-          px="4"
+          px="2"
+          pr="5"
           h="fit-content"
           mr="6"
         >
-          <Text fontFamily="body" fontWeight="bold" color="brand.peach">
-            AUG
+          <Text
+            fontSize="sm"
+            fontFamily="body"
+            fontWeight="bold"
+            color="brand.peach"
+          >
+            {months[event.date.month]}
           </Text>
-          <Text fontSize="2xl" color="brand.black600" fontWeight="medium">
-            25
+          <Text fontSize="xl" color="brand.black600" fontWeight="medium">
+            {event.date.date}
           </Text>
         </Box>
         <Box>
-          <Text fontSize="xl" fontWeight="semibold" color="brand.black600">
-            Web Summit Pitch 2022
+          <Text fontSize="lg" fontWeight="semibold" color="brand.black600">
+            {event.title}
           </Text>
           <Flex color="blackAlpha.700" fontSize="xs" experimental_spaceX="1">
             <Text>by</Text>
-            <Text fontWeight="medium">Shawn Doe</Text>
+            <Link fontWeight="medium" maxW="100px" noOfLines={1}>
+              {event.owner}
+            </Link>
           </Flex>
-          <Text mt="1" color="blackAlpha.600" fontFamily="body" fontSize="sm">
-            The Abcd Company’s official community meetup for 2022 is here!
+          <Text
+            mt="1"
+            color="blackAlpha.500"
+            fontFamily="body"
+            fontSize="sm"
+            noOfLines={2}
+          >
+            {event.description}
           </Text>
         </Box>
       </Flex>
@@ -85,9 +131,9 @@ export default function EventCard() {
           p="1"
           px="3"
           roundedRight="none"
-          transform="translateY(-6px)"
+          transform="translateY(-4px)"
           w="fit-content"
-          fontSize="sm"
+          fontSize="xs"
           boxShadow="0px 6.36032px 39.752px rgba(0, 0, 0, 0.07)"
         >
           <Flex experimental_spaceX="1">
@@ -100,14 +146,19 @@ export default function EventCard() {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              13/40
+              {event.tickets_available - event.tickets_sold}/
+              {event.tickets_available}
             </Text>
             <Text color="blackAlpha.500">Tickets Left</Text>
           </Flex>
         </Box>
       </Flex>
-      <Box w="full" h="6" bg="blackAlpha.50" mt="-5">
-        <Box w="70%" h="full" bg="brand.gradient" />
+      <Box w="full" h="5" bg="blackAlpha.50" mt="-4">
+        <Box
+          w={`${(event.tickets_sold / event.tickets_available) * 100}%`}
+          h="full"
+          bg="brand.gradient"
+        />
       </Box>
     </Box>
   );

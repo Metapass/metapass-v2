@@ -26,8 +26,8 @@ export default function HeroCTA() {
           textAlign="center"
           color="white"
           pb="12"
-          mt="10"
-          mb="20"
+          mt="6"
+          mb="12"
           zIndex={2}
           position="relative"
         >
@@ -35,7 +35,7 @@ export default function HeroCTA() {
             <Text
               textAlign="center"
               fontFamily="azonix"
-              fontSize={{ md: "6xl", lg: "7xl" }}
+              fontSize={{ md: "6xl", lg: "6xl", xl: "7xl" }}
             >
               METAPASS
             </Text>
@@ -51,7 +51,7 @@ export default function HeroCTA() {
             textAlign="center"
             fontWeight="semibold"
             fontFamily="subheading"
-            fontSize={{ md: "23.3px", lg: "28px" }}
+            fontSize={{ md: "23.2px", lg: "23.2px", xl: "28" }}
             mt="-5"
           >
             Buy or sell NFT tickets to events
