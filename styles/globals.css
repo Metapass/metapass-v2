@@ -2,29 +2,29 @@
 
 @font-face {
   font-family: "Azonix";
-  src: url("../public/fonts/Azonix.otf");
+  src: url("/fonts/Azonix.otf");
 }
 
 @font-face {
   font-family: "Product Sans";
-  src: url("../public/fonts/Product_Sans_Regular.ttf");
+  src: url("/fonts/Product_Sans_Regular.ttf");
 }
 
 @font-face {
   font-family: "Product Sans";
-  src: url("../public/fonts/Product_Sans_Italic.ttf");
+  src: url("/fonts/Product_Sans_Italic.ttf");
   font-style: italic;
 }
 
 @font-face {
   font-family: "Product Sans";
-  src: url("../public/fonts/Product_Sans_Bold.ttf");
+  src: url("/fonts/Product_Sans_Bold.ttf");
   font-weight: bold;
 }
 
 @font-face {
   font-family: "Product Sans";
-  src: url("../public/fonts/Product_Sans_Bold_Italic.ttf");
+  src: url("/fonts/Product_Sans_Bold_Italic.ttf");
   font-style: italic;
   font-weight: bold;
 }
