@@ -7,7 +7,7 @@ import { ChevronRight } from "@mui/icons-material";
 
 export default function FeaturedEvents() {
   return (
-    <Flex w="full" justify="center">
+    <Flex w="full" justify="center" mb="-48">
       <Box w="full" pb="20">
         <Flex maxW="1200px" mx={{ lg: "12", xl: "40" }}>
           <Text

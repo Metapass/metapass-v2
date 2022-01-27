@@ -109,7 +109,12 @@ export default function EventCard({ event }: { event: Event }) {
           </Text>
           <Flex color="blackAlpha.700" fontSize="xs" experimental_spaceX="1">
             <Text>by</Text>
-            <Link fontWeight="medium" maxW="100px" noOfLines={1}>
+            <Link
+              fontWeight="medium"
+              maxW="100px"
+              noOfLines={1}
+              _hover={{ color: "brand.black600" }}
+            >
               {event.owner}
             </Link>
           </Flex>

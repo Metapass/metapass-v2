@@ -5,7 +5,7 @@ export default function NavigationBar() {
   return (
     <Flex
       justify="space-between"
-      px="10"
+      px="8"
       position="relative"
       zIndex={2}
       maxW="1600px"

@@ -6,7 +6,7 @@ export default function HeroCTA() {
   return (
     <>
       <Box
-        backgroundImage={`url("assets/gradient.gif")`}
+        backgroundImage={`url("assets/gradient.png")`}
         backgroundSize="cover"
         backgroundRepeat="no-repeat"
         position="relative"
