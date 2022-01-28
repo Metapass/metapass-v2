@@ -35,12 +35,12 @@ export default function HeroCTA() {
             <Text
               textAlign="center"
               fontFamily="azonix"
-              fontSize={{ md: "6xl", lg: "6xl", xl: "7xl" }}
+              fontSize={{ base: "6xl", lg: "6xl", xl: "7xl" }}
             >
               METAPASS
             </Text>
             <Image
-              w={{ md: "8", lg: "10" }}
+              w={{ base: "8", lg: "10" }}
               ml="1"
               mt="-20"
               src="assets/elements/sparkle.svg"

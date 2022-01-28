@@ -12,7 +12,7 @@ export default function QueriedEvents() {
           lg: "repeat(3, 1fr)",
           xl: "repeat(3, 1fr)",
         }}
-        px="10"
+        px={{ base: "6", md: "10" }}
         gap={6}
       >
         {events.map((data, key) => (

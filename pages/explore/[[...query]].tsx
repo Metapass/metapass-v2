@@ -48,7 +48,7 @@ const Explore: NextPage = () => {
               >
                 <Flex
                   w="full"
-                  px="20"
+                  px={{ md: "20" }}
                   justify="center"
                   transform="translateY(35px)"
                 >

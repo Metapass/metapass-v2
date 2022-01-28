@@ -40,12 +40,12 @@ export default function ExploreCTA() {
             <Text
               textAlign="center"
               fontFamily="azonix"
-              fontSize={{ md: "4xl", lg: "4xl", xl: "5xl" }}
+              fontSize={{ base: "4xl", lg: "4xl", xl: "5xl" }}
             >
               EXPLORE EVENTS
             </Text>
             <Image
-              w={{ md: "6", lg: "8" }}
+              w={{ base: "6", lg: "8" }}
               ml="1"
               mt="-16"
               src="assets/elements/sparkle.svg"

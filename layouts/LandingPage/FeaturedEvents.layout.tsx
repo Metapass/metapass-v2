@@ -9,11 +9,11 @@ export default function FeaturedEvents() {
   return (
     <Flex w="full" justify="center" mb="-48">
       <Box w="full" pb="20">
-        <Flex maxW="1200px" mx={{ lg: "12", xl: "40" }}>
+        <Flex maxW="1200px" mx={{ base: "12", xl: "40" }}>
           <Text
             fontWeight="medium"
             color="brand.black"
-            fontSize={{ lg: "3xl", xl: "4xl" }}
+            fontSize={{ base: "3xl", xl: "4xl" }}
             position="relative"
           >
             Featured Events
@@ -34,12 +34,12 @@ export default function FeaturedEvents() {
               transform: "translateY(-100px)",
             }}
           >
-            <Flex experimental_spaceX="8" mx={{ lg: "10", xl: "20" }}>
+            <Flex experimental_spaceX="8" mx={{ base: "10", xl: "20" }}>
               {events.map((data, key) => (
                 <Box
-                  maxW={{ lg: "330px", xl: "390px" }}
+                  maxW={{ base: "330px", xl: "390px" }}
                   key={key}
-                  minW={{ lg: "330px", xl: "390px" }}
+                  minW={{ base: "330px", xl: "390px" }}
                 >
                   <EventCard event={data} />
                 </Box>
