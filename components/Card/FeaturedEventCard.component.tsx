@@ -2,13 +2,7 @@ import { AspectRatio, Box, Flex, Image, Link, Text } from "@chakra-ui/react";
 import { FaStar } from "react-icons/fa";
 import { Event } from "../../types/Event.type";
 
-export default function EventCard({
-  event,
-  isFeatured = false,
-}: {
-  event: Event;
-  isFeatured?: boolean;
-}) {
+export default function FeaturedEventCard({ event }: { event: Event }) {
   const months = [
     "JAN",
     "FEB",
@@ -26,139 +20,123 @@ export default function EventCard({
 
   return (
     <Flex
-      direction="column"
       rounded="lg"
       overflow="hidden"
-      h="full"
       bg="white"
       _hover={{ transform: "scale(1.01)" }}
       _active={{ transform: "scale(1.03)" }}
       transitionDuration="200ms"
       cursor="pointer"
       boxShadow="0px -4px 52px rgba(0, 0, 0, 0.11)"
-      w="full"
+      w={{ base: "540px", lg: "480px", xl: "610px" }}
+      h="full"
       border="1px"
       position="relative"
       borderColor="blackAlpha.200"
     >
-      <Flex position="absolute" top="2" left="2" zIndex={2}>
-        {isFeatured && (
-          <Flex
-            mr="2"
-            zIndex={2}
-            rounded="full"
-            fontSize="10px"
-            fontWeight="medium"
-            pr="2"
-            pl="0.5"
-            justify="center"
-            alignItems="center"
-            experimental_spaceX="1"
-            py="0.5"
-            bg="white"
-            color="blackAlpha.700"
-          >
-            <Flex
-              p="1"
-              alignItems="center"
-              justify="center"
-              bg="brand.gradient"
-              rounded="full"
-              color="white"
-              fontSize="10px"
-            >
-              <FaStar />
-            </Flex>
-            <Text> Featured</Text>
-          </Flex>
-        )}
-        <Flex
-          zIndex={2}
-          rounded="full"
-          fontSize="10px"
-          fontWeight="semibold"
-          px="2"
-          justify="center"
-          alignItems="center"
-          experimental_spaceX="1"
-          py="0.5"
-          bg="white"
-          color="blackAlpha.700"
-        >
-          <Image
-            src="assets/matic.png"
-            w="3"
-            filter="brightness(0%)"
-            alt="matic"
-          />
-          <Text> {event.price}</Text>
-        </Flex>
+      <Flex
+        zIndex={2}
+        rounded="full"
+        fontSize="10px"
+        fontWeight="semibold"
+        px="2"
+        justify="center"
+        alignItems="center"
+        experimental_spaceX="1"
+        py="0.5"
+        bg="white"
+        position="absolute"
+        bottom="2"
+        left="2"
+        color="blackAlpha.700"
+      >
+        <Image
+          src="assets/matic.png"
+          w="3"
+          filter="brightness(0%)"
+          alt="matic"
+        />
+        <Text> {event.price}</Text>
       </Flex>
       <Flex
         zIndex={2}
+        rounded="full"
+        fontSize="10px"
+        fontWeight="medium"
+        pr="2"
+        pl="0.5"
+        justify="center"
+        alignItems="center"
+        experimental_spaceX="1"
+        py="0.5"
+        bg="white"
         position="absolute"
         top="2"
-        right="2"
-        experimental_spaceX="2"
-        color="blackAlpha.600"
+        left="2"
+        color="blackAlpha.700"
       >
-        <Box
+        <Flex
+          p="1"
+          alignItems="center"
+          justify="center"
+          bg="brand.gradient"
           rounded="full"
+          color="white"
           fontSize="10px"
-          fontWeight="semibold"
-          px="2"
-          py="0.5"
-          bg="white"
         >
-          {event.type}
-        </Box>
-        <Box
-          rounded="full"
-          fontSize="10px"
-          fontWeight="semibold"
-          px="2"
-          py="0.5"
-          bg="white"
-        >
-          {event.category}
-        </Box>
+          <FaStar />
+        </Flex>
+        <Text> Featured</Text>
       </Flex>
-      <AspectRatio ratio={428.42 / 180.98} w="full">
+      <AspectRatio
+        ratio={299 / 210}
+        w="full"
+        maxW={{ base: "200px", xl: "240px" }}
+      >
         <Image w="full" src={event.image} alt="event image" />
       </AspectRatio>
-      <Flex direction="column" w="full" justify="space-between" h="full">
-        <Flex p={{ base: "3", xl: "4" }} alignItems="center">
-          <Box
-            textAlign="center"
-            borderRight="2px"
-            borderColor="blackAlpha.200"
-            px="2"
-            pr="5"
-            h="fit-content"
-            mr="6"
-          >
-            <Text
-              fontSize={{ base: "xs", xl: "sm" }}
-              fontFamily="body"
-              fontWeight="bold"
-              color="brand.peach"
-            >
-              {months[event.date.month]}
-            </Text>
-            <Text
-              fontSize={{ base: "lg", xl: "xl" }}
-              color="brand.black600"
-              fontWeight="medium"
-            >
-              {event.date.date}
-            </Text>
-          </Box>
-          <Box>
+
+      <Flex direction="column" justify="space-between" w="full">
+        <Flex
+          p={{ base: "3", xl: "4" }}
+          alignItems="center"
+          w="full"
+          justify="space-between"
+        >
+          <Box pl="2" pr="4">
+            <Flex experimental_spaceX="2" color="blackAlpha.600" mb="2" ml="-1">
+              <Box
+                boxShadow="0px 2px 27.5323px rgba(0, 0, 0, 0.06)"
+                border="1px"
+                borderColor="blackAlpha.200"
+                rounded="full"
+                fontSize="10px"
+                fontWeight="semibold"
+                px="2"
+                py="0.5"
+                bg="white"
+              >
+                {event.type}
+              </Box>
+              <Box
+                boxShadow="0px 2px 27.5323px rgba(0, 0, 0, 0.06)"
+                border="1px"
+                borderColor="blackAlpha.200"
+                rounded="full"
+                fontSize="10px"
+                fontWeight="semibold"
+                px="2"
+                py="0.5"
+                bg="white"
+              >
+                {event.category}
+              </Box>
+            </Flex>
             <Text
               fontSize={{ base: "sm", xl: "lg" }}
               fontWeight="semibold"
-              noOfLines={2}
               color="brand.black600"
+              noOfLines={2}
             >
               {event.title}
             </Text>
@@ -186,6 +164,30 @@ export default function EventCard({
               noOfLines={2}
             >
               {event.description}
+            </Text>
+          </Box>
+          <Box
+            textAlign="center"
+            borderLeft="2px"
+            borderColor="blackAlpha.200"
+            pl="5"
+            h="fit-content"
+            mr="6"
+          >
+            <Text
+              fontSize={{ base: "xs", xl: "sm" }}
+              fontFamily="body"
+              fontWeight="bold"
+              color="brand.peach"
+            >
+              {months[event.date.month]}
+            </Text>
+            <Text
+              fontSize={{ base: "lg", xl: "xl" }}
+              color="brand.black600"
+              fontWeight="medium"
+            >
+              {event.date.date}
             </Text>
           </Box>
         </Flex>

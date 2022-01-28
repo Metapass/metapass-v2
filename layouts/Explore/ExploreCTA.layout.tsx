@@ -2,7 +2,7 @@ import { Box, Flex, Text, Image } from "@chakra-ui/react";
 import SearchBar from "../../components/Elements/SearchBar.component";
 import NavigationBar from "../../components/Navigation/NavigationBar.component";
 
-export default function HeroCTA() {
+export default function ExploreCTA() {
   return (
     <>
       <Box
@@ -17,17 +17,22 @@ export default function HeroCTA() {
           muted
           loop
           id="myVideo"
-          style={{ position: "absolute", top: 0, zIndex: 0, minWidth: "100%" }}
+          style={{
+            position: "absolute",
+            top: 0,
+            zIndex: 0,
+            minWidth: "100%",
+          }}
         >
-          <source src="assets/gradient.mp4" type="video/mp4" />
+          <source src="/assets/gradient.mp4" type="video/mp4" />
         </video>
         <NavigationBar />
         <Box
           textAlign="center"
           color="white"
-          pb="12"
+          pb="10"
           mt="6"
-          mb="12"
+          mb="10"
           zIndex={2}
           position="relative"
         >
@@ -35,32 +40,23 @@ export default function HeroCTA() {
             <Text
               textAlign="center"
               fontFamily="azonix"
-              fontSize={{ md: "6xl", lg: "6xl", xl: "7xl" }}
+              fontSize={{ md: "4xl", lg: "4xl", xl: "5xl" }}
             >
-              METAPASS
+              EXPLORE EVENTS
             </Text>
             <Image
-              w={{ md: "8", lg: "10" }}
+              w={{ md: "6", lg: "8" }}
               ml="1"
-              mt="-20"
+              mt="-16"
               src="assets/elements/sparkle.svg"
               alt="element"
             />
           </Flex>
-          <Text
-            textAlign="center"
-            fontWeight="semibold"
-            fontFamily="subheading"
-            fontSize={{ md: "23.2px", lg: "23.2px", xl: "28" }}
-            mt="-5"
-          >
-            Buy or sell NFT tickets to events
-          </Text>
         </Box>
       </Box>
-      <Flex justify="center" w="full">
+      <Flex justify="center" w="full" position="relative" zIndex={999}>
         <Box
-          mx={{ lg: "10", xl: "32" }}
+          mx={{ base: "10", xl: "32" }}
           maxW="1200px"
           w="full"
           transform="translateY(-30px)"

@@ -36,7 +36,13 @@ export default function FeaturedEvents() {
           >
             <Flex experimental_spaceX="8" mx={{ lg: "10", xl: "20" }}>
               {events.map((data, key) => (
-                <EventCard event={data} key={key} />
+                <Box
+                  maxW={{ lg: "330px", xl: "390px" }}
+                  key={key}
+                  minW={{ lg: "330px", xl: "390px" }}
+                >
+                  <EventCard event={data} />
+                </Box>
               ))}
               <Box p="10" />
             </Flex>
@@ -63,7 +69,9 @@ export default function FeaturedEvents() {
             _active={{}}
             py="7"
             role="group"
+            fontWeight="medium"
             px="8"
+            onClick={() => window.location.replace("/explore")}
           >
             Explore all events
           </Button>

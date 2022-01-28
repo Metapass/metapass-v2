@@ -19,15 +19,18 @@ import {
   Search,
   Tag,
 } from "@mui/icons-material";
+import { useState } from "react";
 
-export default function SearchBar() {
+export default function SearchBar({ noEffects = false }) {
+  const [searchQuery, setSearchQuery] = useState({
+    query: "",
+    type: "",
+    price: "",
+    category: "",
+  });
+
   return (
     <Flex
-      borderBottom="2px"
-      borderLeft="2px"
-      borderRight="none"
-      borderTop="none"
-      borderColor="blackAlpha.100"
       boxShadow="0px 18px 91px rgba(0, 0, 0, 0.07)"
       bg="white"
       rounded="full"
@@ -44,6 +47,13 @@ export default function SearchBar() {
             border="none"
             _focus={{}}
             _hover={{}}
+            value={searchQuery.query}
+            onChange={(e) => {
+              setSearchQuery({
+                ...searchQuery,
+                query: e.target.value,
+              });
+            }}
             rounded="none"
             placeholder="Search events by name or type ..."
           />
@@ -61,15 +71,34 @@ export default function SearchBar() {
                 border="none"
                 _focus={{}}
                 _hover={{}}
+                value={searchQuery.type}
                 rounded="none"
                 placeholder="Event type"
               />
             </InputGroup>
           </MenuButton>
           <MenuList rounded="lg" shadow="none" fontSize="sm" mt="3">
-            <MenuItem>Online</MenuItem>
+            <MenuItem
+              onClick={() => {
+                setSearchQuery({
+                  ...searchQuery,
+                  type: "Online",
+                });
+              }}
+            >
+              Online
+            </MenuItem>
             <MenuDivider color="gray.400" />
-            <MenuItem>In-person</MenuItem>
+            <MenuItem
+              onClick={() => {
+                setSearchQuery({
+                  ...searchQuery,
+                  type: "In-person",
+                });
+              }}
+            >
+              In-person
+            </MenuItem>
           </MenuList>
         </Menu>
         <Box minW="2.5px" bg="gray.100" h="12" />
@@ -86,13 +115,32 @@ export default function SearchBar() {
                 _hover={{}}
                 rounded="none"
                 placeholder="Price"
+                value={searchQuery.price}
               />
             </InputGroup>
           </MenuButton>
           <MenuList rounded="lg" shadow="none" fontSize="sm" mt="3">
-            <MenuItem>Paid</MenuItem>
+            <MenuItem
+              onClick={() => {
+                setSearchQuery({
+                  ...searchQuery,
+                  price: "Paid",
+                });
+              }}
+            >
+              Paid
+            </MenuItem>
             <MenuDivider color="gray.400" />
-            <MenuItem>Free</MenuItem>
+            <MenuItem
+              onClick={() => {
+                setSearchQuery({
+                  ...searchQuery,
+                  price: "Free",
+                });
+              }}
+            >
+              Free
+            </MenuItem>
           </MenuList>
         </Menu>
         <Box minW="2.5px" bg="gray.100" h="12" />
@@ -109,13 +157,32 @@ export default function SearchBar() {
                 _hover={{}}
                 rounded="none"
                 placeholder="Category"
+                value={searchQuery.category}
               />
             </InputGroup>
           </MenuButton>
           <MenuList rounded="lg" shadow="none" fontSize="sm" mt="3">
-            <MenuItem>Meetup</MenuItem>
+            <MenuItem
+              onClick={() => {
+                setSearchQuery({
+                  ...searchQuery,
+                  category: "Meetup",
+                });
+              }}
+            >
+              Meetup
+            </MenuItem>
             <MenuDivider color="gray.400" />
-            <MenuItem>Party</MenuItem>
+            <MenuItem
+              onClick={() => {
+                setSearchQuery({
+                  ...searchQuery,
+                  category: "Party",
+                });
+              }}
+            >
+              Party
+            </MenuItem>
           </MenuList>
         </Menu>
       </Flex>
@@ -142,6 +209,9 @@ export default function SearchBar() {
         py="8"
         px="8"
         fontSize="lg"
+        onClick={() => {
+          window.location.assign("/explore");
+        }}
       >
         Search
       </Button>

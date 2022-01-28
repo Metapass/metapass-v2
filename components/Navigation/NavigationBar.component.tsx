@@ -1,5 +1,6 @@
-import { Button, Flex, Image, Text, Link } from "@chakra-ui/react";
-import { AccountBalanceWallet } from "@mui/icons-material";
+import { Button, Flex, Image, Text, Link, Box } from "@chakra-ui/react";
+import { AccountBalanceWallet, Add } from "@mui/icons-material";
+import NextLink from "next/link";
 
 export default function NavigationBar() {
   return (
@@ -14,10 +15,42 @@ export default function NavigationBar() {
       alignItems="center"
       color="white"
     >
-      <Image src="assets/logo.svg" alt="Metapass" w="10" />
+      <NextLink href="/" passHref>
+        <Link _hover={{}} _focus={{}} _active={{}}>
+          <Image src="assets/logo.svg" alt="Metapass" w="10" />
+        </Link>
+      </NextLink>
       <Flex alignItems="center" experimental_spaceX="6">
-        <Link _hover={{ bg: "" }}>About</Link>
-        <Link _hover={{ bg: "" }}>How it works</Link>
+        <Button
+          pl="1"
+          rounded="full"
+          bg="whiteAlpha.800"
+          color="blackAlpha.700"
+          fontWeight="medium"
+          _hover={{ shadow: "sm", bg: "white" }}
+          border="2px"
+          borderColor="white"
+          _focus={{}}
+          _active={{ transform: "scale(0.95)" }}
+          role="group"
+          leftIcon={
+            <Flex
+              _groupHover={{ transform: "scale(1.05)" }}
+              transitionDuration="200ms"
+              justify="center"
+              alignItems="center"
+              color="white"
+              bg="brand.gradient"
+              rounded="full"
+              p="0.5"
+            >
+              <Add />
+            </Flex>
+          }
+        >
+          Create Event
+        </Button>
+
         <Button
           rounded="full"
           color="white"

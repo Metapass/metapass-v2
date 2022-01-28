@@ -42,6 +42,10 @@ html {
   scroll-behavior: smooth;
 }
 
+body {
+  overflow: overlay;
+}
+
 /* Track */
 ::-webkit-scrollbar-track {
   background: transparent;
