@@ -21,36 +21,39 @@ export default function NavigationBar() {
         </Link>
       </NextLink>
       <Flex alignItems="center" experimental_spaceX="6">
-        <Button
-          pl="1"
-          rounded="full"
-          bg="whiteAlpha.800"
-          color="blackAlpha.700"
-          fontWeight="medium"
-          _hover={{ shadow: "sm", bg: "white" }}
-          border="2px"
-          borderColor="white"
-          _focus={{}}
-          _active={{ transform: "scale(0.95)" }}
-          role="group"
-          leftIcon={
-            <Flex
-              _groupHover={{ transform: "scale(1.05)" }}
-              transitionDuration="200ms"
-              justify="center"
-              alignItems="center"
-              color="white"
-              bg="brand.gradient"
+        <NextLink href="/create" passHref>
+          <Link _hover={{}} _focus={{}} _active={{}}>
+            <Button
+              pl="1"
               rounded="full"
-              p="0.5"
+              bg="whiteAlpha.800"
+              color="blackAlpha.700"
+              fontWeight="medium"
+              _hover={{ shadow: "sm", bg: "white" }}
+              border="2px"
+              borderColor="white"
+              _focus={{}}
+              _active={{ transform: "scale(0.95)" }}
+              role="group"
+              leftIcon={
+                <Flex
+                  _groupHover={{ transform: "scale(1.05)" }}
+                  transitionDuration="200ms"
+                  justify="center"
+                  alignItems="center"
+                  color="white"
+                  bg="brand.gradient"
+                  rounded="full"
+                  p="0.5"
+                >
+                  <Add />
+                </Flex>
+              }
             >
-              <Add />
-            </Flex>
-          }
-        >
-          Create Event
-        </Button>
-
+              Create Event
+            </Button>
+          </Link>
+        </NextLink>
         <Button
           rounded="full"
           color="white"

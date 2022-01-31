@@ -12,9 +12,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <title>MetaPass | Reimagining Events</title>
       </Head>
       <ChakraProvider theme={theme}>
-        <PageLayout>
-          <Component {...pageProps} />
-        </PageLayout>
+        <Component {...pageProps} />
       </ChakraProvider>
     </>
   );

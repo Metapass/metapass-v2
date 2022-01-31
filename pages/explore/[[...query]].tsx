@@ -7,6 +7,7 @@ import ExploreCTA from "../../layouts/Explore/ExploreCTA.layout";
 import FeaturedEvents from "../../layouts/Explore/FeaturedEvents.layout";
 import QueriedEvents from "../../layouts/Explore/QueriedEvents.layout";
 import { AnimatePresence, motion } from "framer-motion";
+import PageLayout from "../../components/Wrappers/PageLayout.component";
 
 const Explore: NextPage = () => {
   const [isScrolling, setScrolling] = useState(true);
@@ -20,7 +21,7 @@ const Explore: NextPage = () => {
     });
   }, []);
   return (
-    <>
+    <PageLayout>
       <Head>
         <title>MetaPass | Explore</title>
       </Head>
@@ -67,7 +68,7 @@ const Explore: NextPage = () => {
           <QueriedEvents />
         </Flex>
       </Box>
-    </>
+    </PageLayout>
   );
 };
 

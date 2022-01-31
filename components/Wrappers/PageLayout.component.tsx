@@ -1,8 +1,8 @@
-import { Button, Flex, Box } from "@chakra-ui/react";
+import { Button, Flex, Box, Link } from "@chakra-ui/react";
 import { Add } from "@mui/icons-material";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import SearchBar from "../Elements/SearchBar.component";
+import NextLink from "next/link";
 
 export default function PageLayout({ children }: any) {
   const [isScrolling, setScrolling] = useState(true);
@@ -45,33 +45,38 @@ export default function PageLayout({ children }: any) {
               _focus={{}}
               _active={{ transform: "scale(0.95)" }}
             >
-              <Button
-                pl="1.5"
-                rounded="full"
-                bg="white"
-                color="blackAlpha.700"
-                fontWeight="medium"
-                _hover={{}}
-                _focus={{}}
-                _active={{}}
-                role="group"
-                leftIcon={
-                  <Flex
-                    _groupHover={{}}
-                    transitionDuration="200ms"
-                    justify="center"
-                    alignItems="center"
-                    color="white"
-                    bg="brand.gradient"
+              <NextLink href="/create" passHref>
+                <Link _hover={{}} _focus={{}} _active={{}}>
+                  {" "}
+                  <Button
+                    pl="1.5"
                     rounded="full"
-                    p="0.5"
+                    bg="white"
+                    color="blackAlpha.700"
+                    fontWeight="medium"
+                    _hover={{}}
+                    _focus={{}}
+                    _active={{}}
+                    role="group"
+                    leftIcon={
+                      <Flex
+                        _groupHover={{}}
+                        transitionDuration="200ms"
+                        justify="center"
+                        alignItems="center"
+                        color="white"
+                        bg="brand.gradient"
+                        rounded="full"
+                        p="0.5"
+                      >
+                        <Add />
+                      </Flex>
+                    }
                   >
-                    <Add />
-                  </Flex>
-                }
-              >
-                Create Event
-              </Button>
+                    Create Event
+                  </Button>
+                </Link>
+              </NextLink>
             </Box>
           </motion.div>
         )}

@@ -15,6 +15,7 @@ import { useState } from "react";
 import { FaStar } from "react-icons/fa";
 import EventLayout from "../../layouts/Event/Event.layout";
 import { Event } from "../../types/Event.type";
+import { users } from "../../utils/testData";
 
 export default function FeaturedEventCard({ event }: { event: Event }) {
   const months = [
@@ -39,6 +40,9 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
       rounded="lg"
       overflow="hidden"
       bg="white"
+      onClick={() => {
+        setEventModal(true);
+      }}
       _hover={{ transform: "scale(1.01)" }}
       _active={{ transform: "scale(1.03)" }}
       transitionDuration="200ms"
@@ -199,9 +203,7 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                 noOfLines={1}
                 _hover={{ color: "brand.black600" }}
               >
-                {event.owner.substring(0, 6) +
-                  "..." +
-                  event.owner.substring(event.owner.length - 4)}
+                {users[event.owner]?.username || "Anonymous"}
               </Link>
             </Flex>
             <Text

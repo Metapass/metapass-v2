@@ -15,13 +15,16 @@ import { useState } from "react";
 import { FaStar } from "react-icons/fa";
 import EventLayout from "../../layouts/Event/Event.layout";
 import { Event } from "../../types/Event.type";
+import { users } from "../../utils/testData";
 
 export default function EventCard({
   event,
   isFeatured = false,
+  previewOnly = false,
 }: {
   event: Event;
   isFeatured?: boolean;
+  previewOnly?: boolean;
 }) {
   const [showEventModal, setEventModal] = useState(false);
 
@@ -60,7 +63,7 @@ export default function EventCard({
       position="relative"
       borderColor="blackAlpha.200"
     >
-      {showEventModal && (
+      {!previewOnly && showEventModal && (
         <Modal
           isCentered
           size="5xl"
@@ -224,9 +227,7 @@ export default function EventCard({
                 noOfLines={1}
                 _hover={{ color: "brand.black600" }}
               >
-                {event.owner.substring(0, 6) +
-                  "..." +
-                  event.owner.substring(event.owner.length - 4)}
+                {users[event.owner]?.username || "Anonymous"}
               </Link>
             </Flex>
             <Text
