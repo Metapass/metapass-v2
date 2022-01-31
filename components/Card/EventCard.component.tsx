@@ -1,5 +1,19 @@
-import { AspectRatio, Box, Flex, Image, Link, Text } from "@chakra-ui/react";
+import {
+  AspectRatio,
+  Box,
+  Flex,
+  Image,
+  Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+  Text,
+} from "@chakra-ui/react";
+import { useState } from "react";
 import { FaStar } from "react-icons/fa";
+import EventLayout from "../../layouts/Event/Event.layout";
 import { Event } from "../../types/Event.type";
 
 export default function EventCard({
@@ -9,6 +23,8 @@ export default function EventCard({
   event: Event;
   isFeatured?: boolean;
 }) {
+  const [showEventModal, setEventModal] = useState(false);
+
   const months = [
     "JAN",
     "FEB",
@@ -27,6 +43,9 @@ export default function EventCard({
   return (
     <Flex
       direction="column"
+      onClick={() => {
+        setEventModal(true);
+      }}
       rounded="lg"
       overflow="hidden"
       h="full"
@@ -41,6 +60,32 @@ export default function EventCard({
       position="relative"
       borderColor="blackAlpha.200"
     >
+      {showEventModal && (
+        <Modal
+          isCentered
+          size="5xl"
+          isOpen={showEventModal}
+          onClose={() => {
+            setEventModal(false);
+          }}
+        >
+          <ModalOverlay />
+
+          <ModalContent rounded={{ base: "none", lg: "xl" }}>
+            <ModalCloseButton
+              bg="white"
+              rounded="full"
+              zIndex={9999}
+              _hover={{ color: "brand.peach" }}
+              top="-10"
+              right="-10"
+            />
+            <ModalBody>
+              <EventLayout event={event} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      )}
       <Flex position="absolute" top="2" left="2" zIndex={2}>
         {isFeatured && (
           <Flex
@@ -85,13 +130,19 @@ export default function EventCard({
           bg="white"
           color="blackAlpha.700"
         >
-          <Image
-            src="assets/matic.png"
-            w="3"
-            filter="brightness(0%)"
-            alt="matic"
-          />
-          <Text> {event.price}</Text>
+          {event.price === 0 ? (
+            <>FREE</>
+          ) : (
+            <>
+              <Image
+                src="assets/matic.png"
+                w="3"
+                filter="brightness(0%)"
+                alt="matic"
+              />
+              <Text> {event.price}</Text>
+            </>
+          )}
         </Flex>
       </Flex>
       <Flex

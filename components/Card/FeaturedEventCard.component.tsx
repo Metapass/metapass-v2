@@ -50,13 +50,19 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
         left="2"
         color="blackAlpha.700"
       >
-        <Image
-          src="assets/matic.png"
-          w="3"
-          filter="brightness(0%)"
-          alt="matic"
-        />
-        <Text> {event.price}</Text>
+        {event.price === 0 ? (
+          <>FREE</>
+        ) : (
+          <>
+            <Image
+              src="assets/matic.png"
+              w="3"
+              filter="brightness(0%)"
+              alt="matic"
+            />
+            <Text> {event.price}</Text>
+          </>
+        )}
       </Flex>
       <Flex
         zIndex={2}

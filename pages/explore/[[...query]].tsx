@@ -35,7 +35,7 @@ const Explore: NextPage = () => {
               style={{
                 width: "100%",
                 position: "fixed",
-                zIndex: 9999,
+                zIndex: 999,
                 boxShadow: "0px 18px 91px rgba(0, 0, 0, 0.07)",
               }}
             >

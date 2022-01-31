@@ -30,7 +30,7 @@ export default function PageLayout({ children }: any) {
             style={{
               width: "fit-content",
               position: "fixed",
-              zIndex: 9999,
+              zIndex: 999,
               bottom: 20,
               right: 25,
             }}

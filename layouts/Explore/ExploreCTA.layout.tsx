@@ -54,7 +54,7 @@ export default function ExploreCTA() {
           </Flex>
         </Box>
       </Box>
-      <Flex justify="center" w="full" position="relative" zIndex={999}>
+      <Flex justify="center" w="full" position="relative" zIndex={99}>
         <Box
           mx={{ base: "10", xl: "32" }}
           maxW="1200px"
