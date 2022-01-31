@@ -222,7 +222,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                 <FormLabel
                   fontSize={{ lg: "md", xl: "lg" }}
                   color="blackAlpha.700"
-                  my=")"
+                  my="0"
                 >
                   Event Category
                 </FormLabel>
@@ -347,6 +347,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                 <FormLabel
                   fontSize={{ lg: "md", xl: "lg" }}
                   color="blackAlpha.700"
+                  my="0"
                 >
                   Date of Event
                 </FormLabel>
@@ -408,7 +409,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                 previewOnly
                 event={{
                   title: formDetails.title || "Untitled",
-                  description: "Form description goes here",
+                  description: "Event description goes here",
                   image: "assets/gradient.png",
                   date:
                     formDetails.date.date === 0

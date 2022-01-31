@@ -3,5 +3,7 @@ export type User = {
     username: string,
     avatar: string,
     banner?: string,
-    bio?: string
+    bio?: string,
+    org?: string,
+    org_avatar?: string
 }
