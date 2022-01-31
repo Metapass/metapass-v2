@@ -19,6 +19,20 @@ import { users } from "../../utils/testData";
 export default function EventLayout({ event }: { event: Event }) {
   const [image, setImage] = useState(event.image);
   const [mediaType, setMediaType] = useState(event.video ? "video" : "image");
+  const months = [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ];
 
   return (
     <Box p="2" pt="3" color="brand.black" mb="4">
@@ -235,7 +249,7 @@ export default function EventLayout({ event }: { event: Event }) {
                 Event Date
               </Text>
               <Divider my="2" />
-              <Text color="brand.peach">AUG</Text>
+              <Text color="brand.peach">{months[event.date.month]}</Text>
               <Text fontSize="2xl" fontWeight="semibold">
                 {event.date.date}
               </Text>

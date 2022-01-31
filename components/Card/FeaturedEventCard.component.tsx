@@ -1,5 +1,19 @@
-import { AspectRatio, Box, Flex, Image, Link, Text } from "@chakra-ui/react";
+import {
+  AspectRatio,
+  Box,
+  Flex,
+  Image,
+  Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+  Text,
+} from "@chakra-ui/react";
+import { useState } from "react";
 import { FaStar } from "react-icons/fa";
+import EventLayout from "../../layouts/Event/Event.layout";
 import { Event } from "../../types/Event.type";
 
 export default function FeaturedEventCard({ event }: { event: Event }) {
@@ -18,6 +32,8 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
     "DEC",
   ];
 
+  const [showEventModal, setEventModal] = useState(false);
+
   return (
     <Flex
       rounded="lg"
@@ -34,6 +50,32 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
       position="relative"
       borderColor="blackAlpha.200"
     >
+      {showEventModal && (
+        <Modal
+          isCentered
+          size="5xl"
+          isOpen={showEventModal}
+          onClose={() => {
+            setEventModal(false);
+          }}
+        >
+          <ModalOverlay />
+
+          <ModalContent rounded={{ base: "none", lg: "xl" }}>
+            <ModalCloseButton
+              bg="white"
+              rounded="full"
+              zIndex={9999}
+              _hover={{ color: "brand.peach" }}
+              top="-10"
+              right="-10"
+            />
+            <ModalBody>
+              <EventLayout event={event} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      )}
       <Flex
         zIndex={2}
         rounded="full"
