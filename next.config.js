@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const removeImports = require("next-remove-imports")();
+const nextConfig = removeImports({
   reactStrictMode: true,
-}
+});
 
-module.exports = nextConfig
+module.exports = nextConfig;

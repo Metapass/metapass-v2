@@ -24,7 +24,7 @@ const event = {
         "https://content.fortune.com/wp-content/uploads/2020/03/digital-parties-zoom.png",
         "https://assets.entrepreneur.com/content/3x2/2000/20160321103826-shutterstock-217119211.jpeg",
     ],
-    long_description: "Celebrate New Year 2022 with John and team. Plenty of giveaways to be done. Free investment consultation by John’s company. Get to network with top industry professionals. DJ by Martin, free meals. Lorem ipsum dolor sit amet constetur de."
+    long_description: "# Nice and cool event \n Let's see what we can do **lmao** https://linktest.com"
 }
 
 

@@ -4,7 +4,7 @@ import { FaCheck } from "react-icons/fa";
 import SearchBar from "../../components/Elements/SearchBar.component";
 import NavigationBar from "../../components/Navigation/NavigationBar.component";
 
-export default function CreateEventCTA({ step = 0 }) {
+export default function CreateEventCTA({ step = 0, setStep }: any) {
   return (
     <>
       <Box
@@ -73,6 +73,11 @@ export default function CreateEventCTA({ step = 0 }) {
                 w="10"
                 h="10"
                 key={key}
+                onClick={() => {
+                  if (step > data - 1) {
+                    setStep(key);
+                  }
+                }}
                 bg={
                   step === data - 1
                     ? "brand.purple"

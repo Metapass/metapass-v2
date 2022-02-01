@@ -15,6 +15,13 @@ import ReactPlayer from "react-player";
 import { Event } from "../../types/Event.type";
 import { getParameterByName } from "../../utils/queryExtractor";
 import { users } from "../../utils/testData";
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
+import dynamic from "next/dynamic";
+
+const MarkdownPreview = dynamic(() => import("@uiw/react-markdown-preview"), {
+  ssr: false,
+});
 
 export default function EventLayout({ event }: { event: Event }) {
   const [image, setImage] = useState(event.image);
@@ -208,10 +215,15 @@ export default function EventLayout({ event }: { event: Event }) {
             p="3"
             fontFamily="body"
             px="4"
-            color="blackAlpha.600"
+            color="blackAlpha.700"
             fontSize={{ base: "sm", lg: "md" }}
           >
-            {event.long_description || event.description}
+            <Box>
+              <MarkdownPreview
+                style={{ fontSize: event.long_description ? "12px" : "14px" }}
+                source={event.long_description || event.description}
+              />
+            </Box>
           </Box>
         </Box>
         <Flex direction="column">
