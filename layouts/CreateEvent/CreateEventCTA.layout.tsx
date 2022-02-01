@@ -73,6 +73,8 @@ export default function CreateEventCTA({ step = 0, setStep }: any) {
                 w="10"
                 h="10"
                 key={key}
+                cursor="pointer"
+                _hover={{ transform: step > data - 1 ? "scale(1.05)" : "" }}
                 onClick={() => {
                   if (step > data - 1) {
                     setStep(key);

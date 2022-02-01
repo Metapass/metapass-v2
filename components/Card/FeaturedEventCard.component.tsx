@@ -101,7 +101,7 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
         ) : (
           <>
             <Image
-              src="assets/matic.png"
+              src="assets/matic_logo.svg"
               w="3"
               filter="brightness(0%)"
               alt="matic"
@@ -189,7 +189,6 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
               fontWeight="semibold"
               color="brand.black600"
               noOfLines={2}
-              wordBreak="break-all"
             >
               {event.title}
             </Text>
@@ -213,7 +212,6 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
               fontFamily="body"
               fontSize={{ base: "xs", xl: "sm" }}
               noOfLines={2}
-              wordBreak="break-all"
             >
               {event.description}
             </Text>

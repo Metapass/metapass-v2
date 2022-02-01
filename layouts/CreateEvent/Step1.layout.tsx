@@ -330,10 +330,18 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                       <Image
                         src="assets/matic_circle.svg"
                         alt="matic"
-                        w="5"
-                        h="5"
+                        w="4"
+                        h="4"
                       />
-                      <Text color="blackAlpha.700">MATIC</Text>
+                      <Text
+                        color="blackAlpha.700"
+                        fontSize="sm"
+                        letterSpacing={1}
+                        fontWeight="medium"
+                        fontFamily="heading"
+                      >
+                        MATIC
+                      </Text>
                     </Flex>
                   </InputRightElement>
                 </InputGroup>

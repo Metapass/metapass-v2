@@ -138,7 +138,7 @@ export default function EventCard({
           ) : (
             <>
               <Image
-                src="assets/matic.png"
+                src="assets/matic_logo.svg"
                 w="3"
                 filter="brightness(0%)"
                 alt="matic"
@@ -212,7 +212,6 @@ export default function EventCard({
               fontSize={{ base: "sm", xl: "lg" }}
               fontWeight="semibold"
               noOfLines={2}
-              wordBreak="break-all"
               color="brand.black600"
             >
               {event.title}
@@ -237,7 +236,6 @@ export default function EventCard({
               fontFamily="body"
               fontSize={{ base: "xs", xl: "sm" }}
               noOfLines={2}
-              wordBreak="break-all"
             >
               {event.description}
             </Text>
