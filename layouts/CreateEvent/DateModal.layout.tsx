@@ -13,8 +13,9 @@ import {
   Box,
   Button,
 } from "@chakra-ui/react";
-import { CalendarToday } from "@mui/icons-material";
+import { MdCalendarToday as CalendarToday } from "react-icons/md";
 import { useState } from "react";
+// import { CalendarToday } from '@mui/icons-material';
 
 export default function DateModal({ isOpen, onClose, onSubmit }: any) {
   const [date, setDate] = useState({

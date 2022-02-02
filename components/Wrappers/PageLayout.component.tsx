@@ -1,5 +1,5 @@
 import { Button, Flex, Box, Link } from "@chakra-ui/react";
-import { Add } from "@mui/icons-material";
+import { IoIosAdd } from "react-icons/io";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import NextLink from "next/link";
@@ -69,7 +69,7 @@ export default function PageLayout({ children }: any) {
                         rounded="full"
                         p="0.5"
                       >
-                        <Add />
+                        <IoIosAdd />
                       </Flex>
                     }
                   >

@@ -3,7 +3,9 @@ import { useEffect } from "react";
 import EventCard from "../../components/Card/EventCard.component";
 import { events } from "../../utils/testData";
 import ScrollContainer from "react-indiana-drag-scroll";
-import { ChevronRight } from "@mui/icons-material";
+
+// import { MdCalendarToday as CalendarToday } from "react-icons/md";
+import { HiOutlineChevronRight as ChevronRight } from "react-icons/hi";
 
 export default function FeaturedEvents() {
   return (

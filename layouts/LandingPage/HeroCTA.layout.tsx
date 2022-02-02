@@ -13,7 +13,7 @@ export default function HeroCTA() {
         overflow="hidden"
       >
         <video
-          autoPlay
+          autoPlay={false}
           muted
           loop
           id="myVideo"
