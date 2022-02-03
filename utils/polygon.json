@@ -1,0 +1,23 @@
+{
+    "chainId": 137,
+    "chainIdHex": "0x89",
+    "name": "Polygon (Matic)",
+    "shortName": "Polygon",
+    "img": "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg",
+    "enabled": true,
+    "addData": {
+        "chainId": "0x89",
+        "chainName": "Polygon Mainnet",
+        "nativeCurrency": {
+            "name": "MATIC",
+            "symbol": "MATIC",
+            "decimals": 18
+        },
+        "rpcUrls": [
+            "https://polygon-rpc.com"
+        ],
+        "blockExplorerUrls": [
+            "https://polygonscan.com/"
+        ]
+    }
+}

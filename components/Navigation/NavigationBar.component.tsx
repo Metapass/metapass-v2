@@ -19,6 +19,7 @@ import { walletContext } from "../../utils/walletContext";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useState, useContext } from "react";
 import Web3 from "web3";
+const polygon = require("../../utils/mumbai.json");
 declare const window: any;
 export default function NavigationBar() {
   const [address, setAddress] = useState<string>("");
@@ -28,31 +29,12 @@ export default function NavigationBar() {
   const enviroment: any = process.env.NEXT_PUBLIC_ENV;
   const chainid: any = process.env.NEXT_PUBLIC_CHAIN_ID;
   // console.log(chainid);
-  const web3 = new Web3(process.env.NEXT_PUBLIC_END_POINT as string);
+  const web3 = new Web3(process.env.NEXT_PUBLIC_ENDPOINT as string);
   const provider = new WalletConnectProvider({
     rpc: {
       [chainid]: process.env.NEXT_PUBLIC_ENDPOINT as string,
     },
   });
-  const polygon = {
-    chainId: 137,
-    chainIdHex: "0x89",
-    name: "Polygon (Matic)",
-    shortName: "Polygon",
-    img: "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg",
-    enabled: true,
-    addData: {
-      chainId: "0x89",
-      chainName: "Polygon Mainnet",
-      nativeCurrency: {
-        name: "MATIC",
-        symbol: "MATIC",
-        decimals: 18,
-      },
-      rpcUrls: ["https://polygon-rpc.com"],
-      blockExplorerUrls: ["https://polygonscan.com/"],
-    },
-  };
 
   const mdcontent = [
     {
@@ -67,7 +49,30 @@ export default function NavigationBar() {
     },
   ];
   // console.log(provider);
+  async function getAccountData({ accounts, windowType }: any) {
+    try {
+      // console.log("trying to get accounts", web3);
+      accounts = await windowType.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      console.log("got accounts", accounts);
+      setAddress(accounts[0]);
+      // console.log("provider current", web3.currentProvider);
+      // web3.setProvider(window.web3.currentProvider);
+      let bal = await web3.eth.getBalance(accounts[0]);
+      // console.log("got balance", bal);
+      let ethBal: any = await web3.utils.fromWei(bal, "ether");
+      // console.log("got eth balance", ethBal);
+      setBalance(ethBal);
 
+      setWallet({
+        balance: ethBal,
+        address: accounts[0],
+      });
+    } catch (error) {
+      console.log(error, "error");
+    }
+  }
   async function loadAccounts() {
     let windowType = window;
 
@@ -76,7 +81,7 @@ export default function NavigationBar() {
     });
     console.log(windowType.ethereum.chainId);
 
-    if (windowType.ethereum.chainId == process.env.NEXT_PUBLIC_CHAIN_ID) {
+    if (windowType.ethereum.chainId == chainid) {
       setAddress(accounts[0]);
       let bal = await web3.eth.getBalance(accounts[0]);
       let ethBal: any = await web3.utils.fromWei(bal, "ether");
@@ -92,20 +97,22 @@ export default function NavigationBar() {
           method: "wallet_switchEthereumChain",
           params: [
             {
-              chainId: web3.utils.toHex(
-                process.env.NEXT_PUBLIC_CHAIN_ID as string
-              ),
+              chainId: web3.utils.toHex(chainid as string),
             },
           ],
         });
+        console.log("switched");
+        getAccountData({ accounts, windowType });
       } catch (switchError: any) {
         // This error code indicates that the chain has not been added to MetaMask.
         if (switchError.code === 4902) {
           try {
+            console.log("trying to add chain");
             await windowType.ethereum.request({
               method: "wallet_addEthereumChain",
               params: [polygon.addData],
             });
+            getAccountData({ accounts, windowType });
           } catch (addError) {
             console.log("Error Adding chain: ", addError);
           }
@@ -122,9 +129,10 @@ export default function NavigationBar() {
     const web3 = new Web3(provider as any);
     window.w3 = web3;
     let accounts = await web3.eth.getAccounts();
-    // console.log(window.w3.chainId, process.env.NEXT_PUBLIC_CHAIN_ID);
+    // console.log(window.w3.chainId, chainid);
     const chainId = await (await web3.eth.getChainId()).toString();
-    if (chainId == process.env.NEXT_PUBLIC_CHAIN_ID) {
+    console.log(chainId, chainid);
+    if (chainId == chainid) {
       setAddress(accounts[0]);
       let bal = await web3.eth.getBalance(accounts[0]);
       let ethBal: any = await web3.utils.fromWei(bal, "ether");
@@ -134,15 +142,36 @@ export default function NavigationBar() {
         balance: ethBal,
         address: accounts[0],
       });
+    } else {
+      try {
+        await provider.request({
+          method: "wallet_switchEthereumChain",
+          params: [
+            {
+              chainId: web3.utils.toHex(chainid as string),
+            },
+          ],
+        });
+        console.log("switched");
+      } catch (e) {
+        console.log(e);
+        // await provider.request({
+        //   method: "wallet_addEthereumChain",
+        //   params: [polygon.addData],
+        // });
+      }
     }
   };
 
   const disconnect = async () => {
     // Close provider session
-    await provider.disconnect();
-    provider.on("disconnect", (code: number, reason: string) => {
-      console.log(code, reason);
-    });
+    const isconnected = provider.isWalletConnect;
+    if (isconnected) {
+      await provider.disconnect();
+      provider.on("disconnect", (code: number, reason: string) => {
+        console.log(code, reason);
+      });
+    }
   };
 
   return (
@@ -232,7 +261,6 @@ export default function NavigationBar() {
             <Modal isOpen={isOpen} onClose={onClose}>
               <ModalOverlay />
               <ModalContent>
-                <ModalCloseButton />
                 <ModalBody m={2} p={4}>
                   {mdcontent.map((item: any, index: number) => {
                     return (
