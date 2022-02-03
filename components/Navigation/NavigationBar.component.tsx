@@ -3,6 +3,7 @@ import {
   Flex,
   Image,
   Text,
+  Fade,
   Link,
   Box,
   useDisclosure,
@@ -10,15 +11,18 @@ import {
   ModalContent,
   ModalCloseButton,
   ModalBody,
+  IconButton,
+  Avatar,
 } from "@chakra-ui/react";
-import { MdAccountBalanceWallet } from "react-icons/md";
+import { MdAccountBalanceWallet, MdClose } from "react-icons/md";
 import { IoIosAdd } from "react-icons/io";
 import NextLink from "next/link";
 import { Modal } from "@chakra-ui/react";
 import { walletContext } from "../../utils/walletContext";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import Web3 from "web3";
+import toast from "react-hot-toast";
 const polygon = require("../../utils/mumbai.json");
 declare const window: any;
 export default function NavigationBar() {
@@ -143,36 +147,50 @@ export default function NavigationBar() {
         address: accounts[0],
       });
     } else {
-      try {
-        await provider.request({
-          method: "wallet_switchEthereumChain",
-          params: [
-            {
-              chainId: web3.utils.toHex(chainid as string),
-            },
-          ],
-        });
-        console.log("switched");
-      } catch (e) {
-        console.log(e);
-        // await provider.request({
-        //   method: "wallet_addEthereumChain",
-        //   params: [polygon.addData],
-        // });
-      }
+      toast.error("Please switch to Polygon mainnet");
+      // try {
+      //   await provider.request({
+      //     method: "wallet_switchEthereumChain",
+      //     params: [
+      //       {
+      //         chainId: web3.utils.toHex(chainid as string),
+      //       },
+      //     ],
+      //   });
+      //   console.log("switched");
+      // } catch (e) {
+      //   console.log(e);
+      // await provider.request({
+      //   method: "wallet_addEthereumChain",
+      //   params: [polygon.addData],
+      // });
+      // }
     }
   };
 
   const disconnect = async () => {
     // Close provider session
+    setBalance("");
     const isconnected = provider.isWalletConnect;
     if (isconnected) {
       await provider.disconnect();
       provider.on("disconnect", (code: number, reason: string) => {
+        onClose();
         console.log(code, reason);
       });
     }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      toast.success("Please connect using Polygon Mainnet", {
+        icon: (
+          <Avatar borderRadius="30" h={40} src={polygon.img} alt="polygon" />
+        ),
+        duration: 4000,
+      });
+    }
+  }, [isOpen]);
 
   return (
     <Flex
@@ -225,7 +243,7 @@ export default function NavigationBar() {
             </Button>
           </Link>
         </NextLink>
-        {balance ? (
+        {balance.length > 0 ? (
           <Button
             rounded="full"
             color="white"
@@ -233,11 +251,22 @@ export default function NavigationBar() {
             border="2px"
             _hover={{ bg: "blackAlpha.600" }}
             _focus={{}}
-            _active={{ bg: "blackAlpha.700" }}
-            py="5"
+            // _active={{ bg: "blackAlpha.700" }}
+
             fontWeight="normal"
-            leftIcon={<MdAccountBalanceWallet />}
-            onClick={disconnect}
+            rightIcon={
+              <IconButton
+                rounded="full"
+                color="white"
+                aria-label="Disconnect"
+                bg="transparent"
+                icon={<MdClose />}
+                onClick={disconnect}
+                _hover={{}}
+                _focus={{}}
+                mr="-4"
+              />
+            }
           >
             {balance.substring(0, 5)} MATIC
           </Button>
@@ -258,54 +287,62 @@ export default function NavigationBar() {
             >
               Connect Wallet
             </Button>
-            <Modal isOpen={isOpen} onClose={onClose}>
-              <ModalOverlay />
-              <ModalContent>
-                <ModalBody m={2} p={4}>
-                  {mdcontent.map((item: any, index: number) => {
-                    return (
-                      <Flex
-                        key={index}
-                        flexDirection="column"
-                        alignItems="center"
-                        borderRadius="md"
-                        as="button"
-                        _hover={{ bg: "gray.100" }}
-                        onClick={
-                          index == 1 ? handleWalletConnect : loadAccounts
-                        }
-                      >
+            <Fade
+              in={isOpen}
+              transition={{
+                enter: { duration: 5 },
+                exit: { duration: 5 },
+              }}
+            >
+              <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalBody m={2} p={4}>
+                    {mdcontent.map((item: any, index: number) => {
+                      return (
                         <Flex
-                          justify="space-between"
+                          key={index}
+                          flexDirection="column"
                           alignItems="center"
-                          px="4"
-                          py="4"
+                          borderRadius="md"
+                          as="button"
+                          _hover={{ bg: "gray.100" }}
+                          onClick={
+                            index == 1 ? handleWalletConnect : loadAccounts
+                          }
                         >
-                          <Text fontSize="lg" fontWeight="medium">
-                            {item.title}
-                          </Text>
-                        </Flex>
-                        <Image src={item.icon} alt="icon" w="10%" />
-                        <Flex
-                          justify="space-between"
-                          alignItems="center"
-                          px="4"
-                          py="4"
-                        >
-                          <Text
-                            fontSize="md"
-                            fontWeight="normal"
-                            color="gray.400"
+                          <Flex
+                            justify="space-between"
+                            alignItems="center"
+                            px="4"
+                            py="4"
                           >
-                            {item.description}
-                          </Text>
+                            <Text fontSize="lg" fontWeight="medium">
+                              {item.title}
+                            </Text>
+                          </Flex>
+                          <Image src={item.icon} alt="icon" w="10%" />
+                          <Flex
+                            justify="space-between"
+                            alignItems="center"
+                            px="4"
+                            py="4"
+                          >
+                            <Text
+                              fontSize="md"
+                              fontWeight="normal"
+                              color="gray.400"
+                            >
+                              {item.description}
+                            </Text>
+                          </Flex>
                         </Flex>
-                      </Flex>
-                    );
-                  })}
-                </ModalBody>
-              </ModalContent>
-            </Modal>
+                      );
+                    })}
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
+            </Fade>
           </>
         )}
       </Flex>

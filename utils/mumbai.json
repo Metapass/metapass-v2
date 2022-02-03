@@ -2,7 +2,7 @@
     "name": "Mumbai",
     "title": "Polygon Testnet Mumbai",
     "chain": "Polygon",
-    "img": "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg",
+    "img": "https://polygon.technology/brand-kit/matic-token-inverted-icon.svg",
     "enabled": true,
     "rpc": [
         "https://matic-mumbai.chainstacklabs.com",

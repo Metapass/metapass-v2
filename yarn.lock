@@ -3036,6 +3036,11 @@
   "resolved" "https://registry.npmjs.org/css-selector-parser/-/css-selector-parser-1.4.1.tgz"
   "version" "1.4.1"
 
+"csstype@^2.6.2":
+  "integrity" "sha512-ZVxXaNy28/k3kJg0Fou5MiYpp88j7H9hLZp8PDC3jV0WFjfH5E9xHb56L0W59cPbKbcHXeP4qyT8PrHp8t6LcQ=="
+  "resolved" "https://registry.npmjs.org/csstype/-/csstype-2.6.19.tgz"
+  "version" "2.6.19"
+
 "csstype@^3.0.2", "csstype@^3.0.9":
   "integrity" "sha512-2u44ZG2OcNUO9HDp/Jl8C07x6pU/eTR3ncV91SiK3dhG9TWvRVsCoJw14Ckx5DgWkzGA3waZWO3d7pgqpUI/XA=="
   "resolved" "https://registry.npmjs.org/csstype/-/csstype-3.0.10.tgz"
@@ -4561,6 +4566,11 @@
     "ignore" "^5.2.0"
     "merge2" "^1.4.1"
     "slash" "^3.0.0"
+
+"goober@^2.1.1":
+  "integrity" "sha512-aCR8u3A/tTgSrZAHfJObhYC0xgdKoYm4GvE/UFmxmzgvj3TSF+3oFYWtmJ459WBewjOIoEsoOG81sDs1rn+W5w=="
+  "resolved" "https://registry.npmjs.org/goober/-/goober-2.1.7.tgz"
+  "version" "2.1.7"
 
 "got@^6.7.1":
   "integrity" "sha1-JAzQV4WpoY5WHcG0S0HHY+8ejbA="
@@ -7352,7 +7362,7 @@
   dependencies:
     "@babel/runtime" "^7.12.13"
 
-"react-dom@^15.0.0 || ^16.0.0 || ^17.0.0", "react-dom@^16.8.0 || 17.x", "react-dom@^17.0.2 || ^18.0.0-0", "react-dom@>=16.13", "react-dom@>=16.8 || ^17.0.0", "react-dom@>=16.8.0", "react-dom@>=16.8.6", "react-dom@17.0.2":
+"react-dom@^15.0.0 || ^16.0.0 || ^17.0.0", "react-dom@^16.8.0 || 17.x", "react-dom@^17.0.2 || ^18.0.0-0", "react-dom@>=16", "react-dom@>=16.13", "react-dom@>=16.8 || ^17.0.0", "react-dom@>=16.8.0", "react-dom@>=16.8.6", "react-dom@17.0.2":
   "integrity" "sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA=="
   "resolved" "https://registry.npmjs.org/react-dom/-/react-dom-17.0.2.tgz"
   "version" "17.0.2"
@@ -7377,6 +7387,13 @@
     "react-clientside-effect" "^1.2.5"
     "use-callback-ref" "^1.2.5"
     "use-sidecar" "^1.0.5"
+
+"react-hot-toast@^2.2.0":
+  "integrity" "sha512-248rXw13uhf/6TNDVzagX+y7R8J183rp7MwUMNkcrBRyHj/jWOggfXTGlM8zAOuh701WyVW+eUaWG2LeSufX9g=="
+  "resolved" "https://registry.npmjs.org/react-hot-toast/-/react-hot-toast-2.2.0.tgz"
+  "version" "2.2.0"
+  dependencies:
+    "goober" "^2.1.1"
 
 "react-icons@^4.3.1":
   "integrity" "sha512-cB10MXLTs3gVuXimblAdI71jrJx8njrJZmNMEMC+sQu5B/BIOmlsAjskdqpn81y8UBVEGuHODd7/ci5DvoSzTQ=="

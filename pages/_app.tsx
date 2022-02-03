@@ -5,6 +5,7 @@ import theme from "./../styles/theme.chakra";
 import Head from "next/head";
 import PageLayout from "../components/Wrappers/PageLayout.component";
 import Wallet from "../utils/walletContext";
+import { Toaster } from "react-hot-toast";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -20,7 +21,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"
         ></script>
       </Head>
+
       <Wallet>
+        <Toaster />
         <ChakraProvider theme={theme}>
           <Component {...pageProps} />
         </ChakraProvider>

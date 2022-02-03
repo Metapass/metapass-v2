@@ -3,8 +3,9 @@
     "chainIdHex": "0x89",
     "name": "Polygon (Matic)",
     "shortName": "Polygon",
-    "img": "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg",
+    "img": "https://polygon.technology/brand-kit/matic-token-inverted-icon.svg",
     "enabled": true,
+    "networkId": 80001,
     "addData": {
         "chainId": "0x89",
         "chainName": "Polygon Mainnet",
