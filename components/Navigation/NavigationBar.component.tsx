@@ -190,7 +190,7 @@ export default function NavigationBar() {
           <Avatar
             borderRadius="30"
             h={40}
-            w={[40, 40, 40, 40]}
+            w={[10, 10, 40, 40]}
             src={polygon.img}
             alt="polygon"
           />
