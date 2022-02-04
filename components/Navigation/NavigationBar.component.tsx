@@ -187,7 +187,13 @@ export default function NavigationBar() {
     if (isOpen) {
       toast.success("Make sure to choose Polygon network", {
         icon: (
-          <Avatar borderRadius="30" h={40} src={polygon.img} alt="polygon" />
+          <Avatar
+            borderRadius="30"
+            h={40}
+            w={[40, 40, 40, 40]}
+            src={polygon.img}
+            alt="polygon"
+          />
         ),
         duration: 4000,
         position: "bottom-center",
@@ -303,7 +309,10 @@ export default function NavigationBar() {
             >
               <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
-                <ModalContent m={["4", "2", "0", "0"]}>
+                <ModalContent
+                  m={["4", "2", "2", "auto"]}
+                  w={["70%", "100%", "100%", "100%"]}
+                >
                   <ModalBody m={2} p={["2", "2", "4", "4"]}>
                     {mdcontent.map((item: any, index: number) => {
                       return (
@@ -328,7 +337,7 @@ export default function NavigationBar() {
                               {item.title}
                             </Text>
                           </Flex>
-                          <Image src={item.icon} alt="icon" w="10%" />
+                          <Image src={item.icon} alt="icon" w="20%" />
                           <Flex
                             justify="space-between"
                             alignItems="center"
