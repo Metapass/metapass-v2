@@ -147,7 +147,9 @@ export default function NavigationBar() {
         address: accounts[0],
       });
     } else {
-      toast.error("Please switch to Polygon mainnet");
+      toast.error("Please switch to Polygon mainnet", {
+        position: "bottom-center",
+      });
       // try {
       //   await provider.request({
       //     method: "wallet_switchEthereumChain",
@@ -183,11 +185,16 @@ export default function NavigationBar() {
 
   useEffect(() => {
     if (isOpen) {
-      toast.success("Please connect using Polygon Mainnet", {
+      toast.success("Make sure to choose Polygon network", {
         icon: (
           <Avatar borderRadius="30" h={40} src={polygon.img} alt="polygon" />
         ),
         duration: 4000,
+        position: "bottom-center",
+        style: {
+          width: "100%",
+          margin: "0 auto",
+        },
       });
     }
   }, [isOpen]);
@@ -296,8 +303,8 @@ export default function NavigationBar() {
             >
               <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
-                <ModalContent>
-                  <ModalBody m={2} p={4}>
+                <ModalContent m={["4", "2", "0", "0"]}>
+                  <ModalBody m={2} p={["2", "2", "4", "4"]}>
                     {mdcontent.map((item: any, index: number) => {
                       return (
                         <Flex
