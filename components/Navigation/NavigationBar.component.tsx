@@ -188,9 +188,9 @@ export default function NavigationBar() {
       toast.success("Make sure to choose Polygon network", {
         icon: (
           <Avatar
-            borderRadius="30"
-            h={40}
-            w={[10, 10, 40, 40]}
+            borderRadius="full"
+            h="100%"
+            w="17%"
             src={polygon.img}
             alt="polygon"
           />
@@ -313,7 +313,7 @@ export default function NavigationBar() {
                   m={["4", "2", "2", "auto"]}
                   w={["70%", "100%", "100%", "100%"]}
                 >
-                  <ModalBody m={2} p={["2", "2", "4", "4"]}>
+                  <ModalBody m={2}>
                     {mdcontent.map((item: any, index: number) => {
                       return (
                         <Flex
