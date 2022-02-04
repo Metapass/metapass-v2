@@ -26,7 +26,9 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CalendarToday, ChevronRight } from "@mui/icons-material";
+
+import { MdCalendarToday as CalendarToday } from "react-icons/md";
+import { HiOutlineChevronRight as ChevronRight } from "react-icons/hi";
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import EventCard from "../../components/Card/EventCard.component";

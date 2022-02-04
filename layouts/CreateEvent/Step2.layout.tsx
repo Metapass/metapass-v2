@@ -26,7 +26,9 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CalendarToday, ChevronRight } from "@mui/icons-material";
+
+// import { MdCalendarToday as CalendarToday } from "react-icons/md";
+import { HiOutlineChevronRight as ChevronRight } from "react-icons/hi";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";

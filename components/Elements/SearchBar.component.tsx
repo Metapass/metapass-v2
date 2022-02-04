@@ -12,13 +12,11 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
-import {
-  Apps,
-  AttachMoney,
-  LocalOffer,
-  Search,
-  Tag,
-} from "@mui/icons-material";
+// import { Apps, AttachMoney, Search, Tag } from "@mui/icons-material";
+import { IoMdApps } from "react-icons/io";
+import { MdOutlineAttachMoney } from "react-icons/md";
+import { AiOutlineSearch } from "react-icons/ai";
+import { MdTag } from "react-icons/md";
 import { useState } from "react";
 
 export default function SearchBar({ noEffects = false }) {
@@ -64,7 +62,7 @@ export default function SearchBar({ noEffects = false }) {
           <MenuButton w="full" maxW={{ lg: "160px", xl: "180px" }}>
             <InputGroup>
               <InputLeftElement color="gray.400">
-                <Tag />
+                <MdTag size="1.5rem" />
               </InputLeftElement>
               <Input
                 bg="transparent"
@@ -106,7 +104,7 @@ export default function SearchBar({ noEffects = false }) {
           <MenuButton w="full" maxW={{ lg: "120px", xl: "130px" }}>
             <InputGroup>
               <InputLeftElement color="gray.400">
-                <AttachMoney />
+                <MdOutlineAttachMoney size="1.5rem" />
               </InputLeftElement>
               <Input
                 bg="transparent"
@@ -148,7 +146,7 @@ export default function SearchBar({ noEffects = false }) {
           <MenuButton w="full" maxW={{ lg: "150px", xl: "180px" }}>
             <InputGroup>
               <InputLeftElement color="gray.400">
-                <Apps />
+                <IoMdApps size="1.5rem" />
               </InputLeftElement>
               <Input
                 bg="transparent"
@@ -196,7 +194,7 @@ export default function SearchBar({ noEffects = false }) {
             transitionDuration="200ms"
           >
             {" "}
-            <Search />
+            <AiOutlineSearch />
           </Flex>
         }
         _hover={{}}
