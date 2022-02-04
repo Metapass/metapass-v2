@@ -217,6 +217,7 @@ export default function EventLayout({ event }: { event: Event }) {
             px="4"
             color="blackAlpha.700"
             fontSize={{ base: "sm", lg: "md" }}
+            minH={{ base: "28", xl: "28" }}
           >
             <Box>
               <MarkdownPreview
@@ -365,7 +366,11 @@ export default function EventLayout({ event }: { event: Event }) {
               overflow="hidden"
             >
               <Box
-                w={`${(event.tickets_sold / event.tickets_available) * 100}%`}
+                w={`${
+                  ((event.tickets_available - event.tickets_sold) /
+                    event.tickets_available) *
+                  100
+                }%`}
                 h="full"
                 bg="brand.gradient"
               />

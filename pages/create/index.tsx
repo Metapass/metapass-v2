@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import CreateEventCTA from "../../layouts/CreateEvent/CreateEventCTA.layout";
 import Step1 from "../../layouts/CreateEvent/Step1.layout";
 import Step2 from "../../layouts/CreateEvent/Step2.layout";
+import Step3 from "../../layouts/CreateEvent/Step3.layout";
 
 const Create: NextPage = () => {
   const [step, setStep] = useState(0);
@@ -37,6 +38,19 @@ const Create: NextPage = () => {
           </Box>
           <Box display={step === 1 ? "block" : "none"}>
             <Step2
+              event={event}
+              onSubmit={(formDetails: any) => {
+                setEvent({
+                  ...event,
+                  ...formDetails,
+                });
+                console.log(formDetails);
+                setStep(2);
+              }}
+            />
+          </Box>
+          <Box display={step === 2 ? "block" : "none"}>
+            <Step3
               event={event}
               onSubmit={(formDetails: any) => {
                 setEvent({

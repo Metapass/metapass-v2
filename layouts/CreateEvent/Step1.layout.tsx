@@ -306,6 +306,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                       });
                     }}
                     type="number"
+                    step="any"
                     fontSize="sm"
                     px="0"
                     _placeholder={{ color: "gray.300" }}
