@@ -208,7 +208,7 @@ export default function SearchBar({ noEffects = false }) {
         px="8"
         fontSize="lg"
         onClick={() => {
-          window.location.assign("/explore");
+          window.location.href = "/events";
         }}
       >
         Search

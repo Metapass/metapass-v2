@@ -73,7 +73,7 @@ export default function FeaturedEvents() {
             role="group"
             fontWeight="medium"
             px="8"
-            onClick={() => window.location.replace("/explore")}
+            onClick={() => (window.location.href = "/events")}
           >
             Explore all events
           </Button>

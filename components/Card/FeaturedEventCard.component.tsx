@@ -68,11 +68,13 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
           <ModalContent rounded={{ base: "none", lg: "xl" }}>
             <ModalCloseButton
               bg="white"
-              rounded="full"
+              roundedRight="full"
+              _focus={{}}
+              _active={{}}
               zIndex={9999}
               _hover={{ color: "brand.peach" }}
-              top="-10"
-              right="-10"
+              top="2"
+              right="-6"
             />
             <ModalBody>
               <EventLayout event={event} />

@@ -60,7 +60,7 @@ const Create: NextPage = () => {
 
   function onSubmit() {
     console.log(event);
-    setEventLink(`${window.location.origin}/event/${event.address}`);
+    setEventLink(`${window.location.origin}/events/${event.address}`);
     setIsPublished(true);
   }
 
@@ -221,7 +221,7 @@ const Create: NextPage = () => {
               </Button>
             </Box>
             <Box mt="2" mb="4">
-              <Link fontSize="sm" href="/explore" color="blackAlpha.600">
+              <Link fontSize="sm" href="/events" color="blackAlpha.600">
                 Back to home
               </Link>
             </Box>

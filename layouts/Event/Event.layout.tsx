@@ -226,7 +226,7 @@ export default function EventLayout({ event }: { event: Event }) {
                 style={{ fontSize: event.long_description ? "12px" : "14px" }}
                 source={event.long_description || event.description}
               />
-              <Box p="10" />
+              <Box p="2" />
             </Box>
           </Box>
         </Box>
