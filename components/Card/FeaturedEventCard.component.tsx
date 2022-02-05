@@ -203,7 +203,9 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                 noOfLines={1}
                 _hover={{ color: "brand.black600" }}
               >
-                {users[event.owner]?.username || "Anonymous"}
+                {event.owner.substring(0, 6) +
+                  "..." +
+                  event.owner.substring(event.owner.length - 6) || "Anonymous"}
               </Link>
             </Flex>
             <Text

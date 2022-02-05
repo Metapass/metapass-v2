@@ -18,6 +18,6 @@ export type Event = {
     buyers: Array<string>,
     slides: Array<string>,
     video?: string,
-    hosts: Array<string>,
+    hosts?: Array<string>,
     long_description?: string
 }

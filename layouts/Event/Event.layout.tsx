@@ -18,6 +18,7 @@ import { users } from "../../utils/testData";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
+import gravatarUrl from "gravatar-url";
 
 const MarkdownPreview = dynamic(() => import("@uiw/react-markdown-preview"), {
   ssr: false,
@@ -218,12 +219,14 @@ export default function EventLayout({ event }: { event: Event }) {
             color="blackAlpha.700"
             fontSize={{ base: "sm", lg: "md" }}
             minH={{ base: "28", xl: "28" }}
+            overflow="auto"
           >
             <Box>
               <MarkdownPreview
                 style={{ fontSize: event.long_description ? "12px" : "14px" }}
                 source={event.long_description || event.description}
               />
+              <Box p="10" />
             </Box>
           </Box>
         </Box>
@@ -245,8 +248,12 @@ export default function EventLayout({ event }: { event: Event }) {
               <Box w="fit-content" mx="auto">
                 <Image src="assets/matic.png" alt="matic" w="6" h="6" />
               </Box>
-              <Text fontSize="2xl" fontWeight="semibold">
-                {event.price}
+              <Text
+                fontSize={event.price === 0 ? "lg" : "2xl"}
+                fontWeight="semibold"
+                mt={event.price === 0 ? "1.5" : "0"}
+              >
+                {event.price === 0 ? "FREE" : event.price}
               </Text>
             </Box>
             <Box
@@ -281,27 +288,28 @@ export default function EventLayout({ event }: { event: Event }) {
               Hosted By
             </Text>
             <Flex mt="2" direction="column" mb="1">
-              {event.hosts.map((data, key) => (
-                <Flex
-                  key={key}
-                  experimental_spaceX="2"
-                  align="center"
-                  _hover={{ bg: "blackAlpha.50" }}
-                  mx="-4"
-                  px="4"
-                  py="2"
-                  cursor="pointer"
-                  transitionDuration="100ms"
-                >
-                  <Avatar size="sm" src={users[data].avatar} />
-                  <Box>
-                    <Text fontSize="13px">{users[data].username}</Text>
-                    <Text color="blackAlpha.600" fontSize="xs" noOfLines={1}>
-                      {users[data].bio}
-                    </Text>
-                  </Box>
-                </Flex>
-              ))}
+              <Flex
+                experimental_spaceX="2"
+                align="center"
+                _hover={{ bg: "blackAlpha.50" }}
+                mx="-4"
+                px="4"
+                py="2"
+                cursor="pointer"
+                transitionDuration="100ms"
+              >
+                <Avatar
+                  size="xs"
+                  src={gravatarUrl(event.owner, { default: "retro" })}
+                />
+                <Box>
+                  <Text fontSize="14px">
+                    {event.owner.substring(0, 6) +
+                      "..." +
+                      event.owner.substring(event.owner.length - 6)}
+                  </Text>
+                </Box>
+              </Flex>
             </Flex>
           </Box>
           <Box
@@ -319,7 +327,7 @@ export default function EventLayout({ event }: { event: Event }) {
             <AvatarGroup mt="2" size="sm" max={6} fontSize="xs" spacing={-2}>
               {event.buyers.reverse().map((data, key) => (
                 <Avatar
-                  src={users[data].avatar}
+                  src={gravatarUrl(data, { default: "retro" })}
                   key={key}
                   cursor="pointer"
                   _hover={{ zIndex: 10 }}

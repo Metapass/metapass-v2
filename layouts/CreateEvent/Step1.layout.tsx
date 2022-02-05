@@ -26,12 +26,15 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CalendarToday, ChevronRight } from "@mui/icons-material";
-import { useState } from "react";
+
+import { MdCalendarToday as CalendarToday } from "react-icons/md";
+import { HiOutlineChevronRight as ChevronRight } from "react-icons/hi";
+import { useContext, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import EventCard from "../../components/Card/EventCard.component";
 import { events } from "../../utils/testData";
 import DateModal from "./DateModal.layout";
+import { walletContext } from "../../utils/walletContext";
 
 export default function Step1({ onSubmit }: { onSubmit: Function }) {
   const [isPaid, setIsPaid] = useState(true);
@@ -49,6 +52,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [submitting, setSubmitting] = useState(false);
+  const [wallet, setWallet] = useContext(walletContext);
 
   return (
     <form
@@ -424,7 +428,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                     formDetails.date.date === 0
                       ? { date: 1, month: 0, year: 1 }
                       : formDetails.date,
-                  owner: "Saptarshi",
+                  owner: wallet.address || "",
                   slides: [],
                   type: formDetails.type || "type",
                   category: formDetails.category || "category",

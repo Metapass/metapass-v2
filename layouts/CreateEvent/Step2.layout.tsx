@@ -26,15 +26,18 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CalendarToday, ChevronRight } from "@mui/icons-material";
+
+// import { MdCalendarToday as CalendarToday } from "react-icons/md";
+import { HiOutlineChevronRight as ChevronRight } from "react-icons/hi";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import EventCard from "../../components/Card/EventCard.component";
 import { events } from "../../utils/testData";
 import DateModal from "./DateModal.layout";
+import { walletContext } from "../../utils/walletContext";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -47,6 +50,7 @@ export default function Step2({
 }) {
   const [description, setDescription] = useState("");
   const [longDescription, setLongDescription] = useState("");
+  const [wallet, setWallet] = useContext(walletContext);
 
   return (
     <form
@@ -168,7 +172,7 @@ export default function Step2({
                       ? { date: 1, month: 0, year: 1 }
                       : event.date
                     : { date: 1, month: 0, year: 1 },
-                  owner: "Saptarshi",
+                  owner: wallet.address || "",
                   slides: [],
                   type: event.type || "type",
                   category: event.category || "category",

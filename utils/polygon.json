@@ -1,0 +1,24 @@
+{
+    "chainId": 137,
+    "chainIdHex": "0x89",
+    "name": "Polygon (Matic)",
+    "shortName": "Polygon",
+    "img": "https://polygon.technology/brand-kit/matic-token-inverted-icon.svg",
+    "enabled": true,
+    "networkId": 80001,
+    "addData": {
+        "chainId": "0x89",
+        "chainName": "Polygon Mainnet",
+        "nativeCurrency": {
+            "name": "MATIC",
+            "symbol": "MATIC",
+            "decimals": 18
+        },
+        "rpcUrls": [
+            "https://polygon-rpc.com"
+        ],
+        "blockExplorerUrls": [
+            "https://polygonscan.com/"
+        ]
+    }
+}

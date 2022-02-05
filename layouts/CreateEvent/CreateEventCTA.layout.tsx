@@ -1,5 +1,5 @@
 import { Box, Flex, Text, Image } from "@chakra-ui/react";
-import { Check } from "@mui/icons-material";
+// import { FaCh } from "@mui/icons-material";
 import { FaCheck } from "react-icons/fa";
 import SearchBar from "../../components/Elements/SearchBar.component";
 import NavigationBar from "../../components/Navigation/NavigationBar.component";
@@ -96,7 +96,7 @@ export default function CreateEventCTA({ step = 0, setStep }: any) {
                 borderColor="blackAlpha.300"
                 color={step >= data - 1 ? "white" : "blackAlpha.300"}
               >
-                {step > data - 1 ? <Check /> : `${data}`}
+                {step > data - 1 ? <FaCheck /> : `${data}`}
               </Flex>
             ))}
           </Flex>

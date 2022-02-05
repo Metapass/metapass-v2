@@ -1,0 +1,31 @@
+{
+    "name": "Mumbai",
+    "title": "Polygon Testnet Mumbai",
+    "chain": "Polygon",
+    "img": "https://polygon.technology/brand-kit/matic-token-inverted-icon.svg",
+    "enabled": true,
+    "rpc": [
+        "https://matic-mumbai.chainstacklabs.com",
+        "https://rpc-mumbai.maticvigil.com"
+    ],
+    "faucets": [
+        "https://faucet.polygon.technology/"
+    ],
+    "nativeCurrency": {
+        "name": "MATIC",
+        "symbol": "MATIC",
+        "decimals": 18
+    },
+    "infoURL": "https://polygon.technology/",
+    "shortName": "maticmum",
+    "chainId": 80001,
+    "chainIdHex": "0x13881",
+    "networkId": 80001,
+    "explorers": [
+        {
+            "name": "polygonscan",
+            "url": "https://mumbai.polygonscan.com",
+            "standard": "EIP3091"
+        }
+    ]
+}
