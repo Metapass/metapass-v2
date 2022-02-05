@@ -333,7 +333,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                       pl="2"
                     >
                       <Image
-                        src="assets/matic_circle.svg"
+                        src="/assets/matic_circle.svg"
                         alt="matic"
                         w="4"
                         h="4"
@@ -413,7 +413,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                 w={{ base: "4", lg: "4" }}
                 ml="1"
                 mt="-6"
-                src="assets/elements/sparkle_gradient.svg"
+                src="/assets/elements/sparkle_gradient.svg"
                 alt="element"
               />
             </Flex>
@@ -423,7 +423,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                 event={{
                   title: formDetails.title || "Untitled",
                   description: "Event description goes here",
-                  image: "assets/gradient.png",
+                  image: "/assets/gradient.png",
                   date:
                     formDetails.date.date === 0
                       ? { date: 1, month: 0, year: 1 }

@@ -36,7 +36,7 @@ import {
 const polygon = require("../../utils/mumbai.json");
 
 declare const window: any;
-export default function NavigationBar() {
+export default function NavigationBar({ mode = "dark" }) {
   const [address, setAddress] = useState<string>("");
   const [balance, setBalance] = useState<string>("");
   const [wallet, setWallet] = useContext(walletContext);
@@ -158,7 +158,9 @@ export default function NavigationBar() {
         address: accounts[0],
       });
     } else {
-      toast.error("Please switch to Polygon mainnet");
+      toast.error("Please switch to Polygon mainnet", {
+        position: "bottom-center",
+      });
       // try {
       //   await provider.request({
       //     method: "wallet_switchEthereumChain",
@@ -204,207 +206,219 @@ export default function NavigationBar() {
   }, [isOpen]);
 
   return (
-    <Flex
-      justify="space-between"
-      px="8"
-      position="relative"
-      zIndex={9}
-      maxW="1600px"
-      mx="auto"
-      py="6"
-      alignItems="center"
-      color="white"
-    >
-      <NextLink href="/" passHref>
-        <Link _hover={{}} _focus={{}} _active={{}}>
-          <Image src="assets/logo.svg" alt="Metapass" w="10" />
-        </Link>
-      </NextLink>
-      <Flex alignItems="center" experimental_spaceX="6">
-        <NextLink href="/create" passHref>
+    <>
+      <Fade
+        in={isOpen}
+        transition={{
+          enter: { duration: 5 },
+          exit: { duration: 5 },
+        }}
+      >
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent rounded="xl">
+            <ModalBody m={2} p={4}>
+              {mdcontent.map((item: any, index: number) => {
+                return (
+                  <Flex
+                    key={index}
+                    flexDirection="column"
+                    alignItems="center"
+                    borderRadius="md"
+                    as="button"
+                    rounded="xl"
+                    _hover={{ bg: "gray.100" }}
+                    onClick={index == 1 ? handleWalletConnect : loadAccounts}
+                  >
+                    <Flex
+                      justify="space-between"
+                      alignItems="center"
+                      px="4"
+                      py="4"
+                    >
+                      <Text fontSize="lg" fontWeight="medium">
+                        {item.title}
+                      </Text>
+                    </Flex>
+                    <Image src={item.icon} alt="icon" w="10%" />
+                    <Flex
+                      justify="space-between"
+                      alignItems="center"
+                      px="4"
+                      py="4"
+                    >
+                      <Text fontSize="md" fontWeight="normal" color="gray.400">
+                        {item.description}
+                      </Text>
+                    </Flex>
+                  </Flex>
+                );
+              })}
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      </Fade>
+      <Flex
+        borderBottom={mode === "white" ? "2px" : "0"}
+        bg={mode === "white" ? "white" : "transparent"}
+        borderColor="gray.100"
+        justify="space-between"
+        px="8"
+        position="relative"
+        zIndex={9}
+        maxW="1600px"
+        mx="auto"
+        py="6"
+        alignItems="center"
+        color="white"
+      >
+        {" "}
+        <NextLink href="/" passHref>
           <Link _hover={{}} _focus={{}} _active={{}}>
-            <Button
-              pl="1"
-              rounded="full"
-              bg="whiteAlpha.800"
-              color="blackAlpha.700"
-              fontWeight="medium"
-              _hover={{ shadow: "sm", bg: "white" }}
-              border="2px"
-              borderColor="white"
-              _focus={{}}
-              _active={{ transform: "scale(0.95)" }}
-              role="group"
-              leftIcon={
-                <Flex
-                  _groupHover={{ transform: "scale(1.05)" }}
-                  transitionDuration="200ms"
-                  justify="center"
-                  alignItems="center"
-                  color="white"
-                  bg="brand.gradient"
-                  rounded="full"
-                  p="0.5"
-                >
-                  <IoIosAdd size="25px" />
-                </Flex>
+            <Image
+              src={
+                mode === "white"
+                  ? "/assets/logo_gradient.svg"
+                  : "/assets/logo.svg"
               }
-            >
-              Create Event
-            </Button>
+              alt="Metapass"
+              w="10"
+            />
           </Link>
         </NextLink>
-        {wallet.address ? (
-          <Menu>
-            <MenuButton>
+        <Flex alignItems="center" experimental_spaceX="6">
+          <NextLink href="/create" passHref>
+            <Link _hover={{}} _focus={{}} _active={{}}>
+              <Button
+                pl="1"
+                rounded="full"
+                bg={mode === "white" ? "blackAlpha.100" : "whiteAlpha.800"}
+                color="blackAlpha.700"
+                fontWeight="medium"
+                _hover={{
+                  shadow: "sm",
+                  bg: mode === "white" ? "blackAlpha.50" : "white",
+                }}
+                border="2px"
+                borderColor={mode === "white" ? "blackAlpha.100" : "white"}
+                _focus={{}}
+                _active={{ transform: "scale(0.95)" }}
+                role="group"
+                leftIcon={
+                  <Flex
+                    _groupHover={{ transform: "scale(1.05)" }}
+                    transitionDuration="200ms"
+                    justify="center"
+                    alignItems="center"
+                    color="white"
+                    bg="brand.gradient"
+                    rounded="full"
+                    p="0.5"
+                  >
+                    <IoIosAdd size="25px" />
+                  </Flex>
+                }
+              >
+                Create Event
+              </Button>
+            </Link>
+          </NextLink>
+          {wallet.address ? (
+            <Menu>
+              <MenuButton>
+                <Button
+                  rounded="full"
+                  color="white"
+                  bg="blackAlpha.500"
+                  border="2px"
+                  pl="1.5"
+                  _hover={{ bg: "blackAlpha.600" }}
+                  _focus={{}}
+                  // _active={{ bg: "blackAlpha.700" }}
+
+                  fontWeight="normal"
+                  leftIcon={
+                    <Avatar
+                      src={gravatarUrl(wallet.address, { default: "retro" })}
+                      size="xs"
+                    />
+                  }
+                  rightIcon={<HiOutlineChevronDown />}
+                >
+                  {wallet.address.substring(0, 4) +
+                    "..." +
+                    wallet.address.substring(wallet.address.length - 4)}
+                </Button>
+              </MenuButton>
+              <MenuList
+                shadow="none"
+                bg="white"
+                rounded="lg"
+                border="none"
+                position="relative"
+              >
+                <MenuItem>
+                  <Flex experimental_spaceX="2" align="end">
+                    <Image
+                      src="/assets/matic_circle.svg"
+                      alt="matic"
+                      w="6"
+                      h="6"
+                      mb="1"
+                    />
+                    <Box>
+                      <Text
+                        fontFamily="body"
+                        fontSize="xs"
+                        fontWeight="thin"
+                        color="blackAlpha.500"
+                      >
+                        Account Balance
+                      </Text>
+                      <Text
+                        mt="-1"
+                        color="brand.black600"
+                        fontFamily="body"
+                        fontSize="lg"
+                        fontWeight="semibold"
+                      >
+                        {wallet.balance.substring(0, 4)} MATIC
+                      </Text>
+                    </Box>
+                  </Flex>
+                </MenuItem>
+                <MenuDivider color="blackAlpha.200" />
+                <MenuItem
+                  onClick={disconnect}
+                  fontSize="sm"
+                  icon={<IoIosLogOut size="20px" />}
+                  color="red.500"
+                >
+                  Disconnect Wallet
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <>
               <Button
                 rounded="full"
                 color="white"
                 bg="blackAlpha.500"
                 border="2px"
-                pl="1.5"
                 _hover={{ bg: "blackAlpha.600" }}
                 _focus={{}}
-                // _active={{ bg: "blackAlpha.700" }}
-
+                _active={{ bg: "blackAlpha.700" }}
+                py="5"
                 fontWeight="normal"
-                leftIcon={
-                  <Avatar
-                    src={gravatarUrl(wallet.address, { default: "retro" })}
-                    size="xs"
-                  />
-                }
-                rightIcon={<HiOutlineChevronDown />}
+                leftIcon={<MdAccountBalanceWallet size="25px" />}
+                onClick={onOpen}
               >
-                {wallet.address.substring(0, 4) +
-                  "..." +
-                  wallet.address.substring(wallet.address.length - 4)}
+                Connect Wallet
               </Button>
-            </MenuButton>
-            <MenuList
-              shadow="none"
-              bg="white"
-              rounded="lg"
-              border="none"
-              position="relative"
-            >
-              <MenuItem>
-                <Flex experimental_spaceX="2" align="end">
-                  <Image
-                    src="assets/matic_circle.svg"
-                    alt="matic"
-                    w="6"
-                    h="6"
-                    mb="1"
-                  />
-                  <Box>
-                    <Text
-                      fontFamily="body"
-                      fontSize="xs"
-                      fontWeight="thin"
-                      color="blackAlpha.500"
-                    >
-                      Account Balance
-                    </Text>
-                    <Text
-                      mt="-1"
-                      color="brand.black600"
-                      fontFamily="body"
-                      fontSize="lg"
-                      fontWeight="semibold"
-                    >
-                      {wallet.balance.substring(0, 4)} MATIC
-                    </Text>
-                  </Box>
-                </Flex>
-              </MenuItem>
-              <MenuDivider color="blackAlpha.200" />
-              <MenuItem
-                onClick={disconnect}
-                fontSize="sm"
-                icon={<IoIosLogOut size="20px" />}
-                color="red.500"
-              >
-                Disconnect Wallet
-              </MenuItem>
-            </MenuList>
-          </Menu>
-        ) : (
-          <>
-            <Button
-              rounded="full"
-              color="white"
-              bg="blackAlpha.500"
-              border="2px"
-              _hover={{ bg: "blackAlpha.600" }}
-              _focus={{}}
-              _active={{ bg: "blackAlpha.700" }}
-              py="5"
-              fontWeight="normal"
-              leftIcon={<MdAccountBalanceWallet size="25px" />}
-              onClick={onOpen}
-            >
-              Connect Wallet
-            </Button>
-            <Fade
-              in={isOpen}
-              transition={{
-                enter: { duration: 5 },
-                exit: { duration: 5 },
-              }}
-            >
-              <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalBody m={2} p={4}>
-                    {mdcontent.map((item: any, index: number) => {
-                      return (
-                        <Flex
-                          key={index}
-                          flexDirection="column"
-                          alignItems="center"
-                          borderRadius="md"
-                          as="button"
-                          _hover={{ bg: "gray.100" }}
-                          onClick={
-                            index == 1 ? handleWalletConnect : loadAccounts
-                          }
-                        >
-                          <Flex
-                            justify="space-between"
-                            alignItems="center"
-                            px="4"
-                            py="4"
-                          >
-                            <Text fontSize="lg" fontWeight="medium">
-                              {item.title}
-                            </Text>
-                          </Flex>
-                          <Image src={item.icon} alt="icon" w="10%" />
-                          <Flex
-                            justify="space-between"
-                            alignItems="center"
-                            px="4"
-                            py="4"
-                          >
-                            <Text
-                              fontSize="md"
-                              fontWeight="normal"
-                              color="gray.400"
-                            >
-                              {item.description}
-                            </Text>
-                          </Flex>
-                        </Flex>
-                      );
-                    })}
-                  </ModalBody>
-                </ModalContent>
-              </Modal>
-            </Fade>
-          </>
-        )}
+            </>
+          )}
+        </Flex>
       </Flex>
-    </Flex>
+    </>
   );
 }

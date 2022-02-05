@@ -1,12 +1,31 @@
-import { Box, Divider, Flex } from "@chakra-ui/react";
+/* eslint-disable react-hooks/rules-of-hooks */
+import {
+  Box,
+  Divider,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Image,
+  Text,
+  InputGroup,
+  Input,
+  InputRightElement,
+  Button,
+  InputLeftElement,
+  Link,
+  useClipboard,
+} from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { SetStateAction, useContext, useEffect, useState } from "react";
-import SearchBar from "../../components/Elements/SearchBar.component";
-import ExploreCTA from "../../layouts/Explore/ExploreCTA.layout";
-import FeaturedEvents from "../../layouts/Explore/FeaturedEvents.layout";
-import QueriedEvents from "../../layouts/Explore/QueriedEvents.layout";
-import { AnimatePresence, motion } from "framer-motion";
+import ReactConfetti from "react-confetti";
+import { IoIosLink } from "react-icons/io";
+import useWindowSize from "react-use/lib/useWindowSize";
+import Confetti from "../../components/Misc/Confetti.component";
 import CreateEventCTA from "../../layouts/CreateEvent/CreateEventCTA.layout";
 import Step1 from "../../layouts/CreateEvent/Step1.layout";
 import Step2 from "../../layouts/CreateEvent/Step2.layout";
@@ -19,9 +38,14 @@ const Create: NextPage = () => {
   const [wallet, setWallet] = useContext(walletContext);
   const [step, setStep] = useState(0);
   const [event, setEvent] = useState({
+    address: "0x436441A8eF5b3C705652a8b0dff624152c227a6f",
+    title: "",
     owner: wallet.address,
     buyers: [],
   });
+  const [eventLink, setEventLink] = useState<any>(undefined);
+  const [isPublished, setIsPublished] = useState(false);
+  const { hasCopied, onCopy } = useClipboard(eventLink);
 
   useEffect(() => {
     console.log(event);
@@ -36,6 +60,8 @@ const Create: NextPage = () => {
 
   function onSubmit() {
     console.log(event);
+    setEventLink(`${window.location.origin}/event/${event.address}`);
+    setIsPublished(true);
   }
 
   return (
@@ -43,6 +69,165 @@ const Create: NextPage = () => {
       <Head>
         <title>MetaPass | Create Event</title>
       </Head>
+      {isPublished && <Confetti />}
+      <Modal isOpen={isPublished} onClose={() => {}}>
+        <ModalOverlay />
+        <ModalContent rounded="2xl">
+          <ModalBody textAlign="center">
+            <Image
+              src="/assets/elements/sparkle_3.svg"
+              alt="sparkle"
+              w="28"
+              mx="auto"
+              h="28"
+            />
+            <Text fontFamily="body" fontSize="xl" color="blackAlpha.800">
+              Radical! 🎊
+            </Text>
+            <Box color="blackAlpha.700" fontSize="sm">
+              <Text mt="2">{event.title} is live on Metapass!</Text>
+              <Text>Spread the word, share this event via </Text>
+            </Box>
+            <Flex
+              mx="auto"
+              mt="2"
+              justify="center"
+              experimental_spaceX="2"
+              align="center"
+            >
+              <Box
+                p="2"
+                bg="white"
+                transitionDuration="100ms"
+                cursor="pointer"
+                boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
+                rounded="full"
+                _hover={{ shadow: "md" }}
+              >
+                <Image src="/assets/twitter.png" w="5" alt="twitter" />
+              </Box>
+              <Box
+                p="2"
+                bg="white"
+                transitionDuration="100ms"
+                cursor="pointer"
+                boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
+                rounded="full"
+                _hover={{ shadow: "md" }}
+              >
+                <Image src="/assets/discord.svg" w="5" alt="discord" />
+              </Box>
+              <Box
+                p="2"
+                bg="white"
+                transitionDuration="100ms"
+                cursor="pointer"
+                boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
+                rounded="full"
+                _hover={{ shadow: "md" }}
+              >
+                <Image src="/assets/instagram.webp" w="5" alt="instagram" />
+              </Box>
+              <Box
+                p="2"
+                bg="white"
+                transitionDuration="100ms"
+                cursor="pointer"
+                boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
+                rounded="full"
+                _hover={{ shadow: "md" }}
+              >
+                <Image src="/assets/whatsapp.png" w="5" alt="whatsapp" />
+              </Box>
+              <Box
+                p="2"
+                bg="white"
+                transitionDuration="100ms"
+                cursor="pointer"
+                boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
+                rounded="full"
+                _hover={{ shadow: "md" }}
+              >
+                <Image src="/assets/telegram.png" w="5" alt="telegram" />
+              </Box>
+            </Flex>
+            <Text color="blackAlpha.700" fontSize="sm" mt="2">
+              Or copy link
+            </Text>
+            <InputGroup mt="4">
+              <InputLeftElement>
+                <IoIosLink />
+              </InputLeftElement>
+              <Input rounded="full" fontSize="xs" value={eventLink} readOnly />
+              <InputRightElement mr="6">
+                <Button
+                  onClick={onCopy}
+                  _hover={{}}
+                  _focus={{}}
+                  _active={{}}
+                  rounded="full"
+                  color="white"
+                  bg="brand.gradient"
+                  fontWeight="normal"
+                  fontSize="sm"
+                  px="12"
+                  roundedBottomLeft="none"
+                >
+                  {hasCopied ? "Copied" : "Copy Link"}
+                </Button>
+              </InputRightElement>{" "}
+            </InputGroup>
+            <Box
+              p="1.5px"
+              mx="auto"
+              mt="6"
+              transitionDuration="200ms"
+              rounded="full"
+              w="fit-content"
+              boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
+              bg="brand.gradient"
+              _hover={{ transform: "scale(1.05)" }}
+              _focus={{}}
+              _active={{ transform: "scale(0.95)" }}
+            >
+              <Button
+                type="submit"
+                rounded="full"
+                bg="white"
+                size="sm"
+                color="blackAlpha.700"
+                fontWeight="medium"
+                _hover={{}}
+                leftIcon={
+                  <Box
+                    _groupHover={{ transform: "scale(1.1)" }}
+                    transitionDuration="200ms"
+                  >
+                    <Image
+                      src="/assets/elements/event_ticket_gradient.svg"
+                      w="4"
+                      alt="ticket"
+                    />
+                  </Box>
+                }
+                _focus={{}}
+                _active={{}}
+                onClick={() => {
+                  window.open(eventLink, "_blank");
+                }}
+                role="group"
+              >
+                Go to event page
+              </Button>
+            </Box>
+            <Box mt="2" mb="4">
+              <Link fontSize="sm" href="/explore" color="blackAlpha.600">
+                Back to home
+              </Link>
+            </Box>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
       <Box minH="100vh" h="full" overflowX="hidden">
         <CreateEventCTA step={step} setStep={setStep} />
         <Box mt="4">

@@ -156,7 +156,7 @@ export default function Step2({
                 w={{ base: "4", lg: "4" }}
                 ml="1"
                 mt="-6"
-                src="assets/elements/sparkle_gradient.svg"
+                src="/assets/elements/sparkle_gradient.svg"
                 alt="element"
               />
             </Flex>
@@ -166,7 +166,7 @@ export default function Step2({
                 event={{
                   title: event.title || "Untitled",
                   description: description || "Event description goes here",
-                  image: "assets/gradient.png",
+                  image: "/assets/gradient.png",
                   date: event.date
                     ? event.date.date === 0
                       ? { date: 1, month: 0, year: 1 }

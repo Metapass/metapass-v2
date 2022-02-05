@@ -23,7 +23,7 @@ export default function FeaturedEvents() {
           <Image
             w={{ lg: "5", xl: "6" }}
             mt="-8"
-            src="assets/elements/sparkle_dark.svg"
+            src="/assets/elements/sparkle_dark.svg"
             alt="element"
           />
         </Flex>

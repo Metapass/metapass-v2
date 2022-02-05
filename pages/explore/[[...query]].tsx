@@ -43,7 +43,7 @@ const Explore: NextPage = () => {
               <Box
                 w="full"
                 bg="black"
-                backgroundImage={`url("assets/gradient.png")`}
+                backgroundImage={`url("/assets/gradient.png")`}
                 backgroundSize="cover"
                 backgroundRepeat="no-repeat"
               >

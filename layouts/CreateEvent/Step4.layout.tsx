@@ -167,7 +167,7 @@ export default function Step4({
                     w={{ base: "4", lg: "4" }}
                     ml="1"
                     mt="-6"
-                    src="assets/elements/sparkle_gradient.svg"
+                    src="/assets/elements/sparkle_gradient.svg"
                     alt="element"
                   />
                 </Flex>

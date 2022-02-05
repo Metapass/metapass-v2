@@ -6,7 +6,7 @@ export default function ExploreCTA() {
   return (
     <>
       <Box
-        backgroundImage={`url("assets/gradient.png")`}
+        backgroundImage={`url("/assets/gradient.png")`}
         backgroundSize="cover"
         backgroundRepeat="no-repeat"
         position="relative"
@@ -48,7 +48,7 @@ export default function ExploreCTA() {
               w={{ base: "6", lg: "8" }}
               ml="1"
               mt="-16"
-              src="assets/elements/sparkle.svg"
+              src="/assets/elements/sparkle.svg"
               alt="element"
             />
           </Flex>

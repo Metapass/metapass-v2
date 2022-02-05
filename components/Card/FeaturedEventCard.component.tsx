@@ -101,7 +101,7 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
         ) : (
           <>
             <Image
-              src="assets/matic_logo.svg"
+              src="/assets/matic_logo.svg"
               w="3"
               filter="brightness(0%)"
               alt="matic"

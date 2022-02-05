@@ -79,7 +79,7 @@ export default function Step5({
               justify="center"
               experimental_spaceX="14"
             >
-              <Box>
+              <Box w="full">
                 <Text
                   textAlign="center"
                   fontFamily="body"

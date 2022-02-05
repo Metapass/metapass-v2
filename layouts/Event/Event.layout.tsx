@@ -96,7 +96,7 @@ export default function EventLayout({ event }: { event: Event }) {
               transitionDuration="200ms"
             >
               <Image
-                src="assets/elements/event_ticket.svg"
+                src="/assets/elements/event_ticket.svg"
                 w="5"
                 alt="ticket"
               />
@@ -246,7 +246,7 @@ export default function EventLayout({ event }: { event: Event }) {
               </Text>
               <Divider my="2" />
               <Box w="fit-content" mx="auto">
-                <Image src="assets/matic.png" alt="matic" w="6" h="6" />
+                <Image src="/assets/matic.png" alt="matic" w="6" h="6" />
               </Box>
               <Text
                 fontSize={event.price === 0 ? "lg" : "2xl"}
