@@ -34,7 +34,10 @@ import {
     HiOutlineChevronDoubleDown,
     HiOutlineChevronDown,
 } from 'react-icons/hi'
-const polygon = require('../../utils/mumbai.json')
+const env: any = process.env.NEXT_PUBLIC_ENV === 'prod'
+const polygon = require(env
+    ? '../../utils/polygon.json'
+    : '../../utils/mumbai.json')
 
 declare const window: any
 
@@ -46,13 +49,14 @@ export default function NavigationBar({ mode = 'dark' }) {
     const [walletType, setWalletType] = useState<string>('')
     const { isOpen, onOpen, onClose } = useDisclosure()
 
-    const enviroment: any = process.env.NEXT_PUBLIC_ENV
-    const chainid: any = process.env.NEXT_PUBLIC_CHAIN_ID
-
-    const web3 = new Web3(process.env.NEXT_PUBLIC_ENDPOINT as string)
+    const chainid: any = env ? 137 : 80001
+    const endpoint: any = env
+        ? process.env.NEXT_PUBLIC_ENDPOINT_POLYGON
+        : process.env.NEXT_PUBLIC_ENDPOINT_MUMBAI
+    const web3 = new Web3(endpoint as string)
     const wcProvider = new WalletConnectProvider({
         rpc: {
-            [chainid]: process.env.NEXT_PUBLIC_ENDPOINT as string,
+            [chainid]: endpoint as string,
         },
     })
 
