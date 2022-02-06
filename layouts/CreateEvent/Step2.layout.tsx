@@ -32,11 +32,12 @@ import { HiOutlineChevronRight as ChevronRight } from "react-icons/hi";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import EventCard from "../../components/Card/EventCard.component";
 import { events } from "../../utils/testData";
 import DateModal from "./DateModal.layout";
+import { walletContext } from "../../utils/walletContext";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -49,6 +50,7 @@ export default function Step2({
 }) {
   const [description, setDescription] = useState("");
   const [longDescription, setLongDescription] = useState("");
+  const [wallet, setWallet] = useContext(walletContext);
 
   return (
     <form
@@ -154,7 +156,7 @@ export default function Step2({
                 w={{ base: "4", lg: "4" }}
                 ml="1"
                 mt="-6"
-                src="assets/elements/sparkle_gradient.svg"
+                src="/assets/elements/sparkle_gradient.svg"
                 alt="element"
               />
             </Flex>
@@ -164,13 +166,13 @@ export default function Step2({
                 event={{
                   title: event.title || "Untitled",
                   description: description || "Event description goes here",
-                  image: "assets/gradient.png",
+                  image: "/assets/gradient.png",
                   date: event.date
                     ? event.date.date === 0
                       ? { date: 1, month: 0, year: 1 }
                       : event.date
                     : { date: 1, month: 0, year: 1 },
-                  owner: "Saptarshi",
+                  owner: wallet.address || "",
                   slides: [],
                   type: event.type || "type",
                   category: event.category || "category",

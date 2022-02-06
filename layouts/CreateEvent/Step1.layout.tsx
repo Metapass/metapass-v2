@@ -29,11 +29,12 @@ import {
 
 import { MdCalendarToday as CalendarToday } from "react-icons/md";
 import { HiOutlineChevronRight as ChevronRight } from "react-icons/hi";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import EventCard from "../../components/Card/EventCard.component";
 import { events } from "../../utils/testData";
 import DateModal from "./DateModal.layout";
+import { walletContext } from "../../utils/walletContext";
 
 export default function Step1({ onSubmit }: { onSubmit: Function }) {
   const [isPaid, setIsPaid] = useState(true);
@@ -51,6 +52,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [submitting, setSubmitting] = useState(false);
+  const [wallet, setWallet] = useContext(walletContext);
 
   return (
     <form
@@ -308,6 +310,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                       });
                     }}
                     type="number"
+                    step="any"
                     fontSize="sm"
                     px="0"
                     _placeholder={{ color: "gray.300" }}
@@ -330,7 +333,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                       pl="2"
                     >
                       <Image
-                        src="assets/matic_circle.svg"
+                        src="/assets/matic_circle.svg"
                         alt="matic"
                         w="4"
                         h="4"
@@ -410,7 +413,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                 w={{ base: "4", lg: "4" }}
                 ml="1"
                 mt="-6"
-                src="assets/elements/sparkle_gradient.svg"
+                src="/assets/elements/sparkle_gradient.svg"
                 alt="element"
               />
             </Flex>
@@ -420,12 +423,12 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                 event={{
                   title: formDetails.title || "Untitled",
                   description: "Event description goes here",
-                  image: "assets/gradient.png",
+                  image: "/assets/gradient.png",
                   date:
                     formDetails.date.date === 0
                       ? { date: 1, month: 0, year: 1 }
                       : formDetails.date,
-                  owner: "Saptarshi",
+                  owner: wallet.address || "",
                   slides: [],
                   type: formDetails.type || "type",
                   category: formDetails.category || "category",

@@ -69,7 +69,7 @@ export default function PageLayout({ children }: any) {
                         rounded="full"
                         p="0.5"
                       >
-                        <IoIosAdd />
+                        <IoIosAdd size="25px" />
                       </Flex>
                     }
                   >

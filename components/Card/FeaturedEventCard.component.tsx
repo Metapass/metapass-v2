@@ -68,11 +68,13 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
           <ModalContent rounded={{ base: "none", lg: "xl" }}>
             <ModalCloseButton
               bg="white"
-              rounded="full"
+              roundedRight="full"
+              _focus={{}}
+              _active={{}}
               zIndex={9999}
               _hover={{ color: "brand.peach" }}
-              top="-10"
-              right="-10"
+              top="2"
+              right="-6"
             />
             <ModalBody>
               <EventLayout event={event} />
@@ -101,7 +103,7 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
         ) : (
           <>
             <Image
-              src="assets/matic_logo.svg"
+              src="/assets/matic_logo.svg"
               w="3"
               filter="brightness(0%)"
               alt="matic"
@@ -203,7 +205,9 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                 noOfLines={1}
                 _hover={{ color: "brand.black600" }}
               >
-                {users[event.owner]?.username || "Anonymous"}
+                {event.owner.substring(0, 6) +
+                  "..." +
+                  event.owner.substring(event.owner.length - 6) || "Anonymous"}
               </Link>
             </Flex>
             <Text

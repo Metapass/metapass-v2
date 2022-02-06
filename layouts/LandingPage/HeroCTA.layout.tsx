@@ -6,7 +6,7 @@ export default function HeroCTA() {
   return (
     <>
       <Box
-        backgroundImage={`url("assets/gradient.png")`}
+        backgroundImage={`url("/assets/gradient.png")`}
         backgroundSize="cover"
         backgroundRepeat="no-repeat"
         position="relative"
@@ -19,7 +19,7 @@ export default function HeroCTA() {
           id="myVideo"
           style={{ position: "absolute", top: 0, zIndex: 0, minWidth: "100%" }}
         >
-          <source src="assets/gradient.mp4" type="video/mp4" />
+          <source src="/assets/gradient.mp4" type="video/mp4" />
         </video>
         <NavigationBar />
         <Box
@@ -43,7 +43,7 @@ export default function HeroCTA() {
               w={{ base: "8", lg: "10" }}
               ml="1"
               mt="-20"
-              src="assets/elements/sparkle.svg"
+              src="/assets/elements/sparkle.svg"
               alt="element"
             />
           </Flex>
