@@ -6,7 +6,7 @@
 .pnp.js
 
 v2mp.code-workspace
-
+yarn.lock
 # testing
 /coverage
 
