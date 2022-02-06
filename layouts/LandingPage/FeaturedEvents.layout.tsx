@@ -1,84 +1,121 @@
-import { Box, Flex, Text, Image, Button } from "@chakra-ui/react";
-import { useEffect } from "react";
-import EventCard from "../../components/Card/EventCard.component";
-import { events } from "../../utils/testData";
-import ScrollContainer from "react-indiana-drag-scroll";
-
+import { Box, Flex, Text, Image, Button } from '@chakra-ui/react'
+import { useEffect } from 'react'
+import EventCard from '../../components/Card/EventCard.component'
+import { events } from '../../utils/testData'
+import ScrollContainer from 'react-indiana-drag-scroll'
+import { gqlEndpoint } from '../../utils/subgraphApi'
 // import { MdCalendarToday as CalendarToday } from "react-icons/md";
-import { HiOutlineChevronRight as ChevronRight } from "react-icons/hi";
-
+import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
+import axios from 'axios'
 export default function FeaturedEvents() {
-  return (
-    <Flex w="full" justify="center" mb="-48">
-      <Box w="full" pb="20">
-        <Flex maxW="1200px" mx={{ base: "12", xl: "40" }}>
-          <Text
-            fontWeight="medium"
-            color="brand.black"
-            fontSize={{ base: "3xl", xl: "4xl" }}
-            position="relative"
-          >
-            Featured Events
-          </Text>
-          <Image
-            w={{ lg: "5", xl: "6" }}
-            mt="-8"
-            src="/assets/elements/sparkle_dark.svg"
-            alt="element"
-          />
-        </Flex>
-        <Flex _active={{ cursor: "grabbing" }} my="8">
-          <ScrollContainer
-            style={{
-              paddingTop: "100px",
-              paddingBottom: "100px",
+    async function getFeaturedEvents() {
+        const featuredQuery = {
+            operationName: 'fetchFeaturedEvents',
+            query: `query fetchFeaturedEvents {
+              featuredEntities{
+                id
+                count
+                eventAddress
+              }
+        }`,
+        }
+        try {
+            const res = await axios({
+                method: 'POST',
+                url: gqlEndpoint,
+                data: featuredQuery,
+                headers: {
+                    'content-type': 'application/json',
+                },
+            })
 
-              transform: "translateY(-100px)",
-            }}
-          >
-            <Flex experimental_spaceX="8" mx={{ base: "10", xl: "20" }}>
-              {events.map((data, key) => (
-                <Box
-                  maxW={{ base: "330px", xl: "390px" }}
-                  key={key}
-                  minW={{ base: "330px", xl: "390px" }}
-                >
-                  <EventCard event={data} />
-                </Box>
-              ))}
-              <Box p="10" />
-            </Flex>
-          </ScrollContainer>
-        </Flex>
-        <Flex justify="center" transform="translateY(-160px)">
-          <Button
-            size="lg"
-            rounded="full"
-            bg="brand.gradient"
-            color="white"
-            rightIcon={
-              <Flex
-                justify="center"
-                alignItems="center"
-                transitionDuration="200ms"
-                _groupHover={{ transform: "translateX(4px)" }}
-              >
-                <ChevronRight />
-              </Flex>
+            if (!!res.data?.errors?.length) {
+                throw new Error('Error fetching featured events')
             }
-            _hover={{}}
-            _focus={{}}
-            _active={{}}
-            py="7"
-            role="group"
-            fontWeight="medium"
-            px="8"
-            onClick={() => (window.location.href = "/events")}
-          >
-            Explore all events
-          </Button>
+            console.log(res.data)
+            return res.data
+        } catch (error) {
+            console.log('error')
+        }
+    }
+
+    useEffect(() => {
+        getFeaturedEvents()
+    }, [])
+    return (
+        <Flex w="full" justify="center" mb="-48">
+            <Box w="full" pb="20">
+                <Flex maxW="1200px" mx={{ base: '12', xl: '40' }}>
+                    <Text
+                        fontWeight="medium"
+                        color="brand.black"
+                        fontSize={{ base: '3xl', xl: '4xl' }}
+                        position="relative"
+                    >
+                        Featured Events
+                    </Text>
+                    <Image
+                        w={{ lg: '5', xl: '6' }}
+                        mt="-8"
+                        src="/assets/elements/sparkle_dark.svg"
+                        alt="element"
+                    />
+                </Flex>
+                <Flex _active={{ cursor: 'grabbing' }} my="8">
+                    <ScrollContainer
+                        style={{
+                            paddingTop: '100px',
+                            paddingBottom: '100px',
+
+                            transform: 'translateY(-100px)',
+                        }}
+                    >
+                        <Flex
+                            experimental_spaceX="8"
+                            mx={{ base: '10', xl: '20' }}
+                        >
+                            {events.map((data, key) => (
+                                <Box
+                                    maxW={{ base: '330px', xl: '390px' }}
+                                    key={key}
+                                    minW={{ base: '330px', xl: '390px' }}
+                                >
+                                    <EventCard event={data} />
+                                </Box>
+                            ))}
+                            <Box p="10" />
+                        </Flex>
+                    </ScrollContainer>
+                </Flex>
+                <Flex justify="center" transform="translateY(-160px)">
+                    <Button
+                        size="lg"
+                        rounded="full"
+                        bg="brand.gradient"
+                        color="white"
+                        rightIcon={
+                            <Flex
+                                justify="center"
+                                alignItems="center"
+                                transitionDuration="200ms"
+                                _groupHover={{ transform: 'translateX(4px)' }}
+                            >
+                                <ChevronRight />
+                            </Flex>
+                        }
+                        _hover={{}}
+                        _focus={{}}
+                        _active={{}}
+                        py="7"
+                        role="group"
+                        fontWeight="medium"
+                        px="8"
+                        onClick={() => (window.location.href = '/events')}
+                    >
+                        Explore all events
+                    </Button>
+                </Flex>
+            </Box>
         </Flex>
-      </Box>
-    </Flex>
-  );
+    )
 }
