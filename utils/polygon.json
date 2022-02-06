@@ -3,7 +3,7 @@
     "chainIdHex": "0x89",
     "name": "Polygon (Matic)",
     "shortName": "Polygon",
-    "img": "https://polygon.technology/brand-kit/matic-token-inverted-icon.svg",
+    "img": "assets/polygon.png",
     "enabled": true,
     "networkId": 80001,
     "addData": {
