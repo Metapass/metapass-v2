@@ -239,6 +239,12 @@ export default function NavigationBar({ mode = 'dark' }) {
         }
     }, [isOpen])
 
+    useEffect(() => {
+        if (isOpen && address) {
+            onClose()
+        }
+    }, [address, onClose, isOpen])
+
     return (
         <>
             <Fade
