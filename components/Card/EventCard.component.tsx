@@ -280,9 +280,9 @@ export default function EventCard({
                                             WebkitTextFillColor: 'transparent',
                                         }}
                                     >
-                                        {event.tickets_available -
+                                        {event.tickets_available}/
+                                        {event.tickets_available +
                                             event.tickets_sold}
-                                        /{event.tickets_available}
                                     </Text>
                                     <Text color="blackAlpha.500">
                                         Tickets Left
@@ -320,7 +320,9 @@ export default function EventCard({
                     <Box w="full" h="5" bg="blackAlpha.50" mt="-4">
                         <Box
                             w={`${
-                                (event.tickets_sold / event.tickets_available) *
+                                (event.tickets_sold /
+                                    (event.tickets_available +
+                                        event.tickets_sold)) *
                                 100
                             }%`}
                             h="full"

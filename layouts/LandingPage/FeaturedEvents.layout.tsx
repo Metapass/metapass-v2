@@ -91,6 +91,7 @@ export default function FeaturedEvents() {
             //     console.log(ens)
             // }
             // getEns()
+            console.log(event.event.seats, event.event.buyers.length)
             return {
                 id: event.event.id,
                 title: event.event.title,
