@@ -1,13 +1,38 @@
 import { Box, Flex, Text, Image, Button } from '@chakra-ui/react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import EventCard from '../../components/Card/EventCard.component'
 import { events } from '../../utils/testData'
+import { Event } from '../../types/Event.type'
 import ScrollContainer from 'react-indiana-drag-scroll'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 // import { MdCalendarToday as CalendarToday } from "react-icons/md";
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import axios from 'axios'
+import getAllEnsLinked from '../../utils/resolveEns'
+
 export default function FeaturedEvents() {
+    const [featEvents, setFeatEvents] = useState<Event[]>([
+        {
+            id: '',
+            title: '',
+            childAddress: '',
+            category: '',
+            image: '',
+            eventHost: '',
+            fee: '',
+            date: '',
+            description: '',
+            seats: 0,
+            owner: '',
+            price: 0,
+            type: '',
+            tickets_available: 0,
+            tickets_sold: 0,
+            buyers: [],
+            slides: [],
+        },
+    ])
+    // const [theEvent, setTheEvent] = useState<Event>()
     async function getFeaturedEvents() {
         const featuredQuery = {
             operationName: 'fetchFeaturedEvents',
@@ -15,8 +40,23 @@ export default function FeaturedEvents() {
               featuredEntities{
                 id
                 count
-                eventAddress
-              }
+                event{
+                    id
+                    title
+                    childAddress
+                    category
+                    image
+                    buyers{
+                        id
+                    }
+                    eventHost
+                    fee
+                    seats
+                    description
+                    date
+                    }
+                }
+              
         }`,
         }
         try {
@@ -32,15 +72,86 @@ export default function FeaturedEvents() {
             if (!!res.data?.errors?.length) {
                 throw new Error('Error fetching featured events')
             }
-            console.log(res.data)
+            console.log(res.data.data.featuredEntities)
             return res.data
         } catch (error) {
-            console.log('error')
+            console.log('error', error)
         }
     }
-
+    const parseFeaturedEvents = (featuredEvents: any): Event[] => {
+        return featuredEvents.map((event: { event: Event }) => {
+            let type = JSON.parse(atob(event.event.category)).event_type
+            let category = JSON.parse(atob(event.event.category)).category.join(
+                ' & '
+            )
+            let image = JSON.parse(atob(event.event.image)).hero_image
+            // let ens: any[] = []
+            // async function getEns() {
+            //     ens = await
+            //     console.log(ens)
+            // }
+            // getEns()
+            return {
+                id: event.event.id,
+                title: event.event.title,
+                childAddress: event.event.childAddress,
+                category: category,
+                image: image,
+                eventHost: event.event.eventHost,
+                fee: Number(event.event.fee) / 10 ** 18,
+                date: event.event.date,
+                description: event.event.description,
+                seats: event.event.seats,
+                owner: event.event.eventHost,
+                price: Number(event.event.fee) / 10 ** 18,
+                type: type,
+                tickets_available:
+                    event.event.seats - event.event.buyers.length,
+                tickets_sold: event.event.buyers.length,
+                buyers: event.event.buyers,
+                slides: event.event.slides,
+            }
+            // getAllEnsLinked('0x99Ec99FCdAd66Ca801DEf23b432500fF045251f9')
+            //     .then((ens: any) => {
+            //         setTheEvent({
+            //             id: event.event.id,
+            //             title: event.event.title,
+            //             childAddress: event.event.childAddress,
+            //             category: category,
+            //             image: image,
+            //             eventHost: event.event.eventHost,
+            //             fee: String(Number(event.event.fee) / 10 ** 18),
+            //             date: event.event.date,
+            //             description: event.event.description,
+            //             seats: event.event.seats,
+            //             owner: ens.length > 0 ? ens[0].name : '',
+            //             price: Number(event.event.fee) / 10 ** 18,
+            //             type: type,
+            //             tickets_available:
+            //                 event.event.seats - event.event.buyers.length,
+            //             tickets_sold: event.event.buyers.length,
+            //             buyers: event.event.buyers,
+            //             slides: event.event.slides,
+            //         })
+            //     })
+            //     .catch((error) => {
+            //         console.log(error)
+            //     })
+            // return theEvent
+        })
+    }
     useEffect(() => {
         getFeaturedEvents()
+            .then((res) => {
+                const data: Event[] = parseFeaturedEvents(
+                    res.data.featuredEntities
+                )
+                setFeatEvents(data)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        // console.log(featEvents)
     }, [])
     return (
         <Flex w="full" justify="center" mb="-48">
@@ -74,7 +185,7 @@ export default function FeaturedEvents() {
                             experimental_spaceX="8"
                             mx={{ base: '10', xl: '20' }}
                         >
-                            {events.map((data, key) => (
+                            {featEvents.map((data, key) => (
                                 <Box
                                     maxW={{ base: '330px', xl: '390px' }}
                                     key={key}

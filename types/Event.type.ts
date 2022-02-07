@@ -1,23 +1,19 @@
-import { User } from "./User.type"
-
 export type Event = {
-    title: string,
-    owner: string,
-    description: string,
-    price: number,
-    image: string,
-    category: string,
-    type: string,
-    tickets_available: number,
-    tickets_sold: number,
-    date: {
-        month: number,
-        date: number,
-        year: number
-    }
-    buyers: Array<string>,
-    slides: Array<string>,
-    video?: string,
-    hosts?: Array<string>,
-    long_description?: string
-}
+    id: string
+    title: string
+    childAddress: string
+    category: string
+    image: string
+    eventHost: string
+    fee: string
+    date: string
+    description: string
+    seats: number
+    owner: string
+    price: number
+    type: string
+    buyers: Array<string>
+    slides: Array<string>
+    tickets_available: number
+    tickets_sold: number
+} //featuring event
