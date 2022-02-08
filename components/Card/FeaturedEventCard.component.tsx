@@ -282,7 +282,7 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                                         /{event.tickets_available}
                                     </Text>
                                     <Text color="blackAlpha.500">
-                                        Tickets Left
+                                        Tickets Sold
                                     </Text>
                                 </Flex>
                             ) : (

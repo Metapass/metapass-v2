@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { FaPlus } from 'react-icons/fa'
+// import VideoThumbnail from 'react-video-thumbnail'
 import ReactPlayer from 'react-player'
 import { Event } from '../../types/Event.type'
 import { getParameterByName } from '../../utils/queryExtractor'
@@ -74,7 +75,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             py="0.5"
                             bg="white"
                         >
-                            {event.category.category.join(' & ')}
+                            {Array(event.category.category).join(' & ')}
                         </Box>
                     </Flex>
                 </Box>
@@ -195,7 +196,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                                           )}/0.jpg`
                                                         : 'https://pdtxar.com/wp-content/uploads/2019/11/video-placeholder-1280x720-40-768x433.jpg'
                                                 }
-                                                alt={'video'}
+                                                alt={'thumbnail'}
                                             />
                                         </AspectRatio>
                                     )}
@@ -394,7 +395,7 @@ export default function EventLayout({ event }: { event: Event }) {
                     >
                         <Flex justify="space-between" align="center">
                             <Text color="blackAlpha.500" fontSize="xs">
-                                Remaining Tickets
+                                Tickets Sold
                             </Text>
                             <Flex fontSize="xs" align="center">
                                 <Text
@@ -406,11 +407,12 @@ export default function EventLayout({ event }: { event: Event }) {
                                         WebkitTextFillColor: 'transparent',
                                     }}
                                 >
-                                    {event.tickets_available -
-                                        event.tickets_sold}
+                                    {event.tickets_sold }
+                                   
                                 </Text>
                                 <Text fontSize="xx-small">/</Text>
-                                <Text> {event.tickets_available}</Text>
+                                <Text> {event.tickets_available + event.tickets_sold
+                                }</Text>
                             </Flex>
                         </Flex>
                         <Box
@@ -424,10 +426,9 @@ export default function EventLayout({ event }: { event: Event }) {
                         >
                             <Box
                                 w={`${
-                                    ((event.tickets_available -
-                                        event.tickets_sold) /
-                                        event.tickets_available) *
-                                    100
+                                   (((event.tickets_sold) /
+                                        (event.tickets_available + event.tickets_sold)) *
+                                    100)
                                 }%`}
                                 h="full"
                                 bg="brand.gradient"

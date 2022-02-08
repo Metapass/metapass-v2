@@ -176,7 +176,9 @@ export default function EventCard({
                     py="0.5"
                     bg="white"
                 >
-                    {event.category.category.join(' & ')}
+                    {/* {console.log(event.category.category.join(', '))} */}
+                    {/* {'some category'} */}
+                    {Array(event.category.category).join(' & ')}
                 </Box>
             </Flex>
             <AspectRatio ratio={428.42 / 180.98} w="full">
@@ -280,12 +282,12 @@ export default function EventCard({
                                             WebkitTextFillColor: 'transparent',
                                         }}
                                     >
-                                        {event.tickets_available}/
+                                        {event.tickets_sold}/
                                         {event.tickets_available +
                                             event.tickets_sold}
                                     </Text>
                                     <Text color="blackAlpha.500">
-                                        Tickets Left
+                                        Tickets Sold
                                     </Text>
                                 </Flex>
                             ) : (
