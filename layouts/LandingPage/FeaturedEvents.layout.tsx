@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Image, Button } from '@chakra-ui/react'
+import { Box, Flex, Text, Image, Button, Skeleton } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import EventCard from '../../components/Card/EventCard.component'
 import { events } from '../../utils/testData'
@@ -203,7 +203,13 @@ export default function FeaturedEvents() {
                                     key={key}
                                     minW={{ base: '330px', xl: '390px' }}
                                 >
+                                    <Skeleton
+                                    maxW={{ base: '330px', xl: '390px' }}
+                                    key={key}
+                                    minW={{ base: '330px', xl: '390px' }}
+                                    isLoaded={data.id !== ''}>
                                     <EventCard event={data} />
+                                </Skeleton>
                                 </Box>
                             ))}
                             <Box p="10" />
