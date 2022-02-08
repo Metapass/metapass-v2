@@ -194,10 +194,6 @@ export default function EventCard({
                         mr="6"
                     >
                         <Text
-                            WILL
-                            ADD
-                            THIS
-                            LATER
                             fontSize={{ base: 'xs', xl: 'sm' }}
                             fontFamily="body"
                             fontWeight="bold"

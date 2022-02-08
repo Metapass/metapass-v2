@@ -85,12 +85,8 @@ export default function FeaturedEvents() {
                 ' & '
             )
             let image = JSON.parse(atob(event.event.image)).hero_image
-            // let ens: any[] = []
-            // async function getEns() {
-            //     ens = await
-            //     console.log(ens)
-            // }
-            // getEns()
+            let shortDescription: { short_desc: ''; long_desc: '' } =
+                JSON.parse(atob(event.event.description)).short_desc
             console.log(event.event.seats, event.event.buyers.length)
             return {
                 id: event.event.id,
@@ -101,7 +97,7 @@ export default function FeaturedEvents() {
                 eventHost: event.event.eventHost,
                 fee: Number(event.event.fee) / 10 ** 18,
                 date: event.event.date,
-                description: event.event.description,
+                description: shortDescription,
                 seats: event.event.seats,
                 owner: event.event.eventHost,
                 price: Number(event.event.fee) / 10 ** 18,
