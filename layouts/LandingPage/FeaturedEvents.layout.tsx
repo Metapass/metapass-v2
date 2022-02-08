@@ -2,7 +2,12 @@ import { Box, Flex, Text, Image, Button } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import EventCard from '../../components/Card/EventCard.component'
 import { events } from '../../utils/testData'
-import { Event } from '../../types/Event.type'
+import {
+    CategoryType,
+    DescriptionType,
+    Event,
+    ImageType,
+} from '../../types/Event.type'
 import ScrollContainer from 'react-indiana-drag-scroll'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 // import { MdCalendarToday as CalendarToday } from "react-icons/md";
@@ -16,12 +21,22 @@ export default function FeaturedEvents() {
             id: '',
             title: '',
             childAddress: '',
-            category: '',
-            image: '',
+            category: {
+                event_type: '',
+                category: [''],
+            },
+            image: {
+                hero_image: '',
+                gallery: [''],
+                video: '',
+            },
             eventHost: '',
             fee: '',
             date: '',
-            description: '',
+            description: {
+                short_desc: '',
+                long_desc: '',
+            },
             seats: 0,
             owner: '',
             price: 0,
@@ -79,14 +94,13 @@ export default function FeaturedEvents() {
         }
     }
     const parseFeaturedEvents = (featuredEvents: any): Event[] => {
-        return featuredEvents.map((event: { event: Event }) => {
+        return featuredEvents.map((event: { event: any }) => {
             let type = JSON.parse(atob(event.event.category)).event_type
-            let category = JSON.parse(atob(event.event.category)).category.join(
-                ' & '
+            let category: CategoryType = JSON.parse(atob(event.event.category))
+            let image: ImageType = JSON.parse(atob(event.event.image))
+            let desc: DescriptionType = JSON.parse(
+                atob(event.event.description)
             )
-            let image = JSON.parse(atob(event.event.image)).hero_image
-            let shortDescription: { short_desc: ''; long_desc: '' } =
-                JSON.parse(atob(event.event.description)).short_desc
             console.log(event.event.seats, event.event.buyers.length)
             return {
                 id: event.event.id,
@@ -95,9 +109,9 @@ export default function FeaturedEvents() {
                 category: category,
                 image: image,
                 eventHost: event.event.eventHost,
-                fee: Number(event.event.fee) / 10 ** 18,
+                fee: String(Number(event.event.fee) / 10 ** 18),
                 date: event.event.date,
-                description: shortDescription,
+                description: desc,
                 seats: event.event.seats,
                 owner: event.event.eventHost,
                 price: Number(event.event.fee) / 10 ** 18,
@@ -106,8 +120,8 @@ export default function FeaturedEvents() {
                     event.event.seats - event.event.buyers.length,
                 tickets_sold: event.event.buyers.length,
                 buyers: event.event.buyers,
-                slides: event.event.slides,
-            }
+                slides: image.gallery,
+            } as Event
             // getAllEnsLinked('0x99Ec99FCdAd66Ca801DEf23b432500fF045251f9')
             //     .then((ens: any) => {
             //         setTheEvent({

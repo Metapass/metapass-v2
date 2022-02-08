@@ -176,11 +176,15 @@ export default function EventCard({
                     py="0.5"
                     bg="white"
                 >
-                    {event.category}
+                    {event.category.category.join(' & ')}
                 </Box>
             </Flex>
             <AspectRatio ratio={428.42 / 180.98} w="full">
-                <Image w="full" src={event.image} alt="event image" />
+                <Image
+                    w="full"
+                    src={event.image.hero_image}
+                    alt="event image"
+                />
             </AspectRatio>
             <Flex direction="column" w="full" justify="space-between" h="full">
                 <Flex p={{ base: '3', xl: '4' }} alignItems="center">
@@ -247,7 +251,7 @@ export default function EventCard({
                             fontSize={{ base: 'xs', xl: 'sm' }}
                             noOfLines={2}
                         >
-                            {event.description}
+                            {event.description.short_desc}
                         </Text>
                     </Box>
                 </Flex>
