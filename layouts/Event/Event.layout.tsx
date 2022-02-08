@@ -252,10 +252,10 @@ export default function EventLayout({ event }: { event: Event }) {
                         overflow="auto"
                     >
                         <Box>
-                            {/* <MarkdownPreview
-                style={{ fontSize: event.long_desc ? "12px" : "14px" }}
-                source={event.long_desc || event.description}
-              /> */}
+                            <MarkdownPreview
+                style={{ fontSize: event.description.long_desc ? "12px" : "14px" }}
+                source={event.description.long_desc || event.description.short_desc}
+              />
                             <Box p="2" />
                         </Box>
                     </Box>
@@ -372,16 +372,19 @@ export default function EventLayout({ event }: { event: Event }) {
                             fontSize="xs"
                             spacing={-2}
                         >
-                            {event.buyers.reverse().map((data, key) => (
+                            {event.buyers?.reverse().map((data, key) => {
+                                // console.log(JSON.parse(data))
+                                const {id}:any = data
+                                return (
                                 <Avatar
-                                    src={gravatarUrl(data, {
+                                    src={gravatarUrl(id, {
                                         default: 'retro',
                                     })}
                                     key={key}
                                     cursor="pointer"
                                     _hover={{ zIndex: 10 }}
                                 />
-                            ))}
+                            )})}
                         </AvatarGroup>
                     </Box>
                     <Box
