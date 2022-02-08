@@ -147,7 +147,7 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                 w="full"
                 maxW={{ base: '200px', xl: '240px' }}
             >
-                <Image w="full" src={event.image} alt="event image" />
+                <Image w="full" src={event.image.hero_image} alt="event image" />
             </AspectRatio>
 
             <Flex direction="column" justify="space-between" w="full">
