@@ -176,8 +176,7 @@ export default function EventCard({
                     py="0.5"
                     bg="white"
                 >
-                    {/* {console.log(event.category.category.join(', '))} */}
-                    {/* {'some category'} */}
+                  
                     {Array(event.category.category).join(' & ')}
                 </Box>
             </Flex>

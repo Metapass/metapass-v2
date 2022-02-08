@@ -94,7 +94,7 @@ export default function FeaturedEvents() {
             console.log('error', error)
         }
     }
-    const parseFeaturedEvents = (featuredEvents: any): Event[] => {
+    const parseFeaturedEvents = (featuredEvents: Array<any>): Event[] => {
         return featuredEvents.map((event: { event: any }) => {
             let type = JSON.parse(atob(event.event.category)).event_type
             let category: CategoryType = JSON.parse(atob(event.event.category))

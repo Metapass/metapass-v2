@@ -25,8 +25,10 @@ const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
     ssr: false,
 })
 import { ImageType } from '../../types/Event.type'
-export default function EventLayout({ event }: { event: Event }) {
+export default function EventLayout({event}:{event:Event}) {
+    // console.log(event.image)
     const [image, setImage] = useState<ImageType>(event.image)
+    // console.log(image)
     const [mediaType, setMediaType] = useState(image.video ? 'video' : 'image')
     const months = [
         'JAN',
@@ -200,7 +202,8 @@ export default function EventLayout({ event }: { event: Event }) {
                                             />
                                         </AspectRatio>
                                     )}
-                                    {image.gallery.map((data, key) => (
+                                    {/* {console.log(image.hero_image,"hero_image")} */}
+                                    {image.gallery?.map((data, key) => (
                                         <AspectRatio
                                             key={key}
                                             cursor="pointer"
@@ -337,7 +340,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             >
                                 <Avatar
                                     size="xs"
-                                    src={gravatarUrl(event.owner, {
+                                    src={gravatarUrl(event.owner || event.eventHost || "0x565b7af7b3c9a5d005ccb39bbf21e07a1ad4cd42", {
                                         default: 'retro',
                                     })}
                                 />
