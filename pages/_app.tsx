@@ -1,38 +1,41 @@
-import "../styles/globals.css";
-import type { AppProps } from "next/app";
-import { Box, ChakraProvider } from "@chakra-ui/react";
-import theme from "./../styles/theme.chakra";
-import Head from "next/head";
-import PageLayout from "../components/Wrappers/PageLayout.component";
-import Wallet from "../utils/walletContext";
-import Web3Wrapper from "../utils/web3Context";
-import { Toaster } from "react-hot-toast";
+import '../styles/globals.css'
+import type { AppProps } from 'next/app'
+import { Box, ChakraProvider } from '@chakra-ui/react'
+import theme from './../styles/theme.chakra'
+import Head from 'next/head'
+import PageLayout from '../components/Wrappers/PageLayout.component'
+import Wallet from '../utils/walletContext'
+import Web3Wrapper from '../utils/web3Context'
+import { Toaster } from 'react-hot-toast'
+import Contract from '../utils/contractContext'
 
 function MyApp({ Component, pageProps }: AppProps) {
-  return (
-    <>
-      <Head>
-        <title>MetaPass | Reimagining Events</title>
-        <script
-          async
-          src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.1/dist/umd/index.min.js"
-        ></script>
-        <script
-          async
-          src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"
-        ></script>
-      </Head>
+    return (
+        <>
+            <Head>
+                <title>MetaPass | Reimagining Events</title>
+                <script
+                    async
+                    src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.1/dist/umd/index.min.js"
+                ></script>
+                <script
+                    async
+                    src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"
+                ></script>
+            </Head>
 
-      <Wallet>
-        <Web3Wrapper>
-        <Toaster />
-        <ChakraProvider theme={theme}>
-          <Component {...pageProps} />
-        </ChakraProvider>
-        </Web3Wrapper>
-      </Wallet>
-    </>
-  );
+            <Wallet>
+                <Web3Wrapper>
+                    <Contract>
+                        <Toaster />
+                        <ChakraProvider theme={theme}>
+                            <Component {...pageProps} />
+                        </ChakraProvider>
+                    </Contract>
+                </Web3Wrapper>
+            </Wallet>
+        </>
+    )
 }
 
-export default MyApp;
+export default MyApp

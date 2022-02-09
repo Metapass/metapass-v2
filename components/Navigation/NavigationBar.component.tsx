@@ -54,11 +54,6 @@ export default function NavigationBar({ mode = 'dark' }) {
         ? process.env.NEXT_PUBLIC_ENDPOINT_POLYGON
         : process.env.NEXT_PUBLIC_ENDPOINT_MUMBAI
     const web3 = new Web3(endpoint as string)
-    const wcProvider = new WalletConnectProvider({
-        rpc: {
-            [chainid]: endpoint as string,
-        },
-    })
 
     const mdcontent = [
         {
@@ -150,6 +145,11 @@ export default function NavigationBar({ mode = 'dark' }) {
     }
 
     const handleWalletConnect = async () => {
+        const wcProvider = new WalletConnectProvider({
+            rpc: {
+                [chainid]: endpoint as string,
+            },
+        })
         try {
             await wcProvider.enable()
             setWalletType('wc')
