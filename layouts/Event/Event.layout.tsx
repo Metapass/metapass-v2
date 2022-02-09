@@ -53,7 +53,7 @@ export default function EventLayout({event}:{event:Event}) {
         >
             <Flex justify="space-between" align="center"
       w="132%"
-      border="1px solid red"
+    //   border="1px solid red"
             >
                 <Box>
                     <Text fontSize="2xl" fontWeight="semibold">
