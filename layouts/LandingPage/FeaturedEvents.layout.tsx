@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Image, Button, Skeleton } from '@chakra-ui/react'
+import { Box, Flex, Text, Image, Button, Skeleton, useDisclosure, Modal, ModalOverlay, ModalContent, ModalBody, MenuButton, InputGroup, InputLeftElement, Menu, Input, Heading } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import EventCard from '../../components/Card/EventCard.component'
 import { events } from '../../utils/testData'
@@ -14,8 +14,12 @@ import { gqlEndpoint } from '../../utils/subgraphApi'
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import axios from 'axios'
 import getAllEnsLinked from '../../utils/resolveEns'
+import { MdTag } from 'react-icons/md'
+import { AiOutlineSearch } from 'react-icons/ai'
+import { SetStateAction } from 'react';
 
 export default function FeaturedEvents() {
+    const [email, setEmail] = useState<string>('')
     const [featEvents, setFeatEvents] = useState<Event[]>([
         {
             id: '',
@@ -47,7 +51,7 @@ export default function FeaturedEvents() {
             slides: [],
         },
     ])
-    // const [theEvent, setTheEvent] = useState<Event>()
+    const { isOpen, onOpen, onClose } = useDisclosure()
     async function getFeaturedEvents() {
         const featuredQuery = {
             operationName: 'fetchFeaturedEvents',
@@ -239,12 +243,141 @@ export default function FeaturedEvents() {
                         role="group"
                         fontWeight="medium"
                         px="8"
-                        onClick={() => (window.location.href = '/events')}
+                    
+                        onClick={onOpen}
                     >
                         Explore all events
                     </Button>
+                  
+                    <Modal
+                    
+                    size="xl"
+                   
+                    isOpen={isOpen} onClose={onClose}
+                    isCentered
+                    >
+                        
+        <ModalOverlay />
+        <ModalContent>
+            <Flex
+            justify="center"
+            >
+          <Image src="/assets/elements/bolt.png"
+          maxH="20"
+          maxW="20" 
+          pos="absolute"
+        // skewY="50px"
+          zIndex="overlay"
+          top="-10"
+        //   left="250"
+          alt="bolt"
+          /></Flex>
+          <ModalBody
+        //   borderRadius="xl"
+     p="10"
+          >
+         <Flex flexDir="column"
+         justify="center"
+         align="center"
+         >
+             <Heading
+             fontFamily="azonix"
+             textAlign="center"
+            //  fontFamily="azonix"
+             fontSize={{ base: "3xl", lg: "3xl", xl: "3xl" }}
+             >
+                 JOIN THE WAITLIST
+             </Heading>
+             <Text
+             m="4"
+             p="4"
+             lineHeight="23.72px"
+             letterSpacing="3%"
+             fontFamily="Product Sans"
+             fontSize="18px"
+             color="rgba(0, 0, 0, 0.31)"
+             maxW="500px"
+             height="63.08px"
+             fontWeight="400"
+             
+            //  noOfLines={4}
+             >
+             We're on the mission to revolutionize event ticketing with blockchain, join the waitlist and lets band together on this journey! 🚀 
+             </Text>
+         <EmailBar 
+           email={email}
+              setEmail={setEmail}
+           />
+         </Flex>
+          </ModalBody>
+
+          
+        </ModalContent>
+      </Modal>
                 </Flex>
             </Box>
         </Flex>
     )
 }
+
+export const EmailBar = ({email,setEmail}:any) => {
+    return (<Flex
+        boxShadow="0px 18px 91px rgba(0, 0, 0, 0.07)"
+        bg="white"
+        rounded="full"
+        alignItems="center"
+        mt="6"
+        pl="6"
+        fontSize="lg"
+        w="85%"
+        justify="space-between"
+      >
+        <Flex w="full" alignItems="center">
+          <InputGroup>
+            <Input
+              bg="transparent"
+              border="none"
+              _focus={{}}
+              _hover={{}}
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
+              rounded="none"
+              placeholder="gm@metapasshq.xyz"
+            />
+          </InputGroup>
+  
+          <Box minW="2.5px" bg="gray.100" h="12" />
+          
+        </Flex>
+        <Button
+          role="group"
+          leftIcon={
+            <Flex
+              justify="center"
+              alignItems="center"
+              _groupHover={{ transform: "scale(1.1)" }}
+              transitionDuration="200ms"
+            >
+              {" "}
+              <AiOutlineSearch size="22px" />
+            </Flex>
+          }
+          _hover={{}}
+          _focus={{}}
+          _active={{}}
+          rounded="full"
+          color="white"
+          bg="brand.gradient"
+          roundedBottomLeft="none"
+          py="8"
+          px="8"
+          fontSize="lg"
+          onClick={() => {
+            window.location.href = "/events";
+          }}
+        >
+          Search
+        </Button>
+      </Flex>
+    );
+    };

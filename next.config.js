@@ -2,7 +2,7 @@
 const removeImports = require('next-remove-imports')()
 const nextConfig = removeImports({
     reactStrictMode: true,
-    // swcMinify: true,
+    swcMinify: true,
     typescript: {
         // !! WARN !!
         // Dangerously allow production builds to successfully complete even if
