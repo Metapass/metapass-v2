@@ -48,7 +48,7 @@ export default function Step2({
   onSubmit: Function;
   event: any;
 }) {
-  const [description, setDescription] = useState("");
+  const [shortDescription, setDescription] = useState("");
   const [longDescription, setLongDescription] = useState("");
   const [wallet, setWallet] = useContext(walletContext);
 
@@ -57,7 +57,7 @@ export default function Step2({
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit({
-          description: description,
+          description: shortDescription,
           long_description: longDescription,
         });
       }}
@@ -100,7 +100,7 @@ export default function Step2({
                   setDescription(e.target.value);
                 }}
                 fontSize="sm"
-                value={description}
+                value={shortDescription}
                 required
                 px="0"
                 _placeholder={{ color: "gray.300" }}
@@ -164,23 +164,37 @@ export default function Step2({
               <EventCard
                 previewOnly
                 event={{
+                  id: event.id,
                   title: event.title || "Untitled",
-                  description: description || "Event description goes here",
-                  image: "/assets/gradient.png",
+                  description: {
+                    short_desc: shortDescription,
+                    long_desc: longDescription,
+                  } || {
+                    short_desc: "Enter a short description",
+                    long_desc: "Enter a long description",
+                  },
+                  seats: event.seats || 0,
+                  childAddress: event.childAddress || "",
+                  image: {
+                    hero_image: "/assets/gradient.png",
+                    gallery:["/assets/gradient.png"],
+                    video: "",
+                  },
                   date: event.date
-                    ? event.date.date === 0
-                      ? { date: 1, month: 0, year: 1 }
+                    ? event.date === ""  || event.date === "00/00/0000"
+                      ? "01/01/2022"
                       : event.date
-                    : { date: 1, month: 0, year: 1 },
+                    : "01/01/2022",
                   owner: wallet.address || "",
                   slides: [],
                   type: event.type || "type",
                   category: event.category || "category",
                   buyers: [],
-                  hosts: [],
+                  eventHost: wallet.address || "",
                   price: event.price,
                   tickets_available: 40,
                   tickets_sold: 13,
+                  fee:event.fee,
                 }}
               />
             </Box>

@@ -35,20 +35,39 @@ import EventCard from "../../components/Card/EventCard.component";
 import { events } from "../../utils/testData";
 import DateModal from "./DateModal.layout";
 import { walletContext } from "../../utils/walletContext";
+import { Event } from "../../types/Event.type";
 
 export default function Step1({ onSubmit }: { onSubmit: Function }) {
   const [isPaid, setIsPaid] = useState(true);
-  const [formDetails, setFormDetails] = useState({
-    title: "",
-    type: "",
-    category: "",
-    price: 0,
-    date: {
-      date: 0,
-      month: 0,
-      year: 0,
+  const [formDetails, setFormDetails] = useState<Event>({
+    id: '',
+    title: '',
+    childAddress: '',
+    category: {
+        event_type: '',
+        category: [''],
     },
-  });
+    image: {
+        hero_image: '',
+        gallery: [''],
+        video: '',
+    },
+    eventHost: '',
+    fee: '',
+    date: '',
+    description: {
+        short_desc: '',
+        long_desc: '',
+    },
+    seats: 0,
+    owner: '',
+    price: 0,
+    type: '',
+    tickets_available: 0,
+    tickets_sold: 0,
+    buyers: [],
+    slides: [],
+});
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [submitting, setSubmitting] = useState(false);
@@ -67,10 +86,10 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
         <DateModal
           isOpen={isOpen}
           onClose={onClose}
-          onSubmit={(date: any) => {
+          onSubmit={(date: {month:'',date:'',year:''}) => {
             setFormDetails({
               ...formDetails,
-              date,
+              date: `${date.month + 1}/${date.date}/${date.year}`,
             });
           }}
         />
@@ -235,7 +254,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                     <InputGroup>
                       <Input
                         fontSize="sm"
-                        value={formDetails.category}
+                        value={Array(formDetails.category.category)[0]}
                         required
                         px="0"
                         _placeholder={{ color: "gray.300" }}
@@ -263,7 +282,10 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                       onClick={(e) => {
                         setFormDetails({
                           ...formDetails,
-                          category: "Meetup",
+                          category:{
+                            event_type: formDetails.type,
+                            category: ["Meetup"]
+                          },
                         });
                       }}
                     >
@@ -274,7 +296,10 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                       onClick={(e) => {
                         setFormDetails({
                           ...formDetails,
-                          category: "Party",
+                          category: {
+                            event_type: formDetails.type,
+                            category: ["Party"]
+                          },
                         });
                       }}
                     >
@@ -371,11 +396,9 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                     required
                     cursor="pointer"
                     value={
-                      formDetails.date.date === 0
+                      formDetails.date === "" || formDetails.date === "00/00/0000"
                         ? ""
-                        : `${formDetails.date.date}/${
-                            formDetails.date.month + 1
-                          }/${formDetails.date.year}`
+                        : formDetails.date
                     }
                     px="0"
                     placeholder="When will the event take place?"
@@ -421,19 +444,26 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
               <EventCard
                 previewOnly
                 event={{
+                  id:formDetails.id,
                   title: formDetails.title || "Untitled",
-                  description: "Event description goes here",
-                  image: "/assets/gradient.png",
-                  date:
-                    formDetails.date.date === 0
-                      ? { date: 1, month: 0, year: 1 }
-                      : formDetails.date,
+                  description: formDetails.description || "",
+                  image: {
+                    ...formDetails.image,
+                    hero_image:"/assets/gradient.png",
+                  },
+                  date:formDetails.date === "" || formDetails.date === "00/00/0000"
+                  ? ""
+                  : formDetails.date,
                   owner: wallet.address || "",
                   slides: [],
+                  fee: String(formDetails.price),
                   type: formDetails.type || "type",
                   category: formDetails.category || "category",
                   buyers: [],
-                  hosts: [],
+                  // hosts: [],
+                  childAddress: formDetails.childAddress || "",
+                  seats: formDetails.seats || 0,
+                  eventHost: "",
                   price: formDetails.price,
                   tickets_available: 40,
                   tickets_sold: 13,
@@ -471,7 +501,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                 formDetails.category &&
                 (formDetails.price || !isPaid) &&
                 formDetails.type &&
-                formDetails.date.date !== 0
+               ( formDetails.date !== "" && formDetails.date !== "00/00/0000")
               ) {
                 setSubmitting(true);
               }
