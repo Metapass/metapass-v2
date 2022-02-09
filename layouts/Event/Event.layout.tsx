@@ -46,8 +46,15 @@ export default function EventLayout({event}:{event:Event}) {
     ]
 
     return (
-        <Box p="2" pt="3" color="brand.black" mb="4">
-            <Flex justify="space-between" align="center">
+        <Box ml="4" pt="3" color="brand.black" mb="4"
+        
+         
+        
+        >
+            <Flex justify="space-between" align="center"
+      w="132%"
+      border="1px solid red"
+            >
                 <Box>
                     <Text fontSize="2xl" fontWeight="semibold">
                         {event.title}
@@ -93,6 +100,7 @@ export default function EventLayout({event}:{event:Event}) {
                     disabled={event.tickets_available === event.tickets_sold}
                     _focus={{}}
                     _active={{}}
+                    mr="3"
                     leftIcon={
                         <Box
                             _groupHover={{ transform: 'scale(1.1)' }}
@@ -116,11 +124,13 @@ export default function EventLayout({event}:{event:Event}) {
                 mt="4"
                 experimental_spaceX="6"
                 justify="space-between"
+                maxW="50rem"
+                
             >
                 <Box w="full">
                     <Box
                         w="full"
-                        overflow="auto"
+                        overflow="clip"
                         border="1px"
                         borderColor="blackAlpha.100"
                         boxShadow="0px 4.25554px 93.6219px rgba(0, 0, 0, 0.08)"
@@ -251,10 +261,15 @@ export default function EventLayout({event}:{event:Event}) {
                         px="4"
                         color="blackAlpha.700"
                         fontSize={{ base: 'sm', lg: 'md' }}
-                        minH={{ base: '28', xl: '28' }}
+                        // minH={{ base: '28', xl: '28' }}
+                        // maxW="10%"
+                        // h="10rem"
+                        maxH="10rem"
                         overflow="auto"
                     >
-                        <Box>
+                        <Box
+                        
+                        >
                             <MarkdownPreview
                 style={{ fontSize: event.description.long_desc ? "12px" : "14px" }}
                 source={event.description.long_desc || event.description.short_desc}
@@ -263,8 +278,14 @@ export default function EventLayout({event}:{event:Event}) {
                         </Box>
                     </Box>
                 </Box>
-                <Flex direction="column">
-                    <Flex experimental_spaceX="2.5">
+                <Flex direction="column"
+              
+          
+                >
+                    <Flex experimental_spaceX="2.5"
+                    
+
+                    >
                         <Box
                             p="2"
                             border="1px"
@@ -302,6 +323,7 @@ export default function EventLayout({event}:{event:Event}) {
                             textAlign="center"
                             minW="100px"
                             boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
+                            
                         >
                             <Text fontSize="xs" color="blackAlpha.700">
                                 Event Date

@@ -15,7 +15,7 @@ import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import EventLayout from '../../layouts/Event/Event.layout'
 import { Event } from '../../types/Event.type'
-import { users } from '../../utils/testData'
+// import { users } from '../../utils/testData'
 
 export default function EventCard({
     event,
@@ -85,7 +85,10 @@ export default function EventCard({
                             _active={{}}
                             right="-6"
                         />
-                        <ModalBody>
+                        <ModalBody
+                        
+                        width="50rem"
+                        >
                             <EventLayout event={event} />
                         </ModalBody>
                     </ModalContent>
@@ -215,7 +218,9 @@ export default function EventCard({
                             {/* event.date.date */}
                         </Text>
                     </Box>
-                    <Box>
+                    <Box
+                    
+                    >
                         <Text
                             fontSize={{ base: 'sm', xl: 'lg' }}
                             fontWeight="semibold"
