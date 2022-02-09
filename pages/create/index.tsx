@@ -33,16 +33,40 @@ import Step3 from "../../layouts/CreateEvent/Step3.layout";
 import Step4 from "../../layouts/CreateEvent/Step4.layout";
 import Step5 from "../../layouts/CreateEvent/Step5.layout";
 import { walletContext } from "../../utils/walletContext";
-
+import { Event } from "../../types/Event.type";
 const Create: NextPage = () => {
   const [wallet, setWallet] = useContext(walletContext);
   const [step, setStep] = useState(0);
-  const [event, setEvent] = useState({
-    address: "0x436441A8eF5b3C705652a8b0dff624152c227a6f",
-    title: "",
-    owner: wallet.address,
+  const [event, setEvent] = useState<Event>({
+    id: '',
+    title: '',
+    childAddress: '',
+    category: {
+        event_type: '',
+        category: [''],
+    },
+    image: {
+        hero_image: '',
+        gallery: [''],
+        video: '',
+    },
+    eventHost: '',
+    fee: '',
+    date: '',
+    description: {
+        short_desc: '',
+        long_desc: '',
+    },
+    seats: 0,
+    owner: '',
+    price: 0,
+    type: '',
+    tickets_available: 0,
+    tickets_sold: 0,
     buyers: [],
-  });
+    slides: [],
+});
+  
   const [eventLink, setEventLink] = useState<any>(undefined);
   const [isPublished, setIsPublished] = useState(false);
   const { hasCopied, onCopy } = useClipboard(eventLink);
@@ -60,7 +84,7 @@ const Create: NextPage = () => {
 
   function onSubmit() {
     console.log(event);
-    setEventLink(`${window.location.origin}/events/${event.address}`);
+    setEventLink(`${window.location.origin}/events/${event.id}`);
     setIsPublished(true);
   }
 
@@ -232,6 +256,7 @@ const Create: NextPage = () => {
         <CreateEventCTA step={step} setStep={setStep} />
         <Box mt="4">
           <Box display={step === 0 ? "block" : "none"}>
+            {/* STEP1🔺 */}
             <Step1
               onSubmit={(formDetails: any) => {
                 setEvent({
@@ -244,6 +269,7 @@ const Create: NextPage = () => {
             />
           </Box>
           <Box display={step === 1 ? "block" : "none"}>
+            {/* STEP2🔺 */}
             <Step2
               event={event}
               onSubmit={(formDetails: any) => {
@@ -257,6 +283,7 @@ const Create: NextPage = () => {
             />
           </Box>
           <Box display={step === 2 ? "block" : "none"}>
+            {/* STEP3🔺 */}
             <Step3
               event={event}
               onSubmit={(formDetails: any) => {
@@ -270,6 +297,7 @@ const Create: NextPage = () => {
             />
           </Box>
           <Box display={step === 3 ? "block" : "none"}>
+            {/* STEP4🔺 */}
             <Step4
               event={event}
               onSubmit={() => {
@@ -278,6 +306,7 @@ const Create: NextPage = () => {
             />
           </Box>
           <Box display={step === 4 ? "block" : "none"}>
+            {/* STEP5🔺 */}
             <Step5
               event={event}
               onSubmit={() => {
