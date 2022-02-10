@@ -38,7 +38,7 @@ import { ethers } from 'ethers'
 import { contractContext } from '../../utils/contractContext'
 
 const Create: NextPage = () => {
-    const [wallet, setWallet] = useContext(walletContext)
+    const [wallet] = useContext(walletContext)
     const [step, setStep] = useState(0)
     const [event, setEvent] = useState<Event>({
         id: '',
@@ -49,7 +49,7 @@ const Create: NextPage = () => {
             category: [''],
         },
         image: {
-            hero_image: '',
+            image: '',
             gallery: [''],
             video: '',
         },

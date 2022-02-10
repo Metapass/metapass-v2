@@ -9,26 +9,26 @@ import {
     Avatar,
     AvatarGroup,
 } from '@chakra-ui/react'
-import { useState } from 'react'
-import { FaPlus } from 'react-icons/fa'
-// import VideoThumbnail from 'react-video-thumbnail'
+import { useState, useContext } from 'react'
 import ReactPlayer from 'react-player'
 import { Event } from '../../types/Event.type'
 import { getParameterByName } from '../../utils/queryExtractor'
-import { users } from '../../utils/testData'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
 import gravatarUrl from 'gravatar-url'
+import { walletContext } from '../../utils/walletContext'
+import { ethers } from 'ethers'
+import abi from '../../utils/Metapass.json'
 
 const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
     ssr: false,
 })
 import { ImageType } from '../../types/Event.type'
-export default function EventLayout({event}:{event:Event}) {
-    // console.log(event.image)
+declare const window: any
+
+export default function EventLayout({ event }: { event: Event }) {
     const [image, setImage] = useState<ImageType>(event.image)
-    // console.log(image)
     const [mediaType, setMediaType] = useState(image.video ? 'video' : 'image')
     const months = [
         'JAN',
@@ -45,15 +45,40 @@ export default function EventLayout({event}:{event:Event}) {
         'DEC',
     ]
 
+    const [wallet] = useContext(walletContext)
+
+    const buyTicket = async () => {
+        if (wallet.address != null) {
+            if (typeof window.ethereum != undefined) {
+                const provider = new ethers.providers.Web3Provider(
+                    window.ethereum
+                )
+                const signer = provider.getSigner()
+                let metapass = new ethers.Contract(
+                    event.childAddress,
+                    abi.abi,
+                    signer
+                )
+                console.log(metapass)
+
+                try {
+                    metapass.owner()
+                } catch (e) {
+                    console.log(e)
+                }
+            } else {
+                console.log("Couldn't find ethereum enviornment")
+            }
+        }
+    }
+
     return (
-        <Box ml="4" pt="3" color="brand.black" mb="4"
-        
-         
-        
-        >
-            <Flex justify="space-between" align="center"
-      w="132%"
-    //   border="1px solid red"
+        <Box ml="4" pt="3" color="brand.black" mb="4">
+            <Flex
+                justify="space-between"
+                align="center"
+                w="132%"
+                //   border="1px solid red"
             >
                 <Box>
                     <Text fontSize="2xl" fontWeight="semibold">
@@ -97,7 +122,8 @@ export default function EventLayout({event}:{event:Event}) {
                     color="white"
                     _disabled={{ opacity: '0.8', cursor: 'not-allowed' }}
                     _hover={{}}
-                    disabled={event.tickets_available === event.tickets_sold}
+                    onClick={buyTicket}
+                    disabled={event.tickets_available <= event.tickets_sold}
                     _focus={{}}
                     _active={{}}
                     mr="3"
@@ -125,7 +151,6 @@ export default function EventLayout({event}:{event:Event}) {
                 experimental_spaceX="6"
                 justify="space-between"
                 maxW="50rem"
-                
             >
                 <Box w="full">
                     <Box
@@ -158,8 +183,8 @@ export default function EventLayout({event}:{event:Event}) {
                                     </Flex>
                                 ) : (
                                     <Image
-                                        src={image.hero_image}
-                                        alt={image.hero_image}
+                                        src={image.image}
+                                        alt={'Event Image'}
                                     />
                                 )}
                             </AspectRatio>
@@ -223,7 +248,7 @@ export default function EventLayout({event}:{event:Event}) {
                                             transitionDuration="100ms"
                                             onClick={() => {
                                                 setImage({
-                                                    hero_image: data,
+                                                    image: data,
                                                     gallery: image.gallery,
                                                     video: image.video,
                                                 })
@@ -233,7 +258,7 @@ export default function EventLayout({event}:{event:Event}) {
                                             w="full"
                                             ringColor="brand.peach"
                                             ring={
-                                                image.hero_image === data &&
+                                                image.image === data &&
                                                 mediaType === 'image'
                                                     ? '2px'
                                                     : 'none'
@@ -267,25 +292,24 @@ export default function EventLayout({event}:{event:Event}) {
                         maxH="10rem"
                         overflow="auto"
                     >
-                        <Box
-                        
-                        >
+                        <Box>
                             <MarkdownPreview
-                style={{ fontSize: event.description.long_desc ? "12px" : "14px" }}
-                source={event.description.long_desc || event.description.short_desc}
-              />
+                                style={{
+                                    fontSize: event.description.long_desc
+                                        ? '12px'
+                                        : '14px',
+                                }}
+                                source={
+                                    event.description.long_desc ||
+                                    event.description.short_desc
+                                }
+                            />
                             <Box p="2" />
                         </Box>
                     </Box>
                 </Box>
-                <Flex direction="column"
-              
-          
-                >
-                    <Flex experimental_spaceX="2.5"
-                    
-
-                    >
+                <Flex direction="column">
+                    <Flex experimental_spaceX="2.5">
                         <Box
                             p="2"
                             border="1px"
@@ -323,7 +347,6 @@ export default function EventLayout({event}:{event:Event}) {
                             textAlign="center"
                             minW="100px"
                             boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
-                            
                         >
                             <Text fontSize="xs" color="blackAlpha.700">
                                 Event Date
@@ -362,9 +385,14 @@ export default function EventLayout({event}:{event:Event}) {
                             >
                                 <Avatar
                                     size="xs"
-                                    src={gravatarUrl(event.owner || event.eventHost || "0x565b7af7b3c9a5d005ccb39bbf21e07a1ad4cd42", {
-                                        default: 'retro',
-                                    })}
+                                    src={gravatarUrl(
+                                        event.owner ||
+                                            event.eventHost ||
+                                            '0x565b7af7b3c9a5d005ccb39bbf21e07a1ad4cd42',
+                                        {
+                                            default: 'retro',
+                                        }
+                                    )}
                                 />
                                 <Box>
                                     <Text fontSize="14px">
@@ -399,17 +427,18 @@ export default function EventLayout({event}:{event:Event}) {
                         >
                             {event.buyers?.reverse().map((data, key) => {
                                 // console.log(JSON.parse(data))
-                                const {id}:any = data
+                                const { id }: any = data
                                 return (
-                                <Avatar
-                                    src={gravatarUrl(id, {
-                                        default: 'retro',
-                                    })}
-                                    key={key}
-                                    cursor="pointer"
-                                    _hover={{ zIndex: 10 }}
-                                />
-                            )})}
+                                    <Avatar
+                                        src={gravatarUrl(id, {
+                                            default: 'retro',
+                                        })}
+                                        key={key}
+                                        cursor="pointer"
+                                        _hover={{ zIndex: 10 }}
+                                    />
+                                )
+                            })}
                         </AvatarGroup>
                     </Box>
                     <Box
@@ -435,12 +464,14 @@ export default function EventLayout({event}:{event:Event}) {
                                         WebkitTextFillColor: 'transparent',
                                     }}
                                 >
-                                    {event.tickets_sold }
-                                   
+                                    {event.tickets_sold}
                                 </Text>
                                 <Text fontSize="xx-small">/</Text>
-                                <Text> {event.tickets_available + event.tickets_sold
-                                }</Text>
+                                <Text>
+                                    {' '}
+                                    {event.tickets_available +
+                                        event.tickets_sold}
+                                </Text>
                             </Flex>
                         </Flex>
                         <Box
@@ -454,9 +485,10 @@ export default function EventLayout({event}:{event:Event}) {
                         >
                             <Box
                                 w={`${
-                                   (((event.tickets_sold) /
-                                        (event.tickets_available + event.tickets_sold)) *
-                                    100)
+                                    (event.tickets_sold /
+                                        (event.tickets_available +
+                                            event.tickets_sold)) *
+                                    100
                                 }%`}
                                 h="full"
                                 bg="brand.gradient"

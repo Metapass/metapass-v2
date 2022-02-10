@@ -26,7 +26,7 @@ export default function FeaturedEvents() {
                 category: [''],
             },
             image: {
-                hero_image: '',
+                image: '',
                 gallery: [''],
                 video: '',
             },
@@ -165,6 +165,7 @@ export default function FeaturedEvents() {
             })
         // console.log(featEvents)
     }, [])
+
     return (
         <Flex w="full" justify="center" mb="-48">
             <Box w="full" pb="20">
@@ -204,12 +205,13 @@ export default function FeaturedEvents() {
                                     minW={{ base: '330px', xl: '390px' }}
                                 >
                                     <Skeleton
-                                    maxW={{ base: '330px', xl: '390px' }}
-                                    key={key}
-                                    minW={{ base: '330px', xl: '390px' }}
-                                    isLoaded={data.id !== ''}>
-                                    <EventCard event={data} />
-                                </Skeleton>
+                                        maxW={{ base: '330px', xl: '390px' }}
+                                        key={key}
+                                        minW={{ base: '330px', xl: '390px' }}
+                                        isLoaded={data.id !== ''}
+                                    >
+                                        <EventCard event={data} />
+                                    </Skeleton>
                                 </Box>
                             ))}
                             <Box p="10" />

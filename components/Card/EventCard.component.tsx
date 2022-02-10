@@ -15,7 +15,8 @@ import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import EventLayout from '../../layouts/Event/Event.layout'
 import { Event } from '../../types/Event.type'
-// import { users } from '../../utils/testData'
+
+declare const window: any
 
 export default function EventCard({
     event,
@@ -85,10 +86,7 @@ export default function EventCard({
                             _active={{}}
                             right="-6"
                         />
-                        <ModalBody
-                        
-                        width="50rem"
-                        >
+                        <ModalBody width="50rem">
                             <EventLayout event={event} />
                         </ModalBody>
                     </ModalContent>
@@ -179,16 +177,11 @@ export default function EventCard({
                     py="0.5"
                     bg="white"
                 >
-                  
                     {Array(event.category.category).join(' & ')}
                 </Box>
             </Flex>
             <AspectRatio ratio={428.42 / 180.98} w="full">
-                <Image
-                    w="full"
-                    src={event.image.hero_image}
-                    alt="event image"
-                />
+                <Image w="full" src={event.image.image} alt="event image" />
             </AspectRatio>
             <Flex direction="column" w="full" justify="space-between" h="full">
                 <Flex p={{ base: '3', xl: '4' }} alignItems="center">
@@ -218,9 +211,7 @@ export default function EventCard({
                             {/* event.date.date */}
                         </Text>
                     </Box>
-                    <Box
-                    
-                    >
+                    <Box>
                         <Text
                             fontSize={{ base: 'sm', xl: 'lg' }}
                             fontWeight="semibold"
@@ -240,7 +231,6 @@ export default function EventCard({
                                 noOfLines={1}
                                 _hover={{ color: 'brand.black600' }}
                             >
-                                {console.log(event.owner)}
                                 {(event.owner.length > 20
                                     ? event.owner.substring(0, 6) +
                                       '...' +
