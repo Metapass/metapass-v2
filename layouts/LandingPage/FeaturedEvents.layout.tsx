@@ -27,7 +27,7 @@ export default function FeaturedEvents() {
             },
             image: {
                 hero_image: '',
-                gallery: [''],
+                gallery: [],
                 video: '',
             },
             eventHost: '',
@@ -204,12 +204,13 @@ export default function FeaturedEvents() {
                                     minW={{ base: '330px', xl: '390px' }}
                                 >
                                     <Skeleton
-                                    maxW={{ base: '330px', xl: '390px' }}
-                                    key={key}
-                                    minW={{ base: '330px', xl: '390px' }}
-                                    isLoaded={data.id !== ''}>
-                                    <EventCard event={data} />
-                                </Skeleton>
+                                        maxW={{ base: '330px', xl: '390px' }}
+                                        key={key}
+                                        minW={{ base: '330px', xl: '390px' }}
+                                        isLoaded={data.id !== ''}
+                                    >
+                                        <EventCard event={data} />
+                                    </Skeleton>
                                 </Box>
                             ))}
                             <Box p="10" />

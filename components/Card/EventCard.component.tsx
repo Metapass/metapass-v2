@@ -85,10 +85,7 @@ export default function EventCard({
                             _active={{}}
                             right="-6"
                         />
-                        <ModalBody
-                        
-                        width="50rem"
-                        >
+                        <ModalBody>
                             <EventLayout event={event} />
                         </ModalBody>
                     </ModalContent>
@@ -138,7 +135,7 @@ export default function EventCard({
                     bg="white"
                     color="blackAlpha.700"
                 >
-                    {event.price === 0 ? (
+                    {event.fee === 0 ? (
                         <>FREE</>
                     ) : (
                         <>
@@ -148,7 +145,7 @@ export default function EventCard({
                                 filter="brightness(0%)"
                                 alt="matic"
                             />
-                            <Text> {event.price}</Text>
+                            <Text> {event.fee}</Text>
                         </>
                     )}
                 </Flex>
@@ -179,7 +176,6 @@ export default function EventCard({
                     py="0.5"
                     bg="white"
                 >
-                  
                     {Array(event.category.category).join(' & ')}
                 </Box>
             </Flex>
@@ -218,9 +214,7 @@ export default function EventCard({
                             {/* event.date.date */}
                         </Text>
                     </Box>
-                    <Box
-                    
-                    >
+                    <Box>
                         <Text
                             fontSize={{ base: 'sm', xl: 'lg' }}
                             fontWeight="semibold"
@@ -274,8 +268,7 @@ export default function EventCard({
                             fontSize={{ base: 'xx-small', xl: 'xs' }}
                             boxShadow="0px 6.36032px 39.752px rgba(0, 0, 0, 0.07)"
                         >
-                            {event.tickets_available - event.tickets_sold >
-                            0 ? (
+                            {event.seats - event.tickets_sold > 0 ? (
                                 <Flex experimental_spaceX="1">
                                     <Text
                                         fontWeight="bold"
@@ -287,8 +280,7 @@ export default function EventCard({
                                         }}
                                     >
                                         {event.tickets_sold}/
-                                        {event.tickets_available +
-                                            event.tickets_sold}
+                                        {event.seats + event.tickets_sold}
                                     </Text>
                                     <Text color="blackAlpha.500">
                                         Tickets Sold
@@ -327,8 +319,7 @@ export default function EventCard({
                         <Box
                             w={`${
                                 (event.tickets_sold /
-                                    (event.tickets_available +
-                                        event.tickets_sold)) *
+                                    (event.seats + event.tickets_sold)) *
                                 100
                             }%`}
                             h="full"

@@ -25,7 +25,7 @@ const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
     ssr: false,
 })
 import { ImageType } from '../../types/Event.type'
-export default function EventLayout({event}:{event:Event}) {
+export default function EventLayout({ event }: { event: Event }) {
     // console.log(event.image)
     const [image, setImage] = useState<ImageType>(event.image)
     // console.log(image)
@@ -46,14 +46,12 @@ export default function EventLayout({event}:{event:Event}) {
     ]
 
     return (
-        <Box ml="4" pt="3" color="brand.black" mb="4"
-        
-         
-        
-        >
-            <Flex justify="space-between" align="center"
-      w="132%"
-    //   border="1px solid red"
+        <Box pt="3" color="brand.black" mb="4">
+            <Flex
+                justify="space-between"
+                align="center"
+
+                //   border="1px solid red"
             >
                 <Box>
                     <Text fontSize="2xl" fontWeight="semibold">
@@ -124,8 +122,6 @@ export default function EventLayout({event}:{event:Event}) {
                 mt="4"
                 experimental_spaceX="6"
                 justify="space-between"
-                maxW="50rem"
-                
             >
                 <Box w="full">
                     <Box
@@ -265,27 +261,27 @@ export default function EventLayout({event}:{event:Event}) {
                         // maxW="10%"
                         // h="10rem"
                         maxH="10rem"
+                        maxW="740px"
                         overflow="auto"
                     >
-                        <Box
-                        
-                        >
+                        <Box>
                             <MarkdownPreview
-                style={{ fontSize: event.description.long_desc ? "12px" : "14px" }}
-                source={event.description.long_desc || event.description.short_desc}
-              />
-                            <Box p="2" />
+                                style={{
+                                    fontSize: event.description.long_desc
+                                        ? '12px'
+                                        : '14px',
+                                    overflow: 'auto',
+                                }}
+                                source={
+                                    event.description.long_desc ||
+                                    event.description.short_desc
+                                }
+                            />
                         </Box>
                     </Box>
                 </Box>
-                <Flex direction="column"
-              
-          
-                >
-                    <Flex experimental_spaceX="2.5"
-                    
-
-                    >
+                <Flex direction="column">
+                    <Flex experimental_spaceX="2.5">
                         <Box
                             p="2"
                             border="1px"
@@ -308,11 +304,11 @@ export default function EventLayout({event}:{event:Event}) {
                                 />
                             </Box>
                             <Text
-                                fontSize={event.price === 0 ? 'lg' : '2xl'}
+                                fontSize={event.fee === 0 ? 'lg' : '2xl'}
                                 fontWeight="semibold"
-                                mt={event.price === 0 ? '1.5' : '0'}
+                                mt={event.fee === 0 ? '1.5' : '0'}
                             >
-                                {event.price === 0 ? 'FREE' : event.price}
+                                {event.fee === 0 ? 'FREE' : event.fee}
                             </Text>
                         </Box>
                         <Box
@@ -323,7 +319,6 @@ export default function EventLayout({event}:{event:Event}) {
                             textAlign="center"
                             minW="100px"
                             boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
-                            
                         >
                             <Text fontSize="xs" color="blackAlpha.700">
                                 Event Date
@@ -362,9 +357,14 @@ export default function EventLayout({event}:{event:Event}) {
                             >
                                 <Avatar
                                     size="xs"
-                                    src={gravatarUrl(event.owner || event.eventHost || "0x565b7af7b3c9a5d005ccb39bbf21e07a1ad4cd42", {
-                                        default: 'retro',
-                                    })}
+                                    src={gravatarUrl(
+                                        event.owner ||
+                                            event.eventHost ||
+                                            '0x565b7af7b3c9a5d005ccb39bbf21e07a1ad4cd42',
+                                        {
+                                            default: 'retro',
+                                        }
+                                    )}
                                 />
                                 <Box>
                                     <Text fontSize="14px">
@@ -399,17 +399,18 @@ export default function EventLayout({event}:{event:Event}) {
                         >
                             {event.buyers?.reverse().map((data, key) => {
                                 // console.log(JSON.parse(data))
-                                const {id}:any = data
+                                const { id }: any = data
                                 return (
-                                <Avatar
-                                    src={gravatarUrl(id, {
-                                        default: 'retro',
-                                    })}
-                                    key={key}
-                                    cursor="pointer"
-                                    _hover={{ zIndex: 10 }}
-                                />
-                            )})}
+                                    <Avatar
+                                        src={gravatarUrl(id, {
+                                            default: 'retro',
+                                        })}
+                                        key={key}
+                                        cursor="pointer"
+                                        _hover={{ zIndex: 10 }}
+                                    />
+                                )
+                            })}
                         </AvatarGroup>
                     </Box>
                     <Box
@@ -435,12 +436,10 @@ export default function EventLayout({event}:{event:Event}) {
                                         WebkitTextFillColor: 'transparent',
                                     }}
                                 >
-                                    {event.tickets_sold }
-                                   
+                                    {event.tickets_sold}
                                 </Text>
                                 <Text fontSize="xx-small">/</Text>
-                                <Text> {event.tickets_available + event.tickets_sold
-                                }</Text>
+                                <Text> {event.seats + event.tickets_sold}</Text>
                             </Flex>
                         </Flex>
                         <Box
@@ -454,9 +453,9 @@ export default function EventLayout({event}:{event:Event}) {
                         >
                             <Box
                                 w={`${
-                                   (((event.tickets_sold) /
-                                        (event.tickets_available + event.tickets_sold)) *
-                                    100)
+                                    (event.tickets_sold /
+                                        (event.seats + event.tickets_sold)) *
+                                    100
                                 }%`}
                                 h="full"
                                 bg="brand.gradient"
