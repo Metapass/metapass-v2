@@ -35,7 +35,9 @@ import Step5 from '../../layouts/CreateEvent/Step5.layout'
 import { walletContext } from '../../utils/walletContext'
 import { Event } from '../../types/Event.type'
 import { ethers } from 'ethers'
-import { contractContext } from '../../utils/contractContext'
+import abi from '../../utils/MetapassFactory.json'
+
+declare const window: any
 
 const Create: NextPage = () => {
     const [wallet] = useContext(walletContext)
@@ -71,7 +73,8 @@ const Create: NextPage = () => {
         link: '',
     })
 
-    const [factory] = useContext(contractContext)
+    const contractAddress = '0x4626ba1411ff126F129D49bdDaeEFF3B707708AE'
+    let contract: any
 
     const [eventLink, setEventLink] = useState<any>(undefined)
     const [isPublished, setIsPublished] = useState(false)
@@ -84,16 +87,30 @@ const Create: NextPage = () => {
         })
     }, [wallet])
 
+    useEffect(() => {
+        if (window.ethereum !== undefined) {
+            const provider = new ethers.providers.Web3Provider(window.ethereum)
+            const signer = provider.getSigner()
+
+            contract = new ethers.Contract(
+                contractAddress as string,
+                abi.abi,
+                signer
+            )
+        }
+        console.log(contract)
+    })
+
     const onSubmit = async () => {
         console.log(event)
 
         let imgJson = {
-            display: event.image,
+            image: event.image,
             gallery: event.slides,
         }
 
         try {
-            let txn = await factory.createEvent(
+            let txn = await contract.createEvent(
                 event.title,
                 ethers.utils.parseEther(event.price.toString()),
                 10,
@@ -111,7 +128,7 @@ const Create: NextPage = () => {
 
         console.log('Event Created')
 
-        factory.on('childEvent', (child: any) => {
+        contract.on('childEvent', (child: any) => {
             setEventLink(`${window.location.origin}/events/${child}`)
             setIsPublished(true)
         })

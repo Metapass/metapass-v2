@@ -62,7 +62,7 @@ export default function EventLayout({ event }: { event: Event }) {
                 console.log(metapass)
 
                 try {
-                    metapass.owner()
+                    metapass.getTix('metadata')
                 } catch (e) {
                     console.log(e)
                 }
@@ -430,7 +430,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                 const { id }: any = data
                                 return (
                                     <Avatar
-                                        src={gravatarUrl(id, {
+                                        src={gravatarUrl('1', {
                                             default: 'retro',
                                         })}
                                         key={key}

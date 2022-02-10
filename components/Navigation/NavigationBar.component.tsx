@@ -70,18 +70,13 @@ export default function NavigationBar({ mode = 'dark' }) {
 
     async function getAccountData({ accounts, windowType }: any) {
         try {
-            // console.log("trying to get accounts", web3);
             accounts = await windowType.ethereum.request({
                 method: 'eth_requestAccounts',
             })
             console.log('got accounts', accounts)
             setAddress(accounts[0])
-            // console.log("provider current", web3.currentProvider);
-            // web3.setProvider(window.web3.currentProvider);
             let bal = await web3.eth.getBalance(accounts[0])
-            // console.log("got balance", bal);
             let ethBal: any = await web3.utils.fromWei(bal, 'ether')
-            // console.log("got eth balance", ethBal);
             setBalance(ethBal)
 
             setWallet({
