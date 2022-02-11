@@ -221,7 +221,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                         h="100%"
                         w="17%"
                         src={polygon.img}
-                        alt="polygon"
+                        
                     />
                 ),
                 duration: 4000,
