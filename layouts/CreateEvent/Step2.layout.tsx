@@ -176,7 +176,7 @@ export default function Step2({
                                     seats: event.seats || 0,
                                     childAddress: event.childAddress || '',
                                     image: {
-                                        hero_image: '/assets/gradient.png',
+                                        image: '/assets/gradient.png',
                                         gallery: ['/assets/gradient.png'],
                                         video: '',
                                     },

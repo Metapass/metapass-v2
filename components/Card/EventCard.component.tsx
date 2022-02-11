@@ -179,9 +179,12 @@ export default function EventCard({
                 >
                     {Array(event.category.category).join(' & ')}
                 </Box>
+                {/* {console.log(event.image,"here here")} */}
             </Flex>
             <AspectRatio ratio={428.42 / 180.98} w="full">
-                <Image w="full" src={event.image.image} alt="event image" />
+                {/* 
+  // @ts-ignore */}
+                <Image w="full" src={event.image.hero_image || event.image.image || event.image.display} alt="event image" /> 
             </AspectRatio>
             <Flex direction="column" w="full" justify="space-between" h="full">
                 <Flex p={{ base: '3', xl: '4' }} alignItems="center">
