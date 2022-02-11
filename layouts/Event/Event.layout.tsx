@@ -169,7 +169,10 @@ export default function EventLayout({ event }: { event: Event }) {
                                 rounded="lg"
                                 overflow="hidden"
                             >
-                                {mediaType === 'video' ? (
+                                
+                                {
+                                
+                                mediaType === 'video' ? (
                                     <Flex
                                         justify="center"
                                         align="center"
@@ -182,10 +185,13 @@ export default function EventLayout({ event }: { event: Event }) {
                                         />
                                     </Flex>
                                 ) : (
+                                    
+                                    
                                     <Image
-                                        src={image.image}
+                                        src={image.image || image.hero_image || image.display} 
                                         alt={'Event Image'}
-                                    />
+                                    /> // @ts-ignore
+                                
                                 )}
                             </AspectRatio>
                             <Box

@@ -48,7 +48,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
             category: [''],
         },
         image: {
-            hero_image: '',
+            image: '',
             gallery: [''],
             video: '',
         },
@@ -462,7 +462,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                     description: formDetails.description || '',
                                     image: {
                                         ...formDetails.image,
-                                        hero_image: '/assets/gradient.png',
+                                        image: '/assets/gradient.png',
                                     },
                                     date:
                                         formDetails.date === '' ||
