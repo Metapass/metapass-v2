@@ -31,7 +31,7 @@ export default function FeaturedEvents() {
                 video: '',
             },
             eventHost: '',
-            fee: '',
+            fee: 0,
             date: '',
             description: {
                 short_desc: '',
@@ -39,12 +39,11 @@ export default function FeaturedEvents() {
             },
             seats: 0,
             owner: '',
-            price: 0,
+
             type: '',
             tickets_available: 0,
             tickets_sold: 0,
             buyers: [],
-            slides: [],
         },
     ])
     // const [theEvent, setTheEvent] = useState<Event>()
@@ -110,18 +109,17 @@ export default function FeaturedEvents() {
                 category: category,
                 image: image,
                 eventHost: event.event.eventHost,
-                fee: String(Number(event.event.fee) / 10 ** 18),
+                fee: Number(event.event.fee) / 10 ** 18,
                 date: event.event.date,
                 description: desc,
                 seats: event.event.seats,
                 owner: event.event.eventHost,
-                price: Number(event.event.fee) / 10 ** 18,
+
                 type: type,
                 tickets_available:
                     event.event.seats - event.event.buyers.length,
                 tickets_sold: event.event.buyers.length,
                 buyers: event.event.buyers,
-                slides: image.gallery,
             } as Event
             // getAllEnsLinked('0x99Ec99FCdAd66Ca801DEf23b432500fF045251f9')
             //     .then((ens: any) => {
@@ -165,6 +163,7 @@ export default function FeaturedEvents() {
             })
         // console.log(featEvents)
     }, [])
+
     return (
         <Flex w="full" justify="center" mb="-48">
             <Box w="full" pb="20">

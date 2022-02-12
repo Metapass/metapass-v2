@@ -9,17 +9,17 @@ import {
     Avatar,
     AvatarGroup,
 } from '@chakra-ui/react'
-import { useState } from 'react'
-import { FaPlus } from 'react-icons/fa'
-// import VideoThumbnail from 'react-video-thumbnail'
+import { useState, useContext } from 'react'
 import ReactPlayer from 'react-player'
 import { Event } from '../../types/Event.type'
 import { getParameterByName } from '../../utils/queryExtractor'
-import { users } from '../../utils/testData'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
 import gravatarUrl from 'gravatar-url'
+import { walletContext } from '../../utils/walletContext'
+import { ethers } from 'ethers'
+import abi from '../../utils/Metapass.json'
 
 const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
     ssr: false,
@@ -27,9 +27,10 @@ const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
 import { ImageType } from '../../types/Event.type'
 export default function EventLayout({ event }: { event: Event }) {
     // console.log(event.image)
-    const [image, setImage] = useState<ImageType>(event.image)
-    // console.log(image)
-    const [mediaType, setMediaType] = useState(image.video ? 'video' : 'image')
+    const [image, setImage] = useState(event.image.hero_image)
+    const [mediaType, setMediaType] = useState(
+        event.image.video ? 'video' : 'image'
+    )
     const months = [
         'JAN',
         'FEB',
@@ -44,6 +45,33 @@ export default function EventLayout({ event }: { event: Event }) {
         'NOV',
         'DEC',
     ]
+
+    const [wallet] = useContext(walletContext)
+
+    const buyTicket = async () => {
+        if (wallet.address != null) {
+            if (typeof window.ethereum != undefined) {
+                const provider = new ethers.providers.Web3Provider(
+                    window.ethereum
+                )
+                const signer = provider.getSigner()
+                let metapass = new ethers.Contract(
+                    event.childAddress,
+                    abi.abi,
+                    signer
+                )
+                console.log(metapass)
+
+                try {
+                    metapass.getTix('metadata')
+                } catch (e) {
+                    console.log(e)
+                }
+            } else {
+                console.log("Couldn't find ethereum enviornment")
+            }
+        }
+    }
 
     return (
         <Box pt="3" color="brand.black" mb="4">
@@ -95,7 +123,8 @@ export default function EventLayout({ event }: { event: Event }) {
                     color="white"
                     _disabled={{ opacity: '0.8', cursor: 'not-allowed' }}
                     _hover={{}}
-                    disabled={event.tickets_available === event.tickets_sold}
+                    onClick={buyTicket}
+                    disabled={event.tickets_available <= event.tickets_sold}
                     _focus={{}}
                     _active={{}}
                     mr="3"
@@ -149,14 +178,14 @@ export default function EventLayout({ event }: { event: Event }) {
                                         <ReactPlayer
                                             height="100%"
                                             width="100%"
-                                            url={image.video}
+                                            url={event.image.video}
                                         />
                                     </Flex>
                                 ) : (
                                     <Image
-                                        src={image.hero_image}
-                                        alt={image.hero_image}
-                                    />
+                                        src={event.image.hero_image}
+                                        alt={'Event Image'}
+                                    /> // @ts-ignore
                                 )}
                             </AspectRatio>
                             <Box
@@ -171,7 +200,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     minW={{ md: '90px', lg: '110px' }}
                                     experimental_spaceY="2"
                                 >
-                                    {image.video && (
+                                    {event.image.video && (
                                         <AspectRatio
                                             cursor="pointer"
                                             _hover={{
@@ -196,11 +225,11 @@ export default function EventLayout({ event }: { event: Event }) {
                                                 src={
                                                     getParameterByName(
                                                         'v',
-                                                        image.video
+                                                        event.image.video
                                                     )
                                                         ? `https://img.youtube.com/vi/${getParameterByName(
                                                               'v',
-                                                              image.video
+                                                              event.image.video
                                                           )}/0.jpg`
                                                         : 'https://pdtxar.com/wp-content/uploads/2019/11/video-placeholder-1280x720-40-768x433.jpg'
                                                 }
@@ -209,7 +238,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                         </AspectRatio>
                                     )}
                                     {/* {console.log(image.hero_image,"hero_image")} */}
-                                    {image.gallery?.map((data, key) => (
+                                    {event.image.gallery?.map((data, key) => (
                                         <AspectRatio
                                             key={key}
                                             cursor="pointer"
@@ -218,18 +247,15 @@ export default function EventLayout({ event }: { event: Event }) {
                                             }}
                                             transitionDuration="100ms"
                                             onClick={() => {
-                                                setImage({
-                                                    hero_image: data,
-                                                    gallery: image.gallery,
-                                                    video: image.video,
-                                                })
+                                                setImage(data)
                                                 setMediaType('image')
                                             }}
                                             ratio={16 / 9}
                                             w="full"
                                             ringColor="brand.peach"
                                             ring={
-                                                image.hero_image === data &&
+                                                event.image.hero_image ===
+                                                    data &&
                                                 mediaType === 'image'
                                                     ? '2px'
                                                     : 'none'

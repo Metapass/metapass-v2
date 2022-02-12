@@ -16,6 +16,7 @@ export type Event = {
 
     tickets_available: number
     tickets_sold: number
+    link?: string
 } //featuring event
 export type ImageType = {
     hero_image: string

@@ -15,7 +15,8 @@ import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import EventLayout from '../../layouts/Event/Event.layout'
 import { Event } from '../../types/Event.type'
-// import { users } from '../../utils/testData'
+
+declare const window: any
 
 export default function EventCard({
     event,
@@ -178,8 +179,11 @@ export default function EventCard({
                 >
                     {Array(event.category.category).join(' & ')}
                 </Box>
+                {/* {console.log(event.image,"here here")} */}
             </Flex>
             <AspectRatio ratio={428.42 / 180.98} w="full">
+                {/* 
+  // @ts-ignore */}
                 <Image
                     w="full"
                     src={event.image.hero_image}
@@ -234,7 +238,6 @@ export default function EventCard({
                                 noOfLines={1}
                                 _hover={{ color: 'brand.black600' }}
                             >
-                                {console.log(event.owner)}
                                 {(event.owner.length > 20
                                     ? event.owner.substring(0, 6) +
                                       '...' +

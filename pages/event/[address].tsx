@@ -1,21 +1,27 @@
-import { Box, Flex } from "@chakra-ui/react";
-import type { NextPage } from "next";
-import EventCard from "../../components/Card/EventCard.component";
-import {Event,DescriptionType,CategoryType,ImageType} from "../../types/Event.type";
-import { useEffect, useState } from "react";
-import NavigationBar from "../../components/Navigation/NavigationBar.component";
-import EventLayout from "../../layouts/Event/Event.layout";
-import EventPageCTA from "../../layouts/EventPage/EventPageCTA.layout";
+import { Box, Flex } from '@chakra-ui/react'
+import type { NextPage } from 'next'
+import EventCard from '../../components/Card/EventCard.component'
+import {
+    Event,
+    DescriptionType,
+    CategoryType,
+    ImageType,
+} from '../../types/Event.type'
+import { useEffect, useState } from 'react'
+import NavigationBar from '../../components/Navigation/NavigationBar.component'
+import EventLayout from '../../layouts/Event/Event.layout'
+import EventPageCTA from '../../layouts/EventPage/EventPageCTA.layout'
 // import { events } from "../../utils/testData";
-import { Skeleton } from "@chakra-ui/react";
-import { gqlEndpoint } from "../../utils/subgraphApi";
-import axios from "axios";
-import { useRouter } from "next/router";
+import { Skeleton } from '@chakra-ui/react'
+import { gqlEndpoint } from '../../utils/subgraphApi'
+import axios from 'axios'
+import { useRouter } from 'next/router'
+
 const Event: NextPage = () => {
-  const router = useRouter();
-  const { address } = router.query;
-  const [featEvent, setFeatEvent] = useState<Event>(
-    {
+    const router = useRouter()
+    const { address } = router.query
+
+    const [featEvent, setFeatEvent] = useState<Event>({
         id: '',
         title: '',
         childAddress: '',
@@ -24,7 +30,7 @@ const Event: NextPage = () => {
             category: [''],
         },
         image: {
-            hero_image: '',
+            image: '',
             gallery: [''],
             video: '',
         },
@@ -43,13 +49,12 @@ const Event: NextPage = () => {
         tickets_sold: 0,
         buyers: [],
         slides: [],
-    },
-)
-// const [theEvent, setTheEvent] = useState<Event>()
-async function getFeaturedEvents() {
-    const featuredQuery = {
-        operationName: 'fetchFeaturedEvents',
-        query: `query fetchFeaturedEvents {
+    })
+
+    async function getFeaturedEvents() {
+        const featuredQuery = {
+            operationName: 'fetchFeaturedEvents',
+            query: `query fetchFeaturedEvents {
           childCreatedEntities(where:{id:"${String(address).toLowerCase()}"}) {
             id
             title
@@ -68,36 +73,34 @@ async function getFeaturedEvents() {
           }
           
     }`,
-    }
-    // console.log(featuredQuery);
-    try {
-        const res = await axios({
-            method: 'POST',
-            url: gqlEndpoint,
-            data: featuredQuery,
-            headers: {
-                'content-type': 'application/json',
-            },
-        })
-
-        if (!!res.data?.errors?.length) {
-            throw new Error('Error fetching featured events')
         }
-        // console.log(res.data.data.childCreatedEntities[0])
-        return res.data
-    } catch (error) {
-        console.log('error', error)
+        // console.log(featuredQuery);
+        try {
+            const res = await axios({
+                method: 'POST',
+                url: gqlEndpoint,
+                data: featuredQuery,
+                headers: {
+                    'content-type': 'application/json',
+                },
+            })
+
+            if (!!res.data?.errors?.length) {
+                throw new Error('Error fetching featured events')
+            }
+            // console.log(res.data.data.childCreatedEntities[0])
+            return res.data
+        } catch (error) {
+            console.log('error', error)
+        }
     }
-}
-const parseFeaturedEvents = (event:any): Event => {
-    // return featuredEvents.map((event: { event: any }) => {
-      // console.log(event,"enter");
-        let type:string = JSON.parse(atob(event.category)).event_type
+    const parseFeaturedEvents = (event: any): Event => {
+        // return featuredEvents.map((event: { event: any }) => {
+        // console.log(event,"enter");
+        let type: string = JSON.parse(atob(event.category)).event_type
         let category: CategoryType = JSON.parse(atob(event.category))
         let image: ImageType = JSON.parse(atob(event.image))
-        let desc: DescriptionType = JSON.parse(
-            atob(event.description)
-        )
+        let desc: DescriptionType = JSON.parse(atob(event.description))
         console.log(event.seats, event.buyers.length)
         return {
             id: event.id,
@@ -113,51 +116,48 @@ const parseFeaturedEvents = (event:any): Event => {
             owner: event.eventHost,
             price: Number(event.fee) / 10 ** 18,
             type: type,
-            tickets_available:
-                event.seats - event.buyers.length,
+            tickets_available: event.seats - event.buyers.length,
             tickets_sold: event.buyers.length,
             buyers: event.buyers,
             slides: image.gallery,
         } as Event
-       
-    // })
+    }
+
+    useEffect(() => {
+        getFeaturedEvents()
+            .then((res) => {
+                // console.log(res.data.childCreatedEntities[0],"res")
+                const data: Event = parseFeaturedEvents(
+                    res.data.childCreatedEntities[0]
+                )
+                // console.log(data, 'data')
+                setFeatEvent(data)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        // console.log(featEvents)
+    }, [address])
+    return (
+        <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
+            <EventPageCTA />
+            <Flex
+                justify="center"
+                mx="auto"
+                mt="6"
+                px="6"
+                w="full"
+                maxW="1400px"
+                experimental_spaceX="10"
+            >
+                <Box maxW="1000px" w="full">
+                    <Skeleton isLoaded={featEvent.id !== ''}>
+                        <EventLayout event={featEvent} />
+                    </Skeleton>
+                </Box>
+            </Flex>
+        </Box>
+    )
 }
 
-useEffect(() => {
-  getFeaturedEvents()
-      .then((res) => {
-        // console.log(res.data.childCreatedEntities[0],"res")
-          const data: Event = parseFeaturedEvents(
-              res.data.childCreatedEntities[0]
-          )
-          // console.log(data, 'data')
-          setFeatEvent(data)
-      })
-      .catch((err) => {
-          console.log(err)
-      })
-  // console.log(featEvents)
-}, [address])
-  return (
-    <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
-      <EventPageCTA />
-      <Flex
-        justify="center"
-        mx="auto"
-        mt="6"
-        px="6"
-        w="full"
-        maxW="1400px"
-        experimental_spaceX="10"
-      >
-        <Box maxW="1000px" w="full">
-          <Skeleton isLoaded={featEvent.id !== ''}>
-          <EventLayout event={featEvent} />
-          </Skeleton>
-        </Box>
-      </Flex>
-    </Box>
-  );
-};
-
-export default Event;
+export default Event
