@@ -35,7 +35,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 category: [''],
             },
             image: {
-                hero_image: '',
+                image: '',
                 gallery: [],
                 video: '',
             },

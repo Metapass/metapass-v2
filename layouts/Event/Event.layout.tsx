@@ -27,7 +27,7 @@ const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
 import { ImageType } from '../../types/Event.type'
 export default function EventLayout({ event }: { event: Event }) {
     // console.log(event.image)
-    const [image, setImage] = useState(event.image.hero_image)
+    const [image, setImage] = useState(event.image.image)
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
     )
@@ -183,7 +183,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     </Flex>
                                 ) : (
                                     <Image
-                                        src={event.image.hero_image}
+                                        src={event.image.image}
                                         alt={'Event Image'}
                                     /> // @ts-ignore
                                 )}
@@ -254,7 +254,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                             w="full"
                                             ringColor="brand.peach"
                                             ring={
-                                                event.image.hero_image ===
+                                                event.image.image ===
                                                     data &&
                                                 mediaType === 'image'
                                                     ? '2px'

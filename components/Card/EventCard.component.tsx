@@ -186,7 +186,7 @@ export default function EventCard({
   // @ts-ignore */}
                 <Image
                     w="full"
-                    src={event.image.hero_image}
+                    src={event.image.image}
                     alt="event image"
                 />
             </AspectRatio>

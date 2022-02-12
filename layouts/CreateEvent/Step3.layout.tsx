@@ -75,7 +75,7 @@ export default function Step3({
                 if (formDetails.image && formDetails.slides.length >= 3) {
                     onSubmit({
                         image: {
-                            hero_image: formDetails.image,
+                            image: formDetails.image,
                             gallery: formDetails.slides,
                             video: formDetails.video,
                         },

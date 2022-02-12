@@ -19,7 +19,7 @@ export type Event = {
     link?: string
 } //featuring event
 export type ImageType = {
-    hero_image: string
+    image: string
     gallery: []
     video?: string
 }

@@ -176,7 +176,7 @@ export default function Step2({
                                         long_desc: longDescription,
                                     },
                                     image: {
-                                        hero_image: '/assets/gradient.png',
+                                        image: '/assets/gradient.png',
                                         gallery: [],
                                     },
                                     date: event.date ? event.date : '1/1/2000',

@@ -52,11 +52,11 @@ const Create: NextPage = () => {
         },
         image: {
             image: '',
-            gallery: [''],
+            gallery: [],
             video: '',
         },
         eventHost: '',
-        fee: '',
+        fee: 0,
         date: '',
         description: {
             short_desc: '',
@@ -64,12 +64,12 @@ const Create: NextPage = () => {
         },
         seats: 0,
         owner: '',
-        price: 0,
+        // price: 0,
         type: '',
         tickets_available: 0,
         tickets_sold: 0,
         buyers: [],
-        slides: [],
+        // slides: [],
         link: '',
     })
 
@@ -106,13 +106,13 @@ const Create: NextPage = () => {
 
         let imgJson = {
             image: event.image,
-            gallery: event.slides,
+            gallery: event.image.gallery,
         }
 
         try {
             let txn = await contract.createEvent(
                 event.title,
-                ethers.utils.parseEther(event.price.toString()),
+                ethers.utils.parseEther(event.fee.toString()),
                 10,
                 btoa(JSON.stringify(imgJson)),
                 wallet.address,

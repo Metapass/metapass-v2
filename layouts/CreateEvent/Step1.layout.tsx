@@ -473,7 +473,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                             'Event description goes here',
                                     },
                                     image: {
-                                        hero_image: '/assets/gradient.png',
+                                        image: '/assets/gradient.png',
                                         gallery: [],
                                     },
                                     date: formDetails.date

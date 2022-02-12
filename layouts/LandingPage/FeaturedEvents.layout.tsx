@@ -26,7 +26,7 @@ export default function FeaturedEvents() {
                 category: [''],
             },
             image: {
-                hero_image: '',
+                image: '',
                 gallery: [],
                 video: '',
             },

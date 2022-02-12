@@ -198,6 +198,11 @@ export default function NavigationBar({ mode = 'dark' }) {
 
     const disconnectWc = async () => {
         // Close provider session
+        const wcProvider = new WalletConnectProvider({
+            rpc: {
+                [chainid]: endpoint as string,
+            },
+        })
         setBalance('')
         setAddress('')
         setWallet({
