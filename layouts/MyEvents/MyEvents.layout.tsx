@@ -13,14 +13,138 @@ import {
     TabPanels,
     TabPanel,
     Grid,
+    Center,
+    Heading,
 } from '@chakra-ui/react'
-import { useState } from 'react'
+import axios from 'axios'
+import { useEffect, useState,useContext } from 'react'
 import EventCard from '../../components/Card/EventCard.component'
-import { events } from '../../utils/testData'
-
+import { Event,CategoryType,DescriptionType,ImageType } from '../../types/Event.type'
+import { gqlEndpoint } from '../../utils/subgraphApi'
+import {walletContext} from '../../utils/walletContext'
 export default function MyEvents({ isOpen, onClose }: any) {
     const [tab, setTab] = useState('upcoming')
+    const [wallet] = useContext<[{address:"",balance:""}]>(walletContext);
+    const [myEvents, setMyEvents] = useState<Event[]>([
+        {
+            id: '',
+            title: '',
+            childAddress: '',
+            category: {
+                event_type: '',
+                category: [''],
+            },
+            image: {
+                hero_image: '',
+                gallery: [],
+                video: '',
+            },
+            eventHost: '',
+            fee: 0,
+            date: '',
+            description: {
+                short_desc: '',
+                long_desc: '',
+            },
+            seats: 0,
+            owner: '',
 
+            type: '',
+            tickets_available: 0,
+            tickets_sold: 0,
+            buyers: [],
+        },
+    ])
+    // const [theEvent, setTheEvent] = useState<Event>()
+    async function getMyEvents() {
+        const myEventsQuery = {
+            operationName: 'fetchMyEvents',
+            query: `query fetchMyEvents {
+                childCreatedEntities(where:{
+                    buyers_contains:["${wallet.address.toLowerCase()}"]
+                  }) {
+                     id
+                 title
+                                    childAddress
+                                    category
+                                    image
+                                    buyers{
+                                        id
+                                        
+                                    }
+                                    eventHost
+                                    fee
+                                    seats
+                                    description
+                                    date
+                  }
+              
+        }`,
+        }
+        try {
+            const res = await axios({
+                method: 'POST',
+                url: gqlEndpoint,
+                data: myEventsQuery,
+                headers: {
+                    'content-type': 'application/json',
+                },
+            })
+
+            if (!!res.data?.errors?.length) {
+                throw new Error('Error fetching featured events')
+            }
+            console.log(res.data.data.childCreatedEntities)
+            return res.data
+        } catch (error) {
+            console.log('error', error)
+        }
+    }
+    const parseMyEvents = (myEvents: Array<any>): Event[] => {
+        return myEvents.map((event: any) => {
+            let type = JSON.parse(atob(event.category)).event_type
+            let category: CategoryType = JSON.parse(atob(event.category))
+            let image: ImageType = JSON.parse(atob(event.image))
+            let desc: DescriptionType = JSON.parse(
+                atob(event.description)
+            )
+            console.log(event.seats, event.buyers.length)
+            return {
+                id: event.id,
+                title: event.title,
+                childAddress: event.childAddress,
+                category: category,
+                image: image,
+                eventHost: event.eventHost,
+                fee: Number(event.fee) / 10 ** 18,
+                date: event.date,
+                description: desc,
+                seats: event.seats,
+                owner: event.eventHost,
+
+                type: type,
+                tickets_available:
+                    event.seats - event.buyers.length,
+                tickets_sold: event.buyers.length,
+                buyers: event.buyers,
+            } as Event
+     
+        })
+    }
+    useEffect(() => {
+        getMyEvents()
+            .then((res) => {
+                const data: Event[] = parseMyEvents(
+                    res.data.childCreatedEntities
+                )
+                setMyEvents(data)
+                console.log(data)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        // console.log(myEvents)
+    }, [])
     return (
         <Modal size="6xl" isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
@@ -144,7 +268,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                             px={{ base: '6', md: '10' }}
                                             gap={6}
                                         >
-                                            {events.map((data, key) => (
+                                            {myEvents.length > 0 ?myEvents.map((data, key) => (
                                                 <Box
                                                     maxW={{ xl: '390px' }}
                                                     minW={{ xl: '390px' }}
@@ -152,7 +276,24 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                                 >
                                                     <EventCard event={data} />
                                                 </Box>
-                                            ))}
+                                            )):
+                                            <Box
+                                                    maxW={{ xl: '390px' }}
+                                                    minW={{ xl: '390px' }}
+                                                  ml="300px"
+                                                >
+                                                <Heading
+                                                
+                                                textAlign="center"
+            fontWeight="semibold"
+            fontFamily="subheading"
+            color="gray.300"
+            fontSize={{ md: "23.2px", lg: "23.2px", xl: "28" }}
+                                                >
+                                                    
+                                                    No upcoming events :(
+                                                    </Heading></Box>
+                                                    }
                                         </Grid>
                                     </TabPanel>
                                     <TabPanel>
@@ -165,7 +306,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                             px={{ base: '6', md: '10' }}
                                             gap={6}
                                         >
-                                            {events
+                                            {myEvents
                                                 .reverse()
                                                 .map((data, key) => (
                                                     <Box

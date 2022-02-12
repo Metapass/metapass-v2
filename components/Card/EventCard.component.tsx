@@ -283,7 +283,7 @@ export default function EventCard({
                                         }}
                                     >
                                         {event.tickets_sold}/
-                                        {event.seats + event.tickets_sold}
+                                        {event.seats}
                                     </Text>
                                     <Text color="blackAlpha.500">
                                         Tickets Sold
@@ -320,11 +320,7 @@ export default function EventCard({
                     </Flex>
                     <Box w="full" h="5" bg="blackAlpha.50" mt="-4">
                         <Box
-                            w={`${
-                                (event.tickets_sold /
-                                    (event.seats + event.tickets_sold)) *
-                                100
-                            }%`}
+                            w={`${(event.tickets_sold/event.seats)*100}%`}
                             h="full"
                             bg="brand.gradient"
                         />
