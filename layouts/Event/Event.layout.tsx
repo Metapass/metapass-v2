@@ -108,7 +108,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             py="0.5"
                             bg="white"
                         >
-                            {event.type}
+                            {event.type || event.category.event_type}
                         </Box>
                         <Box
                             boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
@@ -194,7 +194,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     </Flex>
                                 ) : (
                                     <Image
-                                        src={event.image.image.image}
+                                        src={event.image.image}
                                         alt={'Event Image'}
                                     /> // @ts-ignore
                                 )}

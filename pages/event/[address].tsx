@@ -94,13 +94,16 @@ const Event: NextPage = () => {
             console.log('error', error)
         }
     }
+    function UnicodeDecodeB64(str:any) {
+        return decodeURIComponent(atob(str));
+    };
     const parseFeaturedEvents = (event: any): Event => {
         // return featuredEvents.map((event: { event: any }) => {
         // console.log(event,"enter");
-        let type: string = JSON.parse(atob(event.category)).event_type
-        let category: CategoryType = JSON.parse(atob(event.category))
-        let image: ImageType = JSON.parse(atob(event.image))
-        let desc: DescriptionType = JSON.parse(atob(event.description))
+        let type: string = JSON.parse(UnicodeDecodeB64(event.category)).event_type
+        let category: CategoryType = JSON.parse(UnicodeDecodeB64(event.category))
+        let image: ImageType = JSON.parse(UnicodeDecodeB64(event.image))
+        let desc: DescriptionType = JSON.parse(UnicodeDecodeB64(event.description))
         console.log(event.seats, event.buyers.length)
         return {
             id: event.id,
@@ -152,6 +155,9 @@ const Event: NextPage = () => {
             >
                 <Box maxW="1000px" w="full">
                     <Skeleton isLoaded={featEvent.id !== ''}>
+                        {/* {
+                            console.log(featEvent)
+                        } */}
                         <EventLayout event={featEvent} />
                     </Skeleton>
                 </Box>

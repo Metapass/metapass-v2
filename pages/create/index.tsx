@@ -104,22 +104,30 @@ const Create: NextPage = () => {
     const onSubmit = async () => {
         console.log(event)
 
-        let imgJson = event.image
-
+        // let imgJson = {
+        //     image: event.image,
+        //     gallery: event.image.gallery,
+        // }
+        function b64EncodeUnicode(str:any) {
+            return btoa(encodeURIComponent(str));
+        };
         try {
-            let txn = await contract.createEvent(
-                event.title,
+            console.log("starting txn")
+            let txn = await contract?.createEvent(
+                String(event.title),
                 ethers.utils.parseEther(event.fee.toString()),
-                event.seats,
-                btoa(JSON.stringify(imgJson)),
+                Number(event.seats),
+                b64EncodeUnicode(JSON.stringify(event.image)),
                 wallet.address,
-                btoa(JSON.stringify(event.description)),
+                b64EncodeUnicode(JSON.stringify(event.description)),
                 event.link,
                 event.date,
-                btoa(JSON.stringify(event.category))
+                b64EncodeUnicode(JSON.stringify(event.category))
             )
+            console.log("txn complete")
             console.log(txn)
         } catch (e) {
+            console.log("error while txn")
             console.log(e)
         }
 
