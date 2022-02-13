@@ -23,10 +23,16 @@ function MyApp({ Component, pageProps }: AppProps) {
                     src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"
                 ></script>
                 <meta name="description" content="Book NFT tickets for online and IRL events"></meta>
-                <meta property="og:title" content="MetaPass - Reimagining Events✨" />
+                <meta property="og:title" content="MetaPass - Reimagining Events" />
                 <meta property="og:url" content={`${window.location.href}`} />
-                <meta property="og:image" content="/assets/matic.png" />
+                <meta property="og:image" content="/assets/ogimage.png" />
                 <meta property="og:type" content="website" />
+                <meta name="twitter:site" content="@metapasshq" />
+                <meta name="twitter:title" content="MetaPass - Reimagining Events"/>
+<meta name="twitter:creator" content="@metapasshq" />
+<meta name="twitter:image" content="/assets/ogimage.png"/>
+<meta name="twitter:description" content="Book NFT tickets for online and IRL events" />
+                <meta name="twitter:card" content="summary_large_image"></meta>
                 <meta property="og:description" content="Book NFT tickets for online and IRL events" />
             </Head>
 
