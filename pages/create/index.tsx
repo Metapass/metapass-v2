@@ -73,7 +73,7 @@ const Create: NextPage = () => {
         link: '',
     })
 
-    const contractAddress = '0x4626ba1411ff126F129D49bdDaeEFF3B707708AE'
+    const contractAddress = process.env.NEXT_PUBLIC_FACTORY_ADDRESS
     let contract: any
 
     const [eventLink, setEventLink] = useState<any>(undefined)
@@ -110,7 +110,7 @@ const Create: NextPage = () => {
             let txn = await contract.createEvent(
                 event.title,
                 ethers.utils.parseEther(event.fee.toString()),
-                10,
+                event.seats,
                 btoa(JSON.stringify(imgJson)),
                 wallet.address,
                 btoa(JSON.stringify(event.description)),
