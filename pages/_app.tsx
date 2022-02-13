@@ -8,7 +8,7 @@ import Wallet from '../utils/walletContext'
 import Web3Wrapper from '../utils/web3Context'
 import { Toaster } from 'react-hot-toast'
 import Contract from '../utils/contractContext'
-
+declare const window:any;
 function MyApp({ Component, pageProps }: AppProps) {
     return (
         <>
