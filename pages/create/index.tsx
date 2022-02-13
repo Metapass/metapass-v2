@@ -113,7 +113,7 @@ const Create: NextPage = () => {
             let txn = await contract.createEvent(
                 event.title,
                 ethers.utils.parseEther(event.fee.toString()),
-                10,
+                event.seats,
                 btoa(JSON.stringify(imgJson)),
                 wallet.address,
                 btoa(JSON.stringify(event.description)),
