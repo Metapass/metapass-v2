@@ -10,7 +10,7 @@ export const contractContext: any = createContext([])
 
 function Contract({ children }: any) {
     const [web3] = useContext(web3Context)
-    const contractAddress = '0x4626ba1411ff126F129D49bdDaeEFF3B707708AE'
+    const contractAddress = process.env.NEXT_PUBLIC_FACTORY_ADDRESS
 // 0x9eBF87df7877fe3D06051ee53916Ce828cF261f6
     const [factoryContract, setFactoryContract]: any = useState(undefined)
 
