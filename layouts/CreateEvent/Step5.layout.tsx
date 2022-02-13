@@ -41,20 +41,19 @@ import DateModal from './DateModal.layout'
 import { walletContext } from '../../utils/walletContext'
 import gravatarUrl from 'gravatar-url'
 import EventLayout from '../Event/Event.layout'
-import { Event } from '../../types/Event.type'
 
 export default function Step5({
     event,
     onSubmit,
 }: {
-    event: Event
+    event: any
     onSubmit: Function
 }) {
-    const [wallet] = useContext(walletContext)
+    const [wallet, setWallet] = useContext(walletContext)
 
     return (
         <>
-            {wallet.address && event.date && event.slides && (
+            {wallet.address && event.date && event.image?.gallery.length > 0 && (
                 <form
                     onSubmit={(e) => {
                         e.preventDefault()
@@ -118,7 +117,7 @@ export default function Step5({
                                 </Box>
                             </Box>
                         </Flex>
-                        <Box align="center" mt="10" mb="20">
+                        <Box alignContent="center" mt="10" mb="20">
                             <Button
                                 size="lg"
                                 rounded="full"

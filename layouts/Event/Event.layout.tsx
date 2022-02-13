@@ -25,11 +25,12 @@ const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
     ssr: false,
 })
 import { ImageType } from '../../types/Event.type'
-declare const window: any
-
 export default function EventLayout({ event }: { event: Event }) {
-    const [image, setImage] = useState<ImageType>(event.image)
-    const [mediaType, setMediaType] = useState(image.video ? 'video' : 'image')
+    // console.log(event.image)
+    const [image, setImage] = useState(event.image.image)
+    const [mediaType, setMediaType] = useState(
+        event.image.video ? 'video' : 'image'
+    )
     const months = [
         'JAN',
         'FEB',
@@ -73,11 +74,11 @@ export default function EventLayout({ event }: { event: Event }) {
     }
 
     return (
-        <Box ml="4" pt="3" color="brand.black" mb="4">
+        <Box pt="3" color="brand.black" mb="4">
             <Flex
                 justify="space-between"
                 align="center"
-                w="132%"
+
                 //   border="1px solid red"
             >
                 <Box>
@@ -150,7 +151,6 @@ export default function EventLayout({ event }: { event: Event }) {
                 mt="4"
                 experimental_spaceX="6"
                 justify="space-between"
-                maxW="50rem"
             >
                 <Box w="full">
                     <Box
@@ -169,10 +169,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                 rounded="lg"
                                 overflow="hidden"
                             >
-                                
-                                {
-                                
-                                mediaType === 'video' ? (
+                                {mediaType === 'video' ? (
                                     <Flex
                                         justify="center"
                                         align="center"
@@ -181,17 +178,14 @@ export default function EventLayout({ event }: { event: Event }) {
                                         <ReactPlayer
                                             height="100%"
                                             width="100%"
-                                            url={image.video}
+                                            url={event.image.video}
                                         />
                                     </Flex>
                                 ) : (
-                                    
-                                    
                                     <Image
-                                        src={image.image || image.hero_image || image.display} 
+                                        src={event.image.image}
                                         alt={'Event Image'}
                                     /> // @ts-ignore
-                                
                                 )}
                             </AspectRatio>
                             <Box
@@ -206,7 +200,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     minW={{ md: '90px', lg: '110px' }}
                                     experimental_spaceY="2"
                                 >
-                                    {image.video && (
+                                    {event.image.video && (
                                         <AspectRatio
                                             cursor="pointer"
                                             _hover={{
@@ -231,11 +225,11 @@ export default function EventLayout({ event }: { event: Event }) {
                                                 src={
                                                     getParameterByName(
                                                         'v',
-                                                        image.video
+                                                        event.image.video
                                                     )
                                                         ? `https://img.youtube.com/vi/${getParameterByName(
                                                               'v',
-                                                              image.video
+                                                              event.image.video
                                                           )}/0.jpg`
                                                         : 'https://pdtxar.com/wp-content/uploads/2019/11/video-placeholder-1280x720-40-768x433.jpg'
                                                 }
@@ -244,7 +238,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                         </AspectRatio>
                                     )}
                                     {/* {console.log(image.hero_image,"hero_image")} */}
-                                    {image.gallery?.map((data, key) => (
+                                    {event.image.gallery?.map((data, key) => (
                                         <AspectRatio
                                             key={key}
                                             cursor="pointer"
@@ -253,18 +247,15 @@ export default function EventLayout({ event }: { event: Event }) {
                                             }}
                                             transitionDuration="100ms"
                                             onClick={() => {
-                                                setImage({
-                                                    image: data,
-                                                    gallery: image.gallery,
-                                                    video: image.video,
-                                                })
+                                                setImage(data)
                                                 setMediaType('image')
                                             }}
                                             ratio={16 / 9}
                                             w="full"
                                             ringColor="brand.peach"
                                             ring={
-                                                image.image === data &&
+                                                event.image.image ===
+                                                    data &&
                                                 mediaType === 'image'
                                                     ? '2px'
                                                     : 'none'
@@ -296,6 +287,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         // maxW="10%"
                         // h="10rem"
                         maxH="10rem"
+                        maxW="740px"
                         overflow="auto"
                     >
                         <Box>
@@ -304,13 +296,13 @@ export default function EventLayout({ event }: { event: Event }) {
                                     fontSize: event.description.long_desc
                                         ? '12px'
                                         : '14px',
+                                    overflow: 'auto',
                                 }}
                                 source={
                                     event.description.long_desc ||
                                     event.description.short_desc
                                 }
                             />
-                            <Box p="2" />
                         </Box>
                     </Box>
                 </Box>
@@ -338,11 +330,11 @@ export default function EventLayout({ event }: { event: Event }) {
                                 />
                             </Box>
                             <Text
-                                fontSize={event.price === 0 ? 'lg' : '2xl'}
+                                fontSize={event.fee === 0 ? 'lg' : '2xl'}
                                 fontWeight="semibold"
-                                mt={event.price === 0 ? '1.5' : '0'}
+                                mt={event.fee === 0 ? '1.5' : '0'}
                             >
-                                {event.price === 0 ? 'FREE' : event.price}
+                                {event.fee === 0 ? 'FREE' : event.fee}
                             </Text>
                         </Box>
                         <Box
@@ -436,7 +428,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                 const { id }: any = data
                                 return (
                                     <Avatar
-                                        src={gravatarUrl('1', {
+                                        src={gravatarUrl(id, {
                                             default: 'retro',
                                         })}
                                         key={key}
@@ -473,11 +465,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     {event.tickets_sold}
                                 </Text>
                                 <Text fontSize="xx-small">/</Text>
-                                <Text>
-                                    {' '}
-                                    {event.tickets_available +
-                                        event.tickets_sold}
-                                </Text>
+                                <Text> {event.seats + event.tickets_sold}</Text>
                             </Flex>
                         </Flex>
                         <Box
@@ -492,8 +480,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             <Box
                                 w={`${
                                     (event.tickets_sold /
-                                        (event.tickets_available +
-                                            event.tickets_sold)) *
+                                        (event.seats + event.tickets_sold)) *
                                     100
                                 }%`}
                                 h="full"

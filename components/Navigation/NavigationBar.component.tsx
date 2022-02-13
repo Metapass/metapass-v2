@@ -34,6 +34,7 @@ import {
     HiOutlineChevronDoubleDown,
     HiOutlineChevronDown,
 } from 'react-icons/hi'
+import MyEvents from '../../layouts/MyEvents/MyEvents.layout'
 const env: any = process.env.NEXT_PUBLIC_ENV === 'prod'
 const polygon = require(env
     ? '../../utils/polygon.json'
@@ -48,6 +49,7 @@ export default function NavigationBar({ mode = 'dark' }) {
     const [_, setWeb3] = useContext(web3Context)
     const [walletType, setWalletType] = useState<string>('')
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const [showMyEvents, setMyEvents] = useState(false)
 
     const chainid: any = env ? 137 : 80001
     const endpoint: any = env
@@ -197,6 +199,11 @@ export default function NavigationBar({ mode = 'dark' }) {
 
     const disconnectWc = async () => {
         // Close provider session
+        const wcProvider = new WalletConnectProvider({
+            rpc: {
+                [chainid]: endpoint as string,
+            },
+        })
         setBalance('')
         setAddress('')
         setWallet({
@@ -249,6 +256,12 @@ export default function NavigationBar({ mode = 'dark' }) {
                     exit: { duration: 5 },
                 }}
             >
+                <MyEvents
+                    isOpen={showMyEvents}
+                    onClose={() => {
+                        setMyEvents(false)
+                    }}
+                />
                 <Modal isOpen={isOpen} onClose={onClose}>
                     <ModalOverlay />
                     <ModalContent rounded="xl">
@@ -453,6 +466,24 @@ export default function NavigationBar({ mode = 'dark' }) {
                                                 MATIC
                                             </Text>
                                         </Box>
+                                    </Flex>
+                                </MenuItem>
+                                <MenuDivider color="blackAlpha.200" />
+                                <MenuItem onClick={() => setMyEvents(true)}>
+                                    <Flex
+                                        align="center"
+                                        experimental_spaceX="4"
+                                    >
+                                        <Image
+                                            src="/assets/elements/event_ticket_gradient.svg"
+                                            alt="myevents"
+                                        />
+                                        <Text
+                                            color="blackAlpha.700"
+                                            fontWeight="medium"
+                                        >
+                                            My Events
+                                        </Text>
                                     </Flex>
                                 </MenuItem>
                                 <MenuDivider color="blackAlpha.200" />

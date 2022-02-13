@@ -3,7 +3,7 @@
     "chainIdHex": "0x89",
     "name": "Polygon (Matic)",
     "shortName": "Polygon",
-    "img": "assets/polygon.png",
+    "img": "/assets/polygon.png",
     "enabled": true,
     "networkId": 80001,
     "addData": {
@@ -14,11 +14,7 @@
             "symbol": "MATIC",
             "decimals": 18
         },
-        "rpcUrls": [
-            "https://polygon-rpc.com"
-        ],
-        "blockExplorerUrls": [
-            "https://polygonscan.com/"
-        ]
+        "rpcUrls": ["https://polygon-rpc.com"],
+        "blockExplorerUrls": ["https://polygonscan.com/"]
     }
 }

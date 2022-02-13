@@ -48,7 +48,7 @@ export default function Step2({
     onSubmit: Function
     event: any
 }) {
-    const [shortDescription, setDescription] = useState('')
+    const [description, setDescription] = useState('')
     const [longDescription, setLongDescription] = useState('')
     const [wallet, setWallet] = useContext(walletContext)
 
@@ -57,8 +57,10 @@ export default function Step2({
             onSubmit={(e) => {
                 e.preventDefault()
                 onSubmit({
-                    description: shortDescription,
-                    long_description: longDescription,
+                    description: {
+                        short_desc: description,
+                        long_desc: longDescription,
+                    },
                 })
             }}
         >
@@ -100,7 +102,7 @@ export default function Step2({
                                     setDescription(e.target.value)
                                 }}
                                 fontSize="sm"
-                                value={shortDescription}
+                                value={description}
                                 required
                                 px="0"
                                 _placeholder={{ color: 'gray.300' }}
@@ -164,45 +166,42 @@ export default function Step2({
                             <EventCard
                                 previewOnly
                                 event={{
-                                    id: event.id,
+                                    id: '',
+                                    childAddress: '',
                                     title: event.title || 'Untitled',
                                     description: {
-                                        short_desc: shortDescription,
+                                        short_desc:
+                                            description ||
+                                            'Event description goes here',
                                         long_desc: longDescription,
-                                    } || {
-                                        short_desc: 'Enter a short description',
-                                        long_desc: 'Enter a long description',
                                     },
-                                    seats: event.seats || 0,
-                                    childAddress: event.childAddress || '',
                                     image: {
                                         image: '/assets/gradient.png',
-                                        gallery: ['/assets/gradient.png'],
-                                        video: '',
+                                        gallery: [],
                                     },
-                                    date: event.date
-                                        ? event.date === '' ||
-                                          event.date === '00/00/0000'
-                                            ? '01/01/2022'
-                                            : event.date
-                                        : '01/01/2022',
-                                    owner: wallet.address || '',
-                                    slides: [],
-                                    type: event.type || 'type',
-                                    category: event.category || 'category',
-                                    buyers: [],
+                                    date: event.date ? event.date : '1/1/2000',
                                     eventHost: wallet.address || '',
-                                    price: event.price,
-                                    tickets_available: 40,
-                                    tickets_sold: 13,
-                                    fee: event.fee,
-                                    link: '',
+                                    owner: wallet.address || '',
+                                    type: event.type || 'type',
+                                    category: {
+                                        category: [
+                                            event.category?.category[0] ||
+                                                'category',
+                                        ],
+                                        event_type: event.type || 'type',
+                                    },
+                                    buyers: [],
+
+                                    fee: Number(event.fee),
+                                    seats: event.seats,
+                                    tickets_available: event.seats,
+                                    tickets_sold: 0,
                                 }}
                             />
                         </Box>
                     </Box>
                 </Flex>
-                <Box align="center" mt="10" mb="20">
+                <Box alignContent="center" mt="10" mb="20">
                     <Button
                         size="lg"
                         rounded="full"

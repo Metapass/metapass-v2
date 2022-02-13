@@ -35,39 +35,17 @@ import EventCard from '../../components/Card/EventCard.component'
 import { events } from '../../utils/testData'
 import DateModal from './DateModal.layout'
 import { walletContext } from '../../utils/walletContext'
-import { Event } from '../../types/Event.type'
 
 export default function Step1({ onSubmit }: { onSubmit: Function }) {
     const [isPaid, setIsPaid] = useState(true)
-    const [formDetails, setFormDetails] = useState<Event>({
-        id: '',
+    const [formDetails, setFormDetails] = useState({
         title: '',
-        childAddress: '',
-        category: {
-            event_type: '',
-            category: [''],
-        },
-        image: {
-            image: '',
-            gallery: [''],
-            video: '',
-        },
-        eventHost: '',
-        fee: '',
-        date: '',
-        description: {
-            short_desc: '',
-            long_desc: '',
-        },
-        seats: 0,
-        owner: '',
-        price: 0,
         type: '',
-        tickets_available: 0,
+        category: { category: [''], event_type: '' },
+        fee: 0,
+        date: '',
+        seats: 0,
         tickets_sold: 0,
-        buyers: [],
-        slides: [],
-        link: '',
     })
 
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -87,10 +65,10 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                 <DateModal
                     isOpen={isOpen}
                     onClose={onClose}
-                    onSubmit={(date: { month: ''; date: ''; year: '' }) => {
+                    onSubmit={(date: any) => {
                         setFormDetails({
                             ...formDetails,
-                            date: `${date.month + 1}/${date.date}/${date.year}`,
+                            date,
                         })
                     }}
                 />
@@ -258,10 +236,8 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                             <Input
                                                 fontSize="sm"
                                                 value={
-                                                    Array(
-                                                        formDetails.category
-                                                            .category
-                                                    )[0]
+                                                    formDetails.category
+                                                        .category[0]
                                                 }
                                                 required
                                                 px="0"
@@ -293,8 +269,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                                 setFormDetails({
                                                     ...formDetails,
                                                     category: {
-                                                        event_type:
-                                                            formDetails.type,
+                                                        ...formDetails.category,
                                                         category: ['Meetup'],
                                                     },
                                                 })
@@ -308,8 +283,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                                 setFormDetails({
                                                     ...formDetails,
                                                     category: {
-                                                        event_type:
-                                                            formDetails.type,
+                                                        ...formDetails.category,
                                                         category: ['Party'],
                                                     },
                                                 })
@@ -343,7 +317,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                         onChange={(e) => {
                                             setFormDetails({
                                                 ...formDetails,
-                                                price: Number(e.target.value),
+                                                fee: Number(e.target.value),
                                             })
                                         }}
                                         type="number"
@@ -407,12 +381,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                         fontSize="sm"
                                         required
                                         cursor="pointer"
-                                        value={
-                                            formDetails.date === '' ||
-                                            formDetails.date === '00/00/0000'
-                                                ? ''
-                                                : formDetails.date
-                                        }
+                                        value={formDetails.date}
                                         px="0"
                                         placeholder="When will the event take place?"
                                         bg="transparent"
@@ -428,6 +397,45 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                 </InputGroup>
                             </FormControl>
                         </Flex>
+                        <FormControl
+                            mt="6"
+                            w="50%"
+                            borderBottom="2px"
+                            borderBottomColor="gray.200"
+                            _focusWithin={{ borderBottomColor: 'gray.300' }}
+                        >
+                            <FormLabel
+                                fontSize={{ lg: 'md', xl: 'lg' }}
+                                color="blackAlpha.700"
+                                my="0"
+                            >
+                                Total Tickets
+                            </FormLabel>
+                            <InputGroup>
+                                <Input
+                                    onChange={(e) => {
+                                        setFormDetails({
+                                            ...formDetails,
+                                            seats: Number(e.target.value),
+                                        })
+                                    }}
+                                    _placeholder={{ color: 'gray.300' }}
+                                    fontSize="sm"
+                                    required
+                                    min="1"
+                                    type="number"
+                                    step="1"
+                                    px="0"
+                                    placeholder="Total seats for the event"
+                                    bg="transparent"
+                                    border="none"
+                                    rounded="none"
+                                    _hover={{}}
+                                    _focus={{}}
+                                    _active={{}}
+                                />
+                            </InputGroup>
+                        </FormControl>
                     </Box>
                     <Box h="auto" w="2px" my="20" bg="gray.100" />
                     <Box>
@@ -457,39 +465,42 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                             <EventCard
                                 previewOnly
                                 event={{
-                                    id: formDetails.id,
+                                    id: '',
+                                    childAddress: '',
                                     title: formDetails.title || 'Untitled',
-                                    description: formDetails.description || '',
-                                    image: {
-                                        ...formDetails.image,
-                                        image: '/assets/gradient.png',
+                                    description: {
+                                        short_desc:
+                                            'Event description goes here',
                                     },
-                                    date:
-                                        formDetails.date === '' ||
-                                        formDetails.date === '00/00/0000'
-                                            ? ''
-                                            : formDetails.date,
+                                    image: {
+                                        image: '/assets/gradient.png',
+                                        gallery: [],
+                                    },
+                                    date: formDetails.date
+                                        ? formDetails.date
+                                        : '1/1/2000',
+                                    eventHost: wallet.address || '',
                                     owner: wallet.address || '',
-                                    slides: [],
-                                    fee: String(formDetails.price),
                                     type: formDetails.type || 'type',
-                                    category:
-                                        formDetails.category || 'category',
+                                    category: {
+                                        category: [
+                                            formDetails.category.category[0] ||
+                                                'category',
+                                        ],
+                                        event_type: formDetails.type || 'type',
+                                    },
                                     buyers: [],
-                                    link: '',
-                                    childAddress:
-                                        formDetails.childAddress || '',
-                                    seats: formDetails.seats || 0,
-                                    eventHost: '',
-                                    price: formDetails.price,
-                                    tickets_available: 40,
-                                    tickets_sold: 13,
+
+                                    fee: Number(formDetails.fee),
+                                    seats: formDetails.seats || 20,
+                                    tickets_available: formDetails.seats || 20,
+                                    tickets_sold: 0,
                                 }}
                             />
                         </Box>
                     </Box>
                 </Flex>
-                <Box align="center" mt="10" mb="20">
+                <Box alignContent="center" mt="10" mb="20">
                     <Button
                         size="lg"
                         rounded="full"
@@ -516,10 +527,9 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                             if (
                                 formDetails.title &&
                                 formDetails.category &&
-                                (formDetails.price || !isPaid) &&
+                                (formDetails.fee || !isPaid) &&
                                 formDetails.type &&
-                                formDetails.date !== '' &&
-                                formDetails.date !== '00/00/0000'
+                                formDetails.date
                             ) {
                                 setSubmitting(true)
                             }

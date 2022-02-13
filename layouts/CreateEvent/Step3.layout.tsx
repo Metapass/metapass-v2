@@ -73,7 +73,13 @@ export default function Step3({
             onSubmit={(e) => {
                 e.preventDefault()
                 if (formDetails.image && formDetails.slides.length >= 3) {
-                    onSubmit(formDetails)
+                    onSubmit({
+                        image: {
+                            image: formDetails.image,
+                            gallery: formDetails.slides,
+                            video: formDetails.video,
+                        },
+                    })
                 } else if (!formDetails.image) {
                     toast({
                         position: 'bottom',
@@ -713,7 +719,7 @@ export default function Step3({
                     </Box>
                 </Flex>
 
-                <Box align="center" mt="10" mb="20">
+                <Box alignContent="center" mt="10" mb="20">
                     <Button
                         size="lg"
                         rounded="full"

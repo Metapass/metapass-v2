@@ -98,7 +98,7 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                 left="2"
                 color="blackAlpha.700"
             >
-                {event.price === 0 ? (
+                {event.fee === 0 ? (
                     <>FREE</>
                 ) : (
                     <>
@@ -108,7 +108,7 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                             filter="brightness(0%)"
                             alt="matic"
                         />
-                        <Text> {event.price}</Text>
+                        <Text> {event.fee}</Text>
                     </>
                 )}
             </Flex>

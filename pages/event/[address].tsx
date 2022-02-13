@@ -31,11 +31,11 @@ const Event: NextPage = () => {
         },
         image: {
             image: '',
-            gallery: [''],
+            gallery: [],
             video: '',
         },
         eventHost: '',
-        fee: '',
+        fee: 0,
         date: '',
         description: {
             short_desc: '',
@@ -43,12 +43,12 @@ const Event: NextPage = () => {
         },
         seats: 0,
         owner: '',
-        price: 0,
+        // price: 0,
         type: '',
         tickets_available: 0,
         tickets_sold: 0,
         buyers: [],
-        slides: [],
+        // slides: [],
     })
 
     async function getFeaturedEvents() {
@@ -109,12 +109,12 @@ const Event: NextPage = () => {
             category: category,
             image: image,
             eventHost: event.eventHost,
-            fee: String(Number(event.fee) / 10 ** 18),
+            fee:Number(event.fee) / 10 ** 18,
             date: event.date,
             description: desc,
             seats: event.seats,
             owner: event.eventHost,
-            price: Number(event.fee) / 10 ** 18,
+            
             type: type,
             tickets_available: event.seats - event.buyers.length,
             tickets_sold: event.buyers.length,

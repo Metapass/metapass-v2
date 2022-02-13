@@ -2,15 +2,13 @@
     "name": "Mumbai",
     "title": "Polygon Testnet Mumbai",
     "chain": "Polygon",
-    "img": "assets/polygon.png",
+    "img": "/assets/polygon.png",
     "enabled": true,
     "rpc": [
         "https://matic-mumbai.chainstacklabs.com",
         "https://rpc-mumbai.maticvigil.com"
     ],
-    "faucets": [
-        "https://faucet.polygon.technology/"
-    ],
+    "faucets": ["https://faucet.polygon.technology/"],
     "nativeCurrency": {
         "name": "MATIC",
         "symbol": "MATIC",
