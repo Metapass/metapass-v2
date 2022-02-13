@@ -8,7 +8,7 @@ import Wallet from '../utils/walletContext'
 import Web3Wrapper from '../utils/web3Context'
 import { Toaster } from 'react-hot-toast'
 import Contract from '../utils/contractContext'
-declare const window:any;
+// declare const window:any;
 function MyApp({ Component, pageProps }: AppProps) {
     return (
         <>
@@ -24,7 +24,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 ></script>
                 <meta name="description" content="Book NFT tickets for online and IRL events"></meta>
                 <meta property="og:title" content="MetaPass - Reimagining Events" />
-                <meta property="og:url" content={`${window.location.href}`} />
+                <meta property="og:url" content="https://metapasshq.xyz" />
                 <meta property="og:image" content="/assets/ogimage.png" />
                 <meta property="og:type" content="website" />
                 <meta name="twitter:site" content="@metapasshq" />
