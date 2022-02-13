@@ -56,50 +56,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
         },
     ])
     // const [theEvent, setTheEvent] = useState<Event>()
-    async function getMyEvents() {
-        const myEventsQuery = {
-            operationName: 'fetchMyEvents',
-            query: `query fetchMyEvents {
-                childCreatedEntities(where:{
-                    buyers_contains:["${wallet.address.toLowerCase()}"]
-                  }) {
-                     id
-                 title
-                                    childAddress
-                                    category
-                                    image
-                                    buyers{
-                                        id
-                                        
-                                    }
-                                    eventHost
-                                    fee
-                                    seats
-                                    description
-                                    date
-                  }
-              
-        }`,
-        }
-        try {
-            const res = await axios({
-                method: 'POST',
-                url: gqlEndpoint,
-                data: myEventsQuery,
-                headers: {
-                    'content-type': 'application/json',
-                },
-            })
-
-            if (!!res.data?.errors?.length) {
-                throw new Error('Error fetching featured events')
-            }
-            console.log(res.data.data.childCreatedEntities)
-            return res.data
-        } catch (error) {
-            console.log('error', error)
-        }
-    }
+ 
     const parseMyEvents = (myEvents: Array<any>): Event[] => {
         return myEvents.map((event: any) => {
             let type = JSON.parse(atob(event.category)).event_type
@@ -132,6 +89,50 @@ export default function MyEvents({ isOpen, onClose }: any) {
         })
     }
     useEffect(() => {
+        async function getMyEvents() {
+            const myEventsQuery = {
+                operationName: 'fetchMyEvents',
+                query: `query fetchMyEvents {
+                    childCreatedEntities(where:{
+                        buyers_contains:["${wallet.address.toLowerCase()}"]
+                      }) {
+                         id
+                     title
+                                        childAddress
+                                        category
+                                        image
+                                        buyers{
+                                            id
+                                            
+                                        }
+                                        eventHost
+                                        fee
+                                        seats
+                                        description
+                                        date
+                      }
+                  
+            }`,
+            }
+            try {
+                const res = await axios({
+                    method: 'POST',
+                    url: gqlEndpoint,
+                    data: myEventsQuery,
+                    headers: {
+                        'content-type': 'application/json',
+                    },
+                })
+    
+                if (!!res.data?.errors?.length) {
+                    throw new Error('Error fetching featured events')
+                }
+                console.log(res.data.data.childCreatedEntities)
+                return res.data
+            } catch (error) {
+                console.log('error', error)
+            }
+        }
         getMyEvents()
             .then((res) => {
                 const data: Event[] = parseMyEvents(
@@ -144,7 +145,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 console.log(err)
             })
         // console.log(myEvents)
-    }, [])
+    }, [wallet.address])
     return (
         <Modal size="6xl" isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />

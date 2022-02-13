@@ -104,10 +104,7 @@ const Create: NextPage = () => {
     const onSubmit = async () => {
         console.log(event)
 
-        let imgJson = {
-            image: event.image,
-            gallery: event.image.gallery,
-        }
+        let imgJson = event.image
 
         try {
             let txn = await contract.createEvent(
