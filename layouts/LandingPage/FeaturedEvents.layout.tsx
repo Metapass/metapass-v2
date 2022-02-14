@@ -8,6 +8,7 @@ import {
     Event,
     ImageType,
 } from '../../types/Event.type'
+import sendToAirtable from "../../utils/sendToAirtable";
 import ScrollContainer from 'react-indiana-drag-scroll'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 // import { MdCalendarToday as CalendarToday } from "react-icons/md";
@@ -15,7 +16,7 @@ import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import axios from 'axios'
 import getAllEnsLinked from '../../utils/resolveEns'
 import { MdTag } from 'react-icons/md'
-import { AiOutlineSearch } from 'react-icons/ai'
+import { AiOutlineSend } from 'react-icons/ai'
 import { SetStateAction } from 'react';
 
 export default function FeaturedEvents() {
@@ -324,6 +325,7 @@ export default function FeaturedEvents() {
 }
 
 export const EmailBar = ({email,setEmail}:any) => {
+    const [isSubmitting, setIsSubmitting] = useState(false)
     return (<Flex
         boxShadow="0px 18px 91px rgba(0, 0, 0, 0.07)"
         bg="white"
@@ -362,7 +364,11 @@ export const EmailBar = ({email,setEmail}:any) => {
               transitionDuration="200ms"
             >
               {" "}
-              <AiOutlineSearch size="22px" />
+              <AiOutlineSend size="22px"
+              style={{
+                  rotate: "-45deg",
+              }}
+              />
             </Flex>
           }
           _hover={{}}
@@ -375,11 +381,14 @@ export const EmailBar = ({email,setEmail}:any) => {
           py="8"
           px="8"
           fontSize="lg"
+          isLoading={isSubmitting}
+    // loadingText='Submitting'
           onClick={() => {
-            window.location.href = "/events";
+            // setIsSubmitting(true)
+           sendToAirtable(email,setIsSubmitting)
           }}
         >
-          Search
+          Join
         </Button>
       </Flex>
     );
