@@ -9,7 +9,7 @@ import {
     Avatar,
     AvatarGroup,
 } from '@chakra-ui/react'
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import ReactPlayer from 'react-player'
 import { Event } from '../../types/Event.type'
 import { getParameterByName } from '../../utils/queryExtractor'
@@ -84,7 +84,12 @@ export default function EventLayout({ event }: { event: Event }) {
             toast('Please connect your wallet')
         }
     }
-
+// useEffect(() => {
+//     console.log(youtubeThumbnail(
+//         event.image.video
+//     ))
+//     console.log(event.image.video,"hello")
+// },[])
     return (
         <Box pt="3" color="brand.black" mb="4">
             <Flex
@@ -234,10 +239,10 @@ export default function EventLayout({ event }: { event: Event }) {
                                                 src={
                                                     youtubeThumbnail(
                                                         event.image.video
-                                                    )
+                                                    ).default.url
                                                         ? youtubeThumbnail(
                                                               event.image.video
-                                                          )
+                                                          ).default.url
                                                         : 'https://pdtxar.com/wp-content/uploads/2019/11/video-placeholder-1280x720-40-768x433.jpg'
                                                 }
                                                 alt={'thumbnail'}
