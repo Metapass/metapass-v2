@@ -93,13 +93,16 @@ export default function FeaturedEvents() {
             console.log('error', error)
         }
     }
+    function UnicodeDecodeB64(str:any) {
+        return decodeURIComponent(atob(str));
+    };
     const parseFeaturedEvents = (featuredEvents: Array<any>): Event[] => {
         return featuredEvents.map((event: { event: any }) => {
-            let type = JSON.parse(atob(event.event.category)).event_type
-            let category: CategoryType = JSON.parse(atob(event.event.category))
-            let image: ImageType = JSON.parse(atob(event.event.image))
+            let type = JSON.parse(UnicodeDecodeB64(event.event.category)).event_type
+            let category: CategoryType = JSON.parse(UnicodeDecodeB64(event.event.category))
+            let image: ImageType = JSON.parse(UnicodeDecodeB64(event.event.image))
             let desc: DescriptionType = JSON.parse(
-                atob(event.event.description)
+                UnicodeDecodeB64(event.event.description)
             )
             console.log(event.event.seats, event.event.buyers.length)
             return {
