@@ -311,6 +311,7 @@ export default function FeaturedEvents() {
          <EmailBar 
            email={email}
               setEmail={setEmail}
+              onClose={onClose}
            />
          </Flex>
           </ModalBody>
@@ -324,7 +325,7 @@ export default function FeaturedEvents() {
     )
 }
 
-export const EmailBar = ({email,setEmail}:any) => {
+export const EmailBar = ({email,setEmail,onClose}:any) => {
     const [isSubmitting, setIsSubmitting] = useState(false)
     return (<Flex
         boxShadow="0px 18px 91px rgba(0, 0, 0, 0.07)"
@@ -385,7 +386,7 @@ export const EmailBar = ({email,setEmail}:any) => {
     // loadingText='Submitting'
           onClick={() => {
             // setIsSubmitting(true)
-           sendToAirtable(email,setIsSubmitting)
+           sendToAirtable(email,setIsSubmitting,onClose)
           }}
         >
           Join

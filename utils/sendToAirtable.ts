@@ -1,7 +1,7 @@
 import Airtable from "airtable";
 var base = new Airtable({apiKey: process.env.NEXT_PUBLIC_AIRTABLE}).base('appQdbxTOdZxnkyBM');
 
-async function sendToAirtable(email:string,setIsSubmitting:any) {
+async function sendToAirtable(email:string,setIsSubmitting:any,onClose:any) {
 setIsSubmitting(true)
 const data = {
     "fields": {
@@ -17,6 +17,7 @@ console.log(data)
         }
         records.forEach(function (record) {
             setIsSubmitting(false)
+            onClose()
           console.log(record.fields);
         });
       } as any);
