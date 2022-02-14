@@ -74,6 +74,7 @@ const Create: NextPage = () => {
     })
 
     const contractAddress = process.env.NEXT_PUBLIC_FACTORY_ADDRESS
+    console.log(contractAddress)
     let contract: any
 
     const [eventLink, setEventLink] = useState<any>(undefined)
@@ -88,7 +89,7 @@ const Create: NextPage = () => {
     }, [wallet])
 
     useEffect(() => {
-        if (window.ethereum !== undefined) {
+        if (window.ethereum !== undefined && contractAddress) {
             const provider = new ethers.providers.Web3Provider(window.ethereum)
             const signer = provider.getSigner()
 
