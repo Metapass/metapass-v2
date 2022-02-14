@@ -9,7 +9,7 @@ import {
     Avatar,
     AvatarGroup,
 } from '@chakra-ui/react'
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import ReactPlayer from 'react-player'
 import { Event } from '../../types/Event.type'
 import { getParameterByName } from '../../utils/queryExtractor'
@@ -20,6 +20,7 @@ import gravatarUrl from 'gravatar-url'
 import { walletContext } from '../../utils/walletContext'
 import { ethers } from 'ethers'
 import abi from '../../utils/Metapass.json'
+import youtubeThumbnail from 'youtube-thumbnail'
 
 const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
     ssr: false,
@@ -83,7 +84,12 @@ export default function EventLayout({ event }: { event: Event }) {
             toast('Please connect your wallet')
         }
     }
-
+// useEffect(() => {
+//     console.log(youtubeThumbnail(
+//         event.image.video
+//     ))
+//     console.log(event.image.video,"hello")
+// },[])
     return (
         <Box pt="3" color="brand.black" mb="4">
             <Flex
@@ -193,10 +199,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                         />
                                     </Flex>
                                 ) : (
-                                    <Image
-                                        src={event.image.image}
-                                        alt={'Event Image'}
-                                    /> // @ts-ignore
+                                    <Image src={image} alt={'Event Image'} /> // @ts-ignore
                                 )}
                             </AspectRatio>
                             <Box
@@ -234,14 +237,12 @@ export default function EventLayout({ event }: { event: Event }) {
                                         >
                                             <Image
                                                 src={
-                                                    getParameterByName(
-                                                        'v',
+                                                    youtubeThumbnail(
                                                         event.image.video
-                                                    )
-                                                        ? `https://img.youtube.com/vi/${getParameterByName(
-                                                              'v',
+                                                    ).default.url
+                                                        ? youtubeThumbnail(
                                                               event.image.video
-                                                          )}/0.jpg`
+                                                          ).default.url
                                                         : 'https://pdtxar.com/wp-content/uploads/2019/11/video-placeholder-1280x720-40-768x433.jpg'
                                                 }
                                                 alt={'thumbnail'}
@@ -265,7 +266,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                             w="full"
                                             ringColor="brand.peach"
                                             ring={
-                                                event.image.image === data &&
+                                                image === data &&
                                                 mediaType === 'image'
                                                     ? '2px'
                                                     : 'none'
