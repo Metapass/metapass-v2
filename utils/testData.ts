@@ -14,7 +14,7 @@ const event = {
         month: 7,
         year: 2022
     },
-    tickets_available: 40,
+    seats: 40,
     tickets_sold: 13,
     featured: true,
     buyers: ["0x436441A8eF5b3C705652a8b0dff624152c227a6f", "0x436441A8eF5b3C705652a8b0dff624152c227a62"],
@@ -42,7 +42,7 @@ const event2 = {
         year: 2022
     },
     video: "https://www.youtube.com/watch?v=ysz5S6PUM-U",
-    tickets_available: 40,
+    seats: 40,
     tickets_sold: 40,
     featured: false,
     buyers: ["0x436441A8eF5b3C705652a8b0dff624152c227a6f"],
