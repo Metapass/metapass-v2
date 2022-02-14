@@ -250,7 +250,13 @@ export default function Step4({
                                 </Box>
                             </Box>
                         </Flex>
-                        <Box alignContent="center" mt="10" mb="20">
+                        <Flex
+                            justifyContent="center"
+                            alignItems="center"
+                            alignContent="center"
+                            mt="10"
+                            mb="20"
+                        >
                             <Button
                                 size="lg"
                                 rounded="full"
@@ -279,7 +285,7 @@ export default function Step4({
                             >
                                 Review Details
                             </Button>
-                        </Box>
+                        </Flex>
                     </Box>
                 </form>
             )}
