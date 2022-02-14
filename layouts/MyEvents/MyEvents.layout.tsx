@@ -87,7 +87,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 description: desc,
                 seats: event.seats,
                 owner: event.eventHost,
-
+            link: event.link,
                 type: type,
                 tickets_available: event.seats - event.buyers.length,
                 tickets_sold: event.buyers.length,
@@ -115,6 +115,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                         eventHost
                                         fee
                                         seats
+                                        link
                                         description
                                         date
                       }

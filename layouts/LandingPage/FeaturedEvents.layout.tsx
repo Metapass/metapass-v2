@@ -64,6 +64,7 @@ export default function FeaturedEvents() {
                     title
                     childAddress
                     category
+                    link
                     image
                     buyers{
                         id
@@ -122,7 +123,7 @@ export default function FeaturedEvents() {
                 description: desc,
                 seats: event.event.seats,
                 owner: event.event.eventHost,
-
+                link: event.event.link,
                 type: type,
                 tickets_available:
                     event.event.seats - event.event.buyers.length,

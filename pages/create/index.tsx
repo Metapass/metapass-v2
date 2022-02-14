@@ -135,7 +135,7 @@ const Create: NextPage = () => {
         console.log('Event Created')
 
         contract.on('childEvent', (child: any) => {
-            setEventLink(`${window.location.origin}/events/${child}`)
+            setEventLink(`${window.location.origin}/event/${child}`)
             setIsPublished(true)
         })
     }
