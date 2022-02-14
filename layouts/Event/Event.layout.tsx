@@ -25,8 +25,11 @@ const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
     ssr: false,
 })
 import { ImageType } from '../../types/Event.type'
+import toast from 'react-hot-toast'
+
+declare const window: any
+
 export default function EventLayout({ event }: { event: Event }) {
-    // console.log(event.image)
     const [image, setImage] = useState(event.image.image)
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
@@ -63,13 +66,21 @@ export default function EventLayout({ event }: { event: Event }) {
                 console.log(metapass)
 
                 try {
-                    metapass.getTix('metadata')
-                } catch (e) {
-                    console.log(e)
+                    metapass.getTix('metadata', {
+                        value: ethers.utils.parseEther(event.fee.toString()),
+                    })
+                } catch (e: any) {
+                    toast(
+                        'An error occured! Share error code: ' +
+                            e.code +
+                            ' with the team for reference.'
+                    )
                 }
             } else {
                 console.log("Couldn't find ethereum enviornment")
             }
+        } else {
+            toast('Please connect your wallet')
         }
     }
 
@@ -97,7 +108,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             py="0.5"
                             bg="white"
                         >
-                            {event.type}
+                            {event.type || event.category.event_type}
                         </Box>
                         <Box
                             boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
@@ -254,8 +265,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                             w="full"
                                             ringColor="brand.peach"
                                             ring={
-                                                event.image.image ===
-                                                    data &&
+                                                event.image.image === data &&
                                                 mediaType === 'image'
                                                     ? '2px'
                                                     : 'none'
@@ -416,28 +426,37 @@ export default function EventLayout({ event }: { event: Event }) {
                         <Text color="blackAlpha.500" fontSize="xs">
                             Recent Buyers
                         </Text>
-                        <AvatarGroup
-                            mt="2"
-                            size="sm"
-                            max={6}
-                            fontSize="xs"
-                            spacing={-2}
-                        >
-                            {event.buyers?.reverse().map((data, key) => {
-                                // console.log(JSON.parse(data))
-                                const { id }: any = data
-                                return (
-                                    <Avatar
-                                        src={gravatarUrl(id, {
-                                            default: 'retro',
-                                        })}
-                                        key={key}
-                                        cursor="pointer"
-                                        _hover={{ zIndex: 10 }}
-                                    />
-                                )
-                            })}
-                        </AvatarGroup>
+                        {event.buyers.length > 0 ? (
+                            <AvatarGroup
+                                mt="2"
+                                size="sm"
+                                max={6}
+                                fontSize="xs"
+                                spacing={-2}
+                            >
+                                {event.buyers?.reverse().map((data, key) => {
+                                    const { id }: any = data
+                                    console.log(data)
+                                    return (
+                                        <Avatar
+                                            src={gravatarUrl(
+                                                id?.toString() || '1',
+                                                {
+                                                    default: 'retro',
+                                                }
+                                            )}
+                                            key={key}
+                                            cursor="pointer"
+                                            _hover={{ zIndex: 10 }}
+                                        />
+                                    )
+                                })}
+                            </AvatarGroup>
+                        ) : (
+                            <Text fontSize={13}>
+                                You're the first one here!
+                            </Text>
+                        )}
                     </Box>
                     <Box
                         mt="3"
@@ -465,7 +484,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     {event.tickets_sold}
                                 </Text>
                                 <Text fontSize="xx-small">/</Text>
-                                <Text> {event.seats + event.tickets_sold}</Text>
+                                <Text> {event.seats}</Text>
                             </Flex>
                         </Flex>
                         <Box

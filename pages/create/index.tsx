@@ -73,7 +73,8 @@ const Create: NextPage = () => {
         link: '',
     })
 
-    const contractAddress = '0x4626ba1411ff126F129D49bdDaeEFF3B707708AE'
+    const contractAddress = process.env.NEXT_PUBLIC_FACTORY_ADDRESS
+    console.log(contractAddress)
     let contract: any
 
     const [eventLink, setEventLink] = useState<any>(undefined)
@@ -88,7 +89,7 @@ const Create: NextPage = () => {
     }, [wallet])
 
     useEffect(() => {
-        if (window.ethereum !== undefined) {
+        if (window.ethereum !== undefined && contractAddress) {
             const provider = new ethers.providers.Web3Provider(window.ethereum)
             const signer = provider.getSigner()
 
@@ -104,25 +105,30 @@ const Create: NextPage = () => {
     const onSubmit = async () => {
         console.log(event)
 
-        let imgJson = {
-            image: event.image,
-            gallery: event.image.gallery,
-        }
-
+        // let imgJson = {
+        //     image: event.image,
+        //     gallery: event.image.gallery,
+        // }
+        function b64EncodeUnicode(str:any) {
+            return btoa(encodeURIComponent(str));
+        };
         try {
-            let txn = await contract.createEvent(
-                event.title,
+            console.log("starting txn")
+            let txn = await contract?.createEvent(
+                String(event.title),
                 ethers.utils.parseEther(event.fee.toString()),
-                10,
-                btoa(JSON.stringify(imgJson)),
+                Number(event.seats),
+                b64EncodeUnicode(JSON.stringify(event.image)),
                 wallet.address,
-                btoa(JSON.stringify(event.description)),
+                b64EncodeUnicode(JSON.stringify(event.description)),
                 event.link,
                 event.date,
-                btoa(JSON.stringify(event.category))
+                b64EncodeUnicode(JSON.stringify(event.category))
             )
+            console.log("txn complete")
             console.log(txn)
         } catch (e) {
+            console.log("error while txn")
             console.log(e)
         }
 

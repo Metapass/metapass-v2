@@ -37,6 +37,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-package-lock.json
+# package-lock.json
 yarn.lock
 nextconfig.txt

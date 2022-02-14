@@ -719,7 +719,7 @@ export default function Step3({
                     </Box>
                 </Flex>
 
-                <Box align="center" mt="10" mb="20">
+                <Box alignContent="center" mt="10" mb="20">
                     <Button
                         size="lg"
                         rounded="full"

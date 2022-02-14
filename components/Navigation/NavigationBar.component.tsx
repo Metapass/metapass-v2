@@ -56,6 +56,7 @@ export default function NavigationBar({ mode = 'dark' }) {
         ? process.env.NEXT_PUBLIC_ENDPOINT_POLYGON
         : process.env.NEXT_PUBLIC_ENDPOINT_MUMBAI
     const web3 = new Web3(endpoint as string)
+    let wcProvider: any
 
     const mdcontent = [
         {
@@ -108,6 +109,8 @@ export default function NavigationBar({ mode = 'dark' }) {
                 balance: ethBal,
                 address: accounts[0],
             })
+
+            localStorage.setItem('Autoconnect', 'true')
             setWalletType('mm')
         } else {
             try {
@@ -122,7 +125,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                 console.log('switched')
                 getAccountData({ accounts, windowType })
             } catch (switchError: any) {
-                // This error code indicates that the chain has not been added to MetaMask.
                 if (switchError.code === 4902) {
                     try {
                         console.log('trying to add chain')
@@ -142,7 +144,7 @@ export default function NavigationBar({ mode = 'dark' }) {
     }
 
     const handleWalletConnect = async () => {
-        const wcProvider = new WalletConnectProvider({
+        wcProvider = new WalletConnectProvider({
             rpc: {
                 [chainid]: endpoint as string,
             },
@@ -228,7 +230,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                         h="100%"
                         w="17%"
                         src={polygon.img}
-                        
                     />
                 ),
                 duration: 4000,
@@ -246,6 +247,13 @@ export default function NavigationBar({ mode = 'dark' }) {
             onClose()
         }
     }, [address, onClose, isOpen])
+
+    useEffect(() => {
+        let confirmation = localStorage.getItem('Autoconnect')
+        if (confirmation === 'true') {
+            loadAccounts()
+        }
+    }, [])
 
     return (
         <>
