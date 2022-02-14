@@ -56,14 +56,16 @@ export default function MyEvents({ isOpen, onClose }: any) {
         },
     ])
     // const [theEvent, setTheEvent] = useState<Event>()
- 
+    function UnicodeDecodeB64(str:any) {
+        return decodeURIComponent(atob(str));
+    };
     const parseMyEvents = (myEvents: Array<any>): Event[] => {
         return myEvents.map((event: any) => {
-            let type = JSON.parse(atob(event.category)).event_type
-            let category: CategoryType = JSON.parse(atob(event.category))
-            let image: ImageType = JSON.parse(atob(event.image))
+            let type = JSON.parse(UnicodeDecodeB64(event.category)).event_type
+            let category: CategoryType = JSON.parse(UnicodeDecodeB64(event.category))
+            let image: ImageType = JSON.parse(UnicodeDecodeB64(event.image))
             let desc: DescriptionType = JSON.parse(
-                atob(event.description)
+                UnicodeDecodeB64(event.description)
             )
             console.log(event.seats, event.buyers.length)
             return {
