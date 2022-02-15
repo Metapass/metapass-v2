@@ -25,6 +25,7 @@ import {
     DescriptionType,
     ImageType,
 } from '../../types/Event.type'
+import { decryptLink } from '../../utils/linkResolvers'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import { walletContext } from '../../utils/walletContext'
 export default function MyEvents({ isOpen, onClose }: any) {
@@ -61,14 +62,15 @@ export default function MyEvents({ isOpen, onClose }: any) {
         },
     ])
     // const [theEvent, setTheEvent] = useState<Event>()
-    function UnicodeDecodeB64(str:any) {
-        return decodeURIComponent(atob(str));
-    };
+    function UnicodeDecodeB64(str: any) {
+        return decodeURIComponent(atob(str))
+    }
     const parseMyEvents = (myEvents: Array<any>): Event[] => {
         return myEvents.map((event: any) => {
-          
             let type = JSON.parse(UnicodeDecodeB64(event.category)).event_type
-            let category: CategoryType = JSON.parse(UnicodeDecodeB64(event.category))
+            let category: CategoryType = JSON.parse(
+                UnicodeDecodeB64(event.category)
+            )
             let image: ImageType = JSON.parse(UnicodeDecodeB64(event.image))
             let desc: DescriptionType = JSON.parse(
                 UnicodeDecodeB64(event.description)
@@ -87,7 +89,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 description: desc,
                 seats: event.seats,
                 owner: event.eventHost,
-            link: event.link,
+                link: decryptLink(event.link),
                 type: type,
                 tickets_available: event.seats - event.buyers.length,
                 tickets_sold: event.buyers.length,
@@ -131,7 +133,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                         'content-type': 'application/json',
                     },
                 })
-    
+
                 if (!!res.data?.errors?.length) {
                     throw new Error('Error fetching featured events')
                 }

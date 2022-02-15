@@ -16,6 +16,7 @@ import { Skeleton } from '@chakra-ui/react'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import { decryptLink } from '../../utils/linkResolvers'
 
 const Event: NextPage = () => {
     const router = useRouter()
@@ -94,16 +95,22 @@ const Event: NextPage = () => {
             console.log('error', error)
         }
     }
-    function UnicodeDecodeB64(str:any) {
-        return decodeURIComponent(atob(str));
-    };
+    function UnicodeDecodeB64(str: any) {
+        return decodeURIComponent(atob(str))
+    }
     const parseFeaturedEvents = (event: any): Event => {
         // return featuredEvents.map((event: { event: any }) => {
         // console.log(event,"enter");
-        let type: string = JSON.parse(UnicodeDecodeB64(event.category)).event_type
-        let category: CategoryType = JSON.parse(UnicodeDecodeB64(event.category))
+        let type: string = JSON.parse(
+            UnicodeDecodeB64(event.category)
+        ).event_type
+        let category: CategoryType = JSON.parse(
+            UnicodeDecodeB64(event.category)
+        )
         let image: ImageType = JSON.parse(UnicodeDecodeB64(event.image))
-        let desc: DescriptionType = JSON.parse(UnicodeDecodeB64(event.description))
+        let desc: DescriptionType = JSON.parse(
+            UnicodeDecodeB64(event.description)
+        )
         console.log(event.seats, event.buyers.length)
         return {
             id: event.id,
@@ -112,12 +119,12 @@ const Event: NextPage = () => {
             category: category,
             image: image,
             eventHost: event.eventHost,
-            fee:Number(event.fee) / 10 ** 18,
+            fee: Number(event.fee) / 10 ** 18,
             date: event.date,
             description: desc,
             seats: event.seats,
             owner: event.eventHost,
-            link: event.link,
+            link: decryptLink(event.link),
             type: type,
             tickets_available: event.seats - event.buyers.length,
             tickets_sold: event.buyers.length,

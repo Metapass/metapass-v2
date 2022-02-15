@@ -40,6 +40,7 @@ import { events } from '../../utils/testData'
 import DateModal from './DateModal.layout'
 import { walletContext } from '../../utils/walletContext'
 import gravatarUrl from 'gravatar-url'
+import { encryptLink } from '../../utils/linkResolvers'
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
@@ -59,7 +60,7 @@ export default function Step4({
                 <form
                     onSubmit={(e) => {
                         e.preventDefault()
-                        onSubmit(_link)
+                        onSubmit(encryptLink(_link))
                     }}
                 >
                     <Box color="brand.black">
