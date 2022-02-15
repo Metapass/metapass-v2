@@ -39,6 +39,7 @@ import { ImageType } from '../../types/Event.type'
 import toast from 'react-hot-toast'
 import { IoIosLink } from 'react-icons/io'
 import Confetti from '../../components/Misc/Confetti.component'
+import { ticketToIPFS } from '../../utils/imageHelper'
 
 declare const window: any
 
@@ -80,19 +81,36 @@ export default function EventLayout({ event }: { event: Event }) {
                 )
                 console.log(metapass)
 
+                let img = await ticketToIPFS(
+                    event.title,
+                    event.tickets_sold + 1,
+                    event.image.image,
+                    event.date
+                )
+
+                let metadata = {
+                    name: event.title,
+                    description: `NFT Ticket for ${event.title}`,
+                    image: img,
+                    properties: {
+                        'Ticket Number': event.tickets_sold + 1,
+                    },
+                }
+
                 try {
                     metapass
-                        .getTix('metadata', {
+                        .getTix(JSON.stringify(metadata), {
                             value: ethers.utils.parseEther(
                                 event.fee.toString()
                             ),
                         })
                         .then(() => {
-                            console.log('success')
+                            console.log('Success!')
+                            console.log('metdata is ', metadata)
                         })
                         .catch((err: any) => {
                             console.log('error', err)
-                            toast.error(err.data.message, {
+                            toast.error(err.data?.message, {
                                 id: 'error10',
                                 style: {
                                     fontSize: '12px',
