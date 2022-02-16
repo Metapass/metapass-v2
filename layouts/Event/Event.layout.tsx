@@ -45,6 +45,7 @@ import Confetti from '../../components/Misc/Confetti.component'
 import { ticketToIPFS } from '../../utils/imageHelper'
 import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
+import { getAllEnsLinked } from '../../utils/resolveEns'
 
 declare const window: any
 
@@ -55,6 +56,7 @@ export default function EventLayout({ event }: { event: Event }) {
     )
     const { hasCopied, onCopy } = useClipboard(event.link as string)
     const [hasBought, setHasBought] = useState<boolean>(false)
+    const [ensName, setEnsName] = useState<string>('')
     const months = [
         'JAN',
         'FEB',
@@ -140,12 +142,16 @@ export default function EventLayout({ event }: { event: Event }) {
             toast('Please connect your wallet')
         }
     }
-    // useEffect(() => {
-    //     console.log(youtubeThumbnail(
-    //         event.image.video
-    //     ))
-    //     console.log(event.image.video,"hello")
-    // },[])
+    useEffect(() => {
+        getAllEnsLinked(event.owner).then((data) => {
+            console.log(data.data.domains)
+            console.log(data,data.data.domains.length, data.data.domains.length > 0 && (data.data.domains[0].name))
+            const ens_name = data.data.domains.length > 0 && (data.data.domains[0].name) 
+            setEnsName(ens_name)
+     }).catch((err) => {
+         console.log(err)
+     })
+    },[event.owner])
     return (
         <>
             {hasBought && <Confetti />}
@@ -338,7 +344,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         <Box mt="2" mb="4">
                             <Link
                                 fontSize="sm"
-                                href="/events"
+                                href="/"
                                 color="blackAlpha.600"
                             >
                                 Back to home
@@ -667,11 +673,13 @@ export default function EventLayout({ event }: { event: Event }) {
                                     <BoringAva address={wallet.address} />
                                     <Box>
                                         <Text fontSize="14px">
-                                            {event.owner.substring(0, 6) +
-                                                '...' +
-                                                event.owner.substring(
-                                                    event.owner.length - 6
-                                                )}
+                                            {ensName || ((
+                                                event.owner.substring(0, 6) +
+                                '...' +
+                                event.owner.substring(
+                                    event.owner.length - 6
+                                )
+                                            ))}
                                         </Text>
                                     </Box>
                                 </Flex>
@@ -838,6 +846,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     }
                                     role="button"
                                     onClick={() => {
+                                        // console.log(moment('20140127T204000Z', "YYYYDDMMThhmmssZ"))
                                         // "02/16/2022--17:10:00-18:00:00"
                                         let eventdate = event.date
                                         let date = eventdate.split('--')[0]
@@ -853,6 +862,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                         let finalStartDate = moment(
                                             date + ' ' + startDate
                                         ).format()
+                                        
                                         // console.log(new Date(date+" "+startDate))
                                         console.log(
                                             finalStartDate,

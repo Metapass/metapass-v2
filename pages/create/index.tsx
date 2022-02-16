@@ -332,7 +332,7 @@ const Create: NextPage = () => {
                         <Box mt="2" mb="4">
                             <Link
                                 fontSize="sm"
-                                href="/events"
+                                href="/"
                                 color="blackAlpha.600"
                             >
                                 Back to home
