@@ -48,7 +48,7 @@ import eventOrgs from '../../utils/orgs.json'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 export default function NavigationBar({ mode = 'dark' }) {
-    const [address, setAddress] = useState<string>('')
+    const [address, setAddress] = useState<string>('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
     const [_, setWeb3] = useContext(web3Context)
@@ -304,18 +304,18 @@ export default function NavigationBar({ mode = 'dark' }) {
             loadAccounts()
         }
     }, [])
-    // useEffect(() => {
-    //     getAllEnsLinked(address).then((data) => {
-    //         if(data?.data?.domains && data && data?.data){
-    //         console.log(data?.data?.domains)
-    //         console.log(data?.data.data.domains?.length, data.data.domains?.length > 0 && (data?.data?.domains[0]?.name))
-    //         const ens_name = data?.data?.domains?.length > 0 && (data?.data?.domains[0].name) 
-    //         setEnsName(ens_name)
-    //         }
-    //  }).catch((err) => {
-    //      console.log(err)
-    //  })
-    // },[address])
+    useEffect(() => {
+        getAllEnsLinked(address || "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").then((data) => {
+            if(data?.data?.domains && data && data?.data){
+            console.log(data?.data?.domains)
+            console.log(data?.data.data.domains?.length, data.data.domains?.length > 0 && (data?.data?.domains[0]?.name))
+            const ens_name = data?.data?.domains?.length > 0 && (data?.data?.domains[0].name) 
+            setEnsName(ens_name)
+            }
+     }).catch((err) => {
+         console.log(err)
+     })
+    },[address])
 
     return (
         <>

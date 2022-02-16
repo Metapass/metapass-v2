@@ -142,18 +142,18 @@ export default function EventLayout({ event }: { event: Event }) {
             toast('Please connect your wallet')
         }
     }
-    // useEffect(() => {
-    //     getAllEnsLinked(event.owner).then((data) => {
-    //         if(data?.data?.domains && data && data?.data){
-    //         console.log(data?.data?.domains)
-    //         console.log(data?.data?.data?.domains?.length, data?.data?.domains?.length > 0 && (data?.data?.domains[0].name))
-    //         const ens_name = data?.data?.domains?.length > 0 && (data?.data?.domains[0].name) 
-    //         setEnsName(ens_name)
-    //         }
-    //  }).catch((err) => {
-    //      console.log(err)
-    //  })
-    // },[event.owner])
+    useEffect(() => {
+        getAllEnsLinked(event.owner || "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").then((data) => {
+            if(data?.data?.domains && data && data?.data){
+            console.log(data?.data?.domains)
+            console.log(data?.data?.data?.domains?.length, data?.data?.domains?.length > 0 && (data?.data?.domains[0].name))
+            const ens_name = data?.data?.domains?.length > 0 && (data?.data?.domains[0].name) 
+            setEnsName(ens_name)
+            }
+     }).catch((err) => {
+         console.log(err)
+     })
+    },[event.owner])
     return (
         <>
             {hasBought && <Confetti />}
@@ -678,8 +678,8 @@ export default function EventLayout({ event }: { event: Event }) {
                                             {ensName || ((
                                                 event.owner.substring(0, 6) +
                                 '...' +
-                                event.owner.substring(
-                                    event.owner?.length - 6
+                                event?.owner.substring(
+                                    event?.owner?.length - 6
                                 )
                                             ))}
                                         </Text>
