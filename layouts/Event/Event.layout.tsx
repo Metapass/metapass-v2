@@ -18,6 +18,7 @@ import {
     Input,
     ModalOverlay,
     useClipboard,
+    IconButton,
 } from '@chakra-ui/react'
 import { useState, useContext, useEffect } from 'react'
 import ReactPlayer from 'react-player'
@@ -26,9 +27,11 @@ import { getParameterByName } from '../../utils/queryExtractor'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
+import moment from 'moment'
 import gravatarUrl from 'gravatar-url'
 import { walletContext } from '../../utils/walletContext'
 import { ethers } from 'ethers'
+import {BsCalendarPlus} from 'react-icons/bs'
 import abi from '../../utils/Metapass.json'
 import youtubeThumbnail from 'youtube-thumbnail'
 
@@ -40,6 +43,7 @@ import toast from 'react-hot-toast'
 import { IoIosLink } from 'react-icons/io'
 import Confetti from '../../components/Misc/Confetti.component'
 import { ticketToIPFS } from '../../utils/imageHelper'
+import toGoogleCalDate from '../../utils/parseIsoDate'
 
 declare const window: any
 
@@ -625,12 +629,15 @@ export default function EventLayout({ event }: { event: Event }) {
                                     Event Date
                                 </Text>
                                 <Divider my="2" />
-                                <Text color="brand.peach">
+                                <Text
+                                color="brand.peach">
                                     {months[new Date(event.date).getMonth()]}
                                 </Text>
                                 <Text fontSize="2xl" fontWeight="semibold">
                                     {new Date(event.date).getDate()}
                                 </Text>
+                                
+                                
                             </Box>
                         </Flex>
                         <Box
@@ -780,6 +787,10 @@ export default function EventLayout({ event }: { event: Event }) {
                                 String(buyer.id).toLowerCase() ===
                                 String(wallet.address).toLowerCase()
                         ) && (
+                            <Flex 
+                            align="center"
+                            justify="space-evenly"
+                            >
                             <Box
                                 p="1.5px"
                                 mx="auto"
@@ -822,9 +833,49 @@ export default function EventLayout({ event }: { event: Event }) {
                                     }}
                                     role="group"
                                 >
-                                    Go to event page
+                                    Go to event
                                 </Button>
+                               
                             </Box>
+                           <IconButton
+                           p="1.5px"
+                           mx="auto"
+                           mt="6"
+                        //    bgGradient="linear-gradient(to bottom, #e72c83 0%,#a742c6 100%);"
+                        //    bgClip="text"
+                           icon={  <BsCalendarPlus
+                            // size="40%"
+                        //    color="transparent"
+                        //    fill='transparent'
+                           />}
+                            role="button"
+                            onClick={()=>{
+                                // "02/16/2022--17:10:00-18:00:00"
+                                let eventdate = event.date; 
+                                let date = eventdate.split('--')[0]
+                                console.log(date)
+                                let startDate = eventdate.split('--')[1].split('-')[0]
+                                console.log(startDate)
+                                let endDate = eventdate.split('--')[1].split('-')[1]
+                                console.log(endDate)
+                                let finalStartDate = moment(date+" "+startDate).format()
+                                // console.log(new Date(date+" "+startDate))
+                                console.log(finalStartDate, "finalStartDate")
+                                let finalEndDate = moment(date+" "+endDate).format()
+                                console.log(finalEndDate, "finalEndDate")
+                                let googleStartDate = toGoogleCalDate(new Date(finalStartDate))
+                                console.log(googleStartDate)
+                                let googleEndDate = toGoogleCalDate(new Date(finalEndDate))
+                                console.log(googleEndDate)
+                               //open a window and redirect to google calendar to add an event with a set date and time in the local time zone format mm/dd/yyyy--hh:mm:ss-hh:mm:ss
+                               window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${event.title}&dates=${googleStartDate}/${googleEndDate}&details=${event.description.short_desc}&location=${event.link}&sf=true&output=xml`, '_blank') 
+                              
+                            }}
+                            aria-label='add to calendar'
+                           >
+
+                           </IconButton>
+                         </Flex>
                         )}
                     </Flex>
                 </Flex>
