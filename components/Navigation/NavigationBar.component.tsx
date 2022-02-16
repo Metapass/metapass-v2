@@ -306,10 +306,10 @@ export default function NavigationBar({ mode = 'dark' }) {
     }, [])
     useEffect(() => {
         getAllEnsLinked(address).then((data) => {
-            if(data.data.domains && data && data.data){
-            console.log(data.data.domains)
-            console.log(data,data.data.domains?.length, data.data.domains?.length > 0 && (data.data.domains[0].name))
-            const ens_name = data.data.domains?.length > 0 && (data.data.domains[0].name) 
+            if(data?.data?.domains && data && data?.data){
+            console.log(data?.data?.domains)
+            console.log(data,data.data.domains?.length, data.data.domains?.length > 0 && (data?.data?.domains[0]?.name))
+            const ens_name = data?.data?.domains?.length > 0 && (data?.data?.domains[0].name) 
             setEnsName(ens_name)
             }
      }).catch((err) => {
