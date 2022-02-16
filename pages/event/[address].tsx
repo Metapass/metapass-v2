@@ -111,7 +111,6 @@ const Event: NextPage = () => {
         let desc: DescriptionType = JSON.parse(
             UnicodeDecodeB64(event.description)
         )
-        console.log(event.seats, event.buyers?.length)
         return {
             id: event.id,
             title: event.title,
