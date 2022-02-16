@@ -144,10 +144,12 @@ export default function EventLayout({ event }: { event: Event }) {
     }
     useEffect(() => {
         getAllEnsLinked(event.owner).then((data) => {
+            if(data.data.domains && data && data.data){
             console.log(data.data.domains)
             console.log(data,data.data.domains?.length, data.data.domains?.length > 0 && (data.data.domains[0].name))
             const ens_name = data.data.domains?.length > 0 && (data.data.domains[0].name) 
             setEnsName(ens_name)
+            }
      }).catch((err) => {
          console.log(err)
      })
@@ -677,7 +679,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                                 event.owner.substring(0, 6) +
                                 '...' +
                                 event.owner.substring(
-                                    event.owner.length - 6
+                                    event.owner?.length - 6
                                 )
                                             ))}
                                         </Text>
@@ -697,7 +699,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             <Text color="blackAlpha.500" fontSize="xs">
                                 Recent Buyers
                             </Text>
-                            {event.buyers.length > 0 ? (
+                            {event.buyers?.length > 0 ? (
                                 <AvatarGroup
                                     mt="2"
                                     size="sm"

@@ -111,7 +111,7 @@ const Event: NextPage = () => {
         let desc: DescriptionType = JSON.parse(
             UnicodeDecodeB64(event.description)
         )
-        console.log(event.seats, event.buyers.length)
+        console.log(event.seats, event.buyers?.length)
         return {
             id: event.id,
             title: event.title,
@@ -126,8 +126,8 @@ const Event: NextPage = () => {
             owner: event.eventHost,
             link: decryptLink(event.link),
             type: type,
-            tickets_available: event.seats - event.buyers.length,
-            tickets_sold: event.buyers.length,
+            tickets_available: event.seats - event.buyers?.length,
+            tickets_sold: event.buyers?.length,
             buyers: event.buyers,
             slides: image.gallery,
         } as Event
