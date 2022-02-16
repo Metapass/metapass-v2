@@ -108,14 +108,20 @@ const Explore: NextPage = () => {
             console.log('error', error)
         }
     }
-    function UnicodeDecodeB64(str:any) {
-        return decodeURIComponent(atob(str));
-    };
+    function UnicodeDecodeB64(str: any) {
+        return decodeURIComponent(atob(str))
+    }
     const parseFeaturedEvents = (event: any): Event => {
-        let type: string = JSON.parse(UnicodeDecodeB64(event.category)).event_type
-        let category: CategoryType = JSON.parse(UnicodeDecodeB64(event.category))
+        let type: string = JSON.parse(
+            UnicodeDecodeB64(event.category)
+        ).event_type
+        let category: CategoryType = JSON.parse(
+            UnicodeDecodeB64(event.category)
+        )
         let image: ImageType = JSON.parse(UnicodeDecodeB64(event.image))
-        let desc: DescriptionType = JSON.parse(UnicodeDecodeB64(event.description))
+        let desc: DescriptionType = JSON.parse(
+            UnicodeDecodeB64(event.description)
+        )
         return {
             id: event.id,
             title: event.title,

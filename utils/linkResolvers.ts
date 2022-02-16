@@ -5,13 +5,10 @@ export const encryptLink = (link: string) => {
         link,
         process.env.NEXT_PUBLIC_SECRET as string
     ).toString()
-    return enc;
+    return enc
 }
 
-export const decryptLink = (link: string ) => {
-    let dec = crypto.AES.decrypt(
-        link,
-        process.env.NEXT_PUBLIC_SECRET as string
-    )
-    return dec.toString(crypto.enc.Utf8);
+export const decryptLink = (link: string) => {
+    let dec = crypto.AES.decrypt(link, process.env.NEXT_PUBLIC_SECRET as string)
+    return dec.toString(crypto.enc.Utf8)
 }

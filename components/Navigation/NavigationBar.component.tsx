@@ -30,7 +30,8 @@ import WalletConnectProvider from '@walletconnect/web3-provider'
 import { useState, useContext, useEffect } from 'react'
 import Web3 from 'web3'
 import toast from 'react-hot-toast'
-import gravatarUrl from 'gravatar-url'
+// import gravatarUrl from 'gravatar-url'
+
 import {
     HiOutlineChevronDoubleDown,
     HiOutlineChevronDown,
@@ -43,7 +44,8 @@ const polygon = require(env
     : '../../utils/mumbai.json')
 
 declare const window: any
-import eventOrgs from "../../utils/orgs.json"
+import eventOrgs from '../../utils/orgs.json'
+import BoringAva from '../../utils/BoringAva'
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
     const [balance, setBalance] = useState<string>('')
@@ -53,7 +55,11 @@ export default function NavigationBar({ mode = 'dark' }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [showMyEvents, setMyEvents] = useState(false)
     const [email, setEmail] = useState('')
-    const { isOpen: isOpen2, onOpen: onOpen2, onClose: onClose2 } = useDisclosure()
+    const {
+        isOpen: isOpen2,
+        onOpen: onOpen2,
+        onClose: onClose2,
+    } = useDisclosure()
     const chainid: any = env ? 137 : 80001
     const endpoint: any = env
         ? process.env.NEXT_PUBLIC_ENDPOINT_POLYGON
@@ -126,7 +132,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                     ],
                 })
                 console.log('switched')
-                toast.success('Switched to Polygon Mainnet',{
+                toast.success('Switched to Polygon Mainnet', {
                     id: 'switched1',
                     position: 'top-center',
                     duration: 3000,
@@ -257,41 +263,38 @@ export default function NavigationBar({ mode = 'dark' }) {
         }
     }, [address, onClose, isOpen])
 
-
-useEffect(() => {
-    
-   if(wcProvider){
-        wcProvider.on("chainChanged", (chainId: number) => {
-            if(String(chainId) !== web3.utils.toHex(chainid as string) && walletType === 'wc'){
-                toast.error('Please switch to Polygon Mainnet',{
-                    id: 'switched6',
-                })
-            }
-          });
+    useEffect(() => {
+        if (wcProvider) {
+            wcProvider.on('chainChanged', (chainId: number) => {
+                if (
+                    String(chainId) !== web3.utils.toHex(chainid as string) &&
+                    walletType === 'wc'
+                ) {
+                    toast.error('Please switch to Polygon Mainnet', {
+                        id: 'switched6',
+                    })
+                }
+            })
         }
-        let windowType = window;
+        let windowType = window
         if (walletType === 'mm') {
-        windowType.ethereum.on('chainChanged', async (chainId:number) => {
-          
-            if(String(chainId) !== web3.utils.toHex(chainid as string) && walletType === 'mm'){
-                console.log(chainId,"chainId")
-                toast.error('Please switch to Polygon Mainnet',{
-                    id: 'switched1',
-                    position: 'top-center',
-                    duration:Infinity
-                    
-                    
-                })
-                
-            }
-            loadAccounts()
-        
-        });
+            windowType.ethereum.on('chainChanged', async (chainId: number) => {
+                if (
+                    String(chainId) !== web3.utils.toHex(chainid as string) &&
+                    walletType === 'mm'
+                ) {
+                    console.log(chainId, 'chainId')
+                    toast.error('Please switch to Polygon Mainnet', {
+                        id: 'switched1',
+                        position: 'top-center',
+                        duration: Infinity,
+                    })
+                }
+                loadAccounts()
+            })
         }
-    //   dothis()
-        
-    
-}, [walletType,wcProvider,chainid,web3.utils])
+        //   dothis()
+    }, [walletType, wcProvider, chainid, web3.utils])
 
     useEffect(() => {
         let confirmation = localStorage.getItem('Autoconnect')
@@ -405,56 +408,55 @@ useEffect(() => {
                 <Flex alignItems="center" experimental_spaceX="6">
                     {eventOrgs.eventOrgs.includes(String(wallet?.address)) ? (
                         <NextLink href="/create" passHref>
-                        <Link _hover={{}} _focus={{}} _active={{}}>
-                            <Button
-                                pl="1"
-                                rounded="full"
-                                bg={
-                                    mode === 'white'
-                                        ? 'blackAlpha.100'
-                                        : 'whiteAlpha.800'
-                                }
-                                
-                                color="blackAlpha.700"
-                                fontWeight="medium"
-                                _hover={{
-                                    shadow: 'sm',
-                                    bg:
+                            <Link _hover={{}} _focus={{}} _active={{}}>
+                                <Button
+                                    pl="1"
+                                    rounded="full"
+                                    bg={
                                         mode === 'white'
-                                            ? 'blackAlpha.50'
-                                            : 'white',
-                                }}
-                                border="2px"
-                                borderColor={
-                                    mode === 'white'
-                                        ? 'blackAlpha.100'
-                                        : 'white'
-                                }
-                                _focus={{}}
-                                _active={{ transform: 'scale(0.95)' }}
-                                role="group"
-                                leftIcon={
-                                    <Flex
-                                        _groupHover={{
-                                            transform: 'scale(1.05)',
-                                        }}
-                                        transitionDuration="200ms"
-                                        justify="center"
-                                        alignItems="center"
-                                        color="white"
-                                        bg="brand.gradient"
-                                        rounded="full"
-                                        p="0.5"
-                                    >
-                                        <IoIosAdd size="25px" />
-                                    </Flex>
-                                }
-                            >
-                                Create Event
-                            </Button>
-                            
-                        </Link>
-                    </NextLink>):(
+                                            ? 'blackAlpha.100'
+                                            : 'whiteAlpha.800'
+                                    }
+                                    color="blackAlpha.700"
+                                    fontWeight="medium"
+                                    _hover={{
+                                        shadow: 'sm',
+                                        bg:
+                                            mode === 'white'
+                                                ? 'blackAlpha.50'
+                                                : 'white',
+                                    }}
+                                    border="2px"
+                                    borderColor={
+                                        mode === 'white'
+                                            ? 'blackAlpha.100'
+                                            : 'white'
+                                    }
+                                    _focus={{}}
+                                    _active={{ transform: 'scale(0.95)' }}
+                                    role="group"
+                                    leftIcon={
+                                        <Flex
+                                            _groupHover={{
+                                                transform: 'scale(1.05)',
+                                            }}
+                                            transitionDuration="200ms"
+                                            justify="center"
+                                            alignItems="center"
+                                            color="white"
+                                            bg="brand.gradient"
+                                            rounded="full"
+                                            p="0.5"
+                                        >
+                                            <IoIosAdd size="25px" />
+                                        </Flex>
+                                    }
+                                >
+                                    Create Event
+                                </Button>
+                            </Link>
+                        </NextLink>
+                    ) : (
                         <>
                             <Button
                                 pl="1"
@@ -464,7 +466,6 @@ useEffect(() => {
                                         ? 'blackAlpha.100'
                                         : 'whiteAlpha.800'
                                 }
-                                
                                 color="blackAlpha.700"
                                 fontWeight="medium"
                                 _hover={{
@@ -502,75 +503,80 @@ useEffect(() => {
                                 }
                             >
                                 Create Event
-                            </Button><Modal
-                    
-                    size="xl"
-                   
-                    isOpen={isOpen2} onClose={onClose2}
-                    isCentered
-                    >
-                        
-        <ModalOverlay />
-        <ModalContent>
-            <Flex
-            justify="center"
-            >
-          <Image src="/assets/elements/bolt.png"
-          maxH="20"
-          maxW="20" 
-          pos="absolute"
-        // skewY="50px"
-          zIndex="overlay"
-          top="-10"
-        //   left="250"
-          alt="bolt"
-          /></Flex>
-          <ModalBody
-        //   borderRadius="xl"
-     p="10"
-          >
-         <Flex flexDir="column"
-         justify="center"
-         align="center"
-         >
-             <Heading
-             fontFamily="azonix"
-             textAlign="center"
-            //  fontFamily="azonix"
-             fontSize={{ base: "3xl", lg: "3xl", xl: "3xl" }}
-             >
-                 JOIN THE WAITLIST
-             </Heading>
-             <Text
-             m="4"
-             p="4"
-             lineHeight="23.72px"
-             letterSpacing="3%"
-             fontFamily="Product Sans"
-             fontSize="18px"
-             color="rgba(0, 0, 0, 0.31)"
-             maxW="500px"
-             height="63.08px"
-             fontWeight="400"
-             
-            //  noOfLines={4}
-             >
-             We're on the mission to revolutionize event ticketing with blockchain, join the waitlist and lets band together on this journey! 🚀 
-             </Text>
-         <EmailBar 
-           email={email}
-              setEmail={setEmail}
-              onClose={onClose2}
-           />
-         </Flex>
-          </ModalBody>
+                            </Button>
+                            <Modal
+                                size="xl"
+                                isOpen={isOpen2}
+                                onClose={onClose2}
+                                isCentered
+                            >
+                                <ModalOverlay />
+                                <ModalContent>
+                                    <Flex justify="center">
+                                        <Image
+                                            src="/assets/elements/bolt.png"
+                                            maxH="20"
+                                            maxW="20"
+                                            pos="absolute"
+                                            // skewY="50px"
+                                            zIndex="overlay"
+                                            top="-10"
+                                            //   left="250"
+                                            alt="bolt"
+                                        />
+                                    </Flex>
+                                    <ModalBody
+                                        //   borderRadius="xl"
+                                        p="10"
+                                    >
+                                        <Flex
+                                            flexDir="column"
+                                            justify="center"
+                                            align="center"
+                                        >
+                                            <Heading
+                                                fontFamily="azonix"
+                                                textAlign="center"
+                                                //  fontFamily="azonix"
+                                                fontSize={{
+                                                    base: '3xl',
+                                                    lg: '3xl',
+                                                    xl: '3xl',
+                                                }}
+                                            >
+                                                JOIN THE WAITLIST
+                                            </Heading>
+                                            <Text
+                                                m="4"
+                                                p="4"
+                                                lineHeight="23.72px"
+                                                letterSpacing="3%"
+                                                fontFamily="Product Sans"
+                                                fontSize="18px"
+                                                color="rgba(0, 0, 0, 0.31)"
+                                                maxW="500px"
+                                                height="63.08px"
+                                                fontWeight="400"
 
-          
-        </ModalContent>
-      </Modal>
-      </>)
-                            
-                    }
+                                                //  noOfLines={4}
+                                            >
+                                                We&apos;re on the mission to
+                                                revolutionize event ticketing
+                                                with blockchain, join the
+                                                waitlist and lets band together
+                                                on this journey! 🚀
+                                            </Text>
+                                            <EmailBar
+                                                email={email}
+                                                setEmail={setEmail}
+                                                onClose={onClose2}
+                                            />
+                                        </Flex>
+                                    </ModalBody>
+                                </ModalContent>
+                            </Modal>
+                        </>
+                    )}
                     {wallet.address ? (
                         <Menu>
                             <MenuButton>
@@ -586,12 +592,7 @@ useEffect(() => {
 
                                     fontWeight="normal"
                                     leftIcon={
-                                        <Avatar
-                                            src={gravatarUrl(wallet.address, {
-                                                default: 'retro',
-                                            })}
-                                            size="xs"
-                                        />
+                                        <BoringAva address={wallet.address} />
                                     }
                                     rightIcon={<HiOutlineChevronDown />}
                                 >

@@ -28,10 +28,10 @@ import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
 import moment from 'moment'
-import gravatarUrl from 'gravatar-url'
+// import gravatarUrl from 'gravatar-url'
 import { walletContext } from '../../utils/walletContext'
 import { ethers } from 'ethers'
-import {BsCalendarPlus} from 'react-icons/bs'
+import { BsCalendarPlus } from 'react-icons/bs'
 import abi from '../../utils/Metapass.json'
 import youtubeThumbnail from 'youtube-thumbnail'
 
@@ -44,6 +44,7 @@ import { IoIosLink } from 'react-icons/io'
 import Confetti from '../../components/Misc/Confetti.component'
 import { ticketToIPFS } from '../../utils/imageHelper'
 import toGoogleCalDate from '../../utils/parseIsoDate'
+import BoringAva from '../../utils/BoringAva'
 
 declare const window: any
 
@@ -417,9 +418,12 @@ export default function EventLayout({ event }: { event: Event }) {
                             </Box>
                         }
                     >
-                        {event.tickets_available === event.tickets_sold
+                        {event.tickets_available === 0
                             ? 'Sold Out'
                             : 'Buy Ticket'}
+                            {/* {
+                                console.log(event.tickets_available, event.tickets_sold,"here here")
+                            } */}
                     </Button>
                 </Flex>
                 <Flex
@@ -629,15 +633,12 @@ export default function EventLayout({ event }: { event: Event }) {
                                     Event Date
                                 </Text>
                                 <Divider my="2" />
-                                <Text
-                                color="brand.peach">
+                                <Text color="brand.peach">
                                     {months[new Date(event.date).getMonth()]}
                                 </Text>
                                 <Text fontSize="2xl" fontWeight="semibold">
                                     {new Date(event.date).getDate()}
                                 </Text>
-                                
-                                
                             </Box>
                         </Flex>
                         <Box
@@ -663,17 +664,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     cursor="pointer"
                                     transitionDuration="100ms"
                                 >
-                                    <Avatar
-                                        size="xs"
-                                        src={gravatarUrl(
-                                            event.owner ||
-                                                event.eventHost ||
-                                                '0x565b7af7b3c9a5d005ccb39bbf21e07a1ad4cd42',
-                                            {
-                                                default: 'retro',
-                                            }
-                                        )}
-                                    />
+                                    <BoringAva address={wallet.address} />
                                     <Box>
                                         <Text fontSize="14px">
                                             {event.owner.substring(0, 6) +
@@ -710,19 +701,18 @@ export default function EventLayout({ event }: { event: Event }) {
                                         ?.reverse()
                                         .map((data, key) => {
                                             const { id }: any = data
-                                            console.log(data)
+                                            // console.log(data)
                                             return (
-                                                <Avatar
-                                                    src={gravatarUrl(
-                                                        id?.toString() || '1',
-                                                        {
-                                                            default: 'retro',
-                                                        }
-                                                    )}
+                                                <Box
+                                                    _hover={{ zIndex: 10 }}
                                                     key={key}
                                                     cursor="pointer"
-                                                    _hover={{ zIndex: 10 }}
-                                                />
+                                                >
+                                                    <BoringAva
+                                                        address={id}
+                                                        key={key}
+                                                    />
+                                                </Box>
                                             )
                                         })}
                                 </AvatarGroup>
@@ -787,95 +777,111 @@ export default function EventLayout({ event }: { event: Event }) {
                                 String(buyer.id).toLowerCase() ===
                                 String(wallet.address).toLowerCase()
                         ) && (
-                            <Flex 
-                            align="center"
-                            justify="space-evenly"
-                            >
-                            <Box
-                                p="1.5px"
-                                mx="auto"
-                                mt="6"
-                                transitionDuration="200ms"
-                                rounded="full"
-                                w="fit-content"
-                                boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
-                                bg="brand.gradient"
-                                _hover={{ transform: 'scale(1.05)' }}
-                                _focus={{}}
-                                _active={{ transform: 'scale(0.95)' }}
-                            >
-                                <Button
-                                    type="submit"
+                            <Flex align="center" justify="space-evenly">
+                                <Box
+                                    p="1.5px"
+                                    mx="auto"
+                                    mt="6"
+                                    transitionDuration="200ms"
                                     rounded="full"
-                                    bg="white"
-                                    size="sm"
-                                    color="blackAlpha.700"
-                                    fontWeight="medium"
-                                    _hover={{}}
-                                    leftIcon={
-                                        <Box
-                                            _groupHover={{
-                                                transform: 'scale(1.1)',
-                                            }}
-                                            transitionDuration="200ms"
-                                        >
-                                            <Image
-                                                src="/assets/elements/event_ticket_gradient.svg"
-                                                w="4"
-                                                alt="ticket"
-                                            />
-                                        </Box>
-                                    }
+                                    w="fit-content"
+                                    boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
+                                    bg="brand.gradient"
+                                    _hover={{ transform: 'scale(1.05)' }}
                                     _focus={{}}
-                                    _active={{}}
-                                    onClick={() => {
-                                        window.open(event.link, '_blank')
-                                    }}
-                                    role="group"
+                                    _active={{ transform: 'scale(0.95)' }}
                                 >
-                                    Go to event
-                                </Button>
-                               
-                            </Box>
-                           <IconButton
-                           p="1.5px"
-                           mx="auto"
-                           mt="6"
-                        //    bgGradient="linear-gradient(to bottom, #e72c83 0%,#a742c6 100%);"
-                        //    bgClip="text"
-                           icon={  <BsCalendarPlus
-                            // size="40%"
-                        //    color="transparent"
-                        //    fill='transparent'
-                           />}
-                            role="button"
-                            onClick={()=>{
-                                // "02/16/2022--17:10:00-18:00:00"
-                                let eventdate = event.date; 
-                                let date = eventdate.split('--')[0]
-                                console.log(date)
-                                let startDate = eventdate.split('--')[1].split('-')[0]
-                                console.log(startDate)
-                                let endDate = eventdate.split('--')[1].split('-')[1]
-                                console.log(endDate)
-                                let finalStartDate = moment(date+" "+startDate).format()
-                                // console.log(new Date(date+" "+startDate))
-                                console.log(finalStartDate, "finalStartDate")
-                                let finalEndDate = moment(date+" "+endDate).format()
-                                console.log(finalEndDate, "finalEndDate")
-                                let googleStartDate = toGoogleCalDate(new Date(finalStartDate))
-                                console.log(googleStartDate)
-                                let googleEndDate = toGoogleCalDate(new Date(finalEndDate))
-                                console.log(googleEndDate)
-                               //open a window and redirect to google calendar to add an event with a set date and time in the local time zone format mm/dd/yyyy--hh:mm:ss-hh:mm:ss
-                               window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${event.title}&dates=${googleStartDate}/${googleEndDate}&details=${event.description.short_desc}&location=${event.link}&sf=true&output=xml`, '_blank') 
-                              
-                            }}
-                            aria-label='add to calendar'
-                           >
-
-                           </IconButton>
-                         </Flex>
+                                    <Button
+                                        type="submit"
+                                        rounded="full"
+                                        bg="white"
+                                        size="sm"
+                                        color="blackAlpha.700"
+                                        fontWeight="medium"
+                                        _hover={{}}
+                                        leftIcon={
+                                            <Box
+                                                _groupHover={{
+                                                    transform: 'scale(1.1)',
+                                                }}
+                                                transitionDuration="200ms"
+                                            >
+                                                <Image
+                                                    src="/assets/elements/event_ticket_gradient.svg"
+                                                    w="4"
+                                                    alt="ticket"
+                                                />
+                                            </Box>
+                                        }
+                                        _focus={{}}
+                                        _active={{}}
+                                        onClick={() => {
+                                            window.open(event.link, '_blank')
+                                        }}
+                                        role="group"
+                                    >
+                                        Go to event
+                                    </Button>
+                                </Box>
+                                <IconButton
+                                    p="1.5px"
+                                    mx="auto"
+                                    mt="6"
+                                    //    bgGradient="linear-gradient(to bottom, #e72c83 0%,#a742c6 100%);"
+                                    //    bgClip="text"
+                                    icon={
+                                        <BsCalendarPlus
+                                        // size="40%"
+                                        //    color="transparent"
+                                        //    fill='transparent'
+                                        />
+                                    }
+                                    role="button"
+                                    onClick={() => {
+                                        // "02/16/2022--17:10:00-18:00:00"
+                                        let eventdate = event.date
+                                        let date = eventdate.split('--')[0]
+                                        console.log(date)
+                                        let startDate = eventdate
+                                            .split('--')[1]
+                                            .split('-')[0]
+                                        console.log(startDate)
+                                        let endDate = eventdate
+                                            .split('--')[1]
+                                            .split('-')[1]
+                                        console.log(endDate)
+                                        let finalStartDate = moment(
+                                            date + ' ' + startDate
+                                        ).format()
+                                        // console.log(new Date(date+" "+startDate))
+                                        console.log(
+                                            finalStartDate,
+                                            'finalStartDate'
+                                        )
+                                        let finalEndDate = moment(
+                                            date + ' ' + endDate
+                                        ).format()
+                                        console.log(
+                                            finalEndDate,
+                                            'finalEndDate'
+                                        )
+                                        let googleStartDate = toGoogleCalDate(
+                                            new Date(finalStartDate)
+                                        )
+                                        console.log(googleStartDate)
+                                        let googleEndDate = toGoogleCalDate(
+                                            new Date(finalEndDate)
+                                        )
+                                        console.log(googleEndDate)
+                                        //open a window and redirect to google calendar to add an event with a set date and time in the local time zone format mm/dd/yyyy--hh:mm:ss-hh:mm:ss
+                                        window.open(
+                                            `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${event.title}&dates=${googleStartDate}/${googleEndDate}&details=${event.description.short_desc}&location=${event.link}&sf=true&output=xml`,
+                                            '_blank'
+                                        )
+                                    }}
+                                    aria-label="add to calendar"
+                                ></IconButton>
+                            </Flex>
                         )}
                     </Flex>
                 </Flex>

@@ -109,11 +109,11 @@ const Create: NextPage = () => {
         //     image: event.image,
         //     gallery: event.image.gallery,
         // }
-        function b64EncodeUnicode(str:any) {
-            return btoa(encodeURIComponent(str));
-        };
+        function b64EncodeUnicode(str: any) {
+            return btoa(encodeURIComponent(str))
+        }
         try {
-            console.log("starting txn")
+            console.log('starting txn')
             let txn = await contract?.createEvent(
                 String(event.title),
                 ethers.utils.parseEther(event.fee.toString()),
@@ -125,10 +125,10 @@ const Create: NextPage = () => {
                 event.date,
                 b64EncodeUnicode(JSON.stringify(event.category))
             )
-            console.log("txn complete")
+            console.log('txn complete')
             console.log(txn)
         } catch (e) {
-            console.log("error while txn")
+            console.log('error while txn')
             console.log(e)
         }
 
