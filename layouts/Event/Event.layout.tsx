@@ -56,6 +56,7 @@ export default function EventLayout({ event }: { event: Event }) {
     )
     const { hasCopied, onCopy } = useClipboard(event.link as string)
     const [hasBought, setHasBought] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [ensName, setEnsName] = useState<string>('')
     const months = [
         'JAN',
@@ -73,13 +74,14 @@ export default function EventLayout({ event }: { event: Event }) {
     ]
 
     const [wallet] = useContext(walletContext)
-
+    // const [hasBought, setHasBought] = useState<boolean>(false)
     const buyTicket = async () => {
         if (wallet.address != null) {
             if (typeof window.ethereum != undefined) {
                 const provider = new ethers.providers.Web3Provider(
                     window.ethereum
                 )
+                setIsLoading(true)
                 const signer = provider.getSigner()
                 let metapass = new ethers.Contract(
                     event.childAddress,
@@ -114,6 +116,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         .then(() => {
                             console.log('Success!')
                             console.log('metdata is ', metadata)
+                            setIsLoading(false)
                         })
                         .catch((err: any) => {
                             console.log('error', err)
@@ -123,13 +126,16 @@ export default function EventLayout({ event }: { event: Event }) {
                                     fontSize: '12px',
                                 },
                             })
+                            setIsLoading(false)
                         })
+
                 } catch (e: any) {
                     toast(
                         'An error occured! Share error code: ' +
                             e.code +
                             ' with the team for reference.'
                     )
+                    setIsLoading(false)
                 }
 
                 metapass.once('Transfer', () => {
@@ -143,7 +149,7 @@ export default function EventLayout({ event }: { event: Event }) {
         }
     }
     useEffect(() => {
-        getAllEnsLinked(event.owner || "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").then((data) => {
+        getAllEnsLinked(event.owner || "0x23302DA41ae4A69875321343D7ACA464a4E72DB2").then((data) => {
             if(data?.data?.domains && data && data?.data){
             console.log(data?.data?.domains)
             console.log(data?.data?.data?.domains?.length, data?.data?.domains?.length > 0 && (data?.data?.domains[0].name))
@@ -404,6 +410,8 @@ export default function EventLayout({ event }: { event: Event }) {
                         bg="brand.gradient"
                         fontWeight="medium"
                         role="group"
+                        loadingText='Minting'
+                        isLoading={isLoading}
                         boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
                         color="white"
                         _disabled={{ opacity: '0.8', cursor: 'not-allowed' }}
@@ -728,7 +736,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                 </AvatarGroup>
                             ) : (
                                 <Text fontSize={13}>
-                                    You're the first one here!
+                                    You&apos;re the first one here!
                                 </Text>
                             )}
                         </Box>

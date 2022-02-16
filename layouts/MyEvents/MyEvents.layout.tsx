@@ -67,7 +67,8 @@ export default function MyEvents({ isOpen, onClose }: any) {
     }
     const parseMyEvents = (myEvents: Array<any>): Event[] => {
         return myEvents.map((event: any) => {
-            let type = JSON.parse(UnicodeDecodeB64(event.category)).event_type
+            // let type = JSON.parse(UnicodeDecodeB64(event.category)).event_type
+            let type = event.type
             let category: CategoryType = JSON.parse(
                 UnicodeDecodeB64(event.category)
             )
@@ -143,17 +144,20 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 console.log('error', error)
             }
         }
-        getMyEvents()
+        if(wallet?.address){
+            getMyEvents()
             .then((res) => {
                 const data: Event[] = parseMyEvents(
                     res.data.childCreatedEntities
                 )
+                console.log(data)
                 setMyEvents(data)
                 console.log(data)
             })
             .catch((err) => {
                 console.log(err)
             })
+        }
         // console.log(myEvents)
     }, [wallet.address])
     return (

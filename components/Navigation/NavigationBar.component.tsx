@@ -48,7 +48,7 @@ import eventOrgs from '../../utils/orgs.json'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 export default function NavigationBar({ mode = 'dark' }) {
-    const [address, setAddress] = useState<string>('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')
+    const [address, setAddress] = useState<string>('0x23302DA41ae4A69875321343D7ACA464a4E72DB2')
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
     const [_, setWeb3] = useContext(web3Context)
@@ -84,6 +84,7 @@ export default function NavigationBar({ mode = 'dark' }) {
 
     async function getAccountData({ accounts, windowType }: any) {
         try {
+           
             accounts = await windowType.ethereum.request({
                 method: 'eth_requestAccounts',
             })
@@ -103,24 +104,27 @@ export default function NavigationBar({ mode = 'dark' }) {
     }
 
     async function loadAccounts() {
+        console.log("enter")
         let windowType = window
-
+        console.log(windowType, 'windowType')
         let accounts = await windowType.ethereum.request({
             method: 'eth_requestAccounts',
         })
-        console.log(windowType.ethereum.chainId)
+
+        // console.log(windowType.ethereum.chainId, 'chainId')
 
         if (windowType.ethereum.chainId == chainid) {
             setAddress(accounts[0])
+            // console.log('got accounts', accounts)
             let bal = await web3.eth.getBalance(accounts[0])
             let ethBal: any = await web3.utils.fromWei(bal, 'ether')
             setBalance(ethBal)
-
+            // console.log('got balance', ethBal)
             setWallet({
                 balance: ethBal,
                 address: accounts[0],
             })
-
+            // console.log('got wallet', wallet)
             localStorage.setItem('Autoconnect', 'true')
             setWalletType('mm')
         } else {
@@ -181,14 +185,16 @@ export default function NavigationBar({ mode = 'dark' }) {
 
             if (connectionChainId == chainid) {
                 setAddress(accounts[0])
+                console.log("accounts", accounts[0])
                 let bal = await web3.eth.getBalance(accounts[0])
                 let ethBal: any = await web3.utils.fromWei(bal, 'ether')
                 setBalance(ethBal)
-
+                console.log("bal", ethBal)
                 setWallet({
                     balance: ethBal,
                     address: accounts[0],
                 })
+                console.log("wallet", wallet)   
             } else {
                 toast.error('Please switch to Polygon Mainnet here', {
                     position: 'bottom-center',
@@ -305,10 +311,10 @@ export default function NavigationBar({ mode = 'dark' }) {
         }
     }, [])
     useEffect(() => {
-        getAllEnsLinked(address || "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").then((data) => {
+        getAllEnsLinked(address || "0x23302DA41ae4A69875321343D7ACA464a4E72DB2").then((data) => {
             if(data?.data?.domains && data && data?.data){
             console.log(data?.data?.domains)
-            console.log(data?.data.data.domains?.length, data.data.domains?.length > 0 && (data?.data?.domains[0]?.name))
+            console.log(data?.data.domains?.length, data.data.domains?.length > 0 && (data?.data?.domains[0]?.name))
             const ens_name = data?.data?.domains?.length > 0 && (data?.data?.domains[0].name) 
             setEnsName(ens_name)
             }
@@ -351,7 +357,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                                 ? handleWalletConnect
                                                 : loadAccounts
                                         }
-                                    >
+                                        >
                                         <Flex
                                             justify="space-between"
                                             alignItems="center"
