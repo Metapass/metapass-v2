@@ -46,6 +46,7 @@ const polygon = require(env
 declare const window: any
 import eventOrgs from '../../utils/orgs.json'
 import BoringAva from '../../utils/BoringAva'
+import { getAllEnsLinked } from '../../utils/resolveEns'
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
     const [balance, setBalance] = useState<string>('')
@@ -55,6 +56,7 @@ export default function NavigationBar({ mode = 'dark' }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [showMyEvents, setMyEvents] = useState(false)
     const [email, setEmail] = useState('')
+    const [ensName, setEnsName] = useState<string>('')
     const {
         isOpen: isOpen2,
         onOpen: onOpen2,
@@ -302,6 +304,16 @@ export default function NavigationBar({ mode = 'dark' }) {
             loadAccounts()
         }
     }, [])
+    useEffect(() => {
+        getAllEnsLinked(address).then((data) => {
+            console.log(data.data.domains)
+            console.log(data,data.data.domains.length, data.data.domains.length > 0 && (data.data.domains[0].name))
+            const ens_name = data.data.domains.length > 0 && (data.data.domains[0].name) 
+            setEnsName(ens_name)
+     }).catch((err) => {
+         console.log(err)
+     })
+    },[address])
 
     return (
         <>
@@ -596,11 +608,11 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     }
                                     rightIcon={<HiOutlineChevronDown />}
                                 >
-                                    {wallet.address.substring(0, 4) +
+                                    {ensName || (wallet.address.substring(0, 4) +
                                         '...' +
                                         wallet.address.substring(
                                             wallet.address.length - 4
-                                        )}
+                                        ))}
                                 </Button>
                             </MenuButton>
                             <MenuList
