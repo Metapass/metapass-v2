@@ -32,7 +32,7 @@ import { gqlEndpoint } from '../../utils/subgraphApi'
 // import { MdCalendarToday as CalendarToday } from "react-icons/md";
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import axios from 'axios'
-import getAllEnsLinked from '../../utils/resolveEns'
+import {getAllEnsLinked} from '../../utils/resolveEns'
 import { MdTag } from 'react-icons/md'
 import { AiOutlineSend } from 'react-icons/ai'
 import { SetStateAction } from 'react'
@@ -307,7 +307,7 @@ export default function FeaturedEvents() {
 
                                         //  noOfLines={4}
                                     >
-                                        We're on the mission to revolutionize
+                                        We&apos;re on the mission to revolutionize
                                         event ticketing with blockchain, join
                                         the waitlist and lets band together on
                                         this journey! 🚀

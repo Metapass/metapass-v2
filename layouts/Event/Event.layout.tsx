@@ -434,7 +434,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         _disabled={{ opacity: '0.8', cursor: 'not-allowed' }}
                         _hover={{}}
                         onClick={buyTicket}
-                        disabled={event.tickets_available <= event.tickets_sold}
+                        disabled={event.tickets_available === 0}
                         _focus={{}}
                         _active={{}}
                         mr="3"
