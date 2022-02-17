@@ -47,21 +47,17 @@ declare const window: any
 import eventOrgs from '../../utils/orgs.json'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
+import WaitlistModal from '../Misc/WaitlistModal'
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('0x23302DA41ae4A69875321343D7ACA464a4E72DB2')
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
     const [_, setWeb3] = useContext(web3Context)
     const [walletType, setWalletType] = useState<string>('')
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { isOpen:isOpen1, onOpen:onOpen1, onClose:onClose1 } = useDisclosure()
     const [showMyEvents, setMyEvents] = useState(false)
     const [email, setEmail] = useState('')
     const [ensName, setEnsName] = useState<string>('')
-    const {
-        isOpen: isOpen2,
-        onOpen: onOpen2,
-        onClose: onClose2,
-    } = useDisclosure()
     const chainid: any = env ? 137 : 80001
     const endpoint: any = env
         ? process.env.NEXT_PUBLIC_ENDPOINT_POLYGON
@@ -106,7 +102,7 @@ export default function NavigationBar({ mode = 'dark' }) {
     async function loadAccounts() {
         console.log("enter")
         let windowType = window
-        console.log(windowType, 'windowType')
+        // console.log(windowType, 'windowType')
         let accounts = await windowType.ethereum.request({
             method: 'eth_requestAccounts',
         })
@@ -216,7 +212,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                 address: '',
             })
             windowType.ethereum.on('accountsChanged', async () => {
-                onClose()
+                onClose1()
             })
         }
     }
@@ -238,14 +234,14 @@ export default function NavigationBar({ mode = 'dark' }) {
         if (isconnected) {
             await wcProvider.disconnect()
             wcProvider.on('disconnect', (code: number, reason: string) => {
-                onClose()
+                onClose1()
                 console.log(code, reason)
             })
         }
     }
 
     useEffect(() => {
-        if (isOpen) {
+        if (isOpen1) {
             toast.success('Make sure to choose Polygon network', {
                 icon: (
                     <Avatar
@@ -263,13 +259,13 @@ export default function NavigationBar({ mode = 'dark' }) {
                 },
             })
         }
-    }, [isOpen])
+    }, [isOpen1])
 
     useEffect(() => {
-        if (isOpen && address) {
-            onClose()
+        if (isOpen1 && address && address !== "0x23302DA41ae4A69875321343D7ACA464a4E72DB2") {
+            onClose1();
         }
-    }, [address, onClose, isOpen])
+    }, [address, onClose1, isOpen1])
 
     useEffect(() => {
         if (wcProvider) {
@@ -326,7 +322,7 @@ export default function NavigationBar({ mode = 'dark' }) {
     return (
         <>
             <Fade
-                in={isOpen}
+                in={isOpen1}
                 transition={{
                     enter: { duration: 5 },
                     exit: { duration: 5 },
@@ -338,7 +334,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                         setMyEvents(false)
                     }}
                 />
-                <Modal isOpen={isOpen} onClose={onClose}>
+                <Modal isOpen={isOpen1} onClose={onClose1}>
                     <ModalOverlay />
                     <ModalContent rounded="xl">
                         <ModalBody m={2} p={4}>
@@ -477,125 +473,12 @@ export default function NavigationBar({ mode = 'dark' }) {
                             </Link>
                         </NextLink>
                     ) : (
-                        <>
-                            <Button
-                                pl="1"
-                                rounded="full"
-                                bg={
-                                    mode === 'white'
-                                        ? 'blackAlpha.100'
-                                        : 'whiteAlpha.800'
-                                }
-                                color="blackAlpha.700"
-                                fontWeight="medium"
-                                _hover={{
-                                    shadow: 'sm',
-                                    bg:
-                                        mode === 'white'
-                                            ? 'blackAlpha.50'
-                                            : 'white',
-                                }}
-                                border="2px"
-                                onClick={onOpen2}
-                                borderColor={
-                                    mode === 'white'
-                                        ? 'blackAlpha.100'
-                                        : 'white'
-                                }
-                                _focus={{}}
-                                _active={{ transform: 'scale(0.95)' }}
-                                role="group"
-                                leftIcon={
-                                    <Flex
-                                        _groupHover={{
-                                            transform: 'scale(1.05)',
-                                        }}
-                                        transitionDuration="200ms"
-                                        justify="center"
-                                        alignItems="center"
-                                        color="white"
-                                        bg="brand.gradient"
-                                        rounded="full"
-                                        p="0.5"
-                                    >
-                                        <IoIosAdd size="25px" />
-                                    </Flex>
-                                }
-                            >
-                                Create Event
-                            </Button>
-                            <Modal
-                                size="xl"
-                                isOpen={isOpen2}
-                                onClose={onClose2}
-                                isCentered
-                            >
-                                <ModalOverlay />
-                                <ModalContent>
-                                    <Flex justify="center">
-                                        <Image
-                                            src="/assets/elements/bolt.png"
-                                            maxH="20"
-                                            maxW="20"
-                                            pos="absolute"
-                                            // skewY="50px"
-                                            zIndex="overlay"
-                                            top="-10"
-                                            //   left="250"
-                                            alt="bolt"
-                                        />
-                                    </Flex>
-                                    <ModalBody
-                                        //   borderRadius="xl"
-                                        p="10"
-                                    >
-                                        <Flex
-                                            flexDir="column"
-                                            justify="center"
-                                            align="center"
-                                        >
-                                            <Heading
-                                                fontFamily="azonix"
-                                                textAlign="center"
-                                                //  fontFamily="azonix"
-                                                fontSize={{
-                                                    base: '3xl',
-                                                    lg: '3xl',
-                                                    xl: '3xl',
-                                                }}
-                                            >
-                                                JOIN THE WAITLIST
-                                            </Heading>
-                                            <Text
-                                                m="4"
-                                                p="4"
-                                                lineHeight="23.72px"
-                                                letterSpacing="3%"
-                                                fontFamily="Product Sans"
-                                                fontSize="18px"
-                                                color="rgba(0, 0, 0, 0.31)"
-                                                maxW="500px"
-                                                height="63.08px"
-                                                fontWeight="400"
-
-                                                //  noOfLines={4}
-                                            >
-                                                We&apos;re on the mission to
-                                                revolutionize event ticketing
-                                                with blockchain, join the
-                                                waitlist and lets band together
-                                                on this journey! 🚀
-                                            </Text>
-                                            <EmailBar
-                                                email={email}
-                                                setEmail={setEmail}
-                                                onClose={onClose2}
-                                            />
-                                        </Flex>
-                                    </ModalBody>
-                                </ModalContent>
-                            </Modal>
-                        </>
+                        <WaitlistModal 
+                          email={email}
+                            setEmail={setEmail}
+                            mode={mode}
+                        />
+                    
                     )}
                     {wallet.address ? (
                         <Menu>
@@ -709,7 +592,11 @@ export default function NavigationBar({ mode = 'dark' }) {
                                 leftIcon={
                                     <MdAccountBalanceWallet size="25px" />
                                 }
-                                onClick={onOpen}
+                                onClick={() => {
+                                    onOpen1()
+                                
+                                console.log(isOpen1)
+                                }}
                             >
                                 Connect Wallet
                             </Button>
