@@ -154,33 +154,7 @@ export default function FeaturedEvents() {
                 tickets_sold: event.event.buyers.length,
                 buyers: event.event.buyers,
             } as Event
-            // getAllEnsLinked('0x99Ec99FCdAd66Ca801DEf23b432500fF045251f9')
-            //     .then((ens: any) => {
-            //         setTheEvent({
-            //             id: event.event.id,
-            //             title: event.event.title,
-            //             childAddress: event.event.childAddress,
-            //             category: category,
-            //             image: image,
-            //             eventHost: event.event.eventHost,
-            //             fee: String(Number(event.event.fee) / 10 ** 18),
-            //             date: event.event.date,
-            //             description: event.event.description,
-            //             seats: event.event.seats,
-            //             owner: ens.length > 0 ? ens[0].name : '',
-            //             price: Number(event.event.fee) / 10 ** 18,
-            //             type: type,
-            //             tickets_available:
-            //                 event.event.seats - event.event.buyers.length,
-            //             tickets_sold: event.event.buyers.length,
-            //             buyers: event.event.buyers,
-            //             slides: event.event.slides,
-            //         })
-            //     })
-            //     .catch((error) => {
-            //         console.log(error)
-            //     })
-            // return theEvent
+            
         })
     }
     useEffect(() => {

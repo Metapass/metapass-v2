@@ -307,7 +307,7 @@ export default function NavigationBar({ mode = 'dark' }) {
         }
     }, [])
     useEffect(() => {
-        getAllEnsLinked(address || "0x23302DA41ae4A69875321343D7ACA464a4E72DB2").then((data) => {
+        getAllEnsLinked(wallet.address || address || "address").then((data) => {
             if(data?.data?.domains && data && data?.data){
             console.log(data?.data?.domains)
             console.log(data?.data.domains?.length, data.data.domains?.length > 0 && (data?.data?.domains[0]?.name))
@@ -317,7 +317,7 @@ export default function NavigationBar({ mode = 'dark' }) {
      }).catch((err) => {
          console.log(err)
      })
-    },[address])
+    },[address,wallet.address])
 
     return (
         <>
