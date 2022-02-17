@@ -413,11 +413,11 @@ export default function NavigationBar({ mode = 'dark' }) {
                         <Image
                             src={
                                 mode === 'white'
-                                    ? '/assets/logo_gradient.svg'
-                                    : '/assets/logo.svg'
+                                    ? '/assets/newlogo.svg'
+                                    : '/assets/newlogowhite.svg'
                             }
                             alt="Metapass"
-                            w="10"
+                            w="16"
                         />
                     </Link>
                 </NextLink>
