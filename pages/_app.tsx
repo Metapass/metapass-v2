@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                     content="MetaPass - Reimagining Events"
                 />
                 <meta property="og:url" content="https://metapasshq.xyz" />
-                <meta property="og:image" content="https://res.cloudinary.com/dev-connect/image/upload/v1645093690/img/embed_wqfswz.webp" />
+                <meta property="og:image" content="/assets/ogimage.png" />
         <meta property="og:type" content="website" />
         <meta name="twitter:site" content="@metapasshq" />
         <meta name="twitter:title" content="MetaPass - Reimagining Events" />
