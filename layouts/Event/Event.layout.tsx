@@ -46,6 +46,7 @@ import { ticketToIPFS } from '../../utils/imageHelper'
 import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
+import { decryptLink } from '../../utils/linkResolvers'
 
 declare const window: any
 
@@ -54,10 +55,12 @@ export default function EventLayout({ event }: { event: Event }) {
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
     )
-    const { hasCopied, onCopy } = useClipboard(event.link as string)
+    const [eventLink, setEventLink] = useState<string>('')
+    const { hasCopied, onCopy } = useClipboard(eventLink as string)
     const [hasBought, setHasBought] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [ensName, setEnsName] = useState<string>('')
+
     const months = [
         'JAN',
         'FEB',
@@ -152,7 +155,7 @@ export default function EventLayout({ event }: { event: Event }) {
         getAllEnsLinked(event.owner || "0x23302DA41ae4A69875321343D7ACA464a4E72DB2").then((data) => {
             if(data?.data?.domains && data && data?.data){
             console.log(data?.data?.domains)
-            console.log(data?.data?.data?.domains?.length, data?.data?.domains?.length > 0 && (data?.data?.domains[0].name))
+            console.log(data?.data?.domains?.length, data?.data?.domains?.length > 0 && (data?.data?.domains[0].name))
             const ens_name = data?.data?.domains?.length > 0 && (data?.data?.domains[0].name) 
             setEnsName(ens_name)
             }
@@ -160,6 +163,20 @@ export default function EventLayout({ event }: { event: Event }) {
          console.log(err)
      })
     },[event.owner])
+    useEffect(() => {
+        // console.log(event.link)
+        if (event.link) {
+            const exceptions = ['https://www.youtube.com/watch?v=dQw4w9WgXcQ','https://thememe.club','https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058']
+            console.log(event.link)
+            if(!exceptions.includes(event.link)){
+                // console.log(decryptLink(event.link))
+            setEventLink(decryptLink(event.link))
+            }else{
+                setEventLink(event.link)
+            }
+
+        }
+    }, [event.link])
     return (
         <>
             {hasBought && <Confetti />}
@@ -283,7 +300,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             <Input
                                 rounded="full"
                                 fontSize="xs"
-                                value={event.link}
+                                value={eventLink}
                                 readOnly
                             />
                             <InputRightElement mr="6">
@@ -342,7 +359,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                 _focus={{}}
                                 _active={{}}
                                 onClick={() => {
-                                    window.open(event.link, '_blank')
+                                    window.open(eventLink, '_blank')
                                 }}
                                 role="group"
                             >
@@ -834,7 +851,8 @@ export default function EventLayout({ event }: { event: Event }) {
                                         _focus={{}}
                                         _active={{}}
                                         onClick={() => {
-                                            window.open(event.link, '_blank')
+                                            
+                                            window.open(eventLink, '_blank')
                                         }}
                                         role="group"
                                     >

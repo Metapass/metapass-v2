@@ -76,8 +76,9 @@ export default function MyEvents({ isOpen, onClose }: any) {
             let desc: DescriptionType = JSON.parse(
                 UnicodeDecodeB64(event.description)
             )
-
-            console.log(event.seats, event.buyers.length)
+            const exceptions = ['https://www.youtube.com/watch?v=dQw4w9WgXcQ','https://thememe.club','https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058']
+            // console.log(event.seats, event.buyers.length,event.link)
+            // exceptions.includes(event.link) ? event.link : decryptLink(event.link)
             return {
                 id: event.id,
                 title: event.title,
@@ -90,7 +91,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 description: desc,
                 seats: event.seats,
                 owner: event.eventHost,
-                link: decryptLink(event.link),
+                link: event.link,
                 type: type,
                 tickets_available: event.seats - event.buyers.length,
                 tickets_sold: event.buyers.length,
