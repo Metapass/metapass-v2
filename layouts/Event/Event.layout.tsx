@@ -23,22 +23,18 @@ import {
 import { useState, useContext, useEffect } from 'react'
 import ReactPlayer from 'react-player'
 import { Event } from '../../types/Event.type'
-import { getParameterByName } from '../../utils/queryExtractor'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
 import moment from 'moment'
-// import gravatarUrl from 'gravatar-url'
 import { walletContext } from '../../utils/walletContext'
 import { ethers } from 'ethers'
 import { BsCalendarPlus } from 'react-icons/bs'
 import abi from '../../utils/Metapass.json'
 import youtubeThumbnail from 'youtube-thumbnail'
-
 const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), {
     ssr: false,
 })
-import { ImageType } from '../../types/Event.type'
 import toast from 'react-hot-toast'
 import { IoIosLink } from 'react-icons/io'
 import Confetti from '../../components/Misc/Confetti.component'
@@ -60,6 +56,10 @@ export default function EventLayout({ event }: { event: Event }) {
     const [hasBought, setHasBought] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [ensName, setEnsName] = useState<string>('')
+    let opensea =
+        process.env.NEXT_PUBLIC_CHAIN_ID === '80001'
+            ? 'https://testnets.opensea.io/assets/mumbai'
+            : 'https://opensea.io'
 
     const months = [
         'JAN',
@@ -118,7 +118,6 @@ export default function EventLayout({ event }: { event: Event }) {
                         })
                         .then(() => {
                             console.log('Success!')
-                            console.log('metdata is ', metadata)
                             setIsLoading(false)
                         })
                         .catch((err: any) => {
@@ -129,9 +128,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     fontSize: '12px',
                                 },
                             })
-                            setIsLoading(false)
                         })
-
                 } catch (e: any) {
                     toast(
                         'An error occured! Share error code: ' +
@@ -141,9 +138,23 @@ export default function EventLayout({ event }: { event: Event }) {
                     setIsLoading(false)
                 }
 
-                metapass.once('Transfer', () => {
+                metapass.on('Minted', (res) => {
+                    toast.success('Redirecting to opensea in a few seconds')
+                    setIsLoading(false)
                     setHasBought(true)
+                    let link =
+                        opensea +
+                        '/' +
+                        event.childAddress +
+                        '/' +
+                        ethers.BigNumber.from(res).toNumber()
+
+                    window.open(link, '_blank')
                 })
+
+                // metapass.once('Transfer', (res) => {
+                //     console.log(res)
+                // })
             } else {
                 console.log("Couldn't find ethereum enviornment")
             }
@@ -152,29 +163,37 @@ export default function EventLayout({ event }: { event: Event }) {
         }
     }
     useEffect(() => {
-        getAllEnsLinked(event.owner).then((data) => {
-            if(data?.data?.domains && data && data?.data){
-            console.log(data?.data?.domains)
-            console.log(data?.data?.domains?.length, data?.data?.domains?.length > 0 && (data?.data?.domains[0].name))
-            const ens_name = data?.data?.domains?.length > 0 && (data?.data?.domains[0].name) 
-            setEnsName(ens_name)
-            }
-     }).catch((err) => {
-         console.log(err)
-     })
-    },[event.owner])
+        getAllEnsLinked(event.owner)
+            .then((data) => {
+                if (data?.data?.domains && data && data?.data) {
+                    console.log(
+                        data?.data?.domains?.length,
+                        data?.data?.domains?.length > 0 &&
+                            data?.data?.domains[0].name
+                    )
+                    const ens_name =
+                        data?.data?.domains?.length > 0 &&
+                        data?.data?.domains[0].name
+                    setEnsName(ens_name)
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }, [event.owner])
     useEffect(() => {
         // console.log(event.link)
         if (event.link) {
-            const exceptions = ['https://www.youtube.com/watch?v=dQw4w9WgXcQ','https://thememe.club','https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058']
-            console.log(event.link)
-            if(!exceptions.includes(event.link)){
-                // console.log(decryptLink(event.link))
-            setEventLink(decryptLink(event.link))
-            }else{
+            const exceptions = [
+                'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'https://thememe.club',
+                'https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058',
+            ]
+            if (!exceptions.includes(event.link)) {
+                setEventLink(decryptLink(event.link))
+            } else {
                 setEventLink(event.link)
             }
-
         }
     }, [event.link])
     return (
@@ -367,11 +386,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             </Button>
                         </Box>
                         <Box mt="2" mb="4">
-                            <Link
-                                fontSize="sm"
-                                href="/"
-                                color="blackAlpha.600"
-                            >
+                            <Link fontSize="sm" href="/" color="blackAlpha.600">
                                 Back to home
                             </Link>
                         </Box>
@@ -427,7 +442,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         bg="brand.gradient"
                         fontWeight="medium"
                         role="group"
-                        loadingText='Minting'
+                        loadingText="Minting"
                         isLoading={isLoading}
                         boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
                         color="white"
@@ -454,7 +469,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         {event.tickets_available === 0
                             ? 'Sold Out'
                             : 'Buy Ticket'}
-                            {/* {
+                        {/* {
                                 console.log(event.tickets_available, event.tickets_sold,"here here")
                             } */}
                     </Button>
@@ -700,13 +715,12 @@ export default function EventLayout({ event }: { event: Event }) {
                                     <BoringAva address={wallet.address} />
                                     <Box>
                                         <Text fontSize="14px">
-                                            {ensName || ((
+                                            {ensName ||
                                                 event.owner.substring(0, 6) +
-                                '...' +
-                                event?.owner.substring(
-                                    event?.owner?.length - 6
-                                )
-                                            ))}
+                                                    '...' +
+                                                    event?.owner.substring(
+                                                        event?.owner?.length - 6
+                                                    )}
                                         </Text>
                                     </Box>
                                 </Flex>
@@ -851,7 +865,6 @@ export default function EventLayout({ event }: { event: Event }) {
                                         _focus={{}}
                                         _active={{}}
                                         onClick={() => {
-                                            
                                             window.open(eventLink, '_blank')
                                         }}
                                         role="group"
@@ -890,7 +903,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                         let finalStartDate = moment(
                                             date + ' ' + startDate
                                         ).format()
-                                        
+
                                         // console.log(new Date(date+" "+startDate))
                                         console.log(
                                             finalStartDate,

@@ -75,7 +75,6 @@ const Event: NextPage = () => {
           
     }`,
         }
-        // console.log(featuredQuery);
         try {
             const res = await axios({
                 method: 'POST',
@@ -89,7 +88,6 @@ const Event: NextPage = () => {
             if (!!res.data?.errors?.length) {
                 throw new Error('Error fetching featured events')
             }
-            // console.log(res.data.data.childCreatedEntities[0])
             return res.data
         } catch (error) {
             console.log('error', error)
@@ -99,8 +97,6 @@ const Event: NextPage = () => {
         return decodeURIComponent(atob(str))
     }
     const parseFeaturedEvents = (event: any): Event => {
-        // return featuredEvents.map((event: { event: any }) => {
-        // console.log(event,"enter");
         let type: string = JSON.parse(
             UnicodeDecodeB64(event.category)
         ).event_type
@@ -161,9 +157,6 @@ const Event: NextPage = () => {
             >
                 <Box maxW="1000px" w="full">
                     <Skeleton isLoaded={featEvent.id !== ''}>
-                        {/* {
-                            console.log(featEvent)
-                        } */}
                         <EventLayout event={featEvent} />
                     </Skeleton>
                 </Box>
