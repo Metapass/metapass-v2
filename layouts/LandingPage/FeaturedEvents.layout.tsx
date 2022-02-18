@@ -83,6 +83,9 @@ export default function FeaturedEvents() {
                     childAddress
                     category
                     link
+                    ticketsBought{
+                        id
+                    }
                     image
                     buyers{
                         id
@@ -150,8 +153,8 @@ export default function FeaturedEvents() {
                 link: event.event.link,
                 type: type,
                 tickets_available:
-                    event.event.seats - event.event.buyers.length,
-                tickets_sold: event.event.buyers.length,
+                    event.event.seats - event.event.ticketsBought.length,
+                tickets_sold: event.event.ticketsBought.length,
                 buyers: event.event.buyers,
             } as Event
             

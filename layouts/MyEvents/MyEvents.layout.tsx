@@ -93,8 +93,8 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 owner: event.eventHost,
                 link: event.link,
                 type: type,
-                tickets_available: event.seats - event.buyers.length,
-                tickets_sold: event.buyers.length,
+                tickets_available: event.seats - event.ticketsBought.length,
+                tickets_sold: event.tiscketsBought.length,
                 buyers: event.buyers,
             } as Event
         })
@@ -112,6 +112,9 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                         childAddress
                                         category
                                         image
+                                        ticketsBought{
+                                            id
+                                        }
                                         buyers{
                                             id
                                             

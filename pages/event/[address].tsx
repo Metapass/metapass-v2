@@ -61,6 +61,9 @@ const Event: NextPage = () => {
             title
             childAddress
             category
+            ticketsBought{
+                id
+            }
             link
             description
             date
@@ -121,8 +124,8 @@ const Event: NextPage = () => {
             owner: event.eventHost,
             link: decryptLink(event.link),
             type: type,
-            tickets_available: event.seats - event.buyers?.length,
-            tickets_sold: event.buyers?.length,
+            tickets_available: event.seats - event.ticketsBought?.length,
+            tickets_sold: event.ticketsBought?.length,
             buyers: event.buyers,
             slides: image.gallery,
         } as Event
