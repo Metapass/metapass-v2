@@ -137,7 +137,7 @@ export default function FeaturedEvents() {
             let desc: DescriptionType = JSON.parse(
                 UnicodeDecodeB64(event.event.description)
             )
-            console.log(event.event.seats, event.event.buyers.length)
+            // console.log(event.event.seats, event.event.buyers.length)
             return {
                 id: event.event.id,
                 title: event.event.title,

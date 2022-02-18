@@ -811,10 +811,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             >
                                 <Box
                                     w={`${
-                                        (event.tickets_sold /
-                                            (event.seats +
-                                                event.tickets_sold)) *
-                                        100
+                                        (event.tickets_sold/event.seats)*100
                                     }%`}
                                     h="full"
                                     bg="brand.gradient"

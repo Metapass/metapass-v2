@@ -320,6 +320,7 @@ export default function EventCard({
                         mt="-4"
                         justify="left"
                     >
+                        {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
                         <Box
                             w={`${(event.tickets_sold / event.seats) * 100}%`}
                             h="full"

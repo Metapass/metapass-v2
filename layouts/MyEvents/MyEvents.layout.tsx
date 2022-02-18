@@ -94,7 +94,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 link: event.link,
                 type: type,
                 tickets_available: event.seats - event.ticketsBought.length,
-                tickets_sold: event.tiscketsBought.length,
+                tickets_sold: event.ticketsBought.length,
                 buyers: event.buyers,
             } as Event
         })
