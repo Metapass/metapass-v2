@@ -52,7 +52,7 @@ export default function EventLayout({ event }: { event: Event }) {
         event.image.video ? 'video' : 'image'
     )
     const [eventLink, setEventLink] = useState<string>('')
-    const { hasCopied, onCopy } = useClipboard(eventLink as string)
+    const { hasCopied,value, onCopy } = useClipboard(eventLink as string)
     const [hasBought, setHasBought] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [ensName, setEnsName] = useState<string>('')
@@ -138,7 +138,7 @@ export default function EventLayout({ event }: { event: Event }) {
                     setIsLoading(false)
                 }
 
-                metapass.on('Minted', (res) => {
+                metapass.on('Transfer', (res) => {
                     toast.success('Redirecting to opensea in a few seconds')
                     setIsLoading(false)
                     setHasBought(true)
@@ -161,6 +161,7 @@ export default function EventLayout({ event }: { event: Event }) {
         } else {
             toast('Please connect your wallet')
         }
+        // console.log(eventLink)
     }
     useEffect(() => {
         getAllEnsLinked(event.owner)
@@ -183,19 +184,23 @@ export default function EventLayout({ event }: { event: Event }) {
     }, [event.owner])
     useEffect(() => {
         // console.log(event.link)
-        if (event.link) {
+        if (event.link && hasBought) {
             const exceptions = [
                 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 'https://thememe.club',
                 'https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058',
             ]
             if (!exceptions.includes(event.link)) {
-                setEventLink(decryptLink(event.link))
+                const declink = decryptLink(event.link)
+                // console.log(declink,"if")
+                setEventLink(declink)
             } else {
+                // console.log(event.link,"else")
                 setEventLink(event.link)
             }
+            // console.log(eventLink,value)
         }
-    }, [event.link])
+    }, [event.link,hasBought])
     return (
         <>
             {hasBought && <Confetti />}
