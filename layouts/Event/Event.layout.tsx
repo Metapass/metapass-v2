@@ -81,7 +81,6 @@ export default function EventLayout({ event }: { event: Event }) {
     ]
 
     const [wallet] = useContext(walletContext)
-    // const [hasBought, setHasBought] = useState<boolean>(false)
     const buyTicket = async () => {
         if (wallet.address != null) {
             if (typeof window.ethereum != undefined) {
@@ -96,17 +95,17 @@ export default function EventLayout({ event }: { event: Event }) {
                     signer
                 )
                 console.log(metapass)
-                
-                let {img,fastimg} = await ticketToIPFS(
+
+                let { img, fastimg } = await ticketToIPFS(
                     event.title,
                     event.tickets_sold + 1,
                     event.image.image,
                     event.date,
-                    wallet.ens || (wallet.address.substring(0, 4) +
-                    '...' +
-                    wallet.address.substring(
-                        wallet.address.length - 4)
-                ))
+                    wallet.ens ||
+                        wallet.address.substring(0, 4) +
+                            '...' +
+                            wallet.address.substring(wallet.address.length - 4)
+                )
                 setMintedImage(fastimg)
                 let metadata = {
                     name: event.title,
@@ -190,11 +189,12 @@ export default function EventLayout({ event }: { event: Event }) {
             .catch((err) => {
                 console.log(err)
             })
-            // console.log(wallet)
+        // console.log(wallet)
     }, [event.owner])
+
     useEffect(() => {
-        // console.log(event.link)
-        if (event.link && hasBought) {
+        console.log(event.link)
+        if (event.link) {
             const exceptions = [
                 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 'https://thememe.club',
@@ -202,19 +202,20 @@ export default function EventLayout({ event }: { event: Event }) {
             ]
             if (!exceptions.includes(event.link)) {
                 const declink = decryptLink(event.link)
-                // console.log(declink,"if")
+                console.log(declink, 'if')
                 setEventLink(declink)
             } else {
-                // console.log(event.link,"else")
+                console.log(event.link, 'else')
                 setEventLink(event.link)
             }
             // console.log(eventLink,value)
         }
-    }, [event.link, hasBought])
+    }, [])
+
     const [isDisplayed, setIsDisplayed] = useState(false)
     // const {isOpen:isTicketOpen, onOpen:onTicketOpen, onClose:onTicketClose} = useDisclosure();
     useEffect(() => {
-        if(hasBought){
+        if (hasBought) {
             setInterval(() => {
                 setIsDisplayed(true)
             }, 5000)
@@ -230,9 +231,12 @@ export default function EventLayout({ event }: { event: Event }) {
                         animate={{ scale: [0, 1.3, 1] }}
                         transition={{ ease: 'easeOut', duration: 3 }}
                     >
-                        <Image src={mintedImage}
-                        loading="lazy"
-                        alt="ticket" m="2"></Image>
+                        <Image
+                            src={mintedImage}
+                            loading="lazy"
+                            alt="ticket"
+                            m="2"
+                        ></Image>
                     </motion.div>
                 </ModalContent>
             </Modal>
@@ -241,15 +245,6 @@ export default function EventLayout({ event }: { event: Event }) {
                     <ModalOverlay />
                     <ModalContent rounded="2xl">
                         <ModalBody textAlign="center">
-                            {/* <Image
-                            src="/assets/elements/sparkle_3.svg"
-                            alt="sparkle"
-                            w="28"
-                            mx="auto"
-                            h="28"
-                          translate="yes"
-                          translateY={-20}
-                        /> */}
                             <motion.div
                                 animate={{ translateY: [0, -20, 0] }}
                                 transition={{ duration: 2, repeat: Infinity }}
@@ -258,7 +253,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     src={mintedImage}
                                     alt="ticket"
                                     m="2"
-                                    loading='lazy'
+                                    loading="lazy"
                                 ></Image>
                             </motion.div>
 
