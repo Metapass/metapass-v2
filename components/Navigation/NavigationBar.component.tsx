@@ -50,7 +50,7 @@ import { getAllEnsLinked } from '../../utils/resolveEns'
 import WaitlistModal from '../Misc/WaitlistModal'
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>(
-        '0x23302DA41ae4A69875321343D7ACA464a4E72DB2'
+        ''
     )
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
@@ -270,7 +270,7 @@ export default function NavigationBar({ mode = 'dark' }) {
         if (
             isOpen1 &&
             address &&
-            address !== '0x23302DA41ae4A69875321343D7ACA464a4E72DB2'
+            address !== ''
         ) {
             onClose1()
         }

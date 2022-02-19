@@ -16,7 +16,6 @@ import { Skeleton } from '@chakra-ui/react'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { decryptLink } from '../../utils/linkResolvers'
 
 const Event: NextPage = () => {
     const router = useRouter()
@@ -122,7 +121,7 @@ const Event: NextPage = () => {
             description: desc,
             seats: event.seats,
             owner: event.eventHost,
-            link: decryptLink(event.link),
+            link: event.link,
             type: type,
             tickets_available: event.seats - event.ticketsBought?.length,
             tickets_sold: event.ticketsBought?.length,

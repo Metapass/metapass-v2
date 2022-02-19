@@ -81,7 +81,6 @@ export default function EventLayout({ event }: { event: Event }) {
     ]
 
     const [wallet] = useContext(walletContext)
-    // const [hasBought, setHasBought] = useState<boolean>(false)
     const buyTicket = async () => {
         if (wallet.address != null) {
             if (typeof window.ethereum != undefined) {
@@ -192,9 +191,10 @@ export default function EventLayout({ event }: { event: Event }) {
             })
         // console.log(wallet)
     }, [event.owner])
+
     useEffect(() => {
-        // console.log(event.link)
-        if (event.link && hasBought) {
+        console.log(event.link)
+        if (event.link) {
             const exceptions = [
                 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 'https://thememe.club',
@@ -202,15 +202,16 @@ export default function EventLayout({ event }: { event: Event }) {
             ]
             if (!exceptions.includes(event.link)) {
                 const declink = decryptLink(event.link)
-                // console.log(declink,"if")
+                console.log(declink, 'if')
                 setEventLink(declink)
             } else {
-                // console.log(event.link,"else")
+                console.log(event.link, 'else')
                 setEventLink(event.link)
             }
             // console.log(eventLink,value)
         }
-    }, [event.link, hasBought])
+    }, [])
+
     const [isDisplayed, setIsDisplayed] = useState(false)
     // const {isOpen:isTicketOpen, onOpen:onTicketOpen, onClose:onTicketClose} = useDisclosure();
     useEffect(() => {
@@ -244,15 +245,6 @@ export default function EventLayout({ event }: { event: Event }) {
                     <ModalOverlay />
                     <ModalContent rounded="2xl">
                         <ModalBody textAlign="center">
-                            {/* <Image
-                            src="/assets/elements/sparkle_3.svg"
-                            alt="sparkle"
-                            w="28"
-                            mx="auto"
-                            h="28"
-                          translate="yes"
-                          translateY={-20}
-                        /> */}
                             <motion.div
                                 animate={{ translateY: [0, -20, 0] }}
                                 transition={{ duration: 2, repeat: Infinity }}
@@ -303,6 +295,12 @@ export default function EventLayout({ event }: { event: Event }) {
                                         src="/assets/twitter.png"
                                         w="5"
                                         alt="twitter"
+                                        onClick={() => {
+                                            window.open(
+                                                `http://twitter.com/share?text=I bought my NFT Ticket for ${event.title} on metapass. Get yours now!&url=https://metapasshq.xyz/event/${event.childAddress}`,
+                                                '_blank'
+                                            )
+                                        }}
                                     />
                                 </Box>
                                 <Box
@@ -342,6 +340,11 @@ export default function EventLayout({ event }: { event: Event }) {
                                     cursor="pointer"
                                     boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
                                     rounded="full"
+                                    onClick={() => {
+                                        window.open(
+                                            `https://api.whatsapp.com/send?text=I just bought NFT Ticket to ${event.title} on Metapass. Get yours at https://metapasshq.xyz/event/${event.childAddress}`
+                                        )
+                                    }}
                                     _hover={{ shadow: 'md' }}
                                 >
                                     <Image
@@ -357,6 +360,12 @@ export default function EventLayout({ event }: { event: Event }) {
                                     cursor="pointer"
                                     boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
                                     rounded="full"
+                                    onClick={() => {
+                                        window.open(
+                                            `https://telegram.me/share/url?url=https://metapasshq.xyz/event/${event.childAddress}&text=I just bought my NFT Ticket to ${event.title} on Metapass. Get yours now`,
+                                            '_blank'
+                                        )
+                                    }}
                                     _hover={{ shadow: 'md' }}
                                 >
                                     <Image
