@@ -6,6 +6,7 @@ function Wallet({ children }: any) {
     const [wallet, setWallet] = useState({
         balance: null,
         address: null,
+        ens:null
     })
 
     return (

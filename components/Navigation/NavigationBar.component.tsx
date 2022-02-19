@@ -329,11 +329,18 @@ export default function NavigationBar({ mode = 'dark' }) {
                         data?.data?.domains?.length > 0 &&
                         data?.data?.domains[0].name
                     setEnsName(ens_name)
+                    setWallet({
+                        balance: balance,
+                        address: address,
+                        ens: ens_name,
+                    })
+                    // console.log(wallet,ens_name)
                 }
             })
             .catch((err) => {
                 console.log(err)
             })
+            console.log(wallet)
     }, [address, wallet.address])
 
     return (

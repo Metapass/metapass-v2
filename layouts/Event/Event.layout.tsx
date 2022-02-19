@@ -96,13 +96,17 @@ export default function EventLayout({ event }: { event: Event }) {
                     signer
                 )
                 console.log(metapass)
-
+                
                 let {img,fastimg} = await ticketToIPFS(
                     event.title,
                     event.tickets_sold + 1,
                     event.image.image,
-                    event.date
-                )
+                    event.date,
+                    wallet.ens || (wallet.address.substring(0, 4) +
+                    '...' +
+                    wallet.address.substring(
+                        wallet.address.length - 4)
+                ))
                 setMintedImage(fastimg)
                 let metadata = {
                     name: event.title,
@@ -186,6 +190,7 @@ export default function EventLayout({ event }: { event: Event }) {
             .catch((err) => {
                 console.log(err)
             })
+            // console.log(wallet)
     }, [event.owner])
     useEffect(() => {
         // console.log(event.link)
