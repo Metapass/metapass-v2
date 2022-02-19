@@ -295,6 +295,12 @@ export default function EventLayout({ event }: { event: Event }) {
                                         src="/assets/twitter.png"
                                         w="5"
                                         alt="twitter"
+                                        onClick={() => {
+                                            window.open(
+                                                `http://twitter.com/share?text=I bought my NFT Ticket for ${event.title} on metapass. Get yours now!&url=https://metapasshq.xyz/event/${event.childAddress}`,
+                                                '_blank'
+                                            )
+                                        }}
                                     />
                                 </Box>
                                 <Box
@@ -334,6 +340,11 @@ export default function EventLayout({ event }: { event: Event }) {
                                     cursor="pointer"
                                     boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
                                     rounded="full"
+                                    onClick={() => {
+                                        window.open(
+                                            `https://api.whatsapp.com/send?text=I just bought NFT Ticket to ${event.title} on Metapass. Get yours at https://metapasshq.xyz/event/${event.childAddress}`
+                                        )
+                                    }}
                                     _hover={{ shadow: 'md' }}
                                 >
                                     <Image
@@ -349,6 +360,12 @@ export default function EventLayout({ event }: { event: Event }) {
                                     cursor="pointer"
                                     boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
                                     rounded="full"
+                                    onClick={() => {
+                                        window.open(
+                                            `https://telegram.me/share/url?url=https://metapasshq.xyz/event/${event.childAddress}&text=I just bought my NFT Ticket to ${event.title} on Metapass. Get yours now`,
+                                            '_blank'
+                                        )
+                                    }}
                                     _hover={{ shadow: 'md' }}
                                 >
                                     <Image
