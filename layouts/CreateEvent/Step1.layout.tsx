@@ -500,7 +500,13 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                         </Box>
                     </Box>
                 </Flex>
-                <Box alignContent="center" mt="10" mb="20">
+                <Flex
+                    justifyContent="center"
+                    alignItems="center"
+                    alignContent="center"
+                    mt="10"
+                    mb="20"
+                >
                     <Button
                         size="lg"
                         rounded="full"
@@ -538,7 +544,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                     >
                         Next Step
                     </Button>
-                </Box>
+                </Flex>
             </Box>
         </form>
     )

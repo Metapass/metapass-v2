@@ -39,7 +39,9 @@ import EventCard from '../../components/Card/EventCard.component'
 import { events } from '../../utils/testData'
 import DateModal from './DateModal.layout'
 import { walletContext } from '../../utils/walletContext'
-import gravatarUrl from 'gravatar-url'
+// import gravatarUrl from 'gravatar-url'
+import { encryptLink } from '../../utils/linkResolvers'
+import BoringAva from '../../utils/BoringAva'
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
@@ -59,7 +61,7 @@ export default function Step4({
                 <form
                     onSubmit={(e) => {
                         e.preventDefault()
-                        onSubmit(_link)
+                        onSubmit(encryptLink(_link))
                     }}
                 >
                     <Box color="brand.black">
@@ -110,12 +112,8 @@ export default function Step4({
                                             cursor="pointer"
                                             transitionDuration="100ms"
                                         >
-                                            <Avatar
-                                                size="xs"
-                                                src={gravatarUrl(
-                                                    wallet.address,
-                                                    { default: 'retro' }
-                                                )}
+                                            <BoringAva
+                                                address={wallet.address}
                                             />
                                             <Box>
                                                 <Text fontSize="14px">
@@ -222,14 +220,8 @@ export default function Step4({
                                                 cursor="pointer"
                                                 transitionDuration="100ms"
                                             >
-                                                <Avatar
-                                                    size="xs"
-                                                    src={gravatarUrl(
-                                                        wallet.address,
-                                                        {
-                                                            default: 'retro',
-                                                        }
-                                                    )}
+                                                <BoringAva
+                                                    address={wallet.address}
                                                 />
                                                 <Box>
                                                     <Text fontSize="14px">
@@ -250,7 +242,13 @@ export default function Step4({
                                 </Box>
                             </Box>
                         </Flex>
-                        <Box alignContent="center" mt="10" mb="20">
+                        <Flex
+                            justifyContent="center"
+                            alignItems="center"
+                            alignContent="center"
+                            mt="10"
+                            mb="20"
+                        >
                             <Button
                                 size="lg"
                                 rounded="full"
@@ -279,7 +277,7 @@ export default function Step4({
                             >
                                 Review Details
                             </Button>
-                        </Box>
+                        </Flex>
                     </Box>
                 </form>
             )}

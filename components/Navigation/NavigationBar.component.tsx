@@ -18,6 +18,7 @@ import {
     MenuList,
     MenuItem,
     MenuDivider,
+    Heading,
 } from '@chakra-ui/react'
 import { MdAccountBalanceWallet, MdClose } from 'react-icons/md'
 import { IoIosAdd, IoIosLogOut } from 'react-icons/io'
@@ -29,28 +30,40 @@ import WalletConnectProvider from '@walletconnect/web3-provider'
 import { useState, useContext, useEffect } from 'react'
 import Web3 from 'web3'
 import toast from 'react-hot-toast'
-import gravatarUrl from 'gravatar-url'
+// import gravatarUrl from 'gravatar-url'
+
 import {
     HiOutlineChevronDoubleDown,
     HiOutlineChevronDown,
 } from 'react-icons/hi'
 import MyEvents from '../../layouts/MyEvents/MyEvents.layout'
+import { EmailBar } from '../../layouts/LandingPage/FeaturedEvents.layout'
 const env: any = process.env.NEXT_PUBLIC_ENV === 'prod'
 const polygon = require(env
     ? '../../utils/polygon.json'
     : '../../utils/mumbai.json')
 
 declare const window: any
-
+import eventOrgs from '../../utils/orgs.json'
+import BoringAva from '../../utils/BoringAva'
+import { getAllEnsLinked } from '../../utils/resolveEns'
+import WaitlistModal from '../Misc/WaitlistModal'
 export default function NavigationBar({ mode = 'dark' }) {
-    const [address, setAddress] = useState<string>('')
+    const [address, setAddress] = useState<string>(
+        '0x23302DA41ae4A69875321343D7ACA464a4E72DB2'
+    )
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
     const [_, setWeb3] = useContext(web3Context)
     const [walletType, setWalletType] = useState<string>('')
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const {
+        isOpen: isOpen1,
+        onOpen: onOpen1,
+        onClose: onClose1,
+    } = useDisclosure()
     const [showMyEvents, setMyEvents] = useState(false)
-
+    const [email, setEmail] = useState('')
+    const [ensName, setEnsName] = useState<string>('')
     const chainid: any = env ? 137 : 80001
     const endpoint: any = env
         ? process.env.NEXT_PUBLIC_ENDPOINT_POLYGON
@@ -92,24 +105,27 @@ export default function NavigationBar({ mode = 'dark' }) {
     }
 
     async function loadAccounts() {
+        console.log('enter')
         let windowType = window
-
+        // console.log(windowType, 'windowType')
         let accounts = await windowType.ethereum.request({
             method: 'eth_requestAccounts',
         })
-        console.log(windowType.ethereum.chainId)
+
+        // console.log(windowType.ethereum.chainId, 'chainId')
 
         if (windowType.ethereum.chainId == chainid) {
             setAddress(accounts[0])
+            // console.log('got accounts', accounts)
             let bal = await web3.eth.getBalance(accounts[0])
             let ethBal: any = await web3.utils.fromWei(bal, 'ether')
             setBalance(ethBal)
-
+            // console.log('got balance', ethBal)
             setWallet({
                 balance: ethBal,
                 address: accounts[0],
             })
-
+            // console.log('got wallet', wallet)
             localStorage.setItem('Autoconnect', 'true')
             setWalletType('mm')
         } else {
@@ -123,6 +139,11 @@ export default function NavigationBar({ mode = 'dark' }) {
                     ],
                 })
                 console.log('switched')
+                toast.success('Switched to Polygon Mainnet', {
+                    id: 'switched1',
+                    position: 'top-center',
+                    duration: 3000,
+                })
                 getAccountData({ accounts, windowType })
             } catch (switchError: any) {
                 if (switchError.code === 4902) {
@@ -165,17 +186,20 @@ export default function NavigationBar({ mode = 'dark' }) {
 
             if (connectionChainId == chainid) {
                 setAddress(accounts[0])
+                console.log('accounts', accounts[0])
                 let bal = await web3.eth.getBalance(accounts[0])
                 let ethBal: any = await web3.utils.fromWei(bal, 'ether')
                 setBalance(ethBal)
-
+                console.log('bal', ethBal)
                 setWallet({
                     balance: ethBal,
                     address: accounts[0],
                 })
+                console.log('wallet', wallet)
             } else {
-                toast.error('Please switch to Polygon Mainnet', {
+                toast.error('Please switch to Polygon Mainnet here', {
                     position: 'bottom-center',
+                    id: 'switch9',
                 })
             }
         } catch (e) {
@@ -193,7 +217,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                 address: '',
             })
             windowType.ethereum.on('accountsChanged', async () => {
-                onClose()
+                onClose1()
             })
         }
     }
@@ -215,14 +239,14 @@ export default function NavigationBar({ mode = 'dark' }) {
         if (isconnected) {
             await wcProvider.disconnect()
             wcProvider.on('disconnect', (code: number, reason: string) => {
-                onClose()
+                onClose1()
                 console.log(code, reason)
             })
         }
     }
 
     useEffect(() => {
-        if (isOpen) {
+        if (isOpen1) {
             toast.success('Make sure to choose Polygon network', {
                 icon: (
                     <Avatar
@@ -240,13 +264,50 @@ export default function NavigationBar({ mode = 'dark' }) {
                 },
             })
         }
-    }, [isOpen])
+    }, [isOpen1])
 
     useEffect(() => {
-        if (isOpen && address) {
-            onClose()
+        if (
+            isOpen1 &&
+            address &&
+            address !== '0x23302DA41ae4A69875321343D7ACA464a4E72DB2'
+        ) {
+            onClose1()
         }
-    }, [address, onClose, isOpen])
+    }, [address, onClose1, isOpen1])
+
+    useEffect(() => {
+        if (wcProvider) {
+            wcProvider.on('chainChanged', (chainId: number) => {
+                if (
+                    String(chainId) !== web3.utils.toHex(chainid as string) &&
+                    walletType === 'wc'
+                ) {
+                    toast.error('Please switch to Polygon Mainnet', {
+                        id: 'switched6',
+                    })
+                }
+            })
+        }
+        let windowType = window
+        if (walletType === 'mm') {
+            windowType.ethereum.on('chainChanged', async (chainId: number) => {
+                if (
+                    String(chainId) !== web3.utils.toHex(chainid as string) &&
+                    walletType === 'mm'
+                ) {
+                    console.log(chainId, 'chainId')
+                    toast.error('Please switch to Polygon Mainnet', {
+                        id: 'switched1',
+                        position: 'top-center',
+                        duration: Infinity,
+                    })
+                }
+                loadAccounts()
+            })
+        }
+        //   dothis()
+    }, [walletType, wcProvider, chainid, web3.utils])
 
     useEffect(() => {
         let confirmation = localStorage.getItem('Autoconnect')
@@ -254,11 +315,38 @@ export default function NavigationBar({ mode = 'dark' }) {
             loadAccounts()
         }
     }, [])
+    useEffect(() => {
+        getAllEnsLinked(wallet.address || address || 'address')
+            .then((data) => {
+                if (data?.data?.domains && data && data?.data) {
+                    console.log(data?.data?.domains)
+                    console.log(
+                        data?.data.domains?.length,
+                        data.data.domains?.length > 0 &&
+                            data?.data?.domains[0]?.name
+                    )
+                    const ens_name =
+                        data?.data?.domains?.length > 0 &&
+                        data?.data?.domains[0].name
+                    setEnsName(ens_name)
+                    setWallet({
+                        balance: balance,
+                        address: address,
+                        ens: ens_name,
+                    })
+                    // console.log(wallet,ens_name)
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+            console.log(wallet)
+    }, [address, wallet.address])
 
     return (
         <>
             <Fade
-                in={isOpen}
+                in={isOpen1}
                 transition={{
                     enter: { duration: 5 },
                     exit: { duration: 5 },
@@ -270,7 +358,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                         setMyEvents(false)
                     }}
                 />
-                <Modal isOpen={isOpen} onClose={onClose}>
+                <Modal isOpen={isOpen1} onClose={onClose1}>
                     <ModalOverlay />
                     <ModalContent rounded="xl">
                         <ModalBody m={2} p={4}>
@@ -349,64 +437,72 @@ export default function NavigationBar({ mode = 'dark' }) {
                         <Image
                             src={
                                 mode === 'white'
-                                    ? '/assets/logo_gradient.svg'
-                                    : '/assets/logo.svg'
+                                    ? '/assets/newlogo.svg'
+                                    : '/assets/newlogowhite.svg'
                             }
                             alt="Metapass"
-                            w="10"
+                            w="16"
                         />
                     </Link>
                 </NextLink>
                 <Flex alignItems="center" experimental_spaceX="6">
-                    <NextLink href="/create" passHref>
-                        <Link _hover={{}} _focus={{}} _active={{}}>
-                            <Button
-                                pl="1"
-                                rounded="full"
-                                bg={
-                                    mode === 'white'
-                                        ? 'blackAlpha.100'
-                                        : 'whiteAlpha.800'
-                                }
-                                color="blackAlpha.700"
-                                fontWeight="medium"
-                                _hover={{
-                                    shadow: 'sm',
-                                    bg:
+                    {eventOrgs.eventOrgs.includes(String(wallet?.address)) ? (
+                        <NextLink href="/create" passHref>
+                            <Link _hover={{}} _focus={{}} _active={{}}>
+                                <Button
+                                    pl="1"
+                                    rounded="full"
+                                    bg={
                                         mode === 'white'
-                                            ? 'blackAlpha.50'
-                                            : 'white',
-                                }}
-                                border="2px"
-                                borderColor={
-                                    mode === 'white'
-                                        ? 'blackAlpha.100'
-                                        : 'white'
-                                }
-                                _focus={{}}
-                                _active={{ transform: 'scale(0.95)' }}
-                                role="group"
-                                leftIcon={
-                                    <Flex
-                                        _groupHover={{
-                                            transform: 'scale(1.05)',
-                                        }}
-                                        transitionDuration="200ms"
-                                        justify="center"
-                                        alignItems="center"
-                                        color="white"
-                                        bg="brand.gradient"
-                                        rounded="full"
-                                        p="0.5"
-                                    >
-                                        <IoIosAdd size="25px" />
-                                    </Flex>
-                                }
-                            >
-                                Create Event
-                            </Button>
-                        </Link>
-                    </NextLink>
+                                            ? 'blackAlpha.100'
+                                            : 'whiteAlpha.800'
+                                    }
+                                    color="blackAlpha.700"
+                                    fontWeight="medium"
+                                    _hover={{
+                                        shadow: 'sm',
+                                        bg:
+                                            mode === 'white'
+                                                ? 'blackAlpha.50'
+                                                : 'white',
+                                    }}
+                                    border="2px"
+                                    borderColor={
+                                        mode === 'white'
+                                            ? 'blackAlpha.100'
+                                            : 'white'
+                                    }
+                                    _focus={{}}
+                                    _active={{ transform: 'scale(0.95)' }}
+                                    role="group"
+                                    leftIcon={
+                                        <Flex
+                                            _groupHover={{
+                                                transform: 'scale(1.05)',
+                                            }}
+                                            transitionDuration="200ms"
+                                            justify="center"
+                                            alignItems="center"
+                                            color="white"
+                                            bg="brand.gradient"
+                                            rounded="full"
+                                            p="0.5"
+                                        >
+                                            <IoIosAdd size="25px" />
+                                        </Flex>
+                                    }
+                                >
+                                    Create Event
+                                </Button>
+                            </Link>
+                        </NextLink>
+                    ) : (
+                        <WaitlistModal
+                            email={email}
+                            setEmail={setEmail}
+                            mode={mode}
+                        />
+                    )}
                     {wallet.address ? (
                         <Menu>
                             <MenuButton>
@@ -422,20 +518,16 @@ export default function NavigationBar({ mode = 'dark' }) {
 
                                     fontWeight="normal"
                                     leftIcon={
-                                        <Avatar
-                                            src={gravatarUrl(wallet.address, {
-                                                default: 'retro',
-                                            })}
-                                            size="xs"
-                                        />
+                                        <BoringAva address={wallet.address} />
                                     }
                                     rightIcon={<HiOutlineChevronDown />}
                                 >
-                                    {wallet.address.substring(0, 4) +
-                                        '...' +
-                                        wallet.address.substring(
-                                            wallet.address.length - 4
-                                        )}
+                                    {ensName ||
+                                        wallet.address.substring(0, 4) +
+                                            '...' +
+                                            wallet.address.substring(
+                                                wallet.address.length - 4
+                                            )}
                                 </Button>
                             </MenuButton>
                             <MenuList
@@ -524,7 +616,11 @@ export default function NavigationBar({ mode = 'dark' }) {
                                 leftIcon={
                                     <MdAccountBalanceWallet size="25px" />
                                 }
-                                onClick={onOpen}
+                                onClick={() => {
+                                    onOpen1()
+
+                                    console.log(isOpen1)
+                                }}
                             >
                                 Connect Wallet
                             </Button>

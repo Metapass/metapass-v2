@@ -184,11 +184,7 @@ export default function EventCard({
             <AspectRatio ratio={428.42 / 180.98} w="full">
                 {/* 
   // @ts-ignore */}
-                <Image
-                    w="full"
-                    src={event.image.image}
-                    alt="event image"
-                />
+                <Image w="full" src={event.image.image} alt="event image" />
             </AspectRatio>
             <Flex direction="column" w="full" justify="space-between" h="full">
                 <Flex p={{ base: '3', xl: '4' }} alignItems="center">
@@ -282,8 +278,7 @@ export default function EventCard({
                                             WebkitTextFillColor: 'transparent',
                                         }}
                                     >
-                                        {event.tickets_sold}/
-                                        {event.seats}
+                                        {event.tickets_sold}/{event.seats}
                                     </Text>
                                     <Text color="blackAlpha.500">
                                         Tickets Sold
@@ -318,13 +313,20 @@ export default function EventCard({
                             )}
                         </Box>
                     </Flex>
-                    <Box w="full" h="5" bg="blackAlpha.50" mt="-4">
+                    <Flex
+                        w="full"
+                        h="5"
+                        bg="blackAlpha.50"
+                        mt="-4"
+                        justify="left"
+                    >
+                        {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
                         <Box
-                            w={`${(event.tickets_sold/event.seats)*100}%`}
+                            w={`${(event.tickets_sold / event.seats) * 100}%`}
                             h="full"
                             bg="brand.gradient"
                         />
-                    </Box>
+                    </Flex>
                 </Box>
             </Flex>
         </Flex>

@@ -146,9 +146,18 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                 ratio={299 / 210}
                 w="full"
                 maxW={{ base: '200px', xl: '240px' }}
-            >{/* 
+            >
+                {/* 
             // @ts-ignore */}
-                <Image w="full" src={event.image.hero_image || event.image.image || event.image.display} alt="event image" />
+                <Image
+                    w="full"
+                    src={
+                        event.image.hero_image ||
+                        event.image.image ||
+                        event.image.display
+                    }
+                    alt="event image"
+                />
             </AspectRatio>
 
             <Flex direction="column" justify="space-between" w="full">

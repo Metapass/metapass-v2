@@ -17,14 +17,20 @@ import {
     Heading,
 } from '@chakra-ui/react'
 import axios from 'axios'
-import { useEffect, useState,useContext } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import EventCard from '../../components/Card/EventCard.component'
-import { Event,CategoryType,DescriptionType,ImageType } from '../../types/Event.type'
+import {
+    Event,
+    CategoryType,
+    DescriptionType,
+    ImageType,
+} from '../../types/Event.type'
+import { decryptLink } from '../../utils/linkResolvers'
 import { gqlEndpoint } from '../../utils/subgraphApi'
-import {walletContext} from '../../utils/walletContext'
+import { walletContext } from '../../utils/walletContext'
 export default function MyEvents({ isOpen, onClose }: any) {
     const [tab, setTab] = useState('upcoming')
-    const [wallet] = useContext<[{address:"",balance:""}]>(walletContext);
+    const [wallet] = useContext<[{ address: ''; balance: '' }]>(walletContext)
     const [myEvents, setMyEvents] = useState<Event[]>([
         {
             id: '',
@@ -56,16 +62,27 @@ export default function MyEvents({ isOpen, onClose }: any) {
         },
     ])
     // const [theEvent, setTheEvent] = useState<Event>()
- 
+    function UnicodeDecodeB64(str: any) {
+        return decodeURIComponent(atob(str))
+    }
     const parseMyEvents = (myEvents: Array<any>): Event[] => {
         return myEvents.map((event: any) => {
-            let type = JSON.parse(atob(event.category)).event_type
-            let category: CategoryType = JSON.parse(atob(event.category))
-            let image: ImageType = JSON.parse(atob(event.image))
-            let desc: DescriptionType = JSON.parse(
-                atob(event.description)
+            // let type = JSON.parse(UnicodeDecodeB64(event.category)).event_type
+            let type = event.type
+            let category: CategoryType = JSON.parse(
+                UnicodeDecodeB64(event.category)
             )
-            console.log(event.seats, event.buyers.length)
+            let image: ImageType = JSON.parse(UnicodeDecodeB64(event.image))
+            let desc: DescriptionType = JSON.parse(
+                UnicodeDecodeB64(event.description)
+            )
+            const exceptions = [
+                'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'https://thememe.club',
+                'https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058',
+            ]
+            // console.log(event.seats, event.buyers.length,event.link)
+            // exceptions.includes(event.link) ? event.link : decryptLink(event.link)
             return {
                 id: event.id,
                 title: event.title,
@@ -78,14 +95,12 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 description: desc,
                 seats: event.seats,
                 owner: event.eventHost,
-
+                link: event.link,
                 type: type,
-                tickets_available:
-                    event.seats - event.buyers.length,
-                tickets_sold: event.buyers.length,
+                tickets_available: event.seats - event.ticketsBought.length,
+                tickets_sold: event.ticketsBought.length,
                 buyers: event.buyers,
             } as Event
-     
         })
     }
     useEffect(() => {
@@ -101,6 +116,9 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                         childAddress
                                         category
                                         image
+                                        ticketsBought{
+                                            id
+                                        }
                                         buyers{
                                             id
                                             
@@ -108,6 +126,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                         eventHost
                                         fee
                                         seats
+                                        link
                                         description
                                         date
                       }
@@ -123,7 +142,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                         'content-type': 'application/json',
                     },
                 })
-    
+
                 if (!!res.data?.errors?.length) {
                     throw new Error('Error fetching featured events')
                 }
@@ -133,17 +152,20 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 console.log('error', error)
             }
         }
-        getMyEvents()
-            .then((res) => {
-                const data: Event[] = parseMyEvents(
-                    res.data.childCreatedEntities
-                )
-                setMyEvents(data)
-                console.log(data)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+        if (wallet?.address) {
+            getMyEvents()
+                .then((res) => {
+                    const data: Event[] = parseMyEvents(
+                        res.data.childCreatedEntities
+                    )
+                    console.log(data)
+                    setMyEvents(data)
+                    console.log(data)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
         // console.log(myEvents)
     }, [wallet.address])
     return (
@@ -269,32 +291,39 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                             px={{ base: '6', md: '10' }}
                                             gap={6}
                                         >
-                                            {myEvents.length > 0 ?myEvents.map((data, key) => (
+                                            {myEvents.length > 0 ? (
+                                                myEvents.map((data, key) => (
+                                                    <Box
+                                                        maxW={{ xl: '390px' }}
+                                                        minW={{ xl: '390px' }}
+                                                        key={key}
+                                                    >
+                                                        <EventCard
+                                                            event={data}
+                                                        />
+                                                    </Box>
+                                                ))
+                                            ) : (
                                                 <Box
                                                     maxW={{ xl: '390px' }}
                                                     minW={{ xl: '390px' }}
-                                                    key={key}
+                                                    ml="300px"
                                                 >
-                                                    <EventCard event={data} />
+                                                    <Heading
+                                                        textAlign="center"
+                                                        fontWeight="semibold"
+                                                        fontFamily="subheading"
+                                                        color="gray.300"
+                                                        fontSize={{
+                                                            md: '23.2px',
+                                                            lg: '23.2px',
+                                                            xl: '28',
+                                                        }}
+                                                    >
+                                                        No upcoming events :(
+                                                    </Heading>
                                                 </Box>
-                                            )):
-                                            <Box
-                                                    maxW={{ xl: '390px' }}
-                                                    minW={{ xl: '390px' }}
-                                                  ml="300px"
-                                                >
-                                                <Heading
-                                                
-                                                textAlign="center"
-            fontWeight="semibold"
-            fontFamily="subheading"
-            color="gray.300"
-            fontSize={{ md: "23.2px", lg: "23.2px", xl: "28" }}
-                                                >
-                                                    
-                                                    No upcoming events :(
-                                                    </Heading></Box>
-                                                    }
+                                            )}
                                         </Grid>
                                     </TabPanel>
                                     <TabPanel>

@@ -74,6 +74,7 @@ const Create: NextPage = () => {
     })
 
     const contractAddress = process.env.NEXT_PUBLIC_FACTORY_ADDRESS
+    console.log(contractAddress)
     let contract: any
 
     const [eventLink, setEventLink] = useState<any>(undefined)
@@ -88,7 +89,7 @@ const Create: NextPage = () => {
     }, [wallet])
 
     useEffect(() => {
-        if (window.ethereum !== undefined) {
+        if (window.ethereum !== undefined && contractAddress) {
             const provider = new ethers.providers.Web3Provider(window.ethereum)
             const signer = provider.getSigner()
 
@@ -108,11 +109,11 @@ const Create: NextPage = () => {
         //     image: event.image,
         //     gallery: event.image.gallery,
         // }
-        function b64EncodeUnicode(str:any) {
-            return btoa(encodeURIComponent(str));
-        };
+        function b64EncodeUnicode(str: any) {
+            return btoa(encodeURIComponent(str))
+        }
         try {
-            console.log("starting txn")
+            console.log('starting txn')
             let txn = await contract?.createEvent(
                 String(event.title),
                 ethers.utils.parseEther(event.fee.toString()),
@@ -124,17 +125,17 @@ const Create: NextPage = () => {
                 event.date,
                 b64EncodeUnicode(JSON.stringify(event.category))
             )
-            console.log("txn complete")
+            console.log('txn complete')
             console.log(txn)
         } catch (e) {
-            console.log("error while txn")
+            console.log('error while txn')
             console.log(e)
         }
 
         console.log('Event Created')
 
         contract.on('childEvent', (child: any) => {
-            setEventLink(`${window.location.origin}/events/${child}`)
+            setEventLink(`${window.location.origin}/event/${child}`)
             setIsPublished(true)
         })
     }
@@ -329,11 +330,7 @@ const Create: NextPage = () => {
                             </Button>
                         </Box>
                         <Box mt="2" mb="4">
-                            <Link
-                                fontSize="sm"
-                                href="/events"
-                                color="blackAlpha.600"
-                            >
+                            <Link fontSize="sm" href="/" color="blackAlpha.600">
                                 Back to home
                             </Link>
                         </Box>
