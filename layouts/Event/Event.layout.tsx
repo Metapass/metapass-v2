@@ -96,17 +96,17 @@ export default function EventLayout({ event }: { event: Event }) {
                     signer
                 )
                 console.log(metapass)
-                
-                let {img,fastimg} = await ticketToIPFS(
+
+                let { img, fastimg } = await ticketToIPFS(
                     event.title,
                     event.tickets_sold + 1,
                     event.image.image,
                     event.date,
-                    wallet.ens || (wallet.address.substring(0, 4) +
-                    '...' +
-                    wallet.address.substring(
-                        wallet.address.length - 4)
-                ))
+                    wallet.ens ||
+                        wallet.address.substring(0, 4) +
+                            '...' +
+                            wallet.address.substring(wallet.address.length - 4)
+                )
                 setMintedImage(fastimg)
                 let metadata = {
                     name: event.title,
@@ -190,7 +190,7 @@ export default function EventLayout({ event }: { event: Event }) {
             .catch((err) => {
                 console.log(err)
             })
-            // console.log(wallet)
+        // console.log(wallet)
     }, [event.owner])
     useEffect(() => {
         // console.log(event.link)
@@ -214,7 +214,7 @@ export default function EventLayout({ event }: { event: Event }) {
     const [isDisplayed, setIsDisplayed] = useState(false)
     // const {isOpen:isTicketOpen, onOpen:onTicketOpen, onClose:onTicketClose} = useDisclosure();
     useEffect(() => {
-        if(hasBought){
+        if (hasBought) {
             setInterval(() => {
                 setIsDisplayed(true)
             }, 5000)
@@ -230,9 +230,12 @@ export default function EventLayout({ event }: { event: Event }) {
                         animate={{ scale: [0, 1.3, 1] }}
                         transition={{ ease: 'easeOut', duration: 3 }}
                     >
-                        <Image src={mintedImage}
-                        loading="lazy"
-                        alt="ticket" m="2"></Image>
+                        <Image
+                            src={mintedImage}
+                            loading="lazy"
+                            alt="ticket"
+                            m="2"
+                        ></Image>
                     </motion.div>
                 </ModalContent>
             </Modal>
@@ -258,7 +261,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     src={mintedImage}
                                     alt="ticket"
                                     m="2"
-                                    loading='lazy'
+                                    loading="lazy"
                                 ></Image>
                             </motion.div>
 
@@ -760,10 +763,20 @@ export default function EventLayout({ event }: { event: Event }) {
                                 </Text>
                                 <Divider my="2" />
                                 <Text color="brand.peach">
-                                    {months[new Date(event.date).getMonth()]}
+                                    {
+                                        months[
+                                            new Date(
+                                                Date.parse(
+                                                    event.date.split('T')[0]
+                                                )
+                                            ).getMonth()
+                                        ]
+                                    }
                                 </Text>
                                 <Text fontSize="2xl" fontWeight="semibold">
-                                    {new Date(event.date).getDate()}
+                                    {new Date(
+                                        Date.parse(event.date.split('T')[0])
+                                    ).getDate()}
                                 </Text>
                             </Box>
                         </Flex>
@@ -878,23 +891,25 @@ export default function EventLayout({ event }: { event: Event }) {
                                     <Text> {event.seats}</Text>
                                 </Flex>
                             </Flex>
-                            <Box
+                            <Flex
                                 w="full"
-                                h="4"
-                                bg="blackAlpha.50"
-                                mt="2"
+                                h="5"
+                                bg="brand.gradient"
                                 rounded="full"
-                                mb="1"
+                                mt="2"
+                                justify="end"
                                 overflow="hidden"
                             >
+                                {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
                                 <Box
                                     w={`${
+                                        100 -
                                         (event.tickets_sold / event.seats) * 100
                                     }%`}
                                     h="full"
-                                    bg="brand.gradient"
+                                    bg="gray.100"
                                 />
-                            </Box>
+                            </Flex>
                         </Box>
                         {event.buyers.find(
                             (buyer: any) =>
@@ -965,14 +980,14 @@ export default function EventLayout({ event }: { event: Event }) {
                                         // console.log(moment('20140127T204000Z', "YYYYDDMMThhmmssZ"))
                                         // "02/16/2022--17:10:00-18:00:00"
                                         let eventdate = event.date
-                                        let date = eventdate.split('--')[0]
+                                        let date = eventdate.split('T')[0]
                                         console.log(date)
                                         let startDate = eventdate
-                                            .split('--')[1]
+                                            .split('T')[1]
                                             .split('-')[0]
                                         console.log(startDate)
                                         let endDate = eventdate
-                                            .split('--')[1]
+                                            .split('T')[1]
                                             .split('-')[1]
                                         console.log(endDate)
                                         let finalStartDate = moment(

@@ -381,7 +381,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                         fontSize="sm"
                                         required
                                         cursor="pointer"
-                                        value={formDetails.date}
+                                        value={formDetails.date.split('T')[0]}
                                         px="0"
                                         placeholder="When will the event take place?"
                                         bg="transparent"

@@ -33,8 +33,8 @@ export default function SearchBar({ noEffects = false }) {
             bg="white"
             rounded="full"
             alignItems="center"
-            pl="6"
-            fontSize="lg"
+            pl={{ md: '6' }}
+            fontSize={{ base: 'sm', md: 'lg' }}
             w="full"
             justify="space-between"
         >
@@ -44,6 +44,7 @@ export default function SearchBar({ noEffects = false }) {
                         bg="transparent"
                         border="none"
                         _focus={{}}
+                        fontSize={{ base: 'sm', md: 'md' }}
                         _hover={{}}
                         value={searchQuery.query}
                         onChange={(e) => {
@@ -57,9 +58,18 @@ export default function SearchBar({ noEffects = false }) {
                     />
                 </InputGroup>
 
-                <Box minW="2.5px" bg="gray.100" h="12" />
+                <Box
+                    minW="2.5px"
+                    bg="gray.100"
+                    h="12"
+                    display={{ base: 'none', md: 'block' }}
+                />
                 <Menu>
-                    <MenuButton w="full" maxW={{ lg: '160px', xl: '180px' }}>
+                    <MenuButton
+                        w="full"
+                        maxW={{ lg: '160px', xl: '180px' }}
+                        display={{ base: 'none', md: 'block' }}
+                    >
                         <InputGroup>
                             <InputLeftElement color="gray.400">
                                 <MdTag size="1.5rem" />
@@ -99,9 +109,18 @@ export default function SearchBar({ noEffects = false }) {
                         </MenuItem>
                     </MenuList>
                 </Menu>
-                <Box minW="2.5px" bg="gray.100" h="12" />
+                <Box
+                    minW="2.5px"
+                    bg="gray.100"
+                    h="12"
+                    display={{ base: 'none', md: 'block' }}
+                />
                 <Menu>
-                    <MenuButton w="full" maxW={{ lg: '120px', xl: '130px' }}>
+                    <MenuButton
+                        w="full"
+                        maxW={{ lg: '120px', xl: '130px' }}
+                        display={{ base: 'none', md: 'block' }}
+                    >
                         <InputGroup>
                             <InputLeftElement color="gray.400">
                                 <MdOutlineAttachMoney size="1.5rem" />
@@ -141,9 +160,18 @@ export default function SearchBar({ noEffects = false }) {
                         </MenuItem>
                     </MenuList>
                 </Menu>
-                <Box minW="2.5px" bg="gray.100" h="12" />
+                <Box
+                    minW="2.5px"
+                    bg="gray.100"
+                    h="12"
+                    display={{ base: 'none', md: 'block' }}
+                />
                 <Menu>
-                    <MenuButton w="full" maxW={{ lg: '150px', xl: '180px' }}>
+                    <MenuButton
+                        w="full"
+                        maxW={{ lg: '150px', xl: '180px' }}
+                        display={{ base: 'none', md: 'block' }}
+                    >
                         <InputGroup>
                             <InputLeftElement color="gray.400">
                                 <IoMdApps size="1.5rem" />
@@ -194,7 +222,7 @@ export default function SearchBar({ noEffects = false }) {
                         transitionDuration="200ms"
                     >
                         {' '}
-                        <AiOutlineSearch size="22px" />
+                        <AiOutlineSearch size="20px" />
                     </Flex>
                 }
                 _hover={{}}
@@ -204,9 +232,9 @@ export default function SearchBar({ noEffects = false }) {
                 color="white"
                 bg="brand.gradient"
                 roundedBottomLeft="none"
-                py="8"
+                py={{ base: '6', md: '8' }}
                 px="8"
-                fontSize="lg"
+                fontSize={{ base: 'md', md: 'lg' }}
                 onClick={() => {
                     // window.location.href = '/event'
                 }}

@@ -7,7 +7,7 @@ const Home: NextPage = () => {
     return (
         <Box minH="100vh" h="full" overflow="hidden">
             <HeroCTA />
-            <Box p="2" />
+            <Box p={{ md: '2' }} />
             <FeaturedEvents />
         </Box>
     )

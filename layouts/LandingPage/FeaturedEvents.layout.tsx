@@ -36,6 +36,7 @@ import { getAllEnsLinked } from '../../utils/resolveEns'
 import { MdTag } from 'react-icons/md'
 import { AiOutlineSend } from 'react-icons/ai'
 import { SetStateAction } from 'react'
+import FeaturedEventCard from '../../components/Card/FeaturedEventCard.component'
 
 export default function FeaturedEvents() {
     const [email, setEmail] = useState<string>('')
@@ -174,25 +175,29 @@ export default function FeaturedEvents() {
     }, [])
 
     return (
-        <Flex w="full" justify="center" mb="-48">
+        <Flex w="full" justify="center" mb={{ md: '-48' }}>
             <Box w="full" pb="20">
-                <Flex maxW="1200px" mx={{ base: '12', xl: '40' }}>
+                <Flex maxW="1200px" mx={{ base: '6', md: '12', xl: '40' }}>
                     <Text
                         fontWeight="medium"
                         color="brand.black"
-                        fontSize={{ base: '3xl', xl: '4xl' }}
+                        fontSize={{ base: 'xl', md: '3xl', xl: '4xl' }}
                         position="relative"
                     >
                         Featured Events
                     </Text>
                     <Image
-                        w={{ lg: '5', xl: '6' }}
-                        mt="-8"
+                        w={{ base: '3', md: '5', xl: '6' }}
+                        mt={{ base: '-5', md: '-8' }}
                         src="/assets/elements/sparkle_dark.svg"
                         alt="element"
                     />
                 </Flex>
-                <Flex _active={{ cursor: 'grabbing' }} my="8">
+                <Flex
+                    _active={{ cursor: 'grabbing' }}
+                    my="8"
+                    display={{ base: 'none', md: 'flex' }}
+                >
                     <ScrollContainer
                         style={{
                             paddingTop: '100px',
@@ -209,6 +214,7 @@ export default function FeaturedEvents() {
                                 <Box
                                     maxW={{ base: '330px', xl: '390px' }}
                                     key={key}
+                                    h="full"
                                     minW={{ base: '330px', xl: '390px' }}
                                 >
                                     <Skeleton
@@ -225,7 +231,30 @@ export default function FeaturedEvents() {
                         </Flex>
                     </ScrollContainer>
                 </Flex>
-                <Flex justify="center" transform="translateY(-160px)">
+                <Flex
+                    display={{ base: 'flex', md: 'none' }}
+                    direction="column"
+                    w="full"
+                    align="center"
+                    experimental_spaceY="4"
+                    mt="4"
+                >
+                    {featEvents.map((data, key) => (
+                        <Skeleton
+                            maxW={{ base: '330px', xl: '390px' }}
+                            key={key}
+                            minW={{ base: '330px', xl: '390px' }}
+                            isLoaded={data.id !== ''}
+                        >
+                            <EventCard event={data} />
+                        </Skeleton>
+                    ))}
+                </Flex>
+                <Flex
+                    justify="center"
+                    mt={{ base: '6', md: '0' }}
+                    transform={{ md: 'translateY(-200px)' }}
+                >
                     <Button
                         size="lg"
                         rounded="full"
@@ -356,8 +385,6 @@ export const EmailBar = ({ email, setEmail, onClose }: any) => {
                         placeholder="gm@metapasshq.xyz"
                     />
                 </InputGroup>
-
-                <Box minW="2.5px" bg="gray.100" h="12" />
             </Flex>
             <Button
                 role="group"

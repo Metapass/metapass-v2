@@ -198,7 +198,7 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                                 py="0.5"
                                 bg="white"
                             >
-                                {event.category}
+                                {event.category.category}
                             </Box>
                         </Flex>
                         <Text
@@ -234,7 +234,7 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                             fontSize={{ base: 'xs', xl: 'sm' }}
                             noOfLines={2}
                         >
-                            {event.description}
+                            {event.description.short_desc}
                         </Text>
                     </Box>
                     <Box
@@ -251,14 +251,22 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                             fontWeight="bold"
                             color="brand.peach"
                         >
-                            {months[new Date(event.date).getMonth()]}
+                            {
+                                months[
+                                    new Date(
+                                        Date.parse(event.date.split('T')[0])
+                                    ).getMonth()
+                                ]
+                            }
                         </Text>
                         <Text
                             fontSize={{ base: 'lg', xl: 'xl' }}
                             color="brand.black600"
                             fontWeight="medium"
                         >
-                            {new Date(event.date).getDate()}
+                            {new Date(
+                                Date.parse(event.date.split('T')[0])
+                            ).getDate()}
                         </Text>
                     </Box>
                 </Flex>
@@ -324,16 +332,22 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                             )}
                         </Box>
                     </Flex>
-                    <Box w="full" h="5" bg="blackAlpha.50" mt="-4">
+                    <Flex
+                        w="full"
+                        h="5"
+                        bg="brand.gradient"
+                        mt="-4"
+                        justify="end"
+                    >
+                        {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
                         <Box
                             w={`${
-                                (event.tickets_sold / event.tickets_available) *
-                                100
+                                100 - (event.tickets_sold / event.seats) * 100
                             }%`}
                             h="full"
-                            bg="brand.gradient"
+                            bg="gray.50"
                         />
-                    </Box>
+                    </Flex>
                 </Box>
             </Flex>
         </Flex>

@@ -200,13 +200,14 @@ export default function MyEvents({ isOpen, onClose }: any) {
                         <Flex w="full" justify="center">
                             <Tabs
                                 mt="4"
-                                align="center"
+                                align="start"
                                 w="fit-content"
                                 variant="unstyled"
                             >
                                 <TabList
                                     px="2"
                                     bg="white"
+                                    mx="auto"
                                     w="fit-content"
                                     boxShadow="0px 13px 101px rgba(0, 0, 0, 0.08)"
                                     rounded="full"

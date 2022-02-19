@@ -62,7 +62,7 @@ const WaitlistModal = ({
             </Button>
             <Modal size="xl" isOpen={isOpen} onClose={onClose} isCentered>
                 <ModalOverlay />
-                <ModalContent>
+                <ModalContent rounded="2xl">
                     <Flex justify="center">
                         <Image
                             src="/assets/elements/bolt.png"

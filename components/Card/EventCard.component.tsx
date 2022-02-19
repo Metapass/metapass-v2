@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
+import twoDigit from 'two-digit'
 import EventLayout from '../../layouts/Event/Event.layout'
 import { Event } from '../../types/Event.type'
 
@@ -28,6 +29,7 @@ export default function EventCard({
     previewOnly?: boolean
 }) {
     const [showEventModal, setEventModal] = useState(false)
+    console.log(event)
 
     const months = [
         'JAN',
@@ -203,14 +205,24 @@ export default function EventCard({
                             fontWeight="bold"
                             color="brand.peach"
                         >
-                            {months[new Date(event.date).getMonth()]}
+                            {
+                                months[
+                                    new Date(
+                                        Date.parse(event.date.split('T')[0])
+                                    ).getMonth()
+                                ]
+                            }
                         </Text>
                         <Text
                             fontSize={{ base: 'lg', xl: 'xl' }}
                             color="brand.black600"
                             fontWeight="medium"
                         >
-                            {new Date(event.date).getDate()}
+                            {twoDigit(
+                                new Date(
+                                    Date.parse(event.date.split('T')[0])
+                                ).getDate()
+                            )}
                             {/* event.date.date */}
                         </Text>
                     </Box>
@@ -316,15 +328,17 @@ export default function EventCard({
                     <Flex
                         w="full"
                         h="5"
-                        bg="blackAlpha.50"
+                        bg="brand.gradient"
                         mt="-4"
-                        justify="left"
+                        justify="end"
                     >
                         {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
                         <Box
-                            w={`${(event.tickets_sold / event.seats) * 100}%`}
+                            w={`${
+                                100 - (event.tickets_sold / event.seats) * 100
+                            }%`}
                             h="full"
-                            bg="brand.gradient"
+                            bg="gray.50"
                         />
                     </Flex>
                 </Box>

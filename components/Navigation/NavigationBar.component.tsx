@@ -340,7 +340,7 @@ export default function NavigationBar({ mode = 'dark' }) {
             .catch((err) => {
                 console.log(err)
             })
-            console.log(wallet)
+        console.log(wallet)
     }, [address, wallet.address])
 
     return (
@@ -422,12 +422,12 @@ export default function NavigationBar({ mode = 'dark' }) {
                 bg={mode === 'white' ? 'white' : 'transparent'}
                 borderColor="gray.100"
                 justify="space-between"
-                px="8"
+                px={{ base: '6', md: '8' }}
                 position="relative"
                 zIndex={9}
                 maxW="1600px"
                 mx="auto"
-                py="6"
+                py={{ base: '4', md: '6' }}
                 alignItems="center"
                 color="white"
             >
@@ -441,11 +441,15 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     : '/assets/newlogowhite.svg'
                             }
                             alt="Metapass"
-                            w="16"
+                            w={{ base: '10', md: '16' }}
                         />
                     </Link>
                 </NextLink>
-                <Flex alignItems="center" experimental_spaceX="6">
+                <Flex
+                    display={{ base: 'none', md: 'flex' }}
+                    alignItems="center"
+                    experimental_spaceX="6"
+                >
                     {eventOrgs.eventOrgs.includes(String(wallet?.address)) ? (
                         <NextLink href="/create" passHref>
                             <Link _hover={{}} _focus={{}} _active={{}}>
