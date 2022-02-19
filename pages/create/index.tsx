@@ -330,11 +330,7 @@ const Create: NextPage = () => {
                             </Button>
                         </Box>
                         <Box mt="2" mb="4">
-                            <Link
-                                fontSize="sm"
-                                href="/"
-                                color="blackAlpha.600"
-                            >
+                            <Link fontSize="sm" href="/" color="blackAlpha.600">
                                 Back to home
                             </Link>
                         </Box>

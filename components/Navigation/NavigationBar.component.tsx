@@ -49,12 +49,18 @@ import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 import WaitlistModal from '../Misc/WaitlistModal'
 export default function NavigationBar({ mode = 'dark' }) {
-    const [address, setAddress] = useState<string>('0x23302DA41ae4A69875321343D7ACA464a4E72DB2')
+    const [address, setAddress] = useState<string>(
+        '0x23302DA41ae4A69875321343D7ACA464a4E72DB2'
+    )
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
     const [_, setWeb3] = useContext(web3Context)
     const [walletType, setWalletType] = useState<string>('')
-    const { isOpen:isOpen1, onOpen:onOpen1, onClose:onClose1 } = useDisclosure()
+    const {
+        isOpen: isOpen1,
+        onOpen: onOpen1,
+        onClose: onClose1,
+    } = useDisclosure()
     const [showMyEvents, setMyEvents] = useState(false)
     const [email, setEmail] = useState('')
     const [ensName, setEnsName] = useState<string>('')
@@ -80,7 +86,6 @@ export default function NavigationBar({ mode = 'dark' }) {
 
     async function getAccountData({ accounts, windowType }: any) {
         try {
-           
             accounts = await windowType.ethereum.request({
                 method: 'eth_requestAccounts',
             })
@@ -100,7 +105,7 @@ export default function NavigationBar({ mode = 'dark' }) {
     }
 
     async function loadAccounts() {
-        console.log("enter")
+        console.log('enter')
         let windowType = window
         // console.log(windowType, 'windowType')
         let accounts = await windowType.ethereum.request({
@@ -181,16 +186,16 @@ export default function NavigationBar({ mode = 'dark' }) {
 
             if (connectionChainId == chainid) {
                 setAddress(accounts[0])
-                console.log("accounts", accounts[0])
+                console.log('accounts', accounts[0])
                 let bal = await web3.eth.getBalance(accounts[0])
                 let ethBal: any = await web3.utils.fromWei(bal, 'ether')
                 setBalance(ethBal)
-                console.log("bal", ethBal)
+                console.log('bal', ethBal)
                 setWallet({
                     balance: ethBal,
                     address: accounts[0],
                 })
-                console.log("wallet", wallet)   
+                console.log('wallet', wallet)
             } else {
                 toast.error('Please switch to Polygon Mainnet here', {
                     position: 'bottom-center',
@@ -262,8 +267,12 @@ export default function NavigationBar({ mode = 'dark' }) {
     }, [isOpen1])
 
     useEffect(() => {
-        if (isOpen1 && address && address !== "0x23302DA41ae4A69875321343D7ACA464a4E72DB2") {
-            onClose1();
+        if (
+            isOpen1 &&
+            address &&
+            address !== '0x23302DA41ae4A69875321343D7ACA464a4E72DB2'
+        ) {
+            onClose1()
         }
     }, [address, onClose1, isOpen1])
 
@@ -307,17 +316,25 @@ export default function NavigationBar({ mode = 'dark' }) {
         }
     }, [])
     useEffect(() => {
-        getAllEnsLinked(wallet.address || address || "address").then((data) => {
-            if(data?.data?.domains && data && data?.data){
-            console.log(data?.data?.domains)
-            console.log(data?.data.domains?.length, data.data.domains?.length > 0 && (data?.data?.domains[0]?.name))
-            const ens_name = data?.data?.domains?.length > 0 && (data?.data?.domains[0].name) 
-            setEnsName(ens_name)
-            }
-     }).catch((err) => {
-         console.log(err)
-     })
-    },[address,wallet.address])
+        getAllEnsLinked(wallet.address || address || 'address')
+            .then((data) => {
+                if (data?.data?.domains && data && data?.data) {
+                    console.log(data?.data?.domains)
+                    console.log(
+                        data?.data.domains?.length,
+                        data.data.domains?.length > 0 &&
+                            data?.data?.domains[0]?.name
+                    )
+                    const ens_name =
+                        data?.data?.domains?.length > 0 &&
+                        data?.data?.domains[0].name
+                    setEnsName(ens_name)
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }, [address, wallet.address])
 
     return (
         <>
@@ -353,7 +370,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                                 ? handleWalletConnect
                                                 : loadAccounts
                                         }
-                                        >
+                                    >
                                         <Flex
                                             justify="space-between"
                                             alignItems="center"
@@ -473,12 +490,11 @@ export default function NavigationBar({ mode = 'dark' }) {
                             </Link>
                         </NextLink>
                     ) : (
-                        <WaitlistModal 
-                          email={email}
+                        <WaitlistModal
+                            email={email}
                             setEmail={setEmail}
                             mode={mode}
                         />
-                    
                     )}
                     {wallet.address ? (
                         <Menu>
@@ -499,11 +515,12 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     }
                                     rightIcon={<HiOutlineChevronDown />}
                                 >
-                                    {ensName || (wallet.address.substring(0, 4) +
-                                        '...' +
-                                        wallet.address.substring(
-                                            wallet.address.length - 4
-                                        ))}
+                                    {ensName ||
+                                        wallet.address.substring(0, 4) +
+                                            '...' +
+                                            wallet.address.substring(
+                                                wallet.address.length - 4
+                                            )}
                                 </Button>
                             </MenuButton>
                             <MenuList
@@ -594,8 +611,8 @@ export default function NavigationBar({ mode = 'dark' }) {
                                 }
                                 onClick={() => {
                                     onOpen1()
-                                
-                                console.log(isOpen1)
+
+                                    console.log(isOpen1)
                                 }}
                             >
                                 Connect Wallet

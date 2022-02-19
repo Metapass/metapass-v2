@@ -76,7 +76,11 @@ export default function MyEvents({ isOpen, onClose }: any) {
             let desc: DescriptionType = JSON.parse(
                 UnicodeDecodeB64(event.description)
             )
-            const exceptions = ['https://www.youtube.com/watch?v=dQw4w9WgXcQ','https://thememe.club','https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058']
+            const exceptions = [
+                'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'https://thememe.club',
+                'https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058',
+            ]
             // console.log(event.seats, event.buyers.length,event.link)
             // exceptions.includes(event.link) ? event.link : decryptLink(event.link)
             return {
@@ -148,19 +152,19 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 console.log('error', error)
             }
         }
-        if(wallet?.address){
+        if (wallet?.address) {
             getMyEvents()
-            .then((res) => {
-                const data: Event[] = parseMyEvents(
-                    res.data.childCreatedEntities
-                )
-                console.log(data)
-                setMyEvents(data)
-                console.log(data)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+                .then((res) => {
+                    const data: Event[] = parseMyEvents(
+                        res.data.childCreatedEntities
+                    )
+                    console.log(data)
+                    setMyEvents(data)
+                    console.log(data)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
         }
         // console.log(myEvents)
     }, [wallet.address])

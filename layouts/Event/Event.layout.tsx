@@ -19,6 +19,7 @@ import {
     ModalOverlay,
     useClipboard,
     IconButton,
+    Fade,
 } from '@chakra-ui/react'
 import { useState, useContext, useEffect } from 'react'
 import ReactPlayer from 'react-player'
@@ -27,6 +28,7 @@ import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
 import moment from 'moment'
+import { motion } from 'framer-motion'
 import { walletContext } from '../../utils/walletContext'
 import { ethers } from 'ethers'
 import { BsCalendarPlus } from 'react-icons/bs'
@@ -51,11 +53,13 @@ export default function EventLayout({ event }: { event: Event }) {
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
     )
+    const [mintedImage, setMintedImage] = useState<string>('')
     const [eventLink, setEventLink] = useState<string>('')
-    const { hasCopied,value, onCopy } = useClipboard(eventLink as string)
+    const { hasCopied, value, onCopy } = useClipboard(eventLink as string)
     const [hasBought, setHasBought] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [ensName, setEnsName] = useState<string>('')
+    const [openseaLink, setOpenseaLink] = useState<string>('')
     let opensea =
         process.env.NEXT_PUBLIC_CHAIN_ID === '80001'
             ? 'https://testnets.opensea.io/assets/mumbai'
@@ -93,13 +97,13 @@ export default function EventLayout({ event }: { event: Event }) {
                 )
                 console.log(metapass)
 
-                let img = await ticketToIPFS(
+                let {img,fastimg} = await ticketToIPFS(
                     event.title,
                     event.tickets_sold + 1,
                     event.image.image,
                     event.date
                 )
-
+                setMintedImage(fastimg)
                 let metadata = {
                     name: event.title,
                     description: `NFT Ticket for ${event.title}`,
@@ -118,7 +122,8 @@ export default function EventLayout({ event }: { event: Event }) {
                         })
                         .then(() => {
                             console.log('Success!')
-                            setIsLoading(false)
+                            // setIsLoading(false)
+                            // toast.success("Ticket Minted! Your txn might take a few seconds to confirm")
                         })
                         .catch((err: any) => {
                             console.log('error', err)
@@ -139,7 +144,7 @@ export default function EventLayout({ event }: { event: Event }) {
                 }
 
                 metapass.on('Transfer', (res) => {
-                    toast.success('Redirecting to opensea in a few seconds')
+                    // toast.success('Redirecting to opensea in a few seconds')
                     setIsLoading(false)
                     setHasBought(true)
                     let link =
@@ -149,7 +154,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         '/' +
                         ethers.BigNumber.from(res).toNumber()
 
-                    window.open(link, '_blank')
+                    setOpenseaLink(link)
                 })
 
                 // metapass.once('Transfer', (res) => {
@@ -200,204 +205,267 @@ export default function EventLayout({ event }: { event: Event }) {
             }
             // console.log(eventLink,value)
         }
-    }, [event.link,hasBought])
+    }, [event.link, hasBought])
+    const [isDisplayed, setIsDisplayed] = useState(false)
+    // const {isOpen:isTicketOpen, onOpen:onTicketOpen, onClose:onTicketClose} = useDisclosure();
+    useEffect(() => {
+        if(hasBought){
+            setInterval(() => {
+                setIsDisplayed(true)
+            }, 5000)
+        }
+    }, [hasBought])
     return (
         <>
             {hasBought && <Confetti />}
-            <Modal isOpen={hasBought} onClose={() => {}}>
+            <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />
-                <ModalContent rounded="2xl">
-                    <ModalBody textAlign="center">
-                        <Image
+                <ModalContent rounded="2xl" bgColor={'transparent'}>
+                    <motion.div
+                        animate={{ scale: [0, 1.3, 1] }}
+                        transition={{ ease: 'easeOut', duration: 3 }}
+                    >
+                        <Image src={mintedImage}
+                        loading="lazy"
+                        alt="ticket" m="2"></Image>
+                    </motion.div>
+                </ModalContent>
+            </Modal>
+            <Fade>
+                <Modal isOpen={isDisplayed} onClose={() => {}}>
+                    <ModalOverlay />
+                    <ModalContent rounded="2xl">
+                        <ModalBody textAlign="center">
+                            {/* <Image
                             src="/assets/elements/sparkle_3.svg"
                             alt="sparkle"
                             w="28"
                             mx="auto"
                             h="28"
-                        />
-                        <Text
-                            fontFamily="body"
-                            fontSize="xl"
-                            color="blackAlpha.800"
-                        >
-                            Radical! 🎊
-                        </Text>
-                        <Box color="blackAlpha.700" fontSize="sm">
-                            <Text mt="2">Enjoy your time at {event.title}</Text>
-                            <Text mt="2">
-                                The ticket has been sent to your wallet.🥂
+                          translate="yes"
+                          translateY={-20}
+                        /> */}
+                            <motion.div
+                                animate={{ translateY: [0, -20, 0] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                            >
+                                <Image
+                                    src={mintedImage}
+                                    alt="ticket"
+                                    m="2"
+                                    loading='lazy'
+                                ></Image>
+                            </motion.div>
+
+                            <Box color="blackAlpha.700" fontSize="sm">
+                                <Text
+                                    fontFamily="body"
+                                    fontSize="lg"
+                                    color="blackAlpha.800"
+                                >
+                                    Radical! 🎊
+                                </Text>
+                                <Text mt="2">
+                                    Enjoy your time at {event.title}
+                                </Text>
+                                <Text mt="2">
+                                    The ticket has been sent to your wallet.🥂
+                                </Text>
+                                <Text mt="2">
+                                    Spread the word, share this event via{' '}
+                                </Text>
+                            </Box>
+                            <Flex
+                                mx="auto"
+                                mt="2"
+                                justify="center"
+                                experimental_spaceX="2"
+                                align="center"
+                            >
+                                <Box
+                                    p="2"
+                                    bg="white"
+                                    transitionDuration="100ms"
+                                    cursor="pointer"
+                                    boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
+                                    rounded="full"
+                                    _hover={{ shadow: 'md' }}
+                                >
+                                    <Image
+                                        src="/assets/twitter.png"
+                                        w="5"
+                                        alt="twitter"
+                                    />
+                                </Box>
+                                <Box
+                                    p="2"
+                                    bg="white"
+                                    transitionDuration="100ms"
+                                    cursor="pointer"
+                                    boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
+                                    rounded="full"
+                                    _hover={{ shadow: 'md' }}
+                                >
+                                    <Image
+                                        src="/assets/discord.svg"
+                                        w="5"
+                                        alt="discord"
+                                    />
+                                </Box>
+                                <Box
+                                    p="2"
+                                    bg="white"
+                                    transitionDuration="100ms"
+                                    cursor="pointer"
+                                    boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
+                                    rounded="full"
+                                    _hover={{ shadow: 'md' }}
+                                >
+                                    <Image
+                                        src="/assets/instagram.webp"
+                                        w="5"
+                                        alt="instagram"
+                                    />
+                                </Box>
+                                <Box
+                                    p="2"
+                                    bg="white"
+                                    transitionDuration="100ms"
+                                    cursor="pointer"
+                                    boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
+                                    rounded="full"
+                                    _hover={{ shadow: 'md' }}
+                                >
+                                    <Image
+                                        src="/assets/whatsapp.png"
+                                        w="5"
+                                        alt="whatsapp"
+                                    />
+                                </Box>
+                                <Box
+                                    p="2"
+                                    bg="white"
+                                    transitionDuration="100ms"
+                                    cursor="pointer"
+                                    boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
+                                    rounded="full"
+                                    _hover={{ shadow: 'md' }}
+                                >
+                                    <Image
+                                        src="/assets/telegram.png"
+                                        w="5"
+                                        alt="telegram"
+                                    />
+                                </Box>
+                                <Box
+                                    p="2"
+                                    bg="white"
+                                    transitionDuration="100ms"
+                                    cursor="pointer"
+                                    boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
+                                    rounded="full"
+                                    _hover={{ shadow: 'md' }}
+                                    onClick={() => {
+                                        window.open(openseaLink, '_blank')
+                                    }}
+                                >
+                                    <Image
+                                        src="/assets/opensea.png"
+                                        w="5"
+                                        alt="opensea"
+                                        borderRadius="full"
+                                    />
+                                </Box>
+                            </Flex>
+                            <Text color="blackAlpha.700" fontSize="sm" mt="2">
+                                Or copy link
                             </Text>
-                            <Text mt="2">
-                                Spread the word, share this event via{' '}
-                            </Text>
-                        </Box>
-                        <Flex
-                            mx="auto"
-                            mt="2"
-                            justify="center"
-                            experimental_spaceX="2"
-                            align="center"
-                        >
-                            <Box
-                                p="2"
-                                bg="white"
-                                transitionDuration="100ms"
-                                cursor="pointer"
-                                boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
-                                rounded="full"
-                                _hover={{ shadow: 'md' }}
-                            >
-                                <Image
-                                    src="/assets/twitter.png"
-                                    w="5"
-                                    alt="twitter"
+                            <InputGroup mt="4">
+                                <InputLeftElement>
+                                    <IoIosLink />
+                                </InputLeftElement>
+                                <Input
+                                    rounded="full"
+                                    fontSize="xs"
+                                    value={eventLink}
+                                    readOnly
                                 />
-                            </Box>
+                                <InputRightElement mr="6">
+                                    <Button
+                                        onClick={onCopy}
+                                        _hover={{}}
+                                        _focus={{}}
+                                        _active={{}}
+                                        rounded="full"
+                                        color="white"
+                                        bg="brand.gradient"
+                                        fontWeight="normal"
+                                        fontSize="sm"
+                                        px="12"
+                                        roundedBottomLeft="none"
+                                    >
+                                        {hasCopied ? 'Copied' : 'Copy Link'}
+                                    </Button>
+                                </InputRightElement>{' '}
+                            </InputGroup>
                             <Box
-                                p="2"
-                                bg="white"
-                                transitionDuration="100ms"
-                                cursor="pointer"
-                                boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
+                                p="1.5px"
+                                mx="auto"
+                                mt="6"
+                                transitionDuration="200ms"
                                 rounded="full"
-                                _hover={{ shadow: 'md' }}
+                                w="fit-content"
+                                boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
+                                bg="brand.gradient"
+                                _hover={{ transform: 'scale(1.05)' }}
+                                _focus={{}}
+                                _active={{ transform: 'scale(0.95)' }}
                             >
-                                <Image
-                                    src="/assets/discord.svg"
-                                    w="5"
-                                    alt="discord"
-                                />
-                            </Box>
-                            <Box
-                                p="2"
-                                bg="white"
-                                transitionDuration="100ms"
-                                cursor="pointer"
-                                boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
-                                rounded="full"
-                                _hover={{ shadow: 'md' }}
-                            >
-                                <Image
-                                    src="/assets/instagram.webp"
-                                    w="5"
-                                    alt="instagram"
-                                />
-                            </Box>
-                            <Box
-                                p="2"
-                                bg="white"
-                                transitionDuration="100ms"
-                                cursor="pointer"
-                                boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
-                                rounded="full"
-                                _hover={{ shadow: 'md' }}
-                            >
-                                <Image
-                                    src="/assets/whatsapp.png"
-                                    w="5"
-                                    alt="whatsapp"
-                                />
-                            </Box>
-                            <Box
-                                p="2"
-                                bg="white"
-                                transitionDuration="100ms"
-                                cursor="pointer"
-                                boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
-                                rounded="full"
-                                _hover={{ shadow: 'md' }}
-                            >
-                                <Image
-                                    src="/assets/telegram.png"
-                                    w="5"
-                                    alt="telegram"
-                                />
-                            </Box>
-                        </Flex>
-                        <Text color="blackAlpha.700" fontSize="sm" mt="2">
-                            Or copy link
-                        </Text>
-                        <InputGroup mt="4">
-                            <InputLeftElement>
-                                <IoIosLink />
-                            </InputLeftElement>
-                            <Input
-                                rounded="full"
-                                fontSize="xs"
-                                value={eventLink}
-                                readOnly
-                            />
-                            <InputRightElement mr="6">
                                 <Button
-                                    onClick={onCopy}
+                                    type="submit"
+                                    rounded="full"
+                                    bg="white"
+                                    size="sm"
+                                    color="blackAlpha.700"
+                                    fontWeight="medium"
                                     _hover={{}}
+                                    leftIcon={
+                                        <Box
+                                            _groupHover={{
+                                                transform: 'scale(1.1)',
+                                            }}
+                                            transitionDuration="200ms"
+                                        >
+                                            <Image
+                                                src="/assets/elements/event_ticket_gradient.svg"
+                                                w="4"
+                                                alt="ticket"
+                                            />
+                                        </Box>
+                                    }
                                     _focus={{}}
                                     _active={{}}
-                                    rounded="full"
-                                    color="white"
-                                    bg="brand.gradient"
-                                    fontWeight="normal"
-                                    fontSize="sm"
-                                    px="12"
-                                    roundedBottomLeft="none"
+                                    onClick={() => {
+                                        window.open(eventLink, '_blank')
+                                    }}
+                                    role="group"
                                 >
-                                    {hasCopied ? 'Copied' : 'Copy Link'}
+                                    Go to event
                                 </Button>
-                            </InputRightElement>{' '}
-                        </InputGroup>
-                        <Box
-                            p="1.5px"
-                            mx="auto"
-                            mt="6"
-                            transitionDuration="200ms"
-                            rounded="full"
-                            w="fit-content"
-                            boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
-                            bg="brand.gradient"
-                            _hover={{ transform: 'scale(1.05)' }}
-                            _focus={{}}
-                            _active={{ transform: 'scale(0.95)' }}
-                        >
-                            <Button
-                                type="submit"
-                                rounded="full"
-                                bg="white"
-                                size="sm"
-                                color="blackAlpha.700"
-                                fontWeight="medium"
-                                _hover={{}}
-                                leftIcon={
-                                    <Box
-                                        _groupHover={{
-                                            transform: 'scale(1.1)',
-                                        }}
-                                        transitionDuration="200ms"
-                                    >
-                                        <Image
-                                            src="/assets/elements/event_ticket_gradient.svg"
-                                            w="4"
-                                            alt="ticket"
-                                        />
-                                    </Box>
-                                }
-                                _focus={{}}
-                                _active={{}}
-                                onClick={() => {
-                                    window.open(eventLink, '_blank')
-                                }}
-                                role="group"
-                            >
-                                Go to event page
-                            </Button>
-                        </Box>
-                        <Box mt="2" mb="4">
-                            <Link fontSize="sm" href="/" color="blackAlpha.600">
-                                Back to home
-                            </Link>
-                        </Box>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+                            </Box>
+                            <Box mt="2" mb="4">
+                                <Link
+                                    fontSize="sm"
+                                    href="/"
+                                    color="blackAlpha.600"
+                                >
+                                    Back to home
+                                </Link>
+                            </Box>
+                        </ModalBody>
+                    </ModalContent>
+                </Modal>
+            </Fade>
             <Box pt="3" color="brand.black" mb="4">
                 <Flex
                     justify="space-between"
@@ -816,7 +884,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             >
                                 <Box
                                     w={`${
-                                        (event.tickets_sold/event.seats)*100
+                                        (event.tickets_sold / event.seats) * 100
                                     }%`}
                                     h="full"
                                     bg="brand.gradient"

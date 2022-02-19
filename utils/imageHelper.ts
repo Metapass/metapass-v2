@@ -64,5 +64,5 @@ export const ticketToIPFS = async (
     await axios.post('/api/pin', {
         hash: cid.toString(),
     })
-    return `https://ipfs.io/ipfs/${cid.toString()}`
+    return {img: `https://ipfs.io/ipfs/${cid.toString()}`, fastimg: res.data[0]}
 }
