@@ -42,6 +42,7 @@ import { walletContext } from '../../utils/walletContext'
 // import gravatarUrl from 'gravatar-url'
 import { encryptLink } from '../../utils/linkResolvers'
 import BoringAva from '../../utils/BoringAva'
+import { getAllEnsLinked } from '../../utils/resolveEns'
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
@@ -54,6 +55,28 @@ export default function Step4({
 }) {
     const [wallet, setWallet] = useContext(walletContext)
     const [_link, setLink] = useState<string>('')
+    const [ensName, setEnsName] = useState<string>('')
+
+    useEffect(() => {
+        getAllEnsLinked(event.owner)
+            .then((data) => {
+                if (data?.data?.domains && data && data?.data) {
+                    console.log(
+                        data?.data?.domains?.length,
+                        data?.data?.domains?.length > 0 &&
+                            data?.data?.domains[0].name
+                    )
+                    const ens_name =
+                        data?.data?.domains?.length > 0 &&
+                        data?.data?.domains[0].name
+                    setEnsName(ens_name)
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        // console.log(wallet)
+    }, [event.owner])
 
     return (
         <>
@@ -225,15 +248,18 @@ export default function Step4({
                                                 />
                                                 <Box>
                                                     <Text fontSize="14px">
-                                                        {wallet.address.substring(
-                                                            0,
-                                                            6
-                                                        ) +
-                                                            '...' +
+                                                        {ensName ||
                                                             wallet.address.substring(
-                                                                wallet.address
-                                                                    .length - 6
-                                                            )}
+                                                                0,
+                                                                6
+                                                            ) +
+                                                                '...' +
+                                                                wallet.address.substring(
+                                                                    wallet
+                                                                        .address
+                                                                        .length -
+                                                                        6
+                                                                )}
                                                     </Text>
                                                 </Box>
                                             </Flex>

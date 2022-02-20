@@ -32,7 +32,6 @@ import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import { useContext, useState } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import EventCard from '../../components/Card/EventCard.component'
-import { events } from '../../utils/testData'
 import DateModal from './DateModal.layout'
 import { walletContext } from '../../utils/walletContext'
 
@@ -198,7 +197,10 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                             onClick={(e) => {
                                                 setFormDetails({
                                                     ...formDetails,
-                                                    type: 'Online',
+                                                    category: {
+                                                        ...formDetails.category,
+                                                        event_type: 'Online',
+                                                    },
                                                 })
                                             }}
                                         >
@@ -209,7 +211,10 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                             onClick={(e) => {
                                                 setFormDetails({
                                                     ...formDetails,
-                                                    type: 'In-person',
+                                                    category: {
+                                                        ...formDetails.category,
+                                                        event_type: 'In-Person',
+                                                    },
                                                 })
                                             }}
                                         >
