@@ -10,7 +10,14 @@ import { Toaster } from 'react-hot-toast'
 import Contract from '../utils/contractContext'
 import Script from 'next/script'
 
+import { useEffect } from 'react'
+import LogRocket from 'logrocket'
+
+// declare const window:any;
 function MyApp({ Component, pageProps }: AppProps) {
+    useEffect(() => {
+        LogRocket.init(process.env.NEXT_PUBLIC_LOGROCKET_APP_ID as string)
+    }, [])
     return (
         <>
             <Script
