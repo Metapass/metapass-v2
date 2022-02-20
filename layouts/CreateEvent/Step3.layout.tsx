@@ -34,19 +34,11 @@ import {
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
-import { useCallback, useContext, useEffect, useState } from 'react'
-import { FaChevronDown, FaTrash, FaYoutube } from 'react-icons/fa'
-import EventCard from '../../components/Card/EventCard.component'
-import { events } from '../../utils/testData'
-import DateModal from './DateModal.layout'
+import { useContext, useState } from 'react'
+import { FaTrash, FaYoutube } from 'react-icons/fa'
 import Dropzone from 'react-dropzone'
-import { HiChevronRight, HiOutlineChevronRight, HiUpload } from 'react-icons/hi'
-import {
-    getBuffer,
-    getBlob,
-    loadImage,
-    uploadImage,
-} from '../../utils/imageHelper'
+import { HiOutlineChevronRight, HiUpload } from 'react-icons/hi'
+import { getBuffer, getBlob, uploadImage } from '../../utils/imageHelper'
 import { walletContext } from '../../utils/walletContext'
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })

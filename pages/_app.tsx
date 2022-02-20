@@ -8,20 +8,21 @@ import Wallet from '../utils/walletContext'
 import Web3Wrapper from '../utils/web3Context'
 import { Toaster } from 'react-hot-toast'
 import Contract from '../utils/contractContext'
-// declare const window:any;
+import Script from 'next/script'
+
 function MyApp({ Component, pageProps }: AppProps) {
     return (
         <>
+            <Script
+                async
+                src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.1/dist/umd/index.min.js"
+            />
+            <Script
+                async
+                src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"
+            />
             <Head>
                 <title>MetaPass | Reimagining Events</title>
-                <script
-                    async
-                    src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.1/dist/umd/index.min.js"
-                ></script>
-                <script
-                    async
-                    src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"
-                ></script>
                 <meta
                     name="description"
                     content="Book NFT tickets for online and IRL events"
