@@ -55,7 +55,9 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
         <form
             onSubmit={(e) => {
                 e.preventDefault()
+                // console.log("form",submitting)
                 if (submitting) {
+                    // console.log('submitting')
                     onSubmit(formDetails)
                 }
             }}
@@ -169,7 +171,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                                 fontSize="sm"
                                                 required
                                                 px="0"
-                                                value={formDetails.type}
+                                                value={formDetails.category.event_type}
                                                 _placeholder={{
                                                     color: 'gray.300',
                                                 }}
@@ -486,13 +488,13 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                         : '1/1/2000',
                                     eventHost: wallet.address || '',
                                     owner: wallet.address || '',
-                                    type: formDetails.type || 'type',
+                                    type: formDetails.category.event_type || 'type',
                                     category: {
                                         category: [
                                             formDetails.category.category[0] ||
                                                 'category',
                                         ],
-                                        event_type: formDetails.type || 'type',
+                                        event_type: formDetails.category.event_type || 'type',
                                     },
                                     buyers: [],
 
@@ -539,7 +541,6 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                 formDetails.title &&
                                 formDetails.category &&
                                 (formDetails.fee || !isPaid) &&
-                                formDetails.type &&
                                 formDetails.date
                             ) {
                                 setSubmitting(true)

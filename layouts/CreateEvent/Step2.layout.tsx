@@ -182,13 +182,13 @@ export default function Step2({
                                     date: event.date ? event.date : '1/1/2000',
                                     eventHost: wallet.address || '',
                                     owner: wallet.address || '',
-                                    type: event.type || 'type',
+                                    type: event.category.event_type || 'type',
                                     category: {
                                         category: [
                                             event.category?.category[0] ||
                                                 'category',
                                         ],
-                                        event_type: event.type || 'type',
+                                        event_type: event.category.event_type || 'type',
                                     },
                                     buyers: [],
 
