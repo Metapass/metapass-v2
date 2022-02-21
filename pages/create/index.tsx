@@ -205,36 +205,6 @@ const Create: NextPage = () => {
                                 _hover={{ shadow: 'md' }}
                             >
                                 <Image
-                                    src="/assets/discord.svg"
-                                    w="5"
-                                    alt="discord"
-                                />
-                            </Box>
-                            <Box
-                                p="2"
-                                bg="white"
-                                transitionDuration="100ms"
-                                cursor="pointer"
-                                boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
-                                rounded="full"
-                                _hover={{ shadow: 'md' }}
-                            >
-                                <Image
-                                    src="/assets/instagram.webp"
-                                    w="5"
-                                    alt="instagram"
-                                />
-                            </Box>
-                            <Box
-                                p="2"
-                                bg="white"
-                                transitionDuration="100ms"
-                                cursor="pointer"
-                                boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
-                                rounded="full"
-                                _hover={{ shadow: 'md' }}
-                            >
-                                <Image
                                     src="/assets/whatsapp.png"
                                     w="5"
                                     alt="whatsapp"
