@@ -168,7 +168,7 @@ export default function EventCard({
                     py="0.5"
                     bg="white"
                 >
-                    {event.type}
+                    {event.category.event_type}
                 </Box>
                 <Box
                     rounded="full"

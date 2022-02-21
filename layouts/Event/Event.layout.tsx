@@ -100,7 +100,7 @@ export default function EventLayout({ event }: { event: Event }) {
                     event.title,
                     event.tickets_sold + 1,
                     event.image.image,
-                    event.date,
+                    event.date.split('T')[0],
                     wallet.ens ||
                         wallet.address.substring(0, 4) +
                             '...' +
