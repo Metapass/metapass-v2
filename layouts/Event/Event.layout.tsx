@@ -812,7 +812,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     cursor="pointer"
                                     transitionDuration="100ms"
                                 >
-                                    <BoringAva address={wallet.address} />
+                                    <BoringAva address={event.owner} />
                                     <Box>
                                         <Text fontSize="14px">
                                             {ensName ||

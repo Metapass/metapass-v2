@@ -64,22 +64,21 @@ const Create: NextPage = () => {
         },
         seats: 0,
         owner: '',
-        // price: 0,
         type: '',
         tickets_available: 0,
         tickets_sold: 0,
         buyers: [],
-        // slides: [],
         link: '',
     })
 
     const contractAddress = process.env.NEXT_PUBLIC_FACTORY_ADDRESS
-    console.log(contractAddress)
     let contract: any
 
     const [eventLink, setEventLink] = useState<any>(undefined)
     const [isPublished, setIsPublished] = useState(false)
+    const [inTxn, setInTxn] = useState(false)
     const { hasCopied, onCopy } = useClipboard(eventLink)
+    const [child, setChild] = useState<any>('')
 
     useEffect(() => {
         setEvent({
@@ -99,16 +98,11 @@ const Create: NextPage = () => {
                 signer
             )
         }
-        console.log(contract)
     })
 
     const onSubmit = async () => {
-        console.log(event)
+        setInTxn(true)
 
-        // let imgJson = {
-        //     image: event.image,
-        //     gallery: event.image.gallery,
-        // }
         function b64EncodeUnicode(str: any) {
             return btoa(encodeURIComponent(str))
         }
@@ -123,7 +117,8 @@ const Create: NextPage = () => {
                 b64EncodeUnicode(JSON.stringify(event.description)),
                 event.link,
                 event.date,
-                b64EncodeUnicode(JSON.stringify(event.category))
+                b64EncodeUnicode(JSON.stringify(event.category)),
+                'undefined'
             )
             console.log('txn complete')
             console.log(txn)
@@ -137,6 +132,8 @@ const Create: NextPage = () => {
         contract.on('childEvent', (child: any) => {
             setEventLink(`${window.location.origin}/event/${child}`)
             setIsPublished(true)
+            setInTxn(false)
+            setChild(child)
         })
     }
 
@@ -190,6 +187,12 @@ const Create: NextPage = () => {
                                     src="/assets/twitter.png"
                                     w="5"
                                     alt="twitter"
+                                    onClick={() => {
+                                        window.open(
+                                            `http://twitter.com/share?text=I bought my NFT Ticket for ${event.title} on metapass. Get yours now!&url=https://metapasshq.xyz/event/${child}`,
+                                            '_blank'
+                                        )
+                                    }}
                                 />
                             </Box>
                             <Box
@@ -235,6 +238,11 @@ const Create: NextPage = () => {
                                     src="/assets/whatsapp.png"
                                     w="5"
                                     alt="whatsapp"
+                                    onClick={() => {
+                                        window.open(
+                                            `https://api.whatsapp.com/send?text=I just bought NFT Ticket to ${event.title} on Metapass. Get yours at https://metapasshq.xyz/event/${child}`
+                                        )
+                                    }}
                                 />
                             </Box>
                             <Box
@@ -250,6 +258,12 @@ const Create: NextPage = () => {
                                     src="/assets/telegram.png"
                                     w="5"
                                     alt="telegram"
+                                    onClick={() => {
+                                        window.open(
+                                            `https://telegram.me/share/url?url=https://metapasshq.xyz/event/${child}&text=I just bought my NFT Ticket to ${event.title} on Metapass. Get yours now`,
+                                            '_blank'
+                                        )
+                                    }}
                                 />
                             </Box>
                         </Flex>
@@ -399,6 +413,7 @@ const Create: NextPage = () => {
                             {/* STEP5🔺 */}
                             <Step5
                                 event={event}
+                                inTxn={inTxn}
                                 onSubmit={() => {
                                     onSubmit()
                                 }}

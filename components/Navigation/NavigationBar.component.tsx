@@ -37,7 +37,6 @@ import {
     HiOutlineChevronDown,
 } from 'react-icons/hi'
 import MyEvents from '../../layouts/MyEvents/MyEvents.layout'
-import { EmailBar } from '../../layouts/LandingPage/FeaturedEvents.layout'
 const env: any = process.env.NEXT_PUBLIC_ENV === 'prod'
 const polygon = require(env
     ? '../../utils/polygon.json'
@@ -48,11 +47,9 @@ import eventOrgs from '../../utils/orgs.json'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 import WaitlistModal from '../Misc/WaitlistModal'
-import LogRocket from 'logrocket'
+
 export default function NavigationBar({ mode = 'dark' }) {
-    const [address, setAddress] = useState<string>(
-        ''
-    )
+    const [address, setAddress] = useState<string>('')
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
     const [_, setWeb3] = useContext(web3Context)
@@ -268,11 +265,7 @@ export default function NavigationBar({ mode = 'dark' }) {
     }, [isOpen1])
 
     useEffect(() => {
-        if (
-            isOpen1 &&
-            address &&
-            address !== ''
-        ) {
+        if (isOpen1 && address && address !== '') {
             onClose1()
         }
     }, [address, onClose1, isOpen1])
@@ -343,13 +336,6 @@ export default function NavigationBar({ mode = 'dark' }) {
             })
         console.log(wallet)
     }, [address, wallet.address])
-
-    useEffect(() => {
-        LogRocket.identify(address, {
-            name:   address,
-            ens: wallet.ens || "no ens",
-          });
-    }, [address, wallet.ens])
 
     return (
         <>
