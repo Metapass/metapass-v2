@@ -71,7 +71,7 @@ const Create: NextPage = () => {
         link: '',
     })
 
-    const contractAddress = process.env.NEXT_PUBLIC_FACTORY_ADDRESS
+    const contractAddress = process.env.NEXT_PUBLIC_ENV === 'dev'?process.env.NEXT_PUBLIC_FACTORY_ADDRESS:process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
     let contract: any
 
     const [eventLink, setEventLink] = useState<any>(undefined)
