@@ -29,7 +29,6 @@ export default function EventCard({
     previewOnly?: boolean
 }) {
     const [showEventModal, setEventModal] = useState(false)
-    console.log(event)
 
     const months = [
         'JAN',
@@ -181,7 +180,6 @@ export default function EventCard({
                 >
                     {Array(event.category.category).join(' & ')}
                 </Box>
-                {/* {console.log(event.image,"here here")} */}
             </Flex>
             <AspectRatio ratio={428.42 / 180.98} w="full">
                 {/* 

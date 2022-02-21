@@ -171,7 +171,10 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                                 fontSize="sm"
                                                 required
                                                 px="0"
-                                                value={formDetails.category.event_type}
+                                                value={
+                                                    formDetails.category
+                                                        .event_type
+                                                }
                                                 _placeholder={{
                                                     color: 'gray.300',
                                                 }}
@@ -208,7 +211,6 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                         >
                                             Online
                                         </MenuItem>
-                                        <MenuDivider color="gray.400" />
                                         <MenuItem
                                             onClick={(e) => {
                                                 setFormDetails({
@@ -284,7 +286,6 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                         >
                                             Meetup
                                         </MenuItem>
-                                        <MenuDivider color="gray.400" />
                                         <MenuItem
                                             onClick={(e) => {
                                                 setFormDetails({
@@ -488,13 +489,17 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                         : '1/1/2000',
                                     eventHost: wallet.address || '',
                                     owner: wallet.address || '',
-                                    type: formDetails.category.event_type || 'type',
+                                    type:
+                                        formDetails.category.event_type ||
+                                        'type',
                                     category: {
                                         category: [
                                             formDetails.category.category[0] ||
                                                 'category',
                                         ],
-                                        event_type: formDetails.category.event_type || 'type',
+                                        event_type:
+                                            formDetails.category.event_type ||
+                                            'type',
                                     },
                                     buyers: [],
 
@@ -541,6 +546,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                 formDetails.title &&
                                 formDetails.category &&
                                 (formDetails.fee || !isPaid) &&
+                                formDetails.category.event_type &&
                                 formDetails.date
                             ) {
                                 setSubmitting(true)

@@ -303,36 +303,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                         }}
                                     />
                                 </Box>
-                                <Box
-                                    p="2"
-                                    bg="white"
-                                    transitionDuration="100ms"
-                                    cursor="pointer"
-                                    boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
-                                    rounded="full"
-                                    _hover={{ shadow: 'md' }}
-                                >
-                                    <Image
-                                        src="/assets/discord.svg"
-                                        w="5"
-                                        alt="discord"
-                                    />
-                                </Box>
-                                <Box
-                                    p="2"
-                                    bg="white"
-                                    transitionDuration="100ms"
-                                    cursor="pointer"
-                                    boxShadow="0px 4.61667px 92.3333px rgba(0, 0, 0, 0.15)"
-                                    rounded="full"
-                                    _hover={{ shadow: 'md' }}
-                                >
-                                    <Image
-                                        src="/assets/instagram.webp"
-                                        w="5"
-                                        alt="instagram"
-                                    />
-                                </Box>
+
                                 <Box
                                     p="2"
                                     bg="white"
@@ -812,7 +783,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     cursor="pointer"
                                     transitionDuration="100ms"
                                 >
-                                    <BoringAva address={wallet.address} />
+                                    <BoringAva address={event.owner} />
                                     <Box>
                                         <Text fontSize="14px">
                                             {ensName ||
@@ -1025,7 +996,13 @@ export default function EventLayout({ event }: { event: Event }) {
                                         console.log(googleEndDate)
                                         //open a window and redirect to google calendar to add an event with a set date and time in the local time zone format mm/dd/yyyy--hh:mm:ss-hh:mm:ss
                                         window.open(
-                                            `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${event.title}&dates=${googleStartDate}/${googleEndDate}&details=${event.description.short_desc}&location=${event.link}&sf=true&output=xml`,
+                                            `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${
+                                                event.title
+                                            }&dates=${googleStartDate}/${googleEndDate}&details=${
+                                                event.description.short_desc
+                                            }&location=${decryptLink(
+                                                event.link as string
+                                            )}&sf=true&output=xml`,
                                             '_blank'
                                         )
                                     }}

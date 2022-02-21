@@ -55,9 +55,12 @@ export const ticketToIPFS = async (
     date: string,
     person: string,
 ) => {
+
+    let parsedDate = date.split("T")[0];
+
     const res = await axios.get(
         `https://radiant-caverns-43873.herokuapp.com/v2/2d/edit/url=${url}&hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${
-            months[new Date(date).getMonth()] + ' ' + new Date(date).getDate()
+            months[new Date(parsedDate).getMonth()] + ' ' + new Date(parsedDate).getDate()
         }`
     )
     // @ts-ignore
