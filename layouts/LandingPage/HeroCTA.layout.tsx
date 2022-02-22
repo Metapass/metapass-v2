@@ -64,7 +64,7 @@ export default function HeroCTA() {
                         textAlign="center"
                         fontWeight={{ base: 'medium', lg: 'semibold' }}
                         fontFamily="subheading"
-                        ml={{ base: '-6' }}
+                        ml={{ base: '-6', lg: '0' }}
                         fontSize={{
                             base: '13.8px',
                             md: '23.2px',

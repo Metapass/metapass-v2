@@ -289,21 +289,22 @@ export default function FeaturedEvents() {
                         isCentered
                     >
                         <ModalOverlay />
-                        <ModalContent>
+                        <ModalContent rounded="xl">
                             <Flex justify="center">
                                 <Image
-                                    src="/assets/elements/bolt.png"
-                                    maxH="20"
-                                    maxW="20"
+                                    src="/assets/bolt.svg"
+                                    maxH="28"
+                                    maxW="28"
                                     pos="absolute"
                                     // skewY="50px"
                                     zIndex="overlay"
-                                    top="-10"
+                                    top="-14"
                                     //   left="250"
                                     alt="bolt"
                                 />
                             </Flex>
                             <ModalBody
+                                mt="6"
                                 //   borderRadius="xl"
                                 p="10"
                             >
@@ -331,17 +332,26 @@ export default function FeaturedEvents() {
                                         letterSpacing="3%"
                                         fontFamily="Product Sans"
                                         fontSize="18px"
-                                        color="rgba(0, 0, 0, 0.31)"
                                         maxW="500px"
                                         height="63.08px"
                                         fontWeight="400"
 
                                         //  noOfLines={4}
                                     >
-                                        We&apos;re on the mission to
-                                        revolutionize event ticketing with
-                                        blockchain, join the waitlist and lets
-                                        band together on this journey! 🚀
+                                        <span
+                                            style={{
+                                                color: 'rgba(0, 0, 0, 0.31)',
+                                                fontWeight: 400,
+                                                fontSize: '18px',
+                                                fontFamily: 'Product Sans',
+                                            }}
+                                        >
+                                            We&apos;re on the mission to
+                                            revolutionize event ticketing with
+                                            blockchain, join the waitlist and
+                                            lets band together on this journey!
+                                        </span>{' '}
+                                        🚀
                                     </Text>
                                     <EmailBar
                                         email={email}
