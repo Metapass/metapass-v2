@@ -16,6 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
    useEffect(() => {
     LogRocket.init(process.env.NEXT_PUBLIC_LOGROCKET_APP_ID as string);
     splitbee.init()
+    console.log("Enviroment ",process.env.NEXT_PUBLIC_ENV)
 }, [])
 
     return (
