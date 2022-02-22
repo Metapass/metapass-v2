@@ -3,14 +3,18 @@ import type { AppProps } from 'next/app'
 import { Box, ChakraProvider } from '@chakra-ui/react'
 import theme from './../styles/theme.chakra'
 import Head from 'next/head'
-import PageLayout from '../components/Wrappers/PageLayout.component'
 import Wallet from '../utils/walletContext'
 import Web3Wrapper from '../utils/web3Context'
 import { Toaster } from 'react-hot-toast'
 import Contract from '../utils/contractContext'
 import Script from 'next/script'
+import splitbee from '@splitbee/web'
+import { useEffect } from 'react'
 
 function MyApp({ Component, pageProps }: AppProps) {
+    useEffect(() => {
+        splitbee.init()
+    }, [])
     return (
         <>
             <Script
