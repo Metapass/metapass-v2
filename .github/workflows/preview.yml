@@ -1,0 +1,32 @@
+name: deploy all apps to prod
+
+on: [push]
+
+jobs:
+    pre-job:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Cancel redundant workflows
+              uses: technote-space/auto-cancel-redundant-workflow@v1
+
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Use Node 16
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 16.x
+
+            - name: Install vercel
+              run: npm i vercel -g
+
+            - name: Deploy landing page
+              run: ls && vercel --token $VERCEL_TOKEN
+              env:
+                  VERCEL_TOKEN: ${{ secrets.VERCEL_CLI_TOKEN }}
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_LANDING_ORG }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_LANDING_PROJ }}
