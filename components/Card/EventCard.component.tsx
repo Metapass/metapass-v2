@@ -182,7 +182,7 @@ export default function EventCard({
                     {Array(event.category.category).join(' & ')}
                 </Box>
             </Flex>
-            <AspectRatio ratio={428.42 / 180.98} w="full">
+            <AspectRatio ratio={428.42 / 180.98} w="full" bg="gray.100">
                 {/* 
   // @ts-ignore */}
                 <LazyImage w="full" src={event.image.image} alt="event image" />
