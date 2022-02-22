@@ -61,9 +61,9 @@ export default function EventLayout({ event }: { event: Event }) {
     const [ensName, setEnsName] = useState<string>('')
     const [openseaLink, setOpenseaLink] = useState<string>('')
     let opensea =
-        process.env.NEXT_PUBLIC_CHAIN_ID === '80001'
+        process.env.NEXT_PUBLIC_ENV === 'dev'
             ? 'https://testnets.opensea.io/assets/mumbai'
-            : 'https://opensea.io'
+            : 'https://opensea.io/assets/matic'
 
     const months = [
         'JAN',
