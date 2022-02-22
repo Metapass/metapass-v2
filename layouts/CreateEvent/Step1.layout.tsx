@@ -51,390 +51,101 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
     const [submitting, setSubmitting] = useState(false)
     const [wallet, setWallet] = useContext(walletContext)
 
-    return (
-        <form
-            onSubmit={(e) => {
-                e.preventDefault()
-                // console.log("form",submitting)
-                if (submitting) {
-                    // console.log('submitting')
-                    onSubmit(formDetails)
-                }
-            }}
-        >
-            <Box color="brand.black">
-                <DateModal
-                    isOpen={isOpen}
-                    onClose={onClose}
-                    onSubmit={(date: any) => {
-                        setFormDetails({
-                            ...formDetails,
-                            date,
-                        })
-                    }}
-                />
-                <Text
-                    align="center"
-                    color="brand.black400"
-                    fontSize="4xl"
-                    fontWeight="semibold"
-                >
-                    Tell us about your event
-                </Text>
-                <FormControl
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    fontFamily="body"
-                    mt="2"
-                    fontWeight="normal"
-                >
-                    <FormLabel
-                        fontFamily="body"
-                        color="blackAlpha.700"
-                        fontWeight="normal"
-                        mb="0"
-                        htmlFor="price"
-                    >
-                        Is it a paid event?
-                    </FormLabel>
-
-                    <Switch
-                        onChange={(e) => {
-                            setIsPaid(e.target.checked)
+    if (wallet.address) {
+        return (
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault()
+                    // console.log("form",submitting)
+                    if (submitting) {
+                        // console.log('submitting')
+                        onSubmit(formDetails)
+                    }
+                }}
+            >
+                <Box color="brand.black">
+                    <DateModal
+                        isOpen={isOpen}
+                        onClose={onClose}
+                        onSubmit={(date: any) => {
+                            setFormDetails({
+                                ...formDetails,
+                                date,
+                            })
                         }}
-                        isChecked={isPaid}
-                        id="price"
-                        colorScheme="linkedin"
                     />
-                </FormControl>
-                <Flex
-                    justify="space-between"
-                    experimental_spaceX={{ base: '12', xl: '16' }}
-                    mt="6"
-                    px="10"
-                    maxW="1200px"
-                    mx="auto"
-                >
-                    <Box fontFamily="body" w="full">
-                        <FormControl
-                            borderBottom="2px"
-                            borderBottomColor="gray.200"
-                            _focusWithin={{ borderBottomColor: 'gray.300' }}
+                    <Text
+                        align="center"
+                        color="brand.black400"
+                        fontSize="4xl"
+                        fontWeight="semibold"
+                    >
+                        Tell us about your event
+                    </Text>
+                    <FormControl
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        fontFamily="body"
+                        mt="2"
+                        fontWeight="normal"
+                    >
+                        <FormLabel
+                            fontFamily="body"
+                            color="blackAlpha.700"
+                            fontWeight="normal"
+                            mb="0"
+                            htmlFor="price"
                         >
-                            <FormLabel
-                                fontSize={{ lg: 'md', xl: 'lg' }}
-                                color="blackAlpha.700"
-                                my="0"
-                            >
-                                Event Name
-                            </FormLabel>
+                            Is it a paid event?
+                        </FormLabel>
 
-                            <Input
-                                onChange={(e) => {
-                                    setFormDetails({
-                                        ...formDetails,
-                                        title: e.target.value,
-                                    })
+                        <Switch
+                            onChange={(e) => {
+                                setIsPaid(e.target.checked)
+                            }}
+                            isChecked={isPaid}
+                            id="price"
+                            colorScheme="linkedin"
+                        />
+                    </FormControl>
+                    <Flex
+                        justify="space-between"
+                        experimental_spaceX={{ base: '12', xl: '16' }}
+                        mt="6"
+                        px="10"
+                        maxW="1200px"
+                        mx="auto"
+                    >
+                        <Box fontFamily="body" w="full">
+                            <FormControl
+                                borderBottom="2px"
+                                borderBottomColor="gray.200"
+                                _focusWithin={{
+                                    borderBottomColor: 'gray.300',
                                 }}
-                                fontSize="sm"
-                                value={formDetails.title}
-                                required
-                                px="0"
-                                _placeholder={{ color: 'gray.300' }}
-                                placeholder="Name of your event"
-                                bg="transparent"
-                                border="none"
-                                rounded="none"
-                                _hover={{}}
-                                _focus={{}}
-                                _active={{}}
-                            />
-                        </FormControl>
-                        <Flex experimental_spaceX="8" mt="6">
-                            <FormControl
-                                borderBottom="2px"
-                                borderBottomColor="gray.200"
-                                _focusWithin={{ borderBottomColor: 'gray.300' }}
                             >
                                 <FormLabel
                                     fontSize={{ lg: 'md', xl: 'lg' }}
                                     color="blackAlpha.700"
                                     my="0"
                                 >
-                                    Event Type
+                                    Event Name
                                 </FormLabel>
-                                <Menu>
-                                    <MenuButton type="button" w="full">
-                                        <InputGroup>
-                                            <Input
-                                                fontSize="sm"
-                                                required
-                                                px="0"
-                                                value={
-                                                    formDetails.category
-                                                        .event_type
-                                                }
-                                                _placeholder={{
-                                                    color: 'gray.300',
-                                                }}
-                                                placeholder="Is this event online/in-person?"
-                                                bg="transparent"
-                                                border="none"
-                                                rounded="none"
-                                                _hover={{}}
-                                                _focus={{}}
-                                                _active={{}}
-                                            />
-                                            <InputRightElement color="gray.400">
-                                                <FaChevronDown />
-                                            </InputRightElement>
-                                        </InputGroup>
-                                    </MenuButton>
-                                    <MenuList
-                                        rounded="lg"
-                                        shadow="sm"
-                                        fontSize="sm"
-                                        mt="1"
-                                        zIndex={9}
-                                    >
-                                        <MenuItem
-                                            onClick={(e) => {
-                                                setFormDetails({
-                                                    ...formDetails,
-                                                    category: {
-                                                        ...formDetails.category,
-                                                        event_type: 'Online',
-                                                    },
-                                                })
-                                            }}
-                                        >
-                                            Online
-                                        </MenuItem>
-                                        <MenuItem
-                                            onClick={(e) => {
-                                                setFormDetails({
-                                                    ...formDetails,
-                                                    category: {
-                                                        ...formDetails.category,
-                                                        event_type: 'In-Person',
-                                                    },
-                                                })
-                                            }}
-                                        >
-                                            In-person
-                                        </MenuItem>
-                                    </MenuList>
-                                </Menu>
-                            </FormControl>
-                            <FormControl
-                                borderBottom="2px"
-                                borderBottomColor="gray.200"
-                                _focusWithin={{ borderBottomColor: 'gray.300' }}
-                            >
-                                <FormLabel
-                                    fontSize={{ lg: 'md', xl: 'lg' }}
-                                    color="blackAlpha.700"
-                                    my="0"
-                                >
-                                    Event Category
-                                </FormLabel>
-                                <Menu>
-                                    <MenuButton type="button" w="full">
-                                        <InputGroup>
-                                            <Input
-                                                fontSize="sm"
-                                                value={
-                                                    formDetails.category
-                                                        .category[0]
-                                                }
-                                                required
-                                                px="0"
-                                                _placeholder={{
-                                                    color: 'gray.300',
-                                                }}
-                                                placeholder="Category of your event"
-                                                bg="transparent"
-                                                border="none"
-                                                rounded="none"
-                                                _hover={{}}
-                                                _focus={{}}
-                                                _active={{}}
-                                            />
-                                            <InputRightElement color="gray.400">
-                                                <FaChevronDown />
-                                            </InputRightElement>
-                                        </InputGroup>
-                                    </MenuButton>
-                                    <MenuList
-                                        rounded="lg"
-                                        shadow="sm"
-                                        fontSize="sm"
-                                        mt="1"
-                                        zIndex={9}
-                                    >
-                                        <MenuItem
-                                            onClick={(e) => {
-                                                setFormDetails({
-                                                    ...formDetails,
-                                                    category: {
-                                                        ...formDetails.category,
-                                                        category: ['Meetup'],
-                                                    },
-                                                })
-                                            }}
-                                        >
-                                            Meetup
-                                        </MenuItem>
-                                        <MenuItem
-                                            onClick={(e) => {
-                                                setFormDetails({
-                                                    ...formDetails,
-                                                    category: {
-                                                        ...formDetails.category,
-                                                        category: ['Party'],
-                                                    },
-                                                })
-                                            }}
-                                        >
-                                            Party
-                                        </MenuItem>
-                                    </MenuList>
-                                </Menu>
-                            </FormControl>
-                        </Flex>
-                        <Flex experimental_spaceX="8" mt="6">
-                            <FormControl
-                                opacity={isPaid ? 1 : 0.8}
-                                _disabled={{}}
-                                isDisabled={!isPaid}
-                                borderBottom="2px"
-                                borderBottomColor="gray.200"
-                                _focusWithin={{ borderBottomColor: 'gray.300' }}
-                            >
-                                <FormLabel
-                                    fontSize={{ lg: 'md', xl: 'lg' }}
-                                    color="blackAlpha.700"
-                                    my="0"
-                                >
-                                    Ticket Amount
-                                </FormLabel>
-                                <InputGroup>
-                                    <Input
-                                        required={isPaid}
-                                        onChange={(e) => {
-                                            setFormDetails({
-                                                ...formDetails,
-                                                fee: Number(e.target.value),
-                                            })
-                                        }}
-                                        type="number"
-                                        step="any"
-                                        fontSize="sm"
-                                        px="0"
-                                        _placeholder={{ color: 'gray.300' }}
-                                        placeholder="Price of one ticket"
-                                        bg="transparent"
-                                        border="none"
-                                        rounded="none"
-                                        _hover={{}}
-                                        _focus={{}}
-                                        _active={{}}
-                                    />
-                                    <InputRightElement>
-                                        <Flex
-                                            borderLeft="2px"
-                                            borderColor="gray.200"
-                                            experimental_spaceX="2"
-                                            align="center"
-                                            mr="20"
-                                            bg="white"
-                                            pl="2"
-                                        >
-                                            <Image
-                                                src="/assets/matic_circle.svg"
-                                                alt="matic"
-                                                w="4"
-                                                h="4"
-                                            />
-                                            <Text
-                                                color="blackAlpha.700"
-                                                fontSize="sm"
-                                                letterSpacing={1}
-                                                fontWeight="medium"
-                                                fontFamily="heading"
-                                            >
-                                                MATIC
-                                            </Text>
-                                        </Flex>
-                                    </InputRightElement>
-                                </InputGroup>
-                            </FormControl>
-                            <FormControl
-                                onClick={onOpen}
-                                borderBottom="2px"
-                                borderBottomColor="gray.200"
-                                _focusWithin={{ borderBottomColor: 'gray.300' }}
-                            >
-                                <FormLabel
-                                    fontSize={{ lg: 'md', xl: 'lg' }}
-                                    color="blackAlpha.700"
-                                    my="0"
-                                >
-                                    Date of Event
-                                </FormLabel>
-                                <InputGroup>
-                                    <Input
-                                        _placeholder={{ color: 'gray.300' }}
-                                        fontSize="sm"
-                                        required
-                                        cursor="pointer"
-                                        value={formDetails.date.split('T')[0]}
-                                        px="0"
-                                        placeholder="When will the event take place?"
-                                        bg="transparent"
-                                        border="none"
-                                        rounded="none"
-                                        _hover={{}}
-                                        _focus={{}}
-                                        _active={{}}
-                                    />
-                                    <InputRightElement color="gray.400">
-                                        <CalendarToday />
-                                    </InputRightElement>
-                                </InputGroup>
-                            </FormControl>
-                        </Flex>
-                        <FormControl
-                            mt="6"
-                            w="50%"
-                            borderBottom="2px"
-                            borderBottomColor="gray.200"
-                            _focusWithin={{ borderBottomColor: 'gray.300' }}
-                        >
-                            <FormLabel
-                                fontSize={{ lg: 'md', xl: 'lg' }}
-                                color="blackAlpha.700"
-                                my="0"
-                            >
-                                Total Tickets
-                            </FormLabel>
-                            <InputGroup>
+
                                 <Input
                                     onChange={(e) => {
                                         setFormDetails({
                                             ...formDetails,
-                                            seats: Number(e.target.value),
+                                            title: e.target.value,
                                         })
                                     }}
-                                    _placeholder={{ color: 'gray.300' }}
                                     fontSize="sm"
+                                    value={formDetails.title}
                                     required
-                                    min="1"
-                                    type="number"
-                                    step="1"
                                     px="0"
-                                    placeholder="Total seats for the event"
+                                    _placeholder={{ color: 'gray.300' }}
+                                    placeholder="Name of your event"
                                     bg="transparent"
                                     border="none"
                                     rounded="none"
@@ -442,122 +153,439 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                     _focus={{}}
                                     _active={{}}
                                 />
-                            </InputGroup>
-                        </FormControl>
-                    </Box>
-                    <Box h="auto" w="2px" my="20" bg="gray.100" />
-                    <Box>
-                        <Flex justify="center" mb="4">
-                            <Text
-                                style={{
-                                    background:
-                                        '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent',
+                            </FormControl>
+                            <Flex experimental_spaceX="8" mt="6">
+                                <FormControl
+                                    borderBottom="2px"
+                                    borderBottomColor="gray.200"
+                                    _focusWithin={{
+                                        borderBottomColor: 'gray.300',
+                                    }}
+                                >
+                                    <FormLabel
+                                        fontSize={{ lg: 'md', xl: 'lg' }}
+                                        color="blackAlpha.700"
+                                        my="0"
+                                    >
+                                        Event Type
+                                    </FormLabel>
+                                    <Menu>
+                                        <MenuButton type="button" w="full">
+                                            <InputGroup>
+                                                <Input
+                                                    fontSize="sm"
+                                                    required
+                                                    px="0"
+                                                    value={
+                                                        formDetails.category
+                                                            .event_type
+                                                    }
+                                                    _placeholder={{
+                                                        color: 'gray.300',
+                                                    }}
+                                                    placeholder="Is this event online/in-person?"
+                                                    bg="transparent"
+                                                    border="none"
+                                                    rounded="none"
+                                                    _hover={{}}
+                                                    _focus={{}}
+                                                    _active={{}}
+                                                />
+                                                <InputRightElement color="gray.400">
+                                                    <FaChevronDown />
+                                                </InputRightElement>
+                                            </InputGroup>
+                                        </MenuButton>
+                                        <MenuList
+                                            rounded="lg"
+                                            shadow="sm"
+                                            fontSize="sm"
+                                            mt="1"
+                                            zIndex={9}
+                                        >
+                                            <MenuItem
+                                                onClick={(e) => {
+                                                    setFormDetails({
+                                                        ...formDetails,
+                                                        category: {
+                                                            ...formDetails.category,
+                                                            event_type:
+                                                                'Online',
+                                                        },
+                                                    })
+                                                }}
+                                            >
+                                                Online
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={(e) => {
+                                                    setFormDetails({
+                                                        ...formDetails,
+                                                        category: {
+                                                            ...formDetails.category,
+                                                            event_type:
+                                                                'In-Person',
+                                                        },
+                                                    })
+                                                }}
+                                            >
+                                                In-person
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Menu>
+                                </FormControl>
+                                <FormControl
+                                    borderBottom="2px"
+                                    borderBottomColor="gray.200"
+                                    _focusWithin={{
+                                        borderBottomColor: 'gray.300',
+                                    }}
+                                >
+                                    <FormLabel
+                                        fontSize={{ lg: 'md', xl: 'lg' }}
+                                        color="blackAlpha.700"
+                                        my="0"
+                                    >
+                                        Event Category
+                                    </FormLabel>
+                                    <Menu>
+                                        <MenuButton type="button" w="full">
+                                            <InputGroup>
+                                                <Input
+                                                    fontSize="sm"
+                                                    value={
+                                                        formDetails.category
+                                                            .category[0]
+                                                    }
+                                                    required
+                                                    px="0"
+                                                    _placeholder={{
+                                                        color: 'gray.300',
+                                                    }}
+                                                    placeholder="Category of your event"
+                                                    bg="transparent"
+                                                    border="none"
+                                                    rounded="none"
+                                                    _hover={{}}
+                                                    _focus={{}}
+                                                    _active={{}}
+                                                />
+                                                <InputRightElement color="gray.400">
+                                                    <FaChevronDown />
+                                                </InputRightElement>
+                                            </InputGroup>
+                                        </MenuButton>
+                                        <MenuList
+                                            rounded="lg"
+                                            shadow="sm"
+                                            fontSize="sm"
+                                            mt="1"
+                                            zIndex={9}
+                                        >
+                                            <MenuItem
+                                                onClick={(e) => {
+                                                    setFormDetails({
+                                                        ...formDetails,
+                                                        category: {
+                                                            ...formDetails.category,
+                                                            category: [
+                                                                'Meetup',
+                                                            ],
+                                                        },
+                                                    })
+                                                }}
+                                            >
+                                                Meetup
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={(e) => {
+                                                    setFormDetails({
+                                                        ...formDetails,
+                                                        category: {
+                                                            ...formDetails.category,
+                                                            category: ['Party'],
+                                                        },
+                                                    })
+                                                }}
+                                            >
+                                                Party
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Menu>
+                                </FormControl>
+                            </Flex>
+                            <Flex experimental_spaceX="8" mt="6">
+                                <FormControl
+                                    opacity={isPaid ? 1 : 0.8}
+                                    _disabled={{}}
+                                    isDisabled={!isPaid}
+                                    borderBottom="2px"
+                                    borderBottomColor="gray.200"
+                                    _focusWithin={{
+                                        borderBottomColor: 'gray.300',
+                                    }}
+                                >
+                                    <FormLabel
+                                        fontSize={{ lg: 'md', xl: 'lg' }}
+                                        color="blackAlpha.700"
+                                        my="0"
+                                    >
+                                        Ticket Amount
+                                    </FormLabel>
+                                    <InputGroup>
+                                        <Input
+                                            required={isPaid}
+                                            onChange={(e) => {
+                                                setFormDetails({
+                                                    ...formDetails,
+                                                    fee: Number(e.target.value),
+                                                })
+                                            }}
+                                            type="number"
+                                            step="any"
+                                            fontSize="sm"
+                                            px="0"
+                                            _placeholder={{
+                                                color: 'gray.300',
+                                            }}
+                                            placeholder="Price of one ticket"
+                                            bg="transparent"
+                                            border="none"
+                                            rounded="none"
+                                            _hover={{}}
+                                            _focus={{}}
+                                            _active={{}}
+                                        />
+                                        <InputRightElement>
+                                            <Flex
+                                                borderLeft="2px"
+                                                borderColor="gray.200"
+                                                experimental_spaceX="2"
+                                                align="center"
+                                                mr="20"
+                                                bg="white"
+                                                pl="2"
+                                            >
+                                                <Image
+                                                    src="/assets/matic_circle.svg"
+                                                    alt="matic"
+                                                    w="4"
+                                                    h="4"
+                                                />
+                                                <Text
+                                                    color="blackAlpha.700"
+                                                    fontSize="sm"
+                                                    letterSpacing={1}
+                                                    fontWeight="medium"
+                                                    fontFamily="heading"
+                                                >
+                                                    MATIC
+                                                </Text>
+                                            </Flex>
+                                        </InputRightElement>
+                                    </InputGroup>
+                                </FormControl>
+                                <FormControl
+                                    onClick={onOpen}
+                                    borderBottom="2px"
+                                    borderBottomColor="gray.200"
+                                    _focusWithin={{
+                                        borderBottomColor: 'gray.300',
+                                    }}
+                                >
+                                    <FormLabel
+                                        fontSize={{ lg: 'md', xl: 'lg' }}
+                                        color="blackAlpha.700"
+                                        my="0"
+                                    >
+                                        Date of Event
+                                    </FormLabel>
+                                    <InputGroup>
+                                        <Input
+                                            _placeholder={{
+                                                color: 'gray.300',
+                                            }}
+                                            fontSize="sm"
+                                            required
+                                            cursor="pointer"
+                                            value={
+                                                formDetails.date.split('T')[0]
+                                            }
+                                            px="0"
+                                            placeholder="When will the event take place?"
+                                            bg="transparent"
+                                            border="none"
+                                            rounded="none"
+                                            _hover={{}}
+                                            _focus={{}}
+                                            _active={{}}
+                                        />
+                                        <InputRightElement color="gray.400">
+                                            <CalendarToday />
+                                        </InputRightElement>
+                                    </InputGroup>
+                                </FormControl>
+                            </Flex>
+                            <FormControl
+                                mt="6"
+                                w="50%"
+                                borderBottom="2px"
+                                borderBottomColor="gray.200"
+                                _focusWithin={{
+                                    borderBottomColor: 'gray.300',
                                 }}
-                                textAlign="center"
-                                fontWeight="semibold"
-                                fontSize="2xl"
                             >
-                                Live Preview
-                            </Text>
-                            <Image
-                                w={{ base: '4', lg: '4' }}
-                                ml="1"
-                                mt="-6"
-                                src="/assets/elements/sparkle_gradient.svg"
-                                alt="element"
-                            />
-                        </Flex>
-                        <Box minW={{ base: '320px', xl: '360px' }}>
-                            <EventCard
-                                previewOnly
-                                event={{
-                                    id: '',
-                                    childAddress: '',
-                                    title: formDetails.title || 'Untitled',
-                                    description: {
-                                        short_desc:
-                                            'Event description goes here',
-                                    },
-                                    image: {
-                                        image: '/assets/gradient.png',
-                                        gallery: [],
-                                    },
-                                    date: formDetails.date
-                                        ? formDetails.date
-                                        : '1/1/2000',
-                                    eventHost: wallet.address || '',
-                                    owner: wallet.address || '',
-                                    type:
-                                        formDetails.category.event_type ||
-                                        'type',
-                                    category: {
-                                        category: [
-                                            formDetails.category.category[0] ||
-                                                'category',
-                                        ],
-                                        event_type:
+                                <FormLabel
+                                    fontSize={{ lg: 'md', xl: 'lg' }}
+                                    color="blackAlpha.700"
+                                    my="0"
+                                >
+                                    Total Tickets
+                                </FormLabel>
+                                <InputGroup>
+                                    <Input
+                                        onChange={(e) => {
+                                            setFormDetails({
+                                                ...formDetails,
+                                                seats: Number(e.target.value),
+                                            })
+                                        }}
+                                        _placeholder={{ color: 'gray.300' }}
+                                        fontSize="sm"
+                                        required
+                                        min="1"
+                                        type="number"
+                                        step="1"
+                                        px="0"
+                                        placeholder="Total seats for the event"
+                                        bg="transparent"
+                                        border="none"
+                                        rounded="none"
+                                        _hover={{}}
+                                        _focus={{}}
+                                        _active={{}}
+                                    />
+                                </InputGroup>
+                            </FormControl>
+                        </Box>
+                        <Box h="auto" w="2px" my="20" bg="gray.100" />
+                        <Box>
+                            <Flex justify="center" mb="4">
+                                <Text
+                                    style={{
+                                        background:
+                                            '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent',
+                                    }}
+                                    textAlign="center"
+                                    fontWeight="semibold"
+                                    fontSize="2xl"
+                                >
+                                    Live Preview
+                                </Text>
+                                <Image
+                                    w={{ base: '4', lg: '4' }}
+                                    ml="1"
+                                    mt="-6"
+                                    src="/assets/elements/sparkle_gradient.svg"
+                                    alt="element"
+                                />
+                            </Flex>
+                            <Box minW={{ base: '320px', xl: '360px' }}>
+                                <EventCard
+                                    previewOnly
+                                    event={{
+                                        id: '',
+                                        childAddress: '',
+                                        title: formDetails.title || 'Untitled',
+                                        description: {
+                                            short_desc:
+                                                'Event description goes here',
+                                        },
+                                        image: {
+                                            image: '/assets/gradient.png',
+                                            gallery: [],
+                                        },
+                                        date: formDetails.date
+                                            ? formDetails.date
+                                            : '1/1/2000',
+                                        eventHost: wallet.address || '',
+                                        owner: wallet.address || '',
+                                        type:
                                             formDetails.category.event_type ||
                                             'type',
-                                    },
-                                    buyers: [],
+                                        category: {
+                                            category: [
+                                                formDetails.category
+                                                    .category[0] || 'category',
+                                            ],
+                                            event_type:
+                                                formDetails.category
+                                                    .event_type || 'type',
+                                        },
+                                        buyers: [],
 
-                                    fee: Number(formDetails.fee),
-                                    seats: formDetails.seats || 20,
-                                    tickets_available: formDetails.seats || 20,
-                                    tickets_sold: 0,
-                                }}
-                            />
+                                        fee: Number(formDetails.fee),
+                                        seats: formDetails.seats || 20,
+                                        tickets_available:
+                                            formDetails.seats || 20,
+                                        tickets_sold: 0,
+                                    }}
+                                />
+                            </Box>
                         </Box>
-                    </Box>
-                </Flex>
-                <Flex
-                    justifyContent="center"
-                    alignItems="center"
-                    alignContent="center"
-                    mt="10"
-                    mb="20"
-                >
-                    <Button
-                        size="lg"
-                        rounded="full"
-                        type="submit"
-                        bg="brand.gradient"
-                        color="white"
-                        rightIcon={
-                            <Flex
-                                justify="center"
-                                alignItems="center"
-                                transitionDuration="200ms"
-                                _groupHover={{ transform: 'translateX(4px)' }}
-                            >
-                                <ChevronRight />
-                            </Flex>
-                        }
-                        _hover={{}}
-                        _focus={{}}
-                        _active={{}}
-                        py="7"
-                        role="group"
-                        fontWeight="medium"
-                        onClick={() => {
-                            if (
-                                formDetails.title &&
-                                formDetails.category &&
-                                (formDetails.fee || !isPaid) &&
-                                formDetails.category.event_type &&
-                                formDetails.date
-                            ) {
-                                setSubmitting(true)
-                            }
-                        }}
-                        px="8"
+                    </Flex>
+                    <Flex
+                        justifyContent="center"
+                        alignItems="center"
+                        alignContent="center"
+                        mt="10"
+                        mb="20"
                     >
-                        Next Step
-                    </Button>
-                </Flex>
-            </Box>
-        </form>
-    )
+                        <Button
+                            size="lg"
+                            rounded="full"
+                            type="submit"
+                            bg="brand.gradient"
+                            color="white"
+                            rightIcon={
+                                <Flex
+                                    justify="center"
+                                    alignItems="center"
+                                    transitionDuration="200ms"
+                                    _groupHover={{
+                                        transform: 'translateX(4px)',
+                                    }}
+                                >
+                                    <ChevronRight />
+                                </Flex>
+                            }
+                            _hover={{}}
+                            _focus={{}}
+                            _active={{}}
+                            py="7"
+                            role="group"
+                            fontWeight="medium"
+                            onClick={() => {
+                                if (
+                                    formDetails.title &&
+                                    formDetails.category &&
+                                    (formDetails.fee || !isPaid) &&
+                                    formDetails.category.event_type &&
+                                    formDetails.date
+                                ) {
+                                    setSubmitting(true)
+                                }
+                            }}
+                            px="8"
+                        >
+                            Next Step
+                        </Button>
+                    </Flex>
+                </Box>
+            </form>
+        )
+    } else
+        return <Box textAlign={'center'}>Connect wallet before proceeding</Box>
 }
