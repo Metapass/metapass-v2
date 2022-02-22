@@ -155,7 +155,7 @@ export default function DateModal({ isOpen, onClose, onSubmit }: any) {
                             >
                                 {range(
                                     new Date().getFullYear(),
-                                    new Date().getFullYear() + 10
+                                    new Date().getFullYear() + 1
                                 ).map((data, key) => (
                                     <option key={key} value={data}>
                                         {data}

@@ -104,7 +104,7 @@ export default function Step3({
                     fontSize="4xl"
                     fontWeight="semibold"
                 >
-                    Add image/video to your event
+                    Add image/video to your event page
                 </Text>
 
                 <Flex

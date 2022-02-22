@@ -47,6 +47,7 @@ import eventOrgs from '../../utils/orgs.json'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 import WaitlistModal from '../Misc/WaitlistModal'
+import LogRocket from 'logrocket'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
@@ -336,7 +337,12 @@ export default function NavigationBar({ mode = 'dark' }) {
             })
         console.log(wallet)
     }, [address, wallet.address])
-
+useEffect(() => {
+    LogRocket.identify(wallet.address || address, {
+        name: wallet.address || address || 'address',
+        ens: wallet.ens || 'ens',
+      });
+}, [address,wallet.address,wallet.ens])
     return (
         <>
             <Fade

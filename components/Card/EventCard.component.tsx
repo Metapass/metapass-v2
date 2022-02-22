@@ -16,6 +16,7 @@ import { FaStar } from 'react-icons/fa'
 import twoDigit from 'two-digit'
 import EventLayout from '../../layouts/Event/Event.layout'
 import { Event } from '../../types/Event.type'
+import LazyImage from '../Misc/LazyImage.component'
 
 declare const window: any
 
@@ -181,10 +182,10 @@ export default function EventCard({
                     {Array(event.category.category).join(' & ')}
                 </Box>
             </Flex>
-            <AspectRatio ratio={428.42 / 180.98} w="full">
+            <AspectRatio ratio={428.42 / 180.98} w="full" bg="gray.100">
                 {/* 
   // @ts-ignore */}
-                <Image w="full" src={event.image.image} alt="event image" />
+                <LazyImage w="full" src={event.image.image} alt="event image" />
             </AspectRatio>
             <Flex direction="column" w="full" justify="space-between" h="full">
                 <Flex p={{ base: '3', xl: '4' }} alignItems="center">
