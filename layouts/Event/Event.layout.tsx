@@ -82,7 +82,7 @@ export default function EventLayout({ event }: { event: Event }) {
 
     const [wallet] = useContext(walletContext)
     const buyTicket = async () => {
-        if (wallet.address != null) {
+        if (wallet.address) {
             if (typeof window.ethereum != undefined) {
                 const provider = new ethers.providers.Web3Provider(
                     window.ethereum
