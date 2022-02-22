@@ -450,7 +450,7 @@ useEffect(() => {
                     alignItems="center"
                     experimental_spaceX="6"
                 >
-                    {eventOrgs.eventOrgs.includes(String(wallet?.address)) ? (
+                    {/* {eventOrgs.eventOrgs.includes(String(wallet?.address)) ? (
                         <NextLink href="/create" passHref>
                             <Link _hover={{}} _focus={{}} _active={{}}>
                                 <Button
@@ -506,7 +506,56 @@ useEffect(() => {
                             setEmail={setEmail}
                             mode={mode}
                         />
-                    )}
+                    )} */}
+                    <NextLink href="/create" passHref>
+                            <Link _hover={{}} _focus={{}} _active={{}}>
+                                <Button
+                                    pl="1"
+                                    rounded="full"
+                                    bg={
+                                        mode === 'white'
+                                            ? 'blackAlpha.100'
+                                            : 'whiteAlpha.800'
+                                    }
+                                    color="blackAlpha.700"
+                                    fontWeight="medium"
+                                    _hover={{
+                                        shadow: 'sm',
+                                        bg:
+                                            mode === 'white'
+                                                ? 'blackAlpha.50'
+                                                : 'white',
+                                    }}
+                                    border="2px"
+                                    borderColor={
+                                        mode === 'white'
+                                            ? 'blackAlpha.100'
+                                            : 'white'
+                                    }
+                                    _focus={{}}
+                                    _active={{ transform: 'scale(0.95)' }}
+                                    role="group"
+                                    leftIcon={
+                                        <Flex
+                                            _groupHover={{
+                                                transform: 'scale(1.05)',
+                                            }}
+                                            transitionDuration="200ms"
+                                            justify="center"
+                                            alignItems="center"
+                                            color="white"
+                                            bg="brand.gradient"
+                                            rounded="full"
+                                            p="0.5"
+                                        >
+                                            <IoIosAdd size="25px" />
+                                        </Flex>
+                                    }
+                                >
+                                    Create Event
+                                </Button>
+                            </Link>
+                        </NextLink>
                     {wallet.address ? (
                         <Menu>
                             <MenuButton>
