@@ -9,8 +9,13 @@ import Web3Wrapper from '../utils/web3Context'
 import { Toaster } from 'react-hot-toast'
 import Contract from '../utils/contractContext'
 import Script from 'next/script'
-
+import LogRocket from 'logrocket'
+import { useEffect } from 'react'
 function MyApp({ Component, pageProps }: AppProps) {
+useEffect(() => {
+    LogRocket.init(process.env.NEXT_PUBLIC_LOGROCKET_APP_ID as string);
+}, [])
+
     return (
         <>
             <Script
