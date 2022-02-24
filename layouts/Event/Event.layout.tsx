@@ -95,17 +95,18 @@ export default function EventLayout({ event }: { event: Event }) {
                     signer
                 )
                 console.log(metapass)
-
+                // console.log("creating image")
                 let { img, fastimg } = await ticketToIPFS(
                     event.title,
                     event.tickets_sold + 1,
                     event.image.image,
                     event.date.split('T')[0],
-                    wallet.ens ||
-                        wallet.address.substring(0, 4) +
+                    wallet?.ens ||
+                        wallet?.address?.substring(0, 4) +
                             '...' +
-                            wallet.address.substring(wallet.address.length - 4)
+                            wallet?.address?.substring(wallet?.address?.length - 4)
                 )
+                // console.log(img,"created")
                 setMintedImage(fastimg)
                 let metadata = {
                     name: event.title,
@@ -136,6 +137,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     fontSize: '12px',
                                 },
                             })
+                            setIsLoading(false)
                         })
                 } catch (e: any) {
                     toast(
