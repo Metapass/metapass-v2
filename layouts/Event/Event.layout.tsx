@@ -45,6 +45,7 @@ import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 import { decryptLink } from '../../utils/linkResolvers'
+import LinkMagic from '../../utils/Magic'
 
 declare const window: any
 
@@ -84,8 +85,10 @@ export default function EventLayout({ event }: { event: Event }) {
     const buyTicket = async () => {
         if (wallet.address) {
             if (typeof window.ethereum != undefined) {
+                const {magic,web3,network} = LinkMagic(process.env.NEXT_PUBLIC_ENV as string)
+                console.log(wallet.type)
                 const provider = new ethers.providers.Web3Provider(
-                    window.ethereum
+                   wallet.type === 'magic' ? magic.rpcProvider : window.ethereum 
                 )
                 setIsLoading(true)
                 const signer = provider.getSigner()
@@ -180,11 +183,11 @@ export default function EventLayout({ event }: { event: Event }) {
                     console.log(
                         data?.data?.domains?.length,
                         data?.data?.domains?.length > 0 &&
-                            data?.data?.domains[0].name
+                            data?.data?.domains[data?.data?.domains.length - 1].name
                     )
                     const ens_name =
                         data?.data?.domains?.length > 0 &&
-                        data?.data?.domains[0].name
+                        data?.data?.domains[data?.data?.domains.length - 1].name
                     setEnsName(ens_name)
                 }
             })
