@@ -292,11 +292,11 @@ useEffect(() => {
         setWeb3(web3)
         setMagic(magic)
         
-        web3?.eth.getBalance(data.publicAddress).then(bal => setBalance(web3.utils.fromWei(bal)))
+        web3.eth.getBalance(data.publicAddress).then(bal => setBalance(web3.utils.fromWei(bal)))
         
-        web3?.eth.getBalance(data.publicAddress).then((bal:any) => {
+        web3.eth.getBalance(data.publicAddress).then((bal:any) => {
             setWallet({
-                balance: web3?.utils.fromWei(bal),
+                balance: web3.utils.fromWei(bal),
                 address: data.publicAddress,
                 type: 'magic',
             })
@@ -368,7 +368,7 @@ useEffect(() => {
 
     useEffect(() => {
         let confirmation = localStorage.getItem('Autoconnect')
-        if (confirmation === 'true' && walletType === 'mm') {
+        if (confirmation === 'true') {
             loadAccounts()
         }
     }, [walletType])
@@ -380,11 +380,11 @@ useEffect(() => {
                     console.log(
                         data?.data.domains?.length,
                         data.data.domains?.length > 0 &&
-                            data?.data?.domains[0]?.name
+                            data?.data?.domains[data?.data?.domains.length - 1]?.name
                     )
                     const ens_name =
                         data?.data?.domains?.length > 0 &&
-                        data?.data?.domains[0].name
+                        data?.data?.domains[data?.data?.domains.length - 1].name
                     setEnsName(ens_name)
                     setWallet({
                         balance: balance,

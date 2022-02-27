@@ -183,11 +183,11 @@ export default function EventLayout({ event }: { event: Event }) {
                     console.log(
                         data?.data?.domains?.length,
                         data?.data?.domains?.length > 0 &&
-                            data?.data?.domains[1].name
+                            data?.data?.domains[data?.data?.domains.length - 1].name
                     )
                     const ens_name =
                         data?.data?.domains?.length > 0 &&
-                        data?.data?.domains[1].name
+                        data?.data?.domains[data?.data?.domains.length - 1].name
                     setEnsName(ens_name)
                 }
             })
