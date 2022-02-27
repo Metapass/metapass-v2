@@ -7,6 +7,7 @@ function Wallet({ children }: any) {
         balance: null,
         address: null,
         ens: null,
+        type: null,
     })
 
     return (
