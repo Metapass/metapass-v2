@@ -50,6 +50,7 @@ import WaitlistModal from '../Misc/WaitlistModal'
 import LogRocket from 'logrocket'
 import { EmailBar } from '../../layouts/LandingPage/FeaturedEvents.layout'
 import { getAllowedList } from '../../utils/sendToAirtable'
+import { FaEnvelope } from 'react-icons/fa'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
@@ -417,7 +418,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                         xl: '3xl',
                                     }}
                                 >
-                                    JOIN THE WAITLIST
+                                    REACHING OUT
                                 </Heading>
                                 <Text
                                     m="4"
@@ -447,11 +448,55 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     </span>{' '}
                                     🚀
                                 </Text>
-                                <EmailBar
-                                    email={email}
-                                    setEmail={setEmail}
-                                    onClose={onClose2}
-                                />
+                                <Link
+                                    href="mailto:gm@metapasshq.xyz"
+                                    isExternal
+                                    _hover={{}}
+                                    _focus={{}}
+                                    _active={{}}
+                                >
+                                    <Box
+                                        p="1.5px"
+                                        mx="auto"
+                                        mt="10"
+                                        transitionDuration="200ms"
+                                        rounded="full"
+                                        w="fit-content"
+                                        boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
+                                        bg="brand.gradient"
+                                        _hover={{ transform: 'scale(1.05)' }}
+                                        _focus={{}}
+                                        _active={{ transform: 'scale(0.95)' }}
+                                    >
+                                        <Button
+                                            type="submit"
+                                            rounded="full"
+                                            bg="white"
+                                            color="blackAlpha.700"
+                                            fontWeight="medium"
+                                            _hover={{}}
+                                            leftIcon={
+                                                <Box
+                                                    _groupHover={{
+                                                        transform: 'scale(1.1)',
+                                                    }}
+                                                    transitionDuration="200ms"
+                                                >
+                                                    <Image
+                                                        src="/assets/elements/mail.svg"
+                                                        w="6"
+                                                        alt="ticket"
+                                                    />
+                                                </Box>
+                                            }
+                                            _focus={{}}
+                                            _active={{}}
+                                            role="group"
+                                        >
+                                            Reach us
+                                        </Button>
+                                    </Box>
+                                </Link>
                             </Flex>
                         </ModalBody>
                     </ModalContent>
