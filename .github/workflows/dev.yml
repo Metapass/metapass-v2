@@ -27,7 +27,7 @@ jobs:
               run: npm i vercel -g
 
             - name: Deploy landing page
-              run: ls && vercel --token $VERCEL_TOKEN
+              run: ls && vercel > deployment-url.txt --token $VERCEL_TOKEN
               env:
                   VERCEL_TOKEN: ${{ secrets.VERCEL_CLI_TOKEN }}
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_LANDING_ORG }}
