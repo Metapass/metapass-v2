@@ -77,7 +77,7 @@ export default function HeroCTA() {
                     </Text>
                 </Box>
             </Box>
-            <Flex justify="center" w="full" position="relative" zIndex={999}>
+            <Flex justify="center" w="full" position="relative" zIndex={9}>
                 <Box
                     mx={{ base: '2', md: '10', xl: '32' }}
                     maxW="1200px"

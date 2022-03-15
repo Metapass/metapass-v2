@@ -50,7 +50,7 @@ import WaitlistModal from '../Misc/WaitlistModal'
 import LogRocket from 'logrocket'
 import { EmailBar } from '../../layouts/LandingPage/FeaturedEvents.layout'
 import { getAllowedList } from '../../utils/sendToAirtable'
-import { FaEnvelope } from 'react-icons/fa'
+import { FaBars, FaEnvelope } from 'react-icons/fa'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
@@ -560,6 +560,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                     </ModalContent>
                 </Modal>
             </Fade>
+
             <Flex
                 borderBottom={mode === 'white' ? '2px' : '0'}
                 bg={mode === 'white' ? 'white' : 'transparent'}
@@ -567,7 +568,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                 justify="space-between"
                 px={{ base: '6', md: '8' }}
                 position="relative"
-                zIndex={9}
+                zIndex={999}
                 maxW="1600px"
                 mx="auto"
                 py={{ base: '4', md: '6' }}
@@ -588,6 +589,114 @@ export default function NavigationBar({ mode = 'dark' }) {
                         />
                     </Link>
                 </NextLink>
+                {wallet.address ? (
+                    <Menu>
+                        <MenuButton display={{ base: 'block', md: 'none' }}>
+                            <Button
+                                size="md"
+                                bg="transparent"
+                                _hover={{ bg: 'whiteAlpha.200' }}
+                                _focus={{}}
+                                _active={{}}
+                            >
+                                <FaBars />
+                            </Button>
+                        </MenuButton>{' '}
+                        <MenuList
+                            zIndex={999}
+                            display={{ base: 'block', md: 'none' }}
+                            shadow="none"
+                            bg="white"
+                            rounded="lg"
+                            border="none"
+                            position="relative"
+                        >
+                            <MenuItem>
+                                <Flex experimental_spaceX="2" align="end">
+                                    <Image
+                                        src="/assets/matic_circle.svg"
+                                        alt="matic"
+                                        w="6"
+                                        h="6"
+                                        mb="1"
+                                    />
+                                    <Box>
+                                        <Text
+                                            fontFamily="body"
+                                            fontSize="xs"
+                                            fontWeight="thin"
+                                            color="blackAlpha.500"
+                                        >
+                                            Account Balance
+                                        </Text>
+                                        <Text
+                                            mt="-1"
+                                            color="brand.black600"
+                                            fontFamily="body"
+                                            fontSize="lg"
+                                            fontWeight="semibold"
+                                        >
+                                            {wallet.balance.substring(0, 4)}{' '}
+                                            MATIC
+                                        </Text>
+                                    </Box>
+                                </Flex>
+                            </MenuItem>
+                            <MenuDivider color="blackAlpha.200" />
+                            <MenuItem onClick={() => setMyEvents(true)}>
+                                <Flex align="center" experimental_spaceX="4">
+                                    <Image
+                                        src="/assets/elements/event_ticket_gradient.svg"
+                                        alt="myevents"
+                                    />
+                                    <Text
+                                        color="blackAlpha.700"
+                                        fontWeight="medium"
+                                    >
+                                        My Events
+                                    </Text>
+                                </Flex>
+                            </MenuItem>
+                            <MenuDivider color="blackAlpha.200" />
+                            <MenuItem
+                                onClick={
+                                    walletType === 'wc'
+                                        ? disconnectWc
+                                        : disconnectMetaMask
+                                }
+                                fontSize="sm"
+                                icon={<IoIosLogOut size="20px" />}
+                                color="red.500"
+                            >
+                                Disconnect Wallet
+                            </MenuItem>
+                        </MenuList>
+                    </Menu>
+                ) : (
+                    <>
+                        <Button
+                            rounded="full"
+                            color="white"
+                            bg="blackAlpha.500"
+                            display={{ base: 'flex', md: 'none' }}
+                            border="2px"
+                            _hover={{ bg: 'blackAlpha.600' }}
+                            _focus={{}}
+                            _active={{ bg: 'blackAlpha.700' }}
+                            py="4"
+                            fontSize="sm"
+                            fontWeight="normal"
+                            leftIcon={<MdAccountBalanceWallet size="25px" />}
+                            onClick={() => {
+                                onOpen1()
+
+                                console.log(isOpen1)
+                            }}
+                        >
+                            Connect Wallet
+                        </Button>
+                    </>
+                )}
                 <Flex
                     display={{ base: 'none', md: 'flex' }}
                     alignItems="center"
