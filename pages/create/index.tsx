@@ -71,7 +71,10 @@ const Create: NextPage = () => {
         link: '',
     })
 
-    const contractAddress = process.env.NEXT_PUBLIC_ENV === 'dev'?process.env.NEXT_PUBLIC_FACTORY_ADDRESS:process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
+    const contractAddress =
+        process.env.NEXT_PUBLIC_ENV === 'dev'
+            ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
+            : process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
     let contract: any
 
     const [eventLink, setEventLink] = useState<any>(undefined)
@@ -120,8 +123,7 @@ const Create: NextPage = () => {
                 b64EncodeUnicode(JSON.stringify(event.category)),
                 'undefined'
             )
-            console.log('txn complete')
-            console.log(txn)
+            txn.wait().then((res: any) => console.log(res))
         } catch (e) {
             console.log('error while txn')
             console.log(e)
@@ -390,7 +392,7 @@ const Create: NextPage = () => {
                             />
                         </Box>
                     </Box>
-                ) : ( 
+                ) : (
                     <Box textAlign={'center'}>
                         Connect wallet before proceeding
                     </Box>
