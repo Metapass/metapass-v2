@@ -188,7 +188,8 @@ export default function Step2({
                                             event.category?.category[0] ||
                                                 'category',
                                         ],
-                                        event_type: event.category.event_type || 'type',
+                                        event_type:
+                                            event.category.event_type || 'type',
                                     },
                                     buyers: [],
 

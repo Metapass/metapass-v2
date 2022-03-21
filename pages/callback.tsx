@@ -12,21 +12,21 @@ export default function Callback() {
         )
         // On mount, we try to login with a Magic credential in the URL query.
 
-        try{
-          magic.oauth.getRedirectResult().then((result) => {
-            console.log(result.magic.userMetadata)
-            if (typeof window !== 'undefined') {
-                window.sessionStorage.setItem(
-                    'user_metadata',
-                    JSON.stringify(result.magic.userMetadata)
-                )
-                Router.push('/')
-            }
+        try {
+            magic.oauth.getRedirectResult().then((result) => {
+                console.log(result.magic.userMetadata)
+                if (typeof window !== 'undefined') {
+                    window.sessionStorage.setItem(
+                        'user_metadata',
+                        JSON.stringify(result.magic.userMetadata)
+                    )
+                    Router.push('/')
+                }
 
-            // console.log(result.magic.userMetadata);
-        })
-        }catch(e){
-          console.log("e",e)
+                // console.log(result.magic.userMetadata);
+            })
+        } catch (e) {
+            console.log('e', e)
         }
     }, [])
 

@@ -46,6 +46,8 @@ import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 import { decryptLink } from '../../utils/linkResolvers'
 import LinkMagic from '../../utils/Magic'
+import generateAndSendUUID from '../../utils/generateAndSendUUID'
+import GenerateQR from '../../utils/generateQR'
 
 declare const window: any
 
@@ -61,6 +63,7 @@ export default function EventLayout({ event }: { event: Event }) {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [ensName, setEnsName] = useState<string>('')
     const [openseaLink, setOpenseaLink] = useState<string>('')
+    const [qrId, setQrId] = useState<string>('')
     let opensea =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? 'https://testnets.opensea.io/assets/mumbai'
@@ -85,10 +88,14 @@ export default function EventLayout({ event }: { event: Event }) {
     const buyTicket = async () => {
         if (wallet.address) {
             if (typeof window.ethereum != undefined) {
-                const {magic,web3,network} = LinkMagic(process.env.NEXT_PUBLIC_ENV as string)
+                const { magic, web3, network } = LinkMagic(
+                    process.env.NEXT_PUBLIC_ENV as string
+                )
                 console.log(wallet.type)
                 const provider = new ethers.providers.Web3Provider(
-                   wallet.type === 'magic' ? magic.rpcProvider : window.ethereum 
+                    wallet.type === 'magic'
+                        ? magic.rpcProvider
+                        : window.ethereum
                 )
                 setIsLoading(true)
                 const signer = provider.getSigner()
@@ -107,7 +114,9 @@ export default function EventLayout({ event }: { event: Event }) {
                     wallet?.ens ||
                         wallet?.address?.substring(0, 4) +
                             '...' +
-                            wallet?.address?.substring(wallet?.address?.length - 4)
+                            wallet?.address?.substring(
+                                wallet?.address?.length - 4
+                            )
                 )
                 // console.log(img,"created")
                 setMintedImage(fastimg)
@@ -155,6 +164,13 @@ export default function EventLayout({ event }: { event: Event }) {
                     // toast.success('Redirecting to opensea in a few seconds')
                     setIsLoading(false)
                     setHasBought(true)
+                    generateAndSendUUID(
+                        event.childAddress,
+                        wallet.address,
+                        event.tickets_sold + 1
+                    ).then((uuid) => {
+                        setQrId(String(uuid))
+                    })
                     let link =
                         opensea +
                         '/' +
@@ -183,7 +199,8 @@ export default function EventLayout({ event }: { event: Event }) {
                     console.log(
                         data?.data?.domains?.length,
                         data?.data?.domains?.length > 0 &&
-                            data?.data?.domains[data?.data?.domains.length - 1].name
+                            data?.data?.domains[data?.data?.domains.length - 1]
+                                .name
                     )
                     const ens_name =
                         data?.data?.domains?.length > 0 &&
@@ -261,7 +278,6 @@ export default function EventLayout({ event }: { event: Event }) {
                                     loading="lazy"
                                 ></Image>
                             </motion.div>
-
                             <Box color="blackAlpha.700" fontSize="sm">
                                 <Text
                                     fontFamily="body"
@@ -371,81 +387,102 @@ export default function EventLayout({ event }: { event: Event }) {
                                 </Box>
                             </Flex>
                             <Text color="blackAlpha.700" fontSize="sm" mt="2">
-                                Or copy link
+                                {event.category.event_type == 'In-Person'
+                                    ? 'Save this QR Code'
+                                    : 'Or copy this link'}
                             </Text>
-                            <InputGroup mt="4">
-                                <InputLeftElement>
-                                    <IoIosLink />
-                                </InputLeftElement>
-                                <Input
-                                    rounded="full"
-                                    fontSize="xs"
-                                    value={eventLink}
-                                    readOnly
-                                />
-                                <InputRightElement mr="6">
-                                    <Button
-                                        onClick={onCopy}
-                                        _hover={{}}
-                                        _focus={{}}
-                                        _active={{}}
+                            {event.category.event_type != 'In-Person' && (
+                                <>
+                                    <InputGroup mt="4">
+                                        <InputLeftElement>
+                                            <IoIosLink />
+                                        </InputLeftElement>
+                                        <Input
+                                            rounded="full"
+                                            fontSize="xs"
+                                            value={eventLink}
+                                            readOnly
+                                        />
+                                        <InputRightElement mr="6">
+                                            <Button
+                                                onClick={onCopy}
+                                                _hover={{}}
+                                                _focus={{}}
+                                                _active={{}}
+                                                rounded="full"
+                                                color="white"
+                                                bg="brand.gradient"
+                                                fontWeight="normal"
+                                                fontSize="sm"
+                                                px="12"
+                                                roundedBottomLeft="none"
+                                            >
+                                                {hasCopied
+                                                    ? 'Copied'
+                                                    : 'Copy Link'}
+                                            </Button>
+                                        </InputRightElement>{' '}
+                                    </InputGroup>
+                                    <Box
+                                        p="1.5px"
+                                        mx="auto"
+                                        mt="6"
+                                        transitionDuration="200ms"
                                         rounded="full"
-                                        color="white"
+                                        w="fit-content"
+                                        boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
                                         bg="brand.gradient"
-                                        fontWeight="normal"
-                                        fontSize="sm"
-                                        px="12"
-                                        roundedBottomLeft="none"
+                                        _hover={{ transform: 'scale(1.05)' }}
+                                        _focus={{}}
+                                        _active={{ transform: 'scale(0.95)' }}
                                     >
-                                        {hasCopied ? 'Copied' : 'Copy Link'}
-                                    </Button>
-                                </InputRightElement>{' '}
-                            </InputGroup>
-                            <Box
-                                p="1.5px"
-                                mx="auto"
-                                mt="6"
-                                transitionDuration="200ms"
-                                rounded="full"
-                                w="fit-content"
-                                boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
-                                bg="brand.gradient"
-                                _hover={{ transform: 'scale(1.05)' }}
-                                _focus={{}}
-                                _active={{ transform: 'scale(0.95)' }}
-                            >
-                                <Button
-                                    type="submit"
-                                    rounded="full"
-                                    bg="white"
-                                    size="sm"
-                                    color="blackAlpha.700"
-                                    fontWeight="medium"
-                                    _hover={{}}
-                                    leftIcon={
-                                        <Box
-                                            _groupHover={{
-                                                transform: 'scale(1.1)',
+                                        <Button
+                                            type="submit"
+                                            rounded="full"
+                                            bg="white"
+                                            size="sm"
+                                            color="blackAlpha.700"
+                                            fontWeight="medium"
+                                            _hover={{}}
+                                            leftIcon={
+                                                <Box
+                                                    _groupHover={{
+                                                        transform: 'scale(1.1)',
+                                                    }}
+                                                    transitionDuration="200ms"
+                                                >
+                                                    <Image
+                                                        src="/assets/elements/event_ticket_gradient.svg"
+                                                        w="4"
+                                                        alt="ticket"
+                                                    />
+                                                </Box>
+                                            }
+                                            _focus={{}}
+                                            _active={{}}
+                                            onClick={() => {
+                                                window.open(eventLink, '_blank')
                                             }}
-                                            transitionDuration="200ms"
+                                            role="group"
                                         >
-                                            <Image
-                                                src="/assets/elements/event_ticket_gradient.svg"
-                                                w="4"
-                                                alt="ticket"
-                                            />
-                                        </Box>
-                                    }
-                                    _focus={{}}
-                                    _active={{}}
-                                    onClick={() => {
-                                        window.open(eventLink, '_blank')
-                                    }}
-                                    role="group"
-                                >
-                                    Go to event
-                                </Button>
-                            </Box>
+                                            Go to event
+                                        </Button>
+                                    </Box>
+                                </>
+                            )}
+                            {event.category.event_type == 'In-Person' && (
+                                <Flex justify="center">
+                                    <Box
+                                        borderRadius="2xl"
+                                        border="1px"
+                                        borderColor="blackAlpha.200"
+                                        boxShadow="0px -4px 52px rgba(0, 0, 0, 0.11)"
+                                    >
+                                        {' '}
+                                        <GenerateQR data={qrId} />
+                                    </Box>
+                                </Flex>
+                            )}
                             <Box mt="2" mb="4">
                                 <Link
                                     fontSize="sm"

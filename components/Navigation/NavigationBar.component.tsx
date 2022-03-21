@@ -32,11 +32,7 @@ import Web3 from 'web3'
 import toast from 'react-hot-toast'
 // import gravatarUrl from 'gravatar-url'
 
-import {
-    
-    HiOutlineChevronDown,
-    
-} from 'react-icons/hi'
+import { HiOutlineChevronDown } from 'react-icons/hi'
 import MyEvents from '../../layouts/MyEvents/MyEvents.layout'
 const env: any = process.env.NEXT_PUBLIC_ENV === 'prod'
 const polygon = require(env
@@ -49,12 +45,12 @@ import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 import WaitlistModal from '../Misc/WaitlistModal'
 import LogRocket from 'logrocket'
-import LinkMagic from '../../utils/Magic';
-import { Magic } from 'magic-sdk';
+import LinkMagic from '../../utils/Magic'
+import { Magic } from 'magic-sdk'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
-    const [magic, setMagic] = useState<any>();
+    const [magic, setMagic] = useState<any>()
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
     const [_, setWeb3] = useContext(web3Context)
@@ -89,7 +85,7 @@ export default function NavigationBar({ mode = 'dark' }) {
             title: 'Google',
             description: 'Sign in with Google',
             icon: 'https://res.cloudinary.com/dev-connect/image/upload/e_bgremoval/v1645948559/img/g-logo_uesmfz.png',
-        }
+        },
     ]
 
     async function getAccountData({ accounts, windowType }: any) {
@@ -252,59 +248,63 @@ export default function NavigationBar({ mode = 'dark' }) {
             })
         }
     }
-const handleMagicWallet = async () => {
-    const {magic,web3,network} = LinkMagic(env as string)
-    console.log(magic,web3,network)
-    setWeb3(web3)
-    setMagic(magic)
-    try{
-    await magic.oauth.loginWithRedirect({
-
-            provider: 'google',
-            redirectURI: new URL("/callback", window.location.origin).href,
-    
-          });
-      
-        
-    }catch(e:any){
-        console.log('error',e)
-    }
-}
-
-const disconnectMagic = async () => {
-    await magic.user.logout();
-    setAddress('')
-    setBalance('')
-    setWallet({
-        balance: '',
-        address: '',
-        type: '',
-    })
-}
-
-useEffect(() => {
-    
-    if(window && sessionStorage.getItem('user_metadata')){
-        const data:{"issuer":"","publicAddress":"","email":"","isMfaEnabled":false,"phoneNumber":null} = JSON.parse(sessionStorage.getItem('user_metadata') || "{}") || {}
-        console.log(data.publicAddress)
-        setAddress(data.publicAddress)
-        const {magic,web3,network} = LinkMagic(env as string)
+    const handleMagicWallet = async () => {
+        const { magic, web3, network } = LinkMagic(env as string)
+        console.log(magic, web3, network)
         setWeb3(web3)
         setMagic(magic)
-        
-        web3.eth.getBalance(data.publicAddress).then(bal => setBalance(web3.utils.fromWei(bal)))
-        
-        web3.eth.getBalance(data.publicAddress).then((bal:any) => {
-            setWallet({
-                balance: web3.utils.fromWei(bal),
-                address: data.publicAddress,
-                type: 'magic',
+        try {
+            await magic.oauth.loginWithRedirect({
+                provider: 'google',
+                redirectURI: new URL('/callback', window.location.origin).href,
             })
-        })
-        setWalletType('magic')
-    
+        } catch (e: any) {
+            console.log('error', e)
+        }
     }
-}, [])
+
+    const disconnectMagic = async () => {
+        await magic.user.logout()
+        setAddress('')
+        setBalance('')
+        setWallet({
+            balance: '',
+            address: '',
+            type: '',
+        })
+    }
+
+    useEffect(() => {
+        if (window && sessionStorage.getItem('user_metadata')) {
+            const data: {
+                issuer: ''
+                publicAddress: ''
+                email: ''
+                isMfaEnabled: false
+                phoneNumber: null
+            } =
+                JSON.parse(sessionStorage.getItem('user_metadata') || '{}') ||
+                {}
+            console.log(data.publicAddress)
+            setAddress(data.publicAddress)
+            const { magic, web3, network } = LinkMagic(env as string)
+            setWeb3(web3)
+            setMagic(magic)
+
+            web3.eth
+                .getBalance(data.publicAddress)
+                .then((bal) => setBalance(web3.utils.fromWei(bal)))
+
+            web3.eth.getBalance(data.publicAddress).then((bal: any) => {
+                setWallet({
+                    balance: web3.utils.fromWei(bal),
+                    address: data.publicAddress,
+                    type: 'magic',
+                })
+            })
+            setWalletType('magic')
+        }
+    }, [])
 
     useEffect(() => {
         if (isOpen1) {
@@ -380,7 +380,8 @@ useEffect(() => {
                     console.log(
                         data?.data.domains?.length,
                         data.data.domains?.length > 0 &&
-                            data?.data?.domains[data?.data?.domains.length - 1]?.name
+                            data?.data?.domains[data?.data?.domains.length - 1]
+                                ?.name
                     )
                     const ens_name =
                         data?.data?.domains?.length > 0 &&
@@ -399,12 +400,12 @@ useEffect(() => {
             })
         console.log(wallet)
     }, [address, wallet.address])
-useEffect(() => {
-    LogRocket.identify(wallet.address || address, {
-        name: wallet.address || address || 'address',
-        ens: wallet.ens || 'ens',
-      });
-}, [address,wallet.address,wallet.ens])
+    useEffect(() => {
+        LogRocket.identify(wallet.address || address, {
+            name: wallet.address || address || 'address',
+            ens: wallet.ens || 'ens',
+        })
+    }, [address, wallet.address, wallet.ens])
     return (
         <>
             <Fade
@@ -424,62 +425,62 @@ useEffect(() => {
                     <ModalOverlay />
                     <ModalContent rounded="xl">
                         <ModalBody m={2} p={4}>
-                            <Flex
-                            flexDir="column"
-                            align="center"
-                            >
-                            {mdcontent.map((item: any, index: number) => {
-                                return (
-                                    <Flex
-                                        key={index}
-                                        flexDirection="column"
-                                        alignItems="center"
-                                        borderRadius="md"
-                                        as="button"
-                                        w="full"
-                                        rounded="xl"
-                                        _hover={{ bg: 'gray.100' }}
-                                        onClick={
-                                            index == 1
-                                                ? handleWalletConnect
-                                                : (index == 2 ? handleMagicWallet : loadAccounts) 
-                                        }
-                                    >
+                            <Flex flexDir="column" align="center">
+                                {mdcontent.map((item: any, index: number) => {
+                                    return (
                                         <Flex
-                                            justify="space-between"
+                                            key={index}
+                                            flexDirection="column"
                                             alignItems="center"
-                                            px="4"
-                                            py="4"
+                                            borderRadius="md"
+                                            as="button"
+                                            w="full"
+                                            rounded="xl"
+                                            _hover={{ bg: 'gray.100' }}
+                                            onClick={
+                                                index == 1
+                                                    ? handleWalletConnect
+                                                    : index == 2
+                                                    ? handleMagicWallet
+                                                    : loadAccounts
+                                            }
                                         >
-                                            <Text
-                                                fontSize="lg"
-                                                fontWeight="medium"
+                                            <Flex
+                                                justify="space-between"
+                                                alignItems="center"
+                                                px="4"
+                                                py="4"
                                             >
-                                                {item.title}
-                                            </Text>
-                                        </Flex>
-                                        <Image
-                                            src={item.icon}
-                                            alt="icon"
-                                            w="10%"
-                                        />
-                                        <Flex
-                                            justify="space-between"
-                                            alignItems="center"
-                                            px="4"
-                                            py="4"
-                                        >
-                                            <Text
-                                                fontSize="md"
-                                                fontWeight="normal"
-                                                color="gray.400"
+                                                <Text
+                                                    fontSize="lg"
+                                                    fontWeight="medium"
+                                                >
+                                                    {item.title}
+                                                </Text>
+                                            </Flex>
+                                            <Image
+                                                src={item.icon}
+                                                alt="icon"
+                                                w="10%"
+                                            />
+                                            <Flex
+                                                justify="space-between"
+                                                alignItems="center"
+                                                px="4"
+                                                py="4"
                                             >
-                                                {item.description}
-                                            </Text>
+                                                <Text
+                                                    fontSize="md"
+                                                    fontWeight="normal"
+                                                    color="gray.400"
+                                                >
+                                                    {item.description}
+                                                </Text>
+                                            </Flex>
                                         </Flex>
-                                    </Flex>
-                                )
-                            })}</Flex>
+                                    )
+                                })}
+                            </Flex>
                         </ModalBody>
                     </ModalContent>
                 </Modal>
@@ -575,54 +576,54 @@ useEffect(() => {
                         />
                     )} */}
                     <NextLink href="/create" passHref>
-                            <Link _hover={{}} _focus={{}} _active={{}}>
-                                <Button
-                                    pl="1"
-                                    rounded="full"
-                                    bg={
+                        <Link _hover={{}} _focus={{}} _active={{}}>
+                            <Button
+                                pl="1"
+                                rounded="full"
+                                bg={
+                                    mode === 'white'
+                                        ? 'blackAlpha.100'
+                                        : 'whiteAlpha.800'
+                                }
+                                color="blackAlpha.700"
+                                fontWeight="medium"
+                                _hover={{
+                                    shadow: 'sm',
+                                    bg:
                                         mode === 'white'
-                                            ? 'blackAlpha.100'
-                                            : 'whiteAlpha.800'
-                                    }
-                                    color="blackAlpha.700"
-                                    fontWeight="medium"
-                                    _hover={{
-                                        shadow: 'sm',
-                                        bg:
-                                            mode === 'white'
-                                                ? 'blackAlpha.50'
-                                                : 'white',
-                                    }}
-                                    border="2px"
-                                    borderColor={
-                                        mode === 'white'
-                                            ? 'blackAlpha.100'
-                                            : 'white'
-                                    }
-                                    _focus={{}}
-                                    _active={{ transform: 'scale(0.95)' }}
-                                    role="group"
-                                    leftIcon={
-                                        <Flex
-                                            _groupHover={{
-                                                transform: 'scale(1.05)',
-                                            }}
-                                            transitionDuration="200ms"
-                                            justify="center"
-                                            alignItems="center"
-                                            color="white"
-                                            bg="brand.gradient"
-                                            rounded="full"
-                                            p="0.5"
-                                        >
-                                            <IoIosAdd size="25px" />
-                                        </Flex>
-                                    }
-                                >
-                                    Create Event
-                                </Button>
-                            </Link>
-                        </NextLink>
+                                            ? 'blackAlpha.50'
+                                            : 'white',
+                                }}
+                                border="2px"
+                                borderColor={
+                                    mode === 'white'
+                                        ? 'blackAlpha.100'
+                                        : 'white'
+                                }
+                                _focus={{}}
+                                _active={{ transform: 'scale(0.95)' }}
+                                role="group"
+                                leftIcon={
+                                    <Flex
+                                        _groupHover={{
+                                            transform: 'scale(1.05)',
+                                        }}
+                                        transitionDuration="200ms"
+                                        justify="center"
+                                        alignItems="center"
+                                        color="white"
+                                        bg="brand.gradient"
+                                        rounded="full"
+                                        p="0.5"
+                                    >
+                                        <IoIosAdd size="25px" />
+                                    </Flex>
+                                }
+                            >
+                                Create Event
+                            </Button>
+                        </Link>
+                    </NextLink>
                     {wallet.address ? (
                         <Menu>
                             <MenuButton>
@@ -711,8 +712,9 @@ useEffect(() => {
                                     onClick={
                                         walletType === 'wc'
                                             ? disconnectWc
-                                            : (walletType === 'magic'?
-                                            disconnectMagic : disconnectMetaMask)
+                                            : walletType === 'magic'
+                                            ? disconnectMagic
+                                            : disconnectMetaMask
                                     }
                                     fontSize="sm"
                                     icon={<IoIosLogOut size="20px" />}

@@ -25,48 +25,67 @@ import {
     DescriptionType,
     ImageType,
 } from '../../types/Event.type'
+import { TicketType } from '../../types/Ticket.type'
 import { decryptLink } from '../../utils/linkResolvers'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import { walletContext } from '../../utils/walletContext'
+import TicketLayout from './Ticket.layout'
 export default function MyEvents({ isOpen, onClose }: any) {
     const [tab, setTab] = useState('upcoming')
+    // const [ticketsBought, setTicketsBought] = useState<Array<any>>([])
     const [wallet] = useContext<[{ address: ''; balance: '' }]>(walletContext)
-    const [myEvents, setMyEvents] = useState<Event[]>([
+    const [myTickets, setMyTickets] = useState<TicketType[]>([
         {
             id: '',
-            title: '',
-            childAddress: '',
-            category: {
-                event_type: '',
-                category: [''],
+            ticketID: '',
+            buyer: {
+                id: '',
             },
-            image: {
-                image: '',
-                gallery: [],
-                video: '',
-            },
-            eventHost: '',
-            fee: 0,
-            date: '',
-            description: {
-                short_desc: '',
-                long_desc: '',
-            },
-            seats: 0,
-            owner: '',
+            event: {
+                id: '',
+                title: '',
+                childAddress: '',
+                category: {
+                    event_type: '',
+                    category: [''],
+                },
+                image: {
+                    image: '',
+                    gallery: [],
+                    video: '',
+                },
+                eventHost: '',
+                fee: 0,
+                date: '',
+                description: {
+                    short_desc: '',
+                    long_desc: '',
+                },
+                seats: 0,
+                owner: '',
 
-            type: '',
-            tickets_available: 0,
-            tickets_sold: 0,
-            buyers: [],
+                type: '',
+                tickets_available: 0,
+                tickets_sold: 0,
+                buyers: [],
+            },
         },
     ])
     // const [theEvent, setTheEvent] = useState<Event>()
     function UnicodeDecodeB64(str: any) {
         return decodeURIComponent(atob(str))
     }
-    const parseMyEvents = (myEvents: Array<any>): Event[] => {
-        return myEvents.map((event: any) => {
+    const parseMyEvents = (myTickets: Array<any>): TicketType[] => {
+        // myTickets.map((event: any) => {
+
+        // console.log(event.seats, event.buyers.length,event.link)
+        // exceptions.includes(event.link) ? event.link : decryptLink(event.link)
+        // return  as Event
+        return myTickets.map((ticket: any) => {
+            const event: any = ticket.childContract
+            console.log(event, ticket.childContract)
+            // console.log(event.ticketsBought)
+            // setTicketsBought(event.ticketsBought);
             // let type = JSON.parse(UnicodeDecodeB64(event.category)).event_type
             let type = event.type
             let category: CategoryType = JSON.parse(
@@ -76,31 +95,36 @@ export default function MyEvents({ isOpen, onClose }: any) {
             let desc: DescriptionType = JSON.parse(
                 UnicodeDecodeB64(event.description)
             )
-            const exceptions = [
-                'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                'https://thememe.club',
-                'https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058',
-            ]
-            // console.log(event.seats, event.buyers.length,event.link)
-            // exceptions.includes(event.link) ? event.link : decryptLink(event.link)
+            // const exceptions = [
+            //     'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            //     'https://thememe.club',
+            //     'https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058',
+            // ]
             return {
-                id: event.id,
-                title: event.title,
-                childAddress: event.childAddress,
-                category: category,
-                image: image,
-                eventHost: event.eventHost,
-                fee: Number(event.fee) / 10 ** 18,
-                date: event.date,
-                description: desc,
-                seats: event.seats,
-                owner: event.eventHost,
-                link: event.link,
-                type: type,
-                tickets_available: event.seats - event.ticketsBought.length,
-                tickets_sold: event.ticketsBought.length,
-                buyers: event.buyers,
-            } as Event
+                id: ticket.id,
+                ticketID: ticket.ticketID,
+                buyer: {
+                    id: ticket.buyer.id,
+                },
+                event: {
+                    id: event.id,
+                    title: event.title,
+                    childAddress: event.childAddress,
+                    category: category,
+                    image: image,
+                    eventHost: event.eventHost,
+                    fee: Number(event.fee) / 10 ** 18,
+                    date: event.date,
+                    description: desc,
+                    seats: event.seats,
+                    owner: event.eventHost,
+                    link: event.link,
+                    type: type,
+                    tickets_available: event.seats - event.ticketsBought.length,
+                    tickets_sold: event.ticketsBought.length,
+                    buyers: event.buyers,
+                } as Event,
+            } as TicketType
         })
     }
     useEffect(() => {
@@ -116,9 +140,17 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                         childAddress
                                         category
                                         image
+                                        
                                         ticketsBought{
                                             id
-                                        }
+                                            ticketID
+                                            buyer{
+                                              id
+                                            }
+                                            childContract{
+                                              id
+                                            }
+                                          }
                                         buyers{
                                             id
                                             
@@ -152,14 +184,65 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 console.log('error', error)
             }
         }
+
+        async function getMyTickets() {
+            const myTicketsQuery = {
+                operationName: 'fetchMyTickets',
+                query: `query fetchMyTickets {
+                    ticketBoughtEntities(
+                      where: { buyer_contains: "${wallet.address.toLowerCase()}" }
+                    ) {
+                        id
+                        ticketID
+                      childContract {
+                        id
+                        title
+                        childAddress
+                        category
+                        image
+                        eventHost
+                        fee
+                        ticketsBought{
+                            id
+                        }
+                        seats
+                        link
+                        description
+                        date
+                      }
+                      buyer {
+                        id
+                      }
+                    }
+                  }`,
+            }
+            try {
+                const res = await axios({
+                    method: 'POST',
+                    url: gqlEndpoint,
+                    data: myTicketsQuery,
+                    headers: {
+                        'content-type': 'application/json',
+                    },
+                })
+                console.log(res, 'hello')
+                if (!!res.data?.errors?.length) {
+                    throw new Error('Error fetching featured events')
+                }
+                console.log(res, 'hello')
+                return res.data
+            } catch (error) {
+                console.log('error', error)
+            }
+        }
         if (wallet?.address) {
-            getMyEvents()
+            getMyTickets()
                 .then((res) => {
-                    const data: Event[] = parseMyEvents(
-                        res.data.childCreatedEntities
+                    const data: TicketType[] = parseMyEvents(
+                        res.data.ticketBoughtEntities
                     )
                     console.log(data)
-                    setMyEvents(data)
+                    setMyTickets(data)
                     console.log(data)
                 })
                 .catch((err) => {
@@ -285,22 +368,40 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                     <TabPanel>
                                         <Grid
                                             templateColumns={{
-                                                md: 'repeat(2, 1fr)',
-                                                lg: 'repeat(2, 1fr)',
-                                                xl: 'repeat(2, 1fr)',
+                                                md: 'repeat(1, 1fr)',
+                                                lg: 'repeat(1, 1fr)',
+                                                xl: 'repeat(1, 1fr)',
                                             }}
                                             px={{ base: '6', md: '10' }}
                                             gap={6}
                                         >
-                                            {myEvents.length > 0 ? (
-                                                myEvents.map((data, key) => (
+                                            {myTickets.length > 0 ? (
+                                                myTickets.map((data, key) => (
                                                     <Box
-                                                        maxW={{ xl: '390px' }}
+                                                        maxW={{ xl: '500px' }}
                                                         minW={{ xl: '390px' }}
                                                         key={key}
                                                     >
-                                                        <EventCard
-                                                            event={data}
+                                                        <TicketLayout
+                                                            image={
+                                                                data.event.image
+                                                                    .image
+                                                            }
+                                                            wallet={wallet}
+                                                            ticket={data}
+                                                            contractAddress={
+                                                                data.event
+                                                                    .childAddress
+                                                            }
+                                                            eventLink={
+                                                                data.event
+                                                                    .link as string
+                                                            }
+                                                            eventType={
+                                                                data.event
+                                                                    .category
+                                                                    .event_type
+                                                            }
                                                         />
                                                     </Box>
                                                 ))
@@ -330,26 +431,71 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                     <TabPanel>
                                         <Grid
                                             templateColumns={{
-                                                md: 'repeat(2, 1fr)',
-                                                lg: 'repeat(2, 1fr)',
-                                                xl: 'repeat(2, 1fr)',
+                                                md: 'repeat(1, 1fr)',
+                                                lg: 'repeat(1, 1fr)',
+                                                xl: 'repeat(1, 1fr)',
                                             }}
                                             px={{ base: '6', md: '10' }}
                                             gap={6}
                                         >
-                                            {myEvents
-                                                .reverse()
-                                                .map((data, key) => (
-                                                    <Box
-                                                        maxW={{ xl: '390px' }}
-                                                        minW={{ xl: '390px' }}
-                                                        key={key}
+                                            {myTickets.length > 0 ? (
+                                                myTickets
+                                                    .reverse()
+                                                    .map((data, key) => (
+                                                        <Box
+                                                            maxW={{
+                                                                xl: '500px',
+                                                            }}
+                                                            minW={{
+                                                                xl: '390px',
+                                                            }}
+                                                            key={key}
+                                                        >
+                                                            <TicketLayout
+                                                                image={
+                                                                    data.event
+                                                                        .image
+                                                                        .image
+                                                                }
+                                                                wallet={wallet}
+                                                                ticket={data}
+                                                                contractAddress={
+                                                                    data.event
+                                                                        .childAddress
+                                                                }
+                                                                eventLink={
+                                                                    data.event
+                                                                        .link as string
+                                                                }
+                                                                eventType={
+                                                                    data.event
+                                                                        .category
+                                                                        .event_type
+                                                                }
+                                                            />
+                                                        </Box>
+                                                    ))
+                                            ) : (
+                                                <Box
+                                                    maxW={{ xl: '390px' }}
+                                                    minW={{ xl: '390px' }}
+                                                    ml="300px"
+                                                >
+                                                    <Heading
+                                                        textAlign="center"
+                                                        fontWeight="semibold"
+                                                        fontFamily="subheading"
+                                                        color="gray.300"
+                                                        fontSize={{
+                                                            md: '23.2px',
+                                                            lg: '23.2px',
+                                                            xl: '28',
+                                                        }}
                                                     >
-                                                        <EventCard
-                                                            event={data}
-                                                        />
-                                                    </Box>
-                                                ))}
+                                                        No upcoming events :(
+                                                    </Heading>
+                                                </Box>
+                                            )}
                                         </Grid>
                                     </TabPanel>
                                 </TabPanels>
