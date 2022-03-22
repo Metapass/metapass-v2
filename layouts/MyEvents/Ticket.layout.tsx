@@ -154,7 +154,7 @@ export default function TicketLayout({
                                     p="1.5px"
                                     mx="auto"
                                     mt="6"
-                                    mb={{ base: '4', md: '0' }}
+                                    mb={{base:"4",md:"0"}}
                                     transitionDuration="200ms"
                                     rounded="full"
                                     w="fit-content"
