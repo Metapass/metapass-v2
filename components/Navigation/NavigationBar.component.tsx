@@ -48,6 +48,7 @@ import LogRocket from 'logrocket'
 import LinkMagic from '../../utils/Magic'
 import { Magic } from 'magic-sdk'
 import { FaBars } from 'react-icons/fa'
+import { getAllowedList } from '../../utils/sendToAirtable'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
@@ -98,7 +99,7 @@ export default function NavigationBar({ mode = 'dark' }) {
     async function _allowedList() {
         const res = await getAllowedList()
         let data: any = []
-        res.forEach((record: { fields: { Address: any } }) => {
+        res.forEach((record: any) => {
             data.push(record.fields.Address)
         })
         setAllowedList(data)
@@ -426,15 +427,6 @@ export default function NavigationBar({ mode = 'dark' }) {
             ens: wallet.ens || 'ens',
         })
     }, [address, wallet.address, wallet.ens])
-
-    async function _allowedList() {
-        const res = await getAllowedList()
-        let data: any = []
-        res.forEach((record: { fields: { Address: any } }) => {
-            data.push(record.fields.Address)
-        })
-        setAllowedList(data)
-    }
 
     useEffect(() => {
         _allowedList()
