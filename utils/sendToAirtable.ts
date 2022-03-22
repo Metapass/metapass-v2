@@ -29,4 +29,10 @@ async function sendToAirtable(
     } as any)
 }
 
+
+export async function getAllowedList() {
+
+    const data = await base('eventorgs').select().all()
+    return data
+}
 export default sendToAirtable
