@@ -97,8 +97,8 @@ export default function NavigationBar({ mode = 'dark' }) {
 
     async function _allowedList() {
         const res = await getAllowedList()
-        let data: any[] = []
-        res.forEach((record) => {
+        let data: any = []
+        res.forEach((record: { fields: { Address: any } }) => {
             data.push(record.fields.Address)
         })
         setAllowedList(data)
