@@ -54,21 +54,21 @@ export default function NavigationBar({ mode = 'dark' }) {
     const [magic, setMagic] = useState<any>()
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
-    const [_, setWeb3] = useContext(web3Context)
     const [allowedList, setAllowedList] = useState<any>(undefined)
+    const [_, setWeb3] = useContext(web3Context)
     const [walletType, setWalletType] = useState<string>('')
     const {
         isOpen: isOpen1,
         onOpen: onOpen1,
         onClose: onClose1,
     } = useDisclosure()
-    const [showMyEvents, setMyEvents] = useState(false)
-    const [email, setEmail] = useState('')
+    const [email, setEmail] = useState<string>('')
     const {
         isOpen: isOpen2,
         onOpen: onOpen2,
         onClose: onClose2,
     } = useDisclosure()
+    const [showMyEvents, setMyEvents] = useState(false)
     const [ensName, setEnsName] = useState<string>('')
     const chainid: any = env ? 137 : 80001
     const endpoint: any = env
@@ -94,6 +94,19 @@ export default function NavigationBar({ mode = 'dark' }) {
             icon: 'https://res.cloudinary.com/dev-connect/image/upload/e_bgremoval/v1645948559/img/g-logo_uesmfz.png',
         },
     ]
+
+    async function _allowedList() {
+        const res = await getAllowedList()
+        let data: any[] = []
+        res.forEach((record) => {
+            data.push(record.fields.Address)
+        })
+        setAllowedList(data)
+    }
+
+    useEffect(() => {
+        _allowedList()
+    }, [])
 
     async function getAccountData({ accounts, windowType }: any) {
         try {
@@ -417,7 +430,7 @@ export default function NavigationBar({ mode = 'dark' }) {
     async function _allowedList() {
         const res = await getAllowedList()
         let data: any = []
-        res.forEach((record) => {
+        res.forEach((record: { fields: { Address: any } }) => {
             data.push(record.fields.Address)
         })
         setAllowedList(data)
