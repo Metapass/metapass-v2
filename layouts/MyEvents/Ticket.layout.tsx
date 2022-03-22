@@ -73,11 +73,19 @@ export default function TicketLayout({
                                 timestamp: string
                             }
                         ] = data[key]
-                        console.log(tickets, 'tickets')
+                        // console.log(tickets, 'tickets')
+                        // console.log(
+                        //     tickets.find((tick) =>
+                        //         // console.log(tick.user_address, wallet.address)
+                        //         console.log(tick?.ticketID, ticket?.ticketID)
+                        //     ),
+                        //     'key'
+                        // )
                         const qrdata = tickets.find(
                             (tick) =>
                                 tick.user_address === wallet.address &&
-                                tick?.ticketID == ticket?.ticketID
+                                tick?.ticketID ==
+                                    (Number(ticket?.ticketID) + 1).toString()
                         )?.uuid as string
                         qrdata && setQr(qrdata)
                         console.log(qrdata, 'qrdata')
