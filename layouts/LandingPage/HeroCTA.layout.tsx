@@ -14,7 +14,7 @@ export default function HeroCTA() {
                 position="relative"
                 overflow="hidden"
             >
-                <Box p={{ base: '6', md: '10' }} />
+                <Box p={{ base: '8', md: '12' }} />
                 <Box display={{ base: 'none', md: 'block' }}>
                     <video
                         autoPlay
