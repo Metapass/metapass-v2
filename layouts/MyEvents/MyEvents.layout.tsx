@@ -377,11 +377,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                         >
                                             {myTickets.length > 0 ? (
                                                 myTickets.map((data, key) => (
-                                                    <Box
-                                                        maxW={{ xl: '500px' }}
-                                                        minW={{ xl: '390px' }}
-                                                        key={key}
-                                                    >
+                                                    <Box key={key}>
                                                         <TicketLayout
                                                             image={
                                                                 data.event.image
@@ -442,15 +438,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                                 myTickets
                                                     .reverse()
                                                     .map((data, key) => (
-                                                        <Box
-                                                            maxW={{
-                                                                xl: '500px',
-                                                            }}
-                                                            minW={{
-                                                                xl: '390px',
-                                                            }}
-                                                            key={key}
-                                                        >
+                                                        <Box w="full" key={key}>
                                                             <TicketLayout
                                                                 image={
                                                                     data.event
