@@ -53,14 +53,15 @@ export const ticketToIPFS = async (
     ticketNumber: Number,
     url: String,
     date: string,
-    person: string,
+    person: string
 ) => {
-
-    let parsedDate = date.split("T")[0];
+    let parsedDate = date.split('T')[0]
 
     const res = await axios.get(
         `https://radiant-caverns-43873.herokuapp.com/v2/2d/edit/url=${url}&hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${
-            months[new Date(parsedDate).getMonth()] + ' ' + new Date(parsedDate).getDate()
+            months[new Date(parsedDate).getMonth()] +
+            ' ' +
+            new Date(parsedDate).getDate()
         }`
     )
     // @ts-ignore
@@ -68,5 +69,8 @@ export const ticketToIPFS = async (
     await axios.post('/api/pin', {
         hash: cid.toString(),
     })
-    return {img: `https://ipfs.io/ipfs/${cid.toString()}`, fastimg: res.data[0]}
+    return {
+        img: `https://ipfs.io/ipfs/${cid.toString()}`,
+        fastimg: res.data[0],
+    }
 }

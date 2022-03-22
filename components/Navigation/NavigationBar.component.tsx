@@ -32,10 +32,7 @@ import Web3 from 'web3'
 import toast from 'react-hot-toast'
 // import gravatarUrl from 'gravatar-url'
 
-import {
-    HiOutlineChevronDoubleDown,
-    HiOutlineChevronDown,
-} from 'react-icons/hi'
+import { HiOutlineChevronDown } from 'react-icons/hi'
 import MyEvents from '../../layouts/MyEvents/MyEvents.layout'
 const env: any = process.env.NEXT_PUBLIC_ENV === 'prod'
 const polygon = require(env
@@ -48,12 +45,13 @@ import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 import WaitlistModal from '../Misc/WaitlistModal'
 import LogRocket from 'logrocket'
-import { EmailBar } from '../../layouts/LandingPage/FeaturedEvents.layout'
-import { getAllowedList } from '../../utils/sendToAirtable'
-import { FaBars, FaEnvelope } from 'react-icons/fa'
+import LinkMagic from '../../utils/Magic'
+import { Magic } from 'magic-sdk'
+import { FaBars } from 'react-icons/fa'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
+    const [magic, setMagic] = useState<any>()
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
     const [allowedList, setAllowedList] = useState<any>(undefined)
@@ -71,7 +69,6 @@ export default function NavigationBar({ mode = 'dark' }) {
         onClose: onClose2,
     } = useDisclosure()
     const [showMyEvents, setMyEvents] = useState(false)
-
     const [ensName, setEnsName] = useState<string>('')
     const chainid: any = env ? 137 : 80001
     const endpoint: any = env
@@ -91,11 +88,16 @@ export default function NavigationBar({ mode = 'dark' }) {
             description: 'Connect to your wallet',
             icon: 'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHdpZHRoPSI1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxyYWRpYWxHcmFkaWVudCBpZD0iYSIgY3g9IjAlIiBjeT0iNTAlIiByPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM1ZDlkZjYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwMDZmZmYiLz48L3JhZGlhbEdyYWRpZW50PjxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTI1NiAwYzE0MS4zODQ4OTYgMCAyNTYgMTE0LjYxNTEwNCAyNTYgMjU2cy0xMTQuNjE1MTA0IDI1Ni0yNTYgMjU2LTI1Ni0xMTQuNjE1MTA0LTI1Ni0yNTYgMTE0LjYxNTEwNC0yNTYgMjU2LTI1NnoiIGZpbGw9InVybCgjYSkiLz48cGF0aCBkPSJtNjQuNjkxNzU1OCAzNy43MDg4Mjk4YzUxLjUzMjgwNzItNTAuMjc4NDM5NyAxMzUuMDgzOTk0Mi01MC4yNzg0Mzk3IDE4Ni42MTY3OTkyIDBsNi4yMDIwNTcgNi4wNTEwOTA2YzIuNTc2NjQgMi41MTM5MjE4IDIuNTc2NjQgNi41ODk3OTQ4IDAgOS4xMDM3MTc3bC0yMS4yMTU5OTggMjAuNjk5NTc1OWMtMS4yODgzMjEgMS4yNTY5NjE5LTMuMzc3MSAxLjI1Njk2MTktNC42NjU0MjEgMGwtOC41MzQ3NjYtOC4zMjcwMjA1Yy0zNS45NTA1NzMtMzUuMDc1NDk2Mi05NC4yMzc5NjktMzUuMDc1NDk2Mi0xMzAuMTg4NTQ0IDBsLTkuMTQwMDI4MiA4LjkxNzU1MTljLTEuMjg4MzIxNyAxLjI1Njk2MDktMy4zNzcxMDE2IDEuMjU2OTYwOS00LjY2NTQyMDggMGwtMjEuMjE1OTk3My0yMC42OTk1NzU5Yy0yLjU3NjY0MDMtMi41MTM5MjI5LTIuNTc2NjQwMy02LjU4OTc5NTggMC05LjEwMzcxNzd6bTIzMC40OTM0ODUyIDQyLjgwODkxMTcgMTguODgyMjc5IDE4LjQyMjcyNjJjMi41NzY2MjcgMi41MTM5MTAzIDIuNTc2NjQyIDYuNTg5NzU5My4wMDAwMzIgOS4xMDM2ODYzbC04NS4xNDE0OTggODMuMDcwMzU4Yy0yLjU3NjYyMyAyLjUxMzk0MS02Ljc1NDE4MiAyLjUxMzk2OS05LjMzMDg0LjAwMDA2Ni0uMDAwMDEtLjAwMDAxLS4wMDAwMjMtLjAwMDAyMy0uMDAwMDMzLS4wMDAwMzRsLTYwLjQyODI1Ni01OC45NTc0NTFjLS42NDQxNi0uNjI4NDgxLTEuNjg4NTUtLjYyODQ4MS0yLjMzMjcxIDAtLjAwMDAwNC4wMDAwMDQtLjAwMDAwOC4wMDAwMDctLjAwMDAxMi4wMDAwMTFsLTYwLjQyNjk2ODMgNTguOTU3NDA4Yy0yLjU3NjYxNDEgMi41MTM5NDctNi43NTQxNzQ2IDIuNTEzOTktOS4zMzA4NDA4LjAwMDA5Mi0uMDAwMDE1MS0uMDAwMDE0LS4wMDAwMzA5LS4wMDAwMjktLjAwMDA0NjctLjAwMDA0NmwtODUuMTQzODY3NzQtODMuMDcxNDYzYy0yLjU3NjYzOTI4LTIuNTEzOTIxLTIuNTc2NjM5MjgtNi41ODk3OTUgMC05LjEwMzcxNjNsMTguODgyMzEyNjQtMTguNDIyNjk1NWMyLjU3NjYzOTMtMi41MTM5MjIyIDYuNzU0MTk5My0yLjUxMzkyMjIgOS4zMzA4Mzk3IDBsNjAuNDI5MTM0NyA1OC45NTgyNzU4Yy42NDQxNjA4LjYyODQ4IDEuNjg4NTQ5NS42Mjg0OCAyLjMzMjcxMDMgMCAuMDAwMDA5NS0uMDAwMDA5LjAwMDAxODItLjAwMDAxOC4wMDAwMjc3LS4wMDAwMjVsNjAuNDI2MTA2NS01OC45NTgyNTA4YzIuNTc2NTgxLTIuNTEzOTggNi43NTQxNDItMi41MTQwNzQzIDkuMzMwODQtLjAwMDIxMDMuMDAwMDM3LjAwMDAzNTQuMDAwMDcyLjAwMDA3MDkuMDAwMTA3LjAwMDEwNjNsNjAuNDI5MDU2IDU4Ljk1ODM1NDhjLjY0NDE1OS42Mjg0NzkgMS42ODg1NDkuNjI4NDc5IDIuMzMyNzA5IDBsNjAuNDI4MDc5LTU4Ljk1NzE5MjVjMi41NzY2NC0yLjUxMzkyMzEgNi43NTQxOTktMi41MTM5MjMxIDkuMzMwODM5IDB6IiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9Im5vbnplcm8iIHRyYW5zZm9ybT0idHJhbnNsYXRlKDk4IDE2MCkiLz48L2c+PC9zdmc+',
         },
+        {
+            title: 'Google',
+            description: 'Sign in with Google',
+            icon: 'https://res.cloudinary.com/dev-connect/image/upload/e_bgremoval/v1645948559/img/g-logo_uesmfz.png',
+        },
     ]
 
     async function _allowedList() {
         const res = await getAllowedList()
-        let data = []
+        let data: any[] = []
         res.forEach((record) => {
             data.push(record.fields.Address)
         })
@@ -266,6 +268,63 @@ export default function NavigationBar({ mode = 'dark' }) {
             })
         }
     }
+    const handleMagicWallet = async () => {
+        const { magic, web3, network } = LinkMagic(env as string)
+        console.log(magic, web3, network)
+        setWeb3(web3)
+        setMagic(magic)
+        try {
+            await magic.oauth.loginWithRedirect({
+                provider: 'google',
+                redirectURI: new URL('/callback', window.location.origin).href,
+            })
+        } catch (e: any) {
+            console.log('error', e)
+        }
+    }
+
+    const disconnectMagic = async () => {
+        await magic.user.logout()
+        setAddress('')
+        setBalance('')
+        setWallet({
+            balance: '',
+            address: '',
+            type: '',
+        })
+    }
+
+    useEffect(() => {
+        if (window && sessionStorage.getItem('user_metadata')) {
+            const data: {
+                issuer: ''
+                publicAddress: ''
+                email: ''
+                isMfaEnabled: false
+                phoneNumber: null
+            } =
+                JSON.parse(sessionStorage.getItem('user_metadata') || '{}') ||
+                {}
+            console.log(data.publicAddress)
+            setAddress(data.publicAddress)
+            const { magic, web3, network } = LinkMagic(env as string)
+            setWeb3(web3)
+            setMagic(magic)
+
+            web3.eth
+                .getBalance(data.publicAddress)
+                .then((bal) => setBalance(web3.utils.fromWei(bal)))
+
+            web3.eth.getBalance(data.publicAddress).then((bal: any) => {
+                setWallet({
+                    balance: web3.utils.fromWei(bal),
+                    address: data.publicAddress,
+                    type: 'magic',
+                })
+            })
+            setWalletType('magic')
+        }
+    }, [])
 
     useEffect(() => {
         if (isOpen1) {
@@ -332,7 +391,7 @@ export default function NavigationBar({ mode = 'dark' }) {
         if (confirmation === 'true') {
             loadAccounts()
         }
-    }, [])
+    }, [walletType])
     useEffect(() => {
         getAllEnsLinked(wallet.address || address || 'address')
             .then((data) => {
@@ -341,11 +400,12 @@ export default function NavigationBar({ mode = 'dark' }) {
                     console.log(
                         data?.data.domains?.length,
                         data.data.domains?.length > 0 &&
-                            data?.data?.domains[0]?.name
+                            data?.data?.domains[data?.data?.domains.length - 1]
+                                ?.name
                     )
                     const ens_name =
                         data?.data?.domains?.length > 0 &&
-                        data?.data?.domains[0].name
+                        data?.data?.domains[data?.data?.domains.length - 1].name
                     setEnsName(ens_name)
                     setWallet({
                         balance: balance,
@@ -366,6 +426,19 @@ export default function NavigationBar({ mode = 'dark' }) {
             ens: wallet.ens || 'ens',
         })
     }, [address, wallet.address, wallet.ens])
+
+    async function _allowedList() {
+        const res = await getAllowedList()
+        let data: any = []
+        res.forEach((record: { fields: { Address: any } }) => {
+            data.push(record.fields.Address)
+        })
+        setAllowedList(data)
+    }
+
+    useEffect(() => {
+        _allowedList()
+    }, [])
     return (
         <>
             <Fade
@@ -509,6 +582,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                 return (
                                     <Flex
                                         key={index}
+                                        w="full"
                                         flexDirection="column"
                                         alignItems="center"
                                         borderRadius="md"
@@ -560,286 +634,51 @@ export default function NavigationBar({ mode = 'dark' }) {
                     </ModalContent>
                 </Modal>
             </Fade>
-
-            <Flex
-                borderBottom={mode === 'white' ? '2px' : '0'}
-                bg={mode === 'white' ? 'white' : 'transparent'}
-                borderColor="gray.100"
-                justify="space-between"
-                px={{ base: '6', md: '8' }}
-                position="relative"
-                zIndex={999}
-                maxW="1600px"
-                mx="auto"
-                py={{ base: '4', md: '6' }}
-                alignItems="center"
-                color="white"
-            >
-                {' '}
-                <NextLink href="/" passHref>
-                    <Link _hover={{}} _focus={{}} _active={{}}>
-                        <Image
-                            src={
-                                mode === 'white'
-                                    ? '/assets/newlogo.svg'
-                                    : '/assets/newlogowhite.svg'
-                            }
-                            alt="Metapass"
-                            w={{ base: '10', md: '16' }}
-                        />
-                    </Link>
-                </NextLink>
-                {wallet.address ? (
-                    <Menu>
-                        <MenuButton display={{ base: 'block', md: 'none' }}>
-                            <Button
-                                size="md"
-                                bg="transparent"
-                                _hover={{ bg: 'whiteAlpha.200' }}
-                                _focus={{}}
-                                _active={{}}
-                            >
-                                <FaBars />
-                            </Button>
-                        </MenuButton>{' '}
-                        <MenuList
-                            zIndex={999}
-                            display={{ base: 'block', md: 'none' }}
-                            shadow="none"
-                            bg="white"
-                            rounded="lg"
-                            border="none"
-                            position="relative"
-                        >
-                            <MenuItem>
-                                <Flex experimental_spaceX="2" align="end">
-                                    <Image
-                                        src="/assets/matic_circle.svg"
-                                        alt="matic"
-                                        w="6"
-                                        h="6"
-                                        mb="1"
-                                    />
-                                    <Box>
-                                        <Text
-                                            fontFamily="body"
-                                            fontSize="xs"
-                                            fontWeight="thin"
-                                            color="blackAlpha.500"
-                                        >
-                                            Account Balance
-                                        </Text>
-                                        <Text
-                                            mt="-1"
-                                            color="brand.black600"
-                                            fontFamily="body"
-                                            fontSize="lg"
-                                            fontWeight="semibold"
-                                        >
-                                            {wallet.balance.substring(0, 4)}{' '}
-                                            MATIC
-                                        </Text>
-                                    </Box>
-                                </Flex>
-                            </MenuItem>
-                            <MenuDivider color="blackAlpha.200" />
-                            <MenuItem onClick={() => setMyEvents(true)}>
-                                <Flex align="center" experimental_spaceX="4">
-                                    <Image
-                                        src="/assets/elements/event_ticket_gradient.svg"
-                                        alt="myevents"
-                                    />
-                                    <Text
-                                        color="blackAlpha.700"
-                                        fontWeight="medium"
-                                    >
-                                        My Events
-                                    </Text>
-                                </Flex>
-                            </MenuItem>
-                            <MenuDivider color="blackAlpha.200" />
-                            <MenuItem
-                                onClick={
-                                    walletType === 'wc'
-                                        ? disconnectWc
-                                        : disconnectMetaMask
-                                }
-                                fontSize="sm"
-                                icon={<IoIosLogOut size="20px" />}
-                                color="red.500"
-                            >
-                                Disconnect Wallet
-                            </MenuItem>
-                        </MenuList>
-                    </Menu>
-                ) : (
-                    <>
-                        <Button
-                            rounded="full"
-                            color="white"
-                            bg="blackAlpha.500"
-                            display={{ base: 'flex', md: 'none' }}
-                            border="2px"
-                            _hover={{ bg: 'blackAlpha.600' }}
-                            _focus={{}}
-                            _active={{ bg: 'blackAlpha.700' }}
-                            py="4"
-                            fontSize="sm"
-                            fontWeight="normal"
-                            leftIcon={<MdAccountBalanceWallet size="25px" />}
-                            onClick={() => {
-                                onOpen1()
-
-                                console.log(isOpen1)
-                            }}
-                        >
-                            Connect Wallet
-                        </Button>
-                    </>
-                )}
+            <Box position="absolute" w="full">
                 <Flex
-                    display={{ base: 'none', md: 'flex' }}
+                    borderBottom={mode === 'white' ? '2px' : '0'}
+                    bg={mode === 'white' ? 'white' : 'transparent'}
+                    borderColor="gray.100"
+                    justify="space-between"
+                    px={{ base: '6', md: '8' }}
+                    position="relative"
+                    zIndex={999}
+                    maxW="1600px"
+                    mx="auto"
+                    py={{ base: '4', md: '6' }}
                     alignItems="center"
-                    experimental_spaceX="6"
+                    color="white"
                 >
-                    {/* {eventOrgs.eventOrgs.includes(String(wallet?.address)) ? (
-                        <NextLink href="/create" passHref>
-                            <Link _hover={{}} _focus={{}} _active={{}}>
-                                <Button
-                                    pl="1"
-                                    rounded="full"
-                                    bg={
-                                        mode === 'white'
-                                            ? 'blackAlpha.100'
-                                            : 'whiteAlpha.800'
-                                    }
-                                    color="blackAlpha.700"
-                                    fontWeight="medium"
-                                    _hover={{
-                                        shadow: 'sm',
-                                        bg:
-                                            mode === 'white'
-                                                ? 'blackAlpha.50'
-                                                : 'white',
-                                    }}
-                                    border="2px"
-                                    borderColor={
-                                        mode === 'white'
-                                            ? 'blackAlpha.100'
-                                            : 'white'
-                                    }
-                                    _focus={{}}
-                                    _active={{ transform: 'scale(0.95)' }}
-                                    role="group"
-                                    leftIcon={
-                                        <Flex
-                                            _groupHover={{
-                                                transform: 'scale(1.05)',
-                                            }}
-                                            transitionDuration="200ms"
-                                            justify="center"
-                                            alignItems="center"
-                                            color="white"
-                                            bg="brand.gradient"
-                                            rounded="full"
-                                            p="0.5"
-                                        >
-                                            <IoIosAdd size="25px" />
-                                        </Flex>
-                                    }
-                                >
-                                    Create Event
-                                </Button>
-                            </Link>
-                        </NextLink>
-                    ) : (
-                        <WaitlistModal
-                            email={email}
-                            setEmail={setEmail}
-                            mode={mode}
-                        />
-                    )} */}
-
-                    <Button
-                        onClick={() => {
-                            if (
-                                allowedList &&
-                                (allowedList?.includes(wallet.address) ||
-                                    allowedList?.includes(ensName))
-                            ) {
-                                window.location.href = '/create'
-                            } else {
-                                onOpen2()
-                            }
-                        }}
-                        pl="1"
-                        rounded="full"
-                        bg={
-                            mode === 'white'
-                                ? 'blackAlpha.100'
-                                : 'whiteAlpha.800'
-                        }
-                        color="blackAlpha.700"
-                        fontWeight="medium"
-                        _hover={{
-                            shadow: 'sm',
-                            bg: mode === 'white' ? 'blackAlpha.50' : 'white',
-                        }}
-                        border="2px"
-                        borderColor={
-                            mode === 'white' ? 'blackAlpha.100' : 'white'
-                        }
-                        _focus={{}}
-                        _active={{ transform: 'scale(0.95)' }}
-                        role="group"
-                        leftIcon={
-                            <Flex
-                                _groupHover={{
-                                    transform: 'scale(1.05)',
-                                }}
-                                transitionDuration="200ms"
-                                justify="center"
-                                alignItems="center"
-                                color="white"
-                                bg="brand.gradient"
-                                rounded="full"
-                                p="0.5"
-                            >
-                                <IoIosAdd size="25px" />
-                            </Flex>
-                        }
-                    >
-                        Create Event
-                    </Button>
-
+                    {' '}
+                    <NextLink href="/" passHref>
+                        <Link _hover={{}} _focus={{}} _active={{}}>
+                            <Image
+                                src={
+                                    mode === 'white'
+                                        ? '/assets/newlogo.svg'
+                                        : '/assets/newlogowhite.svg'
+                                }
+                                alt="Metapass"
+                                w={{ base: '10', md: '16' }}
+                            />
+                        </Link>
+                    </NextLink>
                     {wallet.address ? (
                         <Menu>
-                            <MenuButton>
+                            <MenuButton display={{ base: 'block', md: 'none' }}>
                                 <Button
-                                    rounded="full"
-                                    color="white"
-                                    bg="blackAlpha.500"
-                                    border="2px"
-                                    pl="1.5"
-                                    _hover={{ bg: 'blackAlpha.600' }}
+                                    size="md"
+                                    bg="transparent"
+                                    _hover={{ bg: 'whiteAlpha.200' }}
                                     _focus={{}}
-                                    // _active={{ bg: "blackAlpha.700" }}
-
-                                    fontWeight="normal"
-                                    leftIcon={
-                                        <BoringAva address={wallet.address} />
-                                    }
-                                    rightIcon={<HiOutlineChevronDown />}
+                                    _active={{}}
                                 >
-                                    {ensName ||
-                                        wallet.address.substring(0, 4) +
-                                            '...' +
-                                            wallet.address.substring(
-                                                wallet.address.length - 4
-                                            )}
+                                    <FaBars />
                                 </Button>
-                            </MenuButton>
+                            </MenuButton>{' '}
                             <MenuList
+                                zIndex={999}
+                                display={{ base: 'block', md: 'none' }}
                                 shadow="none"
                                 bg="white"
                                 rounded="lg"
@@ -916,11 +755,13 @@ export default function NavigationBar({ mode = 'dark' }) {
                                 rounded="full"
                                 color="white"
                                 bg="blackAlpha.500"
+                                display={{ base: 'flex', md: 'none' }}
                                 border="2px"
                                 _hover={{ bg: 'blackAlpha.600' }}
                                 _focus={{}}
                                 _active={{ bg: 'blackAlpha.700' }}
-                                py="5"
+                                py="4"
+                                fontSize="sm"
                                 fontWeight="normal"
                                 leftIcon={
                                     <MdAccountBalanceWallet size="25px" />
@@ -935,8 +776,258 @@ export default function NavigationBar({ mode = 'dark' }) {
                             </Button>
                         </>
                     )}
+                    <Flex
+                        display={{ base: 'none', md: 'flex' }}
+                        alignItems="center"
+                        experimental_spaceX="6"
+                    >
+                        {/* {eventOrgs.eventOrgs.includes(String(wallet?.address)) ? (
+                        <NextLink href="/create" passHref>
+                            <Link _hover={{}} _focus={{}} _active={{}}>
+                                <Button
+                                    pl="1"
+                                    rounded="full"
+                                    bg={
+                                        mode === 'white'
+                                            ? 'blackAlpha.100'
+                                            : 'whiteAlpha.800'
+                                    }
+                                    color="blackAlpha.700"
+                                    fontWeight="medium"
+                                    _hover={{
+                                        shadow: 'sm',
+                                        bg:
+                                            mode === 'white'
+                                                ? 'blackAlpha.50'
+                                                : 'white',
+                                    }}
+                                    border="2px"
+                                    borderColor={
+                                        mode === 'white'
+                                            ? 'blackAlpha.100'
+                                            : 'white'
+                                    }
+                                    _focus={{}}
+                                    _active={{ transform: 'scale(0.95)' }}
+                                    role="group"
+                                    leftIcon={
+                                        <Flex
+                                            _groupHover={{
+                                                transform: 'scale(1.05)',
+                                            }}
+                                            transitionDuration="200ms"
+                                            justify="center"
+                                            alignItems="center"
+                                            color="white"
+                                            bg="brand.gradient"
+                                            rounded="full"
+                                            p="0.5"
+                                        >
+                                            <IoIosAdd size="25px" />
+                                        </Flex>
+                                    }
+                                >
+                                    Create Event
+                                </Button>
+                            </Link>
+                        </NextLink>
+                    ) : (
+                        <WaitlistModal
+                            email={email}
+                            setEmail={setEmail}
+                            mode={mode}
+                        />
+                    )} */}
+
+                        <Button
+                            onClick={() => {
+                                if (
+                                    allowedList &&
+                                    (allowedList?.includes(wallet.address) ||
+                                        allowedList?.includes(ensName))
+                                ) {
+                                    window.location.href = '/create'
+                                } else {
+                                    onOpen2()
+                                }
+                            }}
+                            pl="1"
+                            rounded="full"
+                            bg={
+                                mode === 'white'
+                                    ? 'blackAlpha.100'
+                                    : 'whiteAlpha.800'
+                            }
+                            color="blackAlpha.700"
+                            fontWeight="medium"
+                            _hover={{
+                                shadow: 'sm',
+                                bg:
+                                    mode === 'white'
+                                        ? 'blackAlpha.50'
+                                        : 'white',
+                            }}
+                            border="2px"
+                            borderColor={
+                                mode === 'white' ? 'blackAlpha.100' : 'white'
+                            }
+                            _focus={{}}
+                            _active={{ transform: 'scale(0.95)' }}
+                            role="group"
+                            leftIcon={
+                                <Flex
+                                    _groupHover={{
+                                        transform: 'scale(1.05)',
+                                    }}
+                                    transitionDuration="200ms"
+                                    justify="center"
+                                    alignItems="center"
+                                    color="white"
+                                    bg="brand.gradient"
+                                    rounded="full"
+                                    p="0.5"
+                                >
+                                    <IoIosAdd size="25px" />
+                                </Flex>
+                            }
+                        >
+                            Create Event
+                        </Button>
+
+                        {wallet.address ? (
+                            <Menu>
+                                <MenuButton>
+                                    <Button
+                                        rounded="full"
+                                        color="white"
+                                        bg="blackAlpha.500"
+                                        border="2px"
+                                        pl="1.5"
+                                        _hover={{ bg: 'blackAlpha.600' }}
+                                        _focus={{}}
+                                        // _active={{ bg: "blackAlpha.700" }}
+
+                                        fontWeight="normal"
+                                        leftIcon={
+                                            <BoringAva
+                                                address={wallet.address}
+                                            />
+                                        }
+                                        rightIcon={<HiOutlineChevronDown />}
+                                    >
+                                        {ensName ||
+                                            wallet.address.substring(0, 4) +
+                                                '...' +
+                                                wallet.address.substring(
+                                                    wallet.address.length - 4
+                                                )}
+                                    </Button>
+                                </MenuButton>
+                                <MenuList
+                                    shadow="none"
+                                    bg="white"
+                                    rounded="lg"
+                                    border="none"
+                                    position="relative"
+                                >
+                                    <MenuItem>
+                                        <Flex
+                                            experimental_spaceX="2"
+                                            align="end"
+                                        >
+                                            <Image
+                                                src="/assets/matic_circle.svg"
+                                                alt="matic"
+                                                w="6"
+                                                h="6"
+                                                mb="1"
+                                            />
+                                            <Box>
+                                                <Text
+                                                    fontFamily="body"
+                                                    fontSize="xs"
+                                                    fontWeight="thin"
+                                                    color="blackAlpha.500"
+                                                >
+                                                    Account Balance
+                                                </Text>
+                                                <Text
+                                                    mt="-1"
+                                                    color="brand.black600"
+                                                    fontFamily="body"
+                                                    fontSize="lg"
+                                                    fontWeight="semibold"
+                                                >
+                                                    {wallet.balance.substring(
+                                                        0,
+                                                        4
+                                                    )}{' '}
+                                                    MATIC
+                                                </Text>
+                                            </Box>
+                                        </Flex>
+                                    </MenuItem>
+                                    <MenuDivider color="blackAlpha.200" />
+                                    <MenuItem onClick={() => setMyEvents(true)}>
+                                        <Flex
+                                            align="center"
+                                            experimental_spaceX="4"
+                                        >
+                                            <Image
+                                                src="/assets/elements/event_ticket_gradient.svg"
+                                                alt="myevents"
+                                            />
+                                            <Text
+                                                color="blackAlpha.700"
+                                                fontWeight="medium"
+                                            >
+                                                My Events
+                                            </Text>
+                                        </Flex>
+                                    </MenuItem>
+                                    <MenuDivider color="blackAlpha.200" />
+                                    <MenuItem
+                                        onClick={
+                                            walletType === 'wc'
+                                                ? disconnectWc
+                                                : disconnectMetaMask
+                                        }
+                                        fontSize="sm"
+                                        icon={<IoIosLogOut size="20px" />}
+                                        color="red.500"
+                                    >
+                                        Disconnect Wallet
+                                    </MenuItem>
+                                </MenuList>
+                            </Menu>
+                        ) : (
+                            <>
+                                <Button
+                                    rounded="full"
+                                    color="white"
+                                    bg="blackAlpha.500"
+                                    border="2px"
+                                    _hover={{ bg: 'blackAlpha.600' }}
+                                    _focus={{}}
+                                    _active={{ bg: 'blackAlpha.700' }}
+                                    py="5"
+                                    fontWeight="normal"
+                                    leftIcon={
+                                        <MdAccountBalanceWallet size="25px" />
+                                    }
+                                    onClick={() => {
+                                        onOpen1()
+
+                                        console.log(isOpen1)
+                                    }}
+                                >
+                                    Connect Wallet
+                                </Button>
+                            </>
+                        )}
+                    </Flex>
                 </Flex>
-            </Flex>
+            </Box>
         </>
     )
 }

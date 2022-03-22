@@ -71,7 +71,10 @@ const Create: NextPage = () => {
         link: '',
     })
 
-    const contractAddress = process.env.NEXT_PUBLIC_ENV === 'dev'?process.env.NEXT_PUBLIC_FACTORY_ADDRESS:process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
+    const contractAddress =
+        process.env.NEXT_PUBLIC_ENV === 'dev'
+            ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
+            : process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
     let contract: any
 
     const [eventLink, setEventLink] = useState<any>(undefined)
@@ -390,7 +393,7 @@ const Create: NextPage = () => {
                             />
                         </Box>
                     </Box>
-                ) : ( 
+                ) : (
                     <Box textAlign={'center'}>
                         Connect wallet before proceeding
                     </Box>
