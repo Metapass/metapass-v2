@@ -164,13 +164,14 @@ export default function EventLayout({ event }: { event: Event }) {
                     // toast.success('Redirecting to opensea in a few seconds')
                     setIsLoading(false)
                     setHasBought(true)
-                    generateAndSendUUID(
-                        event.childAddress,
-                        wallet.address,
-                        event.tickets_sold + 1
-                    ).then((uuid) => {
-                        setQrId(String(uuid))
-                    })
+                    event.category.event_type == 'In-Person' &&
+                        generateAndSendUUID(
+                            event.childAddress,
+                            wallet.address,
+                            event.tickets_sold + 1
+                        ).then((uuid) => {
+                            setQrId(String(uuid))
+                        })
                     let link =
                         opensea +
                         '/' +

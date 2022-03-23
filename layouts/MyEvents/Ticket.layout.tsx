@@ -29,9 +29,9 @@ export default function TicketLayout({
     useEffect(() => {
         // console.log(contractAddress)
         async function getMeta(contract: any, tokenuri: string) {
-            console.log(tokenuri)
+            // console.log(tokenuri)
             const metadata = await contract.tokenURI(tokenuri)
-            console.log(JSON.parse(metadata).image)
+            // console.log(JSON.parse(metadata).image)
             setTicketimg(JSON.parse(metadata).image)
         }
         if (window.ethereum !== undefined && contractAddress) {
@@ -59,7 +59,7 @@ export default function TicketLayout({
 
     useEffect(() => {
         const fetchDetails = async () => {
-            if (wallet.address) {
+            if (wallet.address && contractAddress) {
                 try {
                     const docRef = doc(db, 'events', contractAddress || 'none')
                     const docSnap = await getDoc(docRef)
@@ -74,6 +74,7 @@ export default function TicketLayout({
                             }
                         ] = data[key]
                         // console.log(tickets, 'tickets')
+                        // console.log(ticket, 'key')
                         // console.log(
                         //     tickets.find((tick) =>
                         //         // console.log(tick.user_address, wallet.address)
@@ -83,12 +84,23 @@ export default function TicketLayout({
                         // )
                         const qrdata = tickets.find(
                             (tick) =>
-                                tick.user_address === wallet.address &&
+                                tick?.user_address?.toLowerCase() ===
+                                    String(wallet.address)?.toLowerCase() &&
                                 tick?.ticketID ==
-                                    (Number(ticket?.ticketID) + 1).toString()
+                                    (Number(ticket?.ticketID) + 1)?.toString()
                         )?.uuid as string
-                        qrdata && setQr(qrdata)
-                        console.log(qrdata, 'qrdata')
+                        if (qrdata) {
+                            setQr(qrdata)
+                            console.log(
+                                'Successfully fetched and assigned QR: ',
+                                qrdata,
+                                'for ticket Number: ',
+                                Number(ticket?.ticketID) + 1,
+                                ' and title: ',
+                                ticket.event.title
+                            )
+                        }
+
                         // console.log(qr, 'qr inside fetch')
                     }
                 } catch (error) {
