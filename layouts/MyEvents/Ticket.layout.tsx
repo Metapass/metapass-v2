@@ -121,7 +121,6 @@ export default function TicketLayout({
         >
             <Box
                 backgroundColor="white"
-                ml="-125"
                 rounded="lg"
                 overflow="hidden"
                 h="full"
@@ -133,23 +132,24 @@ export default function TicketLayout({
                 boxShadow="0px -4px 52px rgba(0, 0, 0, 0.11)"
                 // w="full"
                 border="1px"
+                w="full"
                 position="relative"
                 borderColor="blackAlpha.200"
-                p="5"
-                w="150%"
+                p={{ base: '2', md: '5' }}
             >
-                <Flex justify="space-evenly" w="fit-content">
+                <Flex
+                    justify="center"
+                    align="center"
+                    direction={{ base: 'column', md: 'row' }}
+                >
                     <Image
-                        flex="1"
                         w="sm"
                         borderRadius="md"
                         src={ticketimg}
-                        mx="10%"
                         alt="ticket img"
                     />
-                    <Flex flexDir="column" flex="2">
+                    <Flex flexDir="column" mr={{ md: '6' }}>
                         <Text
-                            flex="1"
                             fontSize={{ base: 'sm', xl: 'lg' }}
                             fontWeight="semibold"
                             color="brand.black600"
@@ -166,6 +166,7 @@ export default function TicketLayout({
                                     p="1.5px"
                                     mx="auto"
                                     mt="6"
+                                    mb={{base:"4",md:"0"}}
                                     transitionDuration="200ms"
                                     rounded="full"
                                     w="fit-content"
@@ -216,6 +217,8 @@ export default function TicketLayout({
                             >
                                 <Box
                                     borderRadius="2xl"
+                                    w="fit-content"
+                                    mx="auto"
                                     border="1px"
                                     borderColor="blackAlpha.200"
                                     boxShadow="0px -4px 52px rgba(0, 0, 0, 0.11)"

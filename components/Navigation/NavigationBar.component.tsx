@@ -47,12 +47,15 @@ import WaitlistModal from '../Misc/WaitlistModal'
 import LogRocket from 'logrocket'
 import LinkMagic from '../../utils/Magic'
 import { Magic } from 'magic-sdk'
+import { FaBars } from 'react-icons/fa'
+import { getAllowedList } from '../../utils/sendToAirtable'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
     const [magic, setMagic] = useState<any>()
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
+    const [allowedList, setAllowedList] = useState<any>(undefined)
     const [_, setWeb3] = useContext(web3Context)
     const [walletType, setWalletType] = useState<string>('')
     const {
@@ -60,8 +63,13 @@ export default function NavigationBar({ mode = 'dark' }) {
         onOpen: onOpen1,
         onClose: onClose1,
     } = useDisclosure()
+    const [email, setEmail] = useState<string>('')
+    const {
+        isOpen: isOpen2,
+        onOpen: onOpen2,
+        onClose: onClose2,
+    } = useDisclosure()
     const [showMyEvents, setMyEvents] = useState(false)
-    const [email, setEmail] = useState('')
     const [ensName, setEnsName] = useState<string>('')
     const chainid: any = env ? 137 : 80001
     const endpoint: any = env
@@ -87,6 +95,19 @@ export default function NavigationBar({ mode = 'dark' }) {
             icon: 'https://res.cloudinary.com/dev-connect/image/upload/e_bgremoval/v1645948559/img/g-logo_uesmfz.png',
         },
     ]
+
+    async function _allowedList() {
+        const res = await getAllowedList()
+        let data: any = []
+        res.forEach((record: any) => {
+            data.push(record.fields.Address)
+        })
+        setAllowedList(data)
+    }
+
+    useEffect(() => {
+        _allowedList()
+    }, [])
 
     async function getAccountData({ accounts, windowType }: any) {
         try {
@@ -406,6 +427,10 @@ export default function NavigationBar({ mode = 'dark' }) {
             ens: wallet.ens || 'ens',
         })
     }, [address, wallet.address, wallet.ens])
+
+    useEffect(() => {
+        _allowedList()
+    }, [])
     return (
         <>
             <Fade
@@ -421,237 +446,231 @@ export default function NavigationBar({ mode = 'dark' }) {
                         setMyEvents(false)
                     }}
                 />
-                <Modal isOpen={isOpen1} onClose={onClose1}>
+
+                <Modal size="xl" isOpen={isOpen2} onClose={onClose2} isCentered>
                     <ModalOverlay />
                     <ModalContent rounded="xl">
-                        <ModalBody m={2} p={4}>
-                            <Flex flexDir="column" align="center">
-                                {mdcontent.map((item: any, index: number) => {
-                                    return (
-                                        <Flex
-                                            key={index}
-                                            flexDirection="column"
-                                            alignItems="center"
-                                            borderRadius="md"
-                                            as="button"
-                                            w="full"
-                                            rounded="xl"
-                                            _hover={{ bg: 'gray.100' }}
-                                            onClick={
-                                                index == 1
-                                                    ? handleWalletConnect
-                                                    : index == 2
-                                                    ? handleMagicWallet
-                                                    : loadAccounts
+                        <Flex justify="center">
+                            <Image
+                                src="/assets/bolt.svg"
+                                maxH="28"
+                                maxW="28"
+                                pos="absolute"
+                                // skewY="50px"
+                                zIndex="overlay"
+                                top="-14"
+                                //   left="250"
+                                alt="bolt"
+                            />
+                        </Flex>
+                        <ModalBody
+                            mt="6"
+                            //   borderRadius="xl"
+                            p="10"
+                        >
+                            <Flex
+                                flexDir="column"
+                                justify="center"
+                                align="center"
+                            >
+                                <Heading
+                                    fontFamily="azonix"
+                                    textAlign="center"
+                                    //  fontFamily="azonix"
+                                    fontSize={{
+                                        base: '3xl',
+                                        lg: '3xl',
+                                        xl: '3xl',
+                                    }}
+                                >
+                                    REACHING OUT
+                                </Heading>
+                                <Text
+                                    m="4"
+                                    p="4"
+                                    lineHeight="23.72px"
+                                    letterSpacing="3%"
+                                    fontFamily="Product Sans"
+                                    fontSize="18px"
+                                    maxW="500px"
+                                    height="63.08px"
+                                    fontWeight="400"
+
+                                    //  noOfLines={4}
+                                >
+                                    <span
+                                        style={{
+                                            color: 'rgba(0, 0, 0, 0.31)',
+                                            fontWeight: 400,
+                                            fontSize: '18px',
+                                            fontFamily: 'Product Sans',
+                                        }}
+                                    >
+                                        We&apos;re on the mission to
+                                        revolutionize event ticketing with
+                                        blockchain, join the waitlist and lets
+                                        band together on this journey!
+                                    </span>{' '}
+                                    🚀
+                                </Text>
+                                <Link
+                                    href="mailto:gm@metapasshq.xyz"
+                                    isExternal
+                                    _hover={{}}
+                                    _focus={{}}
+                                    _active={{}}
+                                >
+                                    <Box
+                                        p="1.5px"
+                                        mx="auto"
+                                        mt="10"
+                                        transitionDuration="200ms"
+                                        rounded="full"
+                                        w="fit-content"
+                                        boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
+                                        bg="brand.gradient"
+                                        _hover={{ transform: 'scale(1.05)' }}
+                                        _focus={{}}
+                                        _active={{ transform: 'scale(0.95)' }}
+                                    >
+                                        <Button
+                                            type="submit"
+                                            rounded="full"
+                                            bg="white"
+                                            color="blackAlpha.700"
+                                            fontWeight="medium"
+                                            _hover={{}}
+                                            leftIcon={
+                                                <Box
+                                                    _groupHover={{
+                                                        transform: 'scale(1.1)',
+                                                    }}
+                                                    transitionDuration="200ms"
+                                                >
+                                                    <Image
+                                                        src="/assets/elements/mail.svg"
+                                                        w="6"
+                                                        alt="ticket"
+                                                    />
+                                                </Box>
                                             }
+                                            _focus={{}}
+                                            _active={{}}
+                                            role="group"
                                         >
-                                            <Flex
-                                                justify="space-between"
-                                                alignItems="center"
-                                                px="4"
-                                                py="4"
-                                            >
-                                                <Text
-                                                    fontSize="lg"
-                                                    fontWeight="medium"
-                                                >
-                                                    {item.title}
-                                                </Text>
-                                            </Flex>
-                                            <Image
-                                                src={item.icon}
-                                                alt="icon"
-                                                w="10%"
-                                            />
-                                            <Flex
-                                                justify="space-between"
-                                                alignItems="center"
-                                                px="4"
-                                                py="4"
-                                            >
-                                                <Text
-                                                    fontSize="md"
-                                                    fontWeight="normal"
-                                                    color="gray.400"
-                                                >
-                                                    {item.description}
-                                                </Text>
-                                            </Flex>
-                                        </Flex>
-                                    )
-                                })}
+                                            Reach us
+                                        </Button>
+                                    </Box>
+                                </Link>
                             </Flex>
                         </ModalBody>
                     </ModalContent>
                 </Modal>
-            </Fade>
-            <Flex
-                borderBottom={mode === 'white' ? '2px' : '0'}
-                bg={mode === 'white' ? 'white' : 'transparent'}
-                borderColor="gray.100"
-                justify="space-between"
-                px={{ base: '6', md: '8' }}
-                position="relative"
-                zIndex={9}
-                maxW="1600px"
-                mx="auto"
-                py={{ base: '4', md: '6' }}
-                alignItems="center"
-                color="white"
-            >
-                {' '}
-                <NextLink href="/" passHref>
-                    <Link _hover={{}} _focus={{}} _active={{}}>
-                        <Image
-                            src={
-                                mode === 'white'
-                                    ? '/assets/newlogo.svg'
-                                    : '/assets/newlogowhite.svg'
-                            }
-                            alt="Metapass"
-                            w={{ base: '10', md: '16' }}
-                        />
-                    </Link>
-                </NextLink>
-                <Flex
-                    display={{ base: 'none', md: 'flex' }}
-                    alignItems="center"
-                    experimental_spaceX="6"
-                >
-                    {/* {eventOrgs.eventOrgs.includes(String(wallet?.address)) ? (
-                        <NextLink href="/create" passHref>
-                            <Link _hover={{}} _focus={{}} _active={{}}>
-                                <Button
-                                    pl="1"
-                                    rounded="full"
-                                    bg={
-                                        mode === 'white'
-                                            ? 'blackAlpha.100'
-                                            : 'whiteAlpha.800'
-                                    }
-                                    color="blackAlpha.700"
-                                    fontWeight="medium"
-                                    _hover={{
-                                        shadow: 'sm',
-                                        bg:
-                                            mode === 'white'
-                                                ? 'blackAlpha.50'
-                                                : 'white',
-                                    }}
-                                    border="2px"
-                                    borderColor={
-                                        mode === 'white'
-                                            ? 'blackAlpha.100'
-                                            : 'white'
-                                    }
-                                    _focus={{}}
-                                    _active={{ transform: 'scale(0.95)' }}
-                                    role="group"
-                                    leftIcon={
-                                        <Flex
-                                            _groupHover={{
-                                                transform: 'scale(1.05)',
-                                            }}
-                                            transitionDuration="200ms"
-                                            justify="center"
-                                            alignItems="center"
-                                            color="white"
-                                            bg="brand.gradient"
-                                            rounded="full"
-                                            p="0.5"
-                                        >
-                                            <IoIosAdd size="25px" />
-                                        </Flex>
-                                    }
-                                >
-                                    Create Event
-                                </Button>
-                            </Link>
-                        </NextLink>
-                    ) : (
-                        <WaitlistModal
-                            email={email}
-                            setEmail={setEmail}
-                            mode={mode}
-                        />
-                    )} */}
-                    <NextLink href="/create" passHref>
-                        <Link _hover={{}} _focus={{}} _active={{}}>
-                            <Button
-                                pl="1"
-                                rounded="full"
-                                bg={
-                                    mode === 'white'
-                                        ? 'blackAlpha.100'
-                                        : 'whiteAlpha.800'
-                                }
-                                color="blackAlpha.700"
-                                fontWeight="medium"
-                                _hover={{
-                                    shadow: 'sm',
-                                    bg:
-                                        mode === 'white'
-                                            ? 'blackAlpha.50'
-                                            : 'white',
-                                }}
-                                border="2px"
-                                borderColor={
-                                    mode === 'white'
-                                        ? 'blackAlpha.100'
-                                        : 'white'
-                                }
-                                _focus={{}}
-                                _active={{ transform: 'scale(0.95)' }}
-                                role="group"
-                                leftIcon={
+                <Modal isOpen={isOpen1} onClose={onClose1}>
+                    <ModalOverlay />
+                    <ModalContent rounded="xl">
+                        <ModalBody m={2} p={4}>
+                            {mdcontent.map((item: any, index: number) => {
+                                return (
                                     <Flex
-                                        _groupHover={{
-                                            transform: 'scale(1.05)',
-                                        }}
-                                        transitionDuration="200ms"
-                                        justify="center"
+                                        key={index}
+                                        w="full"
+                                        flexDirection="column"
                                         alignItems="center"
-                                        color="white"
-                                        bg="brand.gradient"
-                                        rounded="full"
-                                        p="0.5"
+                                        borderRadius="md"
+                                        as="button"
+                                        rounded="xl"
+                                        _hover={{ bg: 'gray.100' }}
+                                        onClick={
+                                            index == 1
+                                                ? handleWalletConnect
+                                                : loadAccounts
+                                        }
                                     >
-                                        <IoIosAdd size="25px" />
+                                        <Flex
+                                            justify="space-between"
+                                            alignItems="center"
+                                            px="4"
+                                            py="4"
+                                        >
+                                            <Text
+                                                fontSize="lg"
+                                                fontWeight="medium"
+                                            >
+                                                {item.title}
+                                            </Text>
+                                        </Flex>
+                                        <Image
+                                            src={item.icon}
+                                            alt="icon"
+                                            w="10%"
+                                        />
+                                        <Flex
+                                            justify="space-between"
+                                            alignItems="center"
+                                            px="4"
+                                            py="4"
+                                        >
+                                            <Text
+                                                fontSize="md"
+                                                fontWeight="normal"
+                                                color="gray.400"
+                                            >
+                                                {item.description}
+                                            </Text>
+                                        </Flex>
                                     </Flex>
+                                )
+                            })}
+                        </ModalBody>
+                    </ModalContent>
+                </Modal>
+            </Fade>
+            <Box position="absolute" w="full">
+                <Flex
+                    borderBottom={mode === 'white' ? '2px' : '0'}
+                    bg={mode === 'white' ? 'white' : 'transparent'}
+                    borderColor="gray.100"
+                    justify="space-between"
+                    px={{ base: '6', md: '8' }}
+                    position="relative"
+                    zIndex={999}
+                    maxW="1600px"
+                    mx="auto"
+                    py={{ base: '4', md: '6' }}
+                    alignItems="center"
+                    color="white"
+                >
+                    {' '}
+                    <NextLink href="/" passHref>
+                        <Link _hover={{}} _focus={{}} _active={{}}>
+                            <Image
+                                src={
+                                    mode === 'white'
+                                        ? '/assets/newlogo.svg'
+                                        : '/assets/newlogowhite.svg'
                                 }
-                            >
-                                Create Event
-                            </Button>
+                                alt="Metapass"
+                                w={{ base: '10', md: '16' }}
+                            />
                         </Link>
                     </NextLink>
                     {wallet.address ? (
                         <Menu>
-                            <MenuButton>
+                            <MenuButton display={{ base: 'block', md: 'none' }}>
                                 <Button
-                                    rounded="full"
-                                    color="white"
-                                    bg="blackAlpha.500"
-                                    border="2px"
-                                    pl="1.5"
-                                    _hover={{ bg: 'blackAlpha.600' }}
+                                    size="md"
+                                    bg="transparent"
+                                    _hover={{ bg: 'whiteAlpha.200' }}
                                     _focus={{}}
-                                    // _active={{ bg: "blackAlpha.700" }}
-
-                                    fontWeight="normal"
-                                    leftIcon={
-                                        <BoringAva address={wallet.address} />
-                                    }
-                                    rightIcon={<HiOutlineChevronDown />}
+                                    _active={{}}
                                 >
-                                    {ensName ||
-                                        wallet.address.substring(0, 4) +
-                                            '...' +
-                                            wallet.address.substring(
-                                                wallet.address.length - 4
-                                            )}
+                                    <FaBars />
                                 </Button>
-                            </MenuButton>
+                            </MenuButton>{' '}
                             <MenuList
+                                zIndex={999}
+                                display={{ base: 'block', md: 'none' }}
                                 shadow="none"
                                 bg="white"
                                 rounded="lg"
@@ -712,8 +731,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     onClick={
                                         walletType === 'wc'
                                             ? disconnectWc
-                                            : walletType === 'magic'
-                                            ? disconnectMagic
                                             : disconnectMetaMask
                                     }
                                     fontSize="sm"
@@ -730,11 +747,13 @@ export default function NavigationBar({ mode = 'dark' }) {
                                 rounded="full"
                                 color="white"
                                 bg="blackAlpha.500"
+                                display={{ base: 'flex', md: 'none' }}
                                 border="2px"
                                 _hover={{ bg: 'blackAlpha.600' }}
                                 _focus={{}}
                                 _active={{ bg: 'blackAlpha.700' }}
-                                py="5"
+                                py="4"
+                                fontSize="sm"
                                 fontWeight="normal"
                                 leftIcon={
                                     <MdAccountBalanceWallet size="25px" />
@@ -749,8 +768,258 @@ export default function NavigationBar({ mode = 'dark' }) {
                             </Button>
                         </>
                     )}
+                    <Flex
+                        display={{ base: 'none', md: 'flex' }}
+                        alignItems="center"
+                        experimental_spaceX="6"
+                    >
+                        {/* {eventOrgs.eventOrgs.includes(String(wallet?.address)) ? (
+                        <NextLink href="/create" passHref>
+                            <Link _hover={{}} _focus={{}} _active={{}}>
+                                <Button
+                                    pl="1"
+                                    rounded="full"
+                                    bg={
+                                        mode === 'white'
+                                            ? 'blackAlpha.100'
+                                            : 'whiteAlpha.800'
+                                    }
+                                    color="blackAlpha.700"
+                                    fontWeight="medium"
+                                    _hover={{
+                                        shadow: 'sm',
+                                        bg:
+                                            mode === 'white'
+                                                ? 'blackAlpha.50'
+                                                : 'white',
+                                    }}
+                                    border="2px"
+                                    borderColor={
+                                        mode === 'white'
+                                            ? 'blackAlpha.100'
+                                            : 'white'
+                                    }
+                                    _focus={{}}
+                                    _active={{ transform: 'scale(0.95)' }}
+                                    role="group"
+                                    leftIcon={
+                                        <Flex
+                                            _groupHover={{
+                                                transform: 'scale(1.05)',
+                                            }}
+                                            transitionDuration="200ms"
+                                            justify="center"
+                                            alignItems="center"
+                                            color="white"
+                                            bg="brand.gradient"
+                                            rounded="full"
+                                            p="0.5"
+                                        >
+                                            <IoIosAdd size="25px" />
+                                        </Flex>
+                                    }
+                                >
+                                    Create Event
+                                </Button>
+                            </Link>
+                        </NextLink>
+                    ) : (
+                        <WaitlistModal
+                            email={email}
+                            setEmail={setEmail}
+                            mode={mode}
+                        />
+                    )} */}
+
+                        <Button
+                            onClick={() => {
+                                if (
+                                    allowedList &&
+                                    (allowedList?.includes(wallet.address) ||
+                                        allowedList?.includes(ensName))
+                                ) {
+                                    window.location.href = '/create'
+                                } else {
+                                    onOpen2()
+                                }
+                            }}
+                            pl="1"
+                            rounded="full"
+                            bg={
+                                mode === 'white'
+                                    ? 'blackAlpha.100'
+                                    : 'whiteAlpha.800'
+                            }
+                            color="blackAlpha.700"
+                            fontWeight="medium"
+                            _hover={{
+                                shadow: 'sm',
+                                bg:
+                                    mode === 'white'
+                                        ? 'blackAlpha.50'
+                                        : 'white',
+                            }}
+                            border="2px"
+                            borderColor={
+                                mode === 'white' ? 'blackAlpha.100' : 'white'
+                            }
+                            _focus={{}}
+                            _active={{ transform: 'scale(0.95)' }}
+                            role="group"
+                            leftIcon={
+                                <Flex
+                                    _groupHover={{
+                                        transform: 'scale(1.05)',
+                                    }}
+                                    transitionDuration="200ms"
+                                    justify="center"
+                                    alignItems="center"
+                                    color="white"
+                                    bg="brand.gradient"
+                                    rounded="full"
+                                    p="0.5"
+                                >
+                                    <IoIosAdd size="25px" />
+                                </Flex>
+                            }
+                        >
+                            Create Event
+                        </Button>
+
+                        {wallet.address ? (
+                            <Menu>
+                                <MenuButton>
+                                    <Button
+                                        rounded="full"
+                                        color="white"
+                                        bg="blackAlpha.500"
+                                        border="2px"
+                                        pl="1.5"
+                                        _hover={{ bg: 'blackAlpha.600' }}
+                                        _focus={{}}
+                                        // _active={{ bg: "blackAlpha.700" }}
+
+                                        fontWeight="normal"
+                                        leftIcon={
+                                            <BoringAva
+                                                address={wallet.address}
+                                            />
+                                        }
+                                        rightIcon={<HiOutlineChevronDown />}
+                                    >
+                                        {ensName ||
+                                            wallet.address.substring(0, 4) +
+                                                '...' +
+                                                wallet.address.substring(
+                                                    wallet.address.length - 4
+                                                )}
+                                    </Button>
+                                </MenuButton>
+                                <MenuList
+                                    shadow="none"
+                                    bg="white"
+                                    rounded="lg"
+                                    border="none"
+                                    position="relative"
+                                >
+                                    <MenuItem>
+                                        <Flex
+                                            experimental_spaceX="2"
+                                            align="end"
+                                        >
+                                            <Image
+                                                src="/assets/matic_circle.svg"
+                                                alt="matic"
+                                                w="6"
+                                                h="6"
+                                                mb="1"
+                                            />
+                                            <Box>
+                                                <Text
+                                                    fontFamily="body"
+                                                    fontSize="xs"
+                                                    fontWeight="thin"
+                                                    color="blackAlpha.500"
+                                                >
+                                                    Account Balance
+                                                </Text>
+                                                <Text
+                                                    mt="-1"
+                                                    color="brand.black600"
+                                                    fontFamily="body"
+                                                    fontSize="lg"
+                                                    fontWeight="semibold"
+                                                >
+                                                    {wallet.balance.substring(
+                                                        0,
+                                                        4
+                                                    )}{' '}
+                                                    MATIC
+                                                </Text>
+                                            </Box>
+                                        </Flex>
+                                    </MenuItem>
+                                    <MenuDivider color="blackAlpha.200" />
+                                    <MenuItem onClick={() => setMyEvents(true)}>
+                                        <Flex
+                                            align="center"
+                                            experimental_spaceX="4"
+                                        >
+                                            <Image
+                                                src="/assets/elements/event_ticket_gradient.svg"
+                                                alt="myevents"
+                                            />
+                                            <Text
+                                                color="blackAlpha.700"
+                                                fontWeight="medium"
+                                            >
+                                                My Events
+                                            </Text>
+                                        </Flex>
+                                    </MenuItem>
+                                    <MenuDivider color="blackAlpha.200" />
+                                    <MenuItem
+                                        onClick={
+                                            walletType === 'wc'
+                                                ? disconnectWc
+                                                : disconnectMetaMask
+                                        }
+                                        fontSize="sm"
+                                        icon={<IoIosLogOut size="20px" />}
+                                        color="red.500"
+                                    >
+                                        Disconnect Wallet
+                                    </MenuItem>
+                                </MenuList>
+                            </Menu>
+                        ) : (
+                            <>
+                                <Button
+                                    rounded="full"
+                                    color="white"
+                                    bg="blackAlpha.500"
+                                    border="2px"
+                                    _hover={{ bg: 'blackAlpha.600' }}
+                                    _focus={{}}
+                                    _active={{ bg: 'blackAlpha.700' }}
+                                    py="5"
+                                    fontWeight="normal"
+                                    leftIcon={
+                                        <MdAccountBalanceWallet size="25px" />
+                                    }
+                                    onClick={() => {
+                                        onOpen1()
+
+                                        console.log(isOpen1)
+                                    }}
+                                >
+                                    Connect Wallet
+                                </Button>
+                            </>
+                        )}
+                    </Flex>
                 </Flex>
-            </Flex>
+            </Box>
         </>
     )
 }

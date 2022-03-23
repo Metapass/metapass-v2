@@ -5,6 +5,8 @@ import NavigationBar from '../../components/Navigation/NavigationBar.component'
 export default function HeroCTA() {
     return (
         <>
+            {' '}
+            <NavigationBar />
             <Box
                 backgroundImage={`url("/assets/gradient.png")`}
                 backgroundSize="cover"
@@ -12,6 +14,7 @@ export default function HeroCTA() {
                 position="relative"
                 overflow="hidden"
             >
+                <Box p={{ base: '8', md: '12' }} />
                 <Box display={{ base: 'none', md: 'block' }}>
                     <video
                         autoPlay
@@ -29,7 +32,7 @@ export default function HeroCTA() {
                         <source src="/assets/gradient.mp4" type="video/mp4" />
                     </video>
                 </Box>
-                <NavigationBar />
+
                 <Box
                     textAlign="center"
                     color="white"
@@ -77,7 +80,7 @@ export default function HeroCTA() {
                     </Text>
                 </Box>
             </Box>
-            <Flex justify="center" w="full" position="relative" zIndex={999}>
+            <Flex justify="center" w="full" position="relative" zIndex={99}>
                 <Box
                     mx={{ base: '2', md: '10', xl: '32' }}
                     maxW="1200px"

@@ -305,6 +305,10 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                         onFocus={() => {
                                             setTab('upcoming')
                                         }}
+                                        onClick={() => {
+                                            myTickets.reverse()
+                                            setMyTickets(myTickets)
+                                        }}
                                         _hover={{
                                             color:
                                                 tab !== 'upcoming' &&
@@ -339,6 +343,10 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                         _active={{}}
                                         onFocus={() => {
                                             setTab('past')
+                                        }}
+                                        onClick={() => {
+                                            myTickets.reverse()
+                                            setMyTickets(myTickets)
                                         }}
                                         fontWeight={
                                             tab === 'past' ? 'medium' : 'normal'
@@ -377,11 +385,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                         >
                                             {myTickets.length > 0 ? (
                                                 myTickets.map((data, key) => (
-                                                    <Box
-                                                        maxW={{ xl: '500px' }}
-                                                        minW={{ xl: '390px' }}
-                                                        key={key}
-                                                    >
+                                                    <Box key={key}>
                                                         <TicketLayout
                                                             image={
                                                                 data.event.image
@@ -439,42 +443,31 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                             gap={6}
                                         >
                                             {myTickets.length > 0 ? (
-                                                myTickets
-                                                    .reverse()
-                                                    .map((data, key) => (
-                                                        <Box
-                                                            maxW={{
-                                                                xl: '500px',
-                                                            }}
-                                                            minW={{
-                                                                xl: '390px',
-                                                            }}
-                                                            key={key}
-                                                        >
-                                                            <TicketLayout
-                                                                image={
-                                                                    data.event
-                                                                        .image
-                                                                        .image
-                                                                }
-                                                                wallet={wallet}
-                                                                ticket={data}
-                                                                contractAddress={
-                                                                    data.event
-                                                                        .childAddress
-                                                                }
-                                                                eventLink={
-                                                                    data.event
-                                                                        .link as string
-                                                                }
-                                                                eventType={
-                                                                    data.event
-                                                                        .category
-                                                                        .event_type
-                                                                }
-                                                            />
-                                                        </Box>
-                                                    ))
+                                                myTickets.map((data, key) => (
+                                                    <Box w="full" key={key}>
+                                                        <TicketLayout
+                                                            image={
+                                                                data.event.image
+                                                                    .image
+                                                            }
+                                                            wallet={wallet}
+                                                            ticket={data}
+                                                            contractAddress={
+                                                                data.event
+                                                                    .childAddress
+                                                            }
+                                                            eventLink={
+                                                                data.event
+                                                                    .link as string
+                                                            }
+                                                            eventType={
+                                                                data.event
+                                                                    .category
+                                                                    .event_type
+                                                            }
+                                                        />
+                                                    </Box>
+                                                ))
                                             ) : (
                                                 <Box
                                                     maxW={{ xl: '390px' }}

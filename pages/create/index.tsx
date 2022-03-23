@@ -21,10 +21,8 @@ import {
 } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { SetStateAction, useContext, useEffect, useState } from 'react'
-import ReactConfetti from 'react-confetti'
+import { useContext, useEffect, useState } from 'react'
 import { IoIosLink } from 'react-icons/io'
-import useWindowSize from 'react-use/lib/useWindowSize'
 import Confetti from '../../components/Misc/Confetti.component'
 import CreateEventCTA from '../../layouts/CreateEvent/CreateEventCTA.layout'
 import Step1 from '../../layouts/CreateEvent/Step1.layout'
@@ -123,21 +121,19 @@ const Create: NextPage = () => {
                 b64EncodeUnicode(JSON.stringify(event.category)),
                 'undefined'
             )
-            console.log('txn complete')
-            console.log(txn)
+            txn.wait().then((res: any) => {
+                let child = res.events.filter(
+                    (e: any) => e.event === 'childEvent'
+                )[0].args[0]
+                setEventLink(`${window.location.origin}/event/${child}`)
+                setIsPublished(true)
+                setInTxn(false)
+                setChild(child)
+            })
         } catch (e) {
             console.log('error while txn')
             console.log(e)
         }
-
-        console.log('Event Created')
-
-        contract.on('childEvent', (child: any) => {
-            setEventLink(`${window.location.origin}/event/${child}`)
-            setIsPublished(true)
-            setInTxn(false)
-            setChild(child)
-        })
     }
 
     return (
