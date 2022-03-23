@@ -32,7 +32,8 @@ export default function TicketLayout({
             // console.log(tokenuri)
             const metadata = await contract.tokenURI(tokenuri)
             // console.log(JSON.parse(metadata).image)
-            setTicketimg(JSON.parse(metadata).image)
+            JSON.parse(metadata).image &&
+                setTicketimg(JSON.parse(metadata).image)
         }
         if (window.ethereum !== undefined && contractAddress) {
             const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -55,7 +56,7 @@ export default function TicketLayout({
                 getMeta(contract, ticket.ticketID)
             }
         }
-    }, [contractAddress, ticket, wallet])
+    }, [contractAddress, ticket])
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -112,13 +113,7 @@ export default function TicketLayout({
     }, [contractAddress, wallet.address, ticket])
 
     return (
-        <Skeleton
-            isLoaded={
-                (ticket.event.category.event_type == 'In-Person'
-                    ? qr !== '' && qr !== undefined
-                    : eventLink !== '') && ticketimg !== ''
-            }
-        >
+        <Skeleton isLoaded={ticketimg && ticket.event.title ? true : false}>
             <Box
                 backgroundColor="white"
                 rounded="lg"
@@ -166,7 +161,7 @@ export default function TicketLayout({
                                     p="1.5px"
                                     mx="auto"
                                     mt="6"
-                                    mb={{base:"4",md:"0"}}
+                                    mb={{ base: '4', md: '0' }}
                                     transitionDuration="200ms"
                                     rounded="full"
                                     w="fit-content"
