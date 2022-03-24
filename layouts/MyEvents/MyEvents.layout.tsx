@@ -83,7 +83,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
         // return  as Event
         return myTickets.map((ticket: any) => {
             const event: any = ticket.childContract
-            console.log(event, ticket.childContract)
+            // console.log(event, ticket.childContract)
             // console.log(event.ticketsBought)
             // setTicketsBought(event.ticketsBought);
             // let type = JSON.parse(UnicodeDecodeB64(event.category)).event_type
@@ -178,7 +178,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 if (!!res.data?.errors?.length) {
                     throw new Error('Error fetching featured events')
                 }
-                console.log(res.data.data.childCreatedEntities)
+                // console.log(res.data.data.childCreatedEntities)
                 return res.data
             } catch (error) {
                 console.log('error', error)
@@ -225,11 +225,11 @@ export default function MyEvents({ isOpen, onClose }: any) {
                         'content-type': 'application/json',
                     },
                 })
-                console.log(res, 'hello')
+                // console.log(res, 'hello')
                 if (!!res.data?.errors?.length) {
                     throw new Error('Error fetching featured events')
                 }
-                console.log(res, 'hello')
+                // console.log(res, 'hello')
                 return res.data
             } catch (error) {
                 console.log('error', error)
@@ -241,9 +241,9 @@ export default function MyEvents({ isOpen, onClose }: any) {
                     const data: TicketType[] = parseMyEvents(
                         res.data.ticketBoughtEntities
                     )
-                    console.log(data)
+                    // console.log(data)
                     setMyTickets(data)
-                    console.log(data)
+                    // console.log(data)
                 })
                 .catch((err) => {
                     console.log(err)
