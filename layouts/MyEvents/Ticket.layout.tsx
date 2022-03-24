@@ -61,6 +61,12 @@ export default function TicketLayout({
             if (ticket) {
                 getMeta(contract, ticket.ticketID)
             }
+        } else {
+            console.log(
+                'window.ethereum or contractAddress is undefined:',
+                window.ethereum,
+                contractAddress
+            )
         }
     }, [contractAddress, ticket])
 
