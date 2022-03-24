@@ -42,7 +42,9 @@ export default function TicketLayout({
             }
         }
         if ((window.etherem || window.w3) && contractAddress) {
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
+            const provider = new ethers.providers.Web3Provider(
+                window.ethereum || window.w3
+            )
             const signer = provider.getSigner()
 
             const contract = new ethers.Contract(
