@@ -41,7 +41,7 @@ export default function TicketLayout({
                 console.log(`Failed to set Ticketimg for tokenuri: ${tokenuri}`)
             }
         }
-        if (wallet.address && contractAddress) {
+        if ((window.etherem || window.w3) && contractAddress) {
             const provider = new ethers.providers.Web3Provider(window.ethereum)
             const signer = provider.getSigner()
 
@@ -63,8 +63,9 @@ export default function TicketLayout({
             }
         } else {
             console.log(
-                'wallet.address or contractAddress is undefined:',
-                wallet.address,
+                'window.ethereum or window.w3 or contractAddress is undefined:',
+                window.ethereum,
+                window.w3,
                 contractAddress
             )
         }
