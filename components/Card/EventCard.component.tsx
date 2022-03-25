@@ -16,6 +16,7 @@ import { FaStar } from 'react-icons/fa'
 import twoDigit from 'two-digit'
 import EventLayout from '../../layouts/Event/Event.layout'
 import { Event } from '../../types/Event.type'
+import useMobileDetect from '../../utils/useMobileDetect'
 import LazyImage from '../Misc/LazyImage.component'
 
 declare const window: any
@@ -30,7 +31,7 @@ export default function EventCard({
     previewOnly?: boolean
 }) {
     const [showEventModal, setEventModal] = useState(false)
-
+    const currentDevice = useMobileDetect()
     const months = [
         'JAN',
         'FEB',
@@ -50,7 +51,11 @@ export default function EventCard({
         <Flex
             direction="column"
             onClick={() => {
-                setEventModal(true)
+                !currentDevice.isMobile()
+                    ? setEventModal(true)
+                    : (window.location.href =
+                          window.location.origin +
+                          `/event/${event.childAddress}`)
             }}
             rounded="lg"
             overflow="hidden"
