@@ -671,7 +671,11 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     _focus={{}}
                                     _active={{}}
                                 >
-                                    <FaBars />
+                                    <FaBars
+                                        color={
+                                            mode === 'white' ? 'black' : 'white'
+                                        }
+                                    />
                                 </Button>
                             </MenuButton>{' '}
                             <MenuList
