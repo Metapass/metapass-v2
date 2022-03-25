@@ -148,7 +148,7 @@ const Event: NextPage = () => {
     return (
         <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
             <NavigationBar mode="white" />
-
+            <Box p="4" />
             <Flex
                 justify="center"
                 mx="auto"

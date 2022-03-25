@@ -505,7 +505,6 @@ export default function EventLayout({ event }: { event: Event }) {
                 </Modal>
             </Fade>
             <Box pt="3" color="brand.black" mb="4">
-                <Box p="4" />
                 <Flex
                     justify="space-between"
                     align={{ md: 'center' }}
