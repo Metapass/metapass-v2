@@ -31,7 +31,7 @@ export default function EventCard({
     previewOnly?: boolean
 }) {
     const [showEventModal, setEventModal] = useState(false)
-
+    const currentDevice = useMobileDetect()
     const months = [
         'JAN',
         'FEB',
@@ -56,7 +56,7 @@ export default function EventCard({
                 if (!currentDevice.isMobile) {
                     setEventModal(true)
                 } else {
-                    window.location.href = `/event/${event.id}`
+                    window.location.href = `/event/${event.childAddress}`
                 }
             }}
             rounded="lg"

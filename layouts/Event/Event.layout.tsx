@@ -98,6 +98,8 @@ export default function EventLayout({ event }: { event: Event }) {
                 const provider = new ethers.providers.Web3Provider(
                     wallet.type === 'magic'
                         ? magic.rpcProvider
+                        : wallet.type === 'wc'
+                        ? window.w3.currentProvider
                         : window.ethereum
                 )
                 setIsLoading(true)
