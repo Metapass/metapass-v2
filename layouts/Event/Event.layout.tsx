@@ -503,19 +503,14 @@ export default function EventLayout({ event }: { event: Event }) {
                 </Modal>
             </Fade>
             <Box pt="3" color="brand.black" mb="4">
+                <Box p="4" />
                 <Flex
                     justify="space-between"
-                    align="center"
+                    align={{ md: 'center' }}
                     flexDir={{ base: 'column', md: 'row' }}
                     //   border="1px solid red"
                 >
-                    <Box
-                        m={{
-                            base: '1rem',
-                            md: '2rem',
-                        }}
-                        ml={{ base: '-24', md: '0' }}
-                    >
+                    <Box pl={{ md: '2' }}>
                         <Text fontSize="2xl" fontWeight="semibold">
                             {event.title}
                         </Text>
@@ -552,53 +547,53 @@ export default function EventLayout({ event }: { event: Event }) {
                             </Box>
                         </Flex>
                     </Box>
-                    {!currentDevice.isMobile() && (
-                        <Button
-                            rounded="full"
-                            bg="brand.gradient"
-                            fontWeight="medium"
-                            role="group"
-                            loadingText="Minting"
-                            isLoading={isLoading}
-                            boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
-                            color="white"
-                            _disabled={{
-                                opacity: '0.8',
-                                cursor: 'not-allowed',
-                            }}
-                            _hover={{}}
-                            onClick={buyTicket}
-                            disabled={event.tickets_available === 0}
-                            _focus={{}}
-                            _active={{}}
-                            w={{ base: '70%', md: 'auto' }}
-                            mr="3"
-                            leftIcon={
-                                <Box
-                                    _groupHover={{ transform: 'scale(1.1)' }}
-                                    transitionDuration="200ms"
-                                >
-                                    <Image
-                                        src="/assets/elements/event_ticket.svg"
-                                        w={{ base: '6', md: '5' }}
-                                        alt="ticket"
-                                    />
-                                </Box>
-                            }
-                        >
-                            {event.tickets_available === 0
-                                ? 'Sold Out'
-                                : 'Buy Ticket'}
-                            {/* {
+
+                    <Button
+                        display={{ base: 'none', md: 'flex' }}
+                        rounded="full"
+                        bg="brand.gradient"
+                        fontWeight="medium"
+                        role="group"
+                        loadingText="Minting"
+                        isLoading={isLoading}
+                        boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
+                        color="white"
+                        _disabled={{
+                            opacity: '0.8',
+                            cursor: 'not-allowed',
+                        }}
+                        _hover={{}}
+                        onClick={buyTicket}
+                        disabled={event.tickets_available === 0}
+                        _focus={{}}
+                        _active={{}}
+                        w={{ base: '70%', md: 'auto' }}
+                        mr="3"
+                        leftIcon={
+                            <Box
+                                _groupHover={{ transform: 'scale(1.1)' }}
+                                transitionDuration="200ms"
+                            >
+                                <Image
+                                    src="/assets/elements/event_ticket.svg"
+                                    w={{ base: '6', md: '5' }}
+                                    alt="ticket"
+                                />
+                            </Box>
+                        }
+                    >
+                        {event.tickets_available === 0
+                            ? 'Sold Out'
+                            : 'Buy Ticket'}
+                        {/* {
                                 console.log(event.tickets_available, event.tickets_sold,"here here")
                             } */}
-                        </Button>
-                    )}
+                    </Button>
                 </Flex>
                 <Flex
                     align="start"
                     mt="4"
-                    experimental_spaceX="6"
+                    experimental_spaceX={{ base: '0', md: '6' }}
                     justify="space-between"
                     flexDirection={{ base: 'column', md: 'row' }}
                 >
@@ -744,7 +739,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         <Box
                             w="full"
                             mt="2"
-                            mb={{ base: '6rem', md: '0' }}
+                            mb={{ base: '10px', md: '0' }}
                             noOfLines={6}
                             border="1px"
                             borderColor="blackAlpha.100"
@@ -778,62 +773,68 @@ export default function EventLayout({ event }: { event: Event }) {
                                 />
                             </Box>
                         </Box>
-                        {currentDevice.isMobile() && (
-                            <Flex justify="center">
-                                <Button
-                                    rounded="full"
-                                    bg="brand.gradient"
-                                    fontWeight="medium"
-                                    role="group"
-                                    loadingText="Minting"
-                                    isLoading={isLoading}
-                                    boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
-                                    color="white"
-                                    _disabled={{
-                                        opacity: '0.8',
-                                        cursor: 'not-allowed',
-                                    }}
-                                    _hover={{}}
-                                    onClick={buyTicket}
-                                    disabled={event.tickets_available === 0}
-                                    _focus={{}}
-                                    _active={{}}
-                                    w={{ base: '90%', md: 'auto' }}
-                                    my="4"
-                                    leftIcon={
-                                        <Box
-                                            _groupHover={{
-                                                transform: 'scale(1.1)',
-                                            }}
-                                            transitionDuration="200ms"
-                                        >
-                                            <Image
-                                                src="/assets/elements/event_ticket.svg"
-                                                w={{ base: '6', md: '5' }}
-                                                alt="ticket"
-                                            />
-                                        </Box>
-                                    }
-                                >
-                                    {event.tickets_available === 0
-                                        ? 'Sold Out'
-                                        : 'Buy Ticket'}
-                                    {/* {
+
+                        <Flex
+                            justify="center"
+                            display={{ base: 'flex', md: 'none' }}
+                        >
+                            <Button
+                                rounded="full"
+                                bg="brand.gradient"
+                                fontWeight="medium"
+                                role="group"
+                                loadingText="Minting"
+                                isLoading={isLoading}
+                                boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
+                                color="white"
+                                _disabled={{
+                                    opacity: '0.8',
+                                    cursor: 'not-allowed',
+                                }}
+                                _hover={{}}
+                                onClick={buyTicket}
+                                disabled={event.tickets_available === 0}
+                                _focus={{}}
+                                _active={{}}
+                                w={{ base: '90%', md: 'auto' }}
+                                my="4"
+                                leftIcon={
+                                    <Box
+                                        _groupHover={{
+                                            transform: 'scale(1.1)',
+                                        }}
+                                        transitionDuration="200ms"
+                                    >
+                                        <Image
+                                            src="/assets/elements/event_ticket.svg"
+                                            w={{ base: '6', md: '5' }}
+                                            alt="ticket"
+                                        />
+                                    </Box>
+                                }
+                            >
+                                {event.tickets_available === 0
+                                    ? 'Sold Out'
+                                    : 'Buy Ticket'}
+                                {/* {
                                 console.log(event.tickets_available, event.tickets_sold,"here here")
                             } */}
-                                </Button>
-                            </Flex>
-                        )}
+                            </Button>
+                        </Flex>
                     </Box>
-                    <Flex direction="column">
-                        <Flex experimental_spaceX="2.5">
+                    <Flex direction="column" w={{ base: 'full', md: 'auto' }}>
+                        <Flex
+                            experimental_spaceX="2.5"
+                            w={{ base: 'full', md: 'auto' }}
+                        >
                             <Box
                                 p="2"
                                 border="1px"
                                 borderColor="blackAlpha.100"
                                 rounded="xl"
                                 textAlign="center"
-                                minW="100px"
+                                w={{ base: 'full', md: 'auto' }}
+                                minW={{ base: 'auto', md: '100px' }}
                                 boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                             >
                                 <Text fontSize="xs" color="blackAlpha.700">
@@ -862,7 +863,8 @@ export default function EventLayout({ event }: { event: Event }) {
                                 borderColor="blackAlpha.100"
                                 rounded="xl"
                                 textAlign="center"
-                                minW="100px"
+                                w={{ base: 'full', md: 'auto' }}
+                                minW={{ base: 'auto', md: '100px' }}
                                 boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                             >
                                 <Text fontSize="xs" color="blackAlpha.700">

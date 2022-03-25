@@ -16,6 +16,7 @@ import { FaStar } from 'react-icons/fa'
 import twoDigit from 'two-digit'
 import EventLayout from '../../layouts/Event/Event.layout'
 import { Event } from '../../types/Event.type'
+import useMobileDetect from '../../utils/useMobileDetect'
 import LazyImage from '../Misc/LazyImage.component'
 
 declare const window: any
@@ -46,11 +47,17 @@ export default function EventCard({
         'DEC',
     ]
 
+    const currentDevice = useMobileDetect()
+
     return (
         <Flex
             direction="column"
             onClick={() => {
-                setEventModal(true)
+                if (!currentDevice.isMobile) {
+                    setEventModal(true)
+                } else {
+                    window.location.href = `/event/${event.id}`
+                }
             }}
             rounded="lg"
             overflow="hidden"
