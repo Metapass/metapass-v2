@@ -47,8 +47,6 @@ export default function EventCard({
         'DEC',
     ]
 
-    const currentDevice = useMobileDetect()
-
     return (
         <Flex
             direction="column"
