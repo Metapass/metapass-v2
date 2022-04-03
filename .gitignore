@@ -41,4 +41,4 @@ yarn-error.log*
 yarn.lock
 nextconfig.txt
 pages/events/
-
+/.github/
