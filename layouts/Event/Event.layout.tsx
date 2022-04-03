@@ -48,6 +48,8 @@ import { decryptLink } from '../../utils/linkResolvers'
 import LinkMagic from '../../utils/Magic'
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
+import useCheckMobileScreen from '../../utils/useMobileDetect'
+import useMobileDetect from '../../utils/useMobileDetect'
 
 declare const window: any
 
@@ -64,6 +66,7 @@ export default function EventLayout({ event }: { event: Event }) {
     const [ensName, setEnsName] = useState<string>('')
     const [openseaLink, setOpenseaLink] = useState<string>('')
     const [qrId, setQrId] = useState<string>('')
+    const currentDevice = useMobileDetect()
     let opensea =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? 'https://testnets.opensea.io/assets/mumbai'
@@ -95,6 +98,8 @@ export default function EventLayout({ event }: { event: Event }) {
                 const provider = new ethers.providers.Web3Provider(
                     wallet.type === 'magic'
                         ? magic.rpcProvider
+                        : wallet.type === 'wc'
+                        ? window.w3.currentProvider
                         : window.ethereum
                 )
                 setIsLoading(true)
@@ -164,13 +169,14 @@ export default function EventLayout({ event }: { event: Event }) {
                     // toast.success('Redirecting to opensea in a few seconds')
                     setIsLoading(false)
                     setHasBought(true)
-                    generateAndSendUUID(
-                        event.childAddress,
-                        wallet.address,
-                        event.tickets_sold + 1
-                    ).then((uuid) => {
-                        setQrId(String(uuid))
-                    })
+                    event.category.event_type == 'In-Person' &&
+                        generateAndSendUUID(
+                            event.childAddress,
+                            wallet.address,
+                            event.tickets_sold + 1
+                        ).then((uuid) => {
+                            setQrId(String(uuid))
+                        })
                     let link =
                         opensea +
                         '/' +
@@ -216,6 +222,8 @@ export default function EventLayout({ event }: { event: Event }) {
 
     useEffect(() => {
         console.log(event.link)
+
+        // console.log(currentDevice.isMobile(), 'is mobile')
         if (event.link) {
             const exceptions = [
                 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
@@ -499,11 +507,11 @@ export default function EventLayout({ event }: { event: Event }) {
             <Box pt="3" color="brand.black" mb="4">
                 <Flex
                     justify="space-between"
-                    align="center"
-
+                    align={{ md: 'center' }}
+                    flexDir={{ base: 'column', md: 'row' }}
                     //   border="1px solid red"
                 >
-                    <Box>
+                    <Box pl={{ md: '2' }}>
                         <Text fontSize="2xl" fontWeight="semibold">
                             {event.title}
                         </Text>
@@ -540,7 +548,9 @@ export default function EventLayout({ event }: { event: Event }) {
                             </Box>
                         </Flex>
                     </Box>
+
                     <Button
+                        display={{ base: 'none', md: 'flex' }}
                         rounded="full"
                         bg="brand.gradient"
                         fontWeight="medium"
@@ -549,12 +559,16 @@ export default function EventLayout({ event }: { event: Event }) {
                         isLoading={isLoading}
                         boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
                         color="white"
-                        _disabled={{ opacity: '0.8', cursor: 'not-allowed' }}
+                        _disabled={{
+                            opacity: '0.8',
+                            cursor: 'not-allowed',
+                        }}
                         _hover={{}}
                         onClick={buyTicket}
                         disabled={event.tickets_available === 0}
                         _focus={{}}
                         _active={{}}
+                        w={{ base: '70%', md: 'auto' }}
                         mr="3"
                         leftIcon={
                             <Box
@@ -563,7 +577,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             >
                                 <Image
                                     src="/assets/elements/event_ticket.svg"
-                                    w="5"
+                                    w={{ base: '6', md: '5' }}
                                     alt="ticket"
                                 />
                             </Box>
@@ -580,8 +594,9 @@ export default function EventLayout({ event }: { event: Event }) {
                 <Flex
                     align="start"
                     mt="4"
-                    experimental_spaceX="6"
+                    experimental_spaceX={{ base: '0', md: '6' }}
                     justify="space-between"
+                    flexDirection={{ base: 'column', md: 'row' }}
                 >
                     <Box w="full">
                         <Box
@@ -593,7 +608,14 @@ export default function EventLayout({ event }: { event: Event }) {
                             rounded="xl"
                             p="3"
                         >
-                            <Flex alignItems="end" experimental_spaceX="4">
+                            <Flex
+                                alignItems={{
+                                    base: 'stretch',
+                                    md: 'end',
+                                }}
+                                experimental_spaceX="4"
+                                flexDir={{ base: 'column', md: 'row' }}
+                            >
                                 <AspectRatio
                                     ratio={16 / 9}
                                     w="full"
@@ -621,14 +643,24 @@ export default function EventLayout({ event }: { event: Event }) {
                                 </AspectRatio>
                                 <Box
                                     maxH={{ base: '26vw', xl: '300px' }}
-                                    minW={{ md: '100px', lg: '130px' }}
+                                    minW={{
+                                        md: '100px',
+                                        lg: '130px',
+                                    }}
                                     overflowY="auto"
                                 >
                                     <Flex
+                                        py={{ base: '2', md: '1' }}
                                         px="1"
-                                        py="1"
-                                        direction="column"
-                                        minW={{ md: '90px', lg: '110px' }}
+                                        flexDir={{
+                                            base: 'row',
+                                            md: 'column',
+                                        }}
+                                        minW={{
+                                            base: '60px',
+                                            md: '90px',
+                                            lg: '110px',
+                                        }}
                                         experimental_spaceY="2"
                                     >
                                         {event.image.video && (
@@ -683,6 +715,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                                     }}
                                                     ratio={16 / 9}
                                                     w="full"
+                                                    mx={{ base: '1', md: '0' }}
                                                     ringColor="brand.peach"
                                                     ring={
                                                         image === data &&
@@ -707,6 +740,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         <Box
                             w="full"
                             mt="2"
+                            mb={{ base: '10px', md: '0' }}
                             noOfLines={6}
                             border="1px"
                             borderColor="blackAlpha.100"
@@ -720,7 +754,8 @@ export default function EventLayout({ event }: { event: Event }) {
                             // minH={{ base: '28', xl: '28' }}
                             // maxW="10%"
                             // h="10rem"
-                            maxH="10rem"
+                            minH={{ base: '4rem', md: 'auto' }}
+                            maxH={{ base: '14rem', md: 'auto' }}
                             maxW="740px"
                             overflow="auto"
                         >
@@ -739,16 +774,68 @@ export default function EventLayout({ event }: { event: Event }) {
                                 />
                             </Box>
                         </Box>
+
+                        <Flex
+                            justify="center"
+                            display={{ base: 'flex', md: 'none' }}
+                        >
+                            <Button
+                                rounded="full"
+                                bg="brand.gradient"
+                                fontWeight="medium"
+                                role="group"
+                                loadingText="Minting"
+                                isLoading={isLoading}
+                                boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
+                                color="white"
+                                _disabled={{
+                                    opacity: '0.8',
+                                    cursor: 'not-allowed',
+                                }}
+                                _hover={{}}
+                                onClick={buyTicket}
+                                disabled={event.tickets_available === 0}
+                                _focus={{}}
+                                _active={{}}
+                                w={{ base: '90%', md: 'auto' }}
+                                my="4"
+                                leftIcon={
+                                    <Box
+                                        _groupHover={{
+                                            transform: 'scale(1.1)',
+                                        }}
+                                        transitionDuration="200ms"
+                                    >
+                                        <Image
+                                            src="/assets/elements/event_ticket.svg"
+                                            w={{ base: '6', md: '5' }}
+                                            alt="ticket"
+                                        />
+                                    </Box>
+                                }
+                            >
+                                {event.tickets_available === 0
+                                    ? 'Sold Out'
+                                    : 'Buy Ticket'}
+                                {/* {
+                                console.log(event.tickets_available, event.tickets_sold,"here here")
+                            } */}
+                            </Button>
+                        </Flex>
                     </Box>
-                    <Flex direction="column">
-                        <Flex experimental_spaceX="2.5">
+                    <Flex direction="column" w={{ base: 'full', md: 'auto' }}>
+                        <Flex
+                            experimental_spaceX="2.5"
+                            w={{ base: 'full', md: 'auto' }}
+                        >
                             <Box
                                 p="2"
                                 border="1px"
                                 borderColor="blackAlpha.100"
                                 rounded="xl"
                                 textAlign="center"
-                                minW="100px"
+                                w={{ base: 'full', md: 'auto' }}
+                                minW={{ base: 'auto', md: '100px' }}
                                 boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                             >
                                 <Text fontSize="xs" color="blackAlpha.700">
@@ -777,7 +864,8 @@ export default function EventLayout({ event }: { event: Event }) {
                                 borderColor="blackAlpha.100"
                                 rounded="xl"
                                 textAlign="center"
-                                minW="100px"
+                                w={{ base: 'full', md: 'auto' }}
+                                minW={{ base: 'auto', md: '100px' }}
                                 boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                             >
                                 <Text fontSize="xs" color="blackAlpha.700">

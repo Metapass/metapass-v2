@@ -123,6 +123,7 @@ export default function NavigationBar({ mode = 'dark' }) {
             setWallet({
                 balance: ethBal,
                 address: accounts[0],
+                type: 'mm',
             })
         } catch (error) {
             console.log(error, 'error')
@@ -149,6 +150,7 @@ export default function NavigationBar({ mode = 'dark' }) {
             setWallet({
                 balance: ethBal,
                 address: accounts[0],
+                type: 'mm',
             })
             // console.log('got wallet', wallet)
             localStorage.setItem('Autoconnect', 'true')
@@ -219,6 +221,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                 setWallet({
                     balance: ethBal,
                     address: accounts[0],
+                    type: 'wc',
                 })
                 console.log('wallet', wallet)
             } else {
@@ -240,6 +243,7 @@ export default function NavigationBar({ mode = 'dark' }) {
             setWallet({
                 balance: '',
                 address: '',
+                type: '',
             })
             windowType.ethereum.on('accountsChanged', async () => {
                 onClose1()
@@ -259,6 +263,7 @@ export default function NavigationBar({ mode = 'dark' }) {
         setWallet({
             balance: '',
             address: '',
+            type: '',
         })
         const isconnected = wcProvider.isWalletConnect
         if (isconnected) {
@@ -411,6 +416,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                     setWallet({
                         balance: balance,
                         address: address,
+                        type: walletType,
                         ens: ens_name,
                     })
                     // console.log(wallet,ens_name)
@@ -665,7 +671,11 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     _focus={{}}
                                     _active={{}}
                                 >
-                                    <FaBars />
+                                    <FaBars
+                                        color={
+                                            mode === 'white' ? 'black' : 'white'
+                                        }
+                                    />
                                 </Button>
                             </MenuButton>{' '}
                             <MenuList
