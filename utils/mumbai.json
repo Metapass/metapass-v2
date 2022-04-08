@@ -8,9 +8,7 @@
         "https://matic-mumbai.chainstacklabs.com",
         "https://rpc-mumbai.maticvigil.com"
     ],
-    "faucets": [
-        "https://faucet.polygon.technology/"
-    ],
+    "faucets": ["https://faucet.polygon.technology/"],
     "nativeCurrency": {
         "name": "MATIC",
         "symbol": "MATIC",
@@ -29,12 +27,8 @@
             "symbol": "MATIC",
             "decimals": 18
         },
-        "rpcUrls": [
-            "https://matic-mumbai.chainstacklabs.com"
-        ],
-        "blockExplorerUrls": [
-            "https://mumbai.polygonscan.com"
-        ]
+        "rpcUrls": ["https://matic-mumbai.chainstacklabs.com"],
+        "blockExplorerUrls": ["https://mumbai.polygonscan.com"]
     },
     "explorers": [
         {

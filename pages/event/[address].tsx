@@ -147,11 +147,12 @@ const Event: NextPage = () => {
     }, [address])
     return (
         <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
-            <EventPageCTA />
+            <NavigationBar mode="white" />
+            <Box p="4" />
             <Flex
                 justify="center"
                 mx="auto"
-                mt="6"
+                mt="16"
                 px="6"
                 w="full"
                 maxW="1400px"
