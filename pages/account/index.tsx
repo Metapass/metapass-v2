@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 
 import {
     Box,
@@ -8,10 +8,10 @@ import {
     Text,
     Center,
     Button,
-    Divider,
+    Flex,
 } from '@chakra-ui/react'
-import { SignUpModal, HeroSection } from '../../components'
-import EventCard from '../../components/Card/EventCard.component'
+import { SignUpModal, HeroSection, UpdateProfileModal } from '../../components'
+import { HiPencil } from 'react-icons/hi'
 
 import { auth } from '../../utils/firebaseUtils'
 import { onAuthStateChanged } from 'firebase/auth'
@@ -49,9 +49,24 @@ const Account: NextPage = () => {
             </Center>
 
             <Box display="flex" flexDir="column" textAlign="center" gap="1">
-                <Text fontSize="3xl" fontFamily="heading" fontWeight="600">
-                    {user?.displayName}
-                </Text>
+                <Flex gap="2" justifyContent="center" alignItems="center">
+                    <Text fontSize="3xl" fontFamily="heading" fontWeight="600">
+                        {user?.displayName}
+                    </Text>
+
+                    <Box
+                        display="grid"
+                        placeItems="center"
+                        h="8"
+                        w="8"
+                        rounded="full"
+                        cursor="pointer"
+                        shadow="0px 6px 30px 0px #0000000F"
+                    >
+                        <HiPencil size="20" />
+                    </Box>
+                </Flex>
+
                 <Text
                     fontFamily="body"
                     fontSize="lg"
@@ -93,11 +108,11 @@ const Account: NextPage = () => {
                     fontWeight="500"
                     textColor="gray.500"
                     gap="4"
-                    px="3"
+                    px="6"
                     rounded="full"
                     h="10"
                     mt="6"
-                    border="solid 2px gray.500"
+                    boxShadow="0px 15px 105px 0px #0000000F"
                 >
                     <Text
                         cursor="pointer"
@@ -126,7 +141,6 @@ const Account: NextPage = () => {
                 <Text fontSize="3xl" fontFamily="poppins" fontWeight="500">
                     Events Attended
                 </Text>
-
             </Box>
         </Box>
     )

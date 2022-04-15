@@ -1,5 +1,5 @@
 import type { NextComponentType, NextPageContext } from 'next'
-import type { AuthModalProps } from '../../types/AuthModal.types'
+import type { ModalProps } from '../../types/AuthModal.types'
 
 import {
     Modal,
@@ -22,7 +22,7 @@ import {
 } from 'firebase/auth'
 import type { AuthProvider } from 'firebase/auth'
 
-const SignUpModal: NextComponentType<NextPageContext, {}, AuthModalProps> = ({
+const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     isOpen,
     onOpen,
     onClose,

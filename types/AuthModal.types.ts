@@ -1,7 +1,7 @@
-interface AuthModalProps {
+interface ModalProps {
     isOpen: boolean
     onOpen: () => void
     onClose: () => void
 }
 
-export type { AuthModalProps }
+export type { ModalProps }
