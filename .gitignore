@@ -4,9 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
-package-lock.json
 v2mp.code-workspace
-yarn.lock
 # testing
 /coverage
 
@@ -37,8 +35,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-# package-lock.json
-yarn.lock
 nextconfig.txt
 pages/events/
 /.github/
