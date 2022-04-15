@@ -1,0 +1,1 @@
+export { default as SignUpModal } from "./Modals/SignUp.modal"
