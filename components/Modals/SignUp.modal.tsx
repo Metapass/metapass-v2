@@ -48,7 +48,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     
     
     useEffect(() => {
-      setUrl(document?.refferer)
+      setUrl(document?.referrer)
     }, [])
     
     const actionCodeSettings = {
