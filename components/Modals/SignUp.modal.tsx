@@ -1,6 +1,6 @@
 import type { NextComponentType, NextPageContext } from 'next'
 import type { ModalProps } from '../../types/AuthModal.types'
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 
 declare const document: any
 
@@ -38,15 +38,21 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
 }) => {
     const toast = useToast()
     const [email, setEmail] = useState<string>('')
-
+    const [Url,setUrl] = useState<string>('')
     const googleProvider = new GoogleAuthProvider()
 
     const signUp = (provider: AuthProvider) => {
         signInWithRedirect(auth, provider)
     }
 
+    
+    
+    useEffect(() => {
+      setUrl(document?.refferer)
+    }, [])
+    
     const actionCodeSettings = {
-        url: document?.referrer,
+        url: Url,
         handleCodeInApp: true,
     }
 
@@ -70,7 +76,6 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     }
 
     return (
-       (typeof document !== "undefined") &&
         <>
             <Modal isOpen onClose={onClose} isCentered>
                 <ModalOverlay />
