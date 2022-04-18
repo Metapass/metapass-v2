@@ -44,7 +44,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     }
 
     const actionCodeSettings = {
-        url: 'https://3000-kranurag-metapassv2-rx3vqy8a1fd.ws-us40.gitpod.io/account',
+        url: document.referrer,
         handleCodeInApp: true,
     }
 
