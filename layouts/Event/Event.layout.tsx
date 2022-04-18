@@ -20,6 +20,7 @@ import {
     useClipboard,
     IconButton,
     Fade,
+    useDisclosure,
 } from '@chakra-ui/react'
 import { useState, useContext, useEffect } from 'react'
 import ReactPlayer from 'react-player'
@@ -50,6 +51,10 @@ import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import useCheckMobileScreen from '../../utils/useMobileDetect'
 import useMobileDetect from '../../utils/useMobileDetect'
+
+import { SignUpModal } from '../../components'
+import { auth } from '../../utils/firebaseUtils'
+import { onAuthStateChanged } from 'firebase/auth'
 
 declare const window: any
 
@@ -87,115 +92,131 @@ export default function EventLayout({ event }: { event: Event }) {
         'DEC',
     ]
 
+     const [user, setUser] = useState<any>()
+     const [notAuthed, setNotAuthed] = useState<boolean>(false)
+
+     onAuthStateChanged(auth, (user) => {
+         user ? setUser(user) : setUser(null)
+     })
+
+     const { isOpen, onOpen, onClose } = useDisclosure()
+
     const [wallet] = useContext(walletContext)
     const buyTicket = async () => {
-        if (wallet.address) {
-            if (typeof window.ethereum != undefined) {
-                const { magic, web3, network } = LinkMagic(
-                    process.env.NEXT_PUBLIC_ENV as string
-                )
-                console.log(wallet.type)
-                const provider = new ethers.providers.Web3Provider(
-                    wallet.type === 'magic'
-                        ? magic.rpcProvider
-                        : wallet.type === 'wc'
-                        ? window.w3.currentProvider
-                        : window.ethereum
-                )
-                setIsLoading(true)
-                const signer = provider.getSigner()
-                let metapass = new ethers.Contract(
-                    event.childAddress,
-                    abi.abi,
-                    signer
-                )
-                console.log(metapass)
-                // console.log("creating image")
-                let { img, fastimg } = await ticketToIPFS(
-                    event.title,
-                    event.tickets_sold + 1,
-                    event.image.image,
-                    event.date.split('T')[0],
-                    wallet?.ens ||
-                        wallet?.address?.substring(0, 4) +
-                            '...' +
-                            wallet?.address?.substring(
-                                wallet?.address?.length - 4
-                            )
-                )
-                // console.log(img,"created")
-                setMintedImage(fastimg)
-                let metadata = {
-                    name: event.title,
-                    description: `NFT Ticket for ${event.title}`,
-                    image: img,
-                    properties: {
-                        'Ticket Number': event.tickets_sold + 1,
-                    },
-                }
-
-                try {
-                    metapass
-                        .getTix(JSON.stringify(metadata), {
-                            value: ethers.utils.parseEther(
-                                event.fee.toString()
-                            ),
-                        })
-                        .then(() => {
-                            console.log('Success!')
-                            // setIsLoading(false)
-                            // toast.success("Ticket Minted! Your txn might take a few seconds to confirm")
-                        })
-                        .catch((err: any) => {
-                            console.log('error', err)
-                            toast.error(err.data?.message, {
-                                id: 'error10',
-                                style: {
-                                    fontSize: '12px',
-                                },
-                            })
-                            setIsLoading(false)
-                        })
-                } catch (e: any) {
-                    toast(
-                        'An error occured! Share error code: ' +
-                            e.code +
-                            ' with the team for reference.'
+        if (user) {
+            setNotAuthed(false)
+            if (wallet.address) {
+                if (typeof window.ethereum != undefined) {
+                    const { magic, web3, network } = LinkMagic(
+                        process.env.NEXT_PUBLIC_ENV as string
                     )
-                    setIsLoading(false)
+                    console.log(wallet.type)
+                    const provider = new ethers.providers.Web3Provider(
+                        wallet.type === 'magic'
+                            ? magic.rpcProvider
+                            : wallet.type === 'wc'
+                            ? window.w3.currentProvider
+                            : window.ethereum
+                    )
+                    setIsLoading(true)
+                    const signer = provider.getSigner()
+                    let metapass = new ethers.Contract(
+                        event.childAddress,
+                        abi.abi,
+                        signer
+                    )
+                    console.log(metapass)
+                    // console.log("creating image")
+                    let { img, fastimg } = await ticketToIPFS(
+                        event.title,
+                        event.tickets_sold + 1,
+                        event.image.image,
+                        event.date.split('T')[0],
+                        wallet?.ens ||
+                            wallet?.address?.substring(0, 4) +
+                                '...' +
+                                wallet?.address?.substring(
+                                    wallet?.address?.length - 4
+                                )
+                    )
+                    // console.log(img,"created")
+                    setMintedImage(fastimg)
+                    let metadata = {
+                        name: event.title,
+                        description: `NFT Ticket for ${event.title}`,
+                        image: img,
+                        properties: {
+                            'Ticket Number': event.tickets_sold + 1,
+                        },
+                    }
+
+                    try {
+                        metapass
+                            .getTix(JSON.stringify(metadata), {
+                                value: ethers.utils.parseEther(
+                                    event.fee.toString()
+                                ),
+                            })
+                            .then(() => {
+                                console.log('Success!')
+                                // setIsLoading(false)
+                                // toast.success("Ticket Minted! Your txn might take a few seconds to confirm")
+                            })
+                            .catch((err: any) => {
+                                console.log('error', err)
+                                toast.error(err.data?.message, {
+                                    id: 'error10',
+                                    style: {
+                                        fontSize: '12px',
+                                    },
+                                })
+                                setIsLoading(false)
+                            })
+                    } catch (e: any) {
+                        toast(
+                            'An error occured! Share error code: ' +
+                                e.code +
+                                ' with the team for reference.'
+                        )
+                        setIsLoading(false)
+                    }
+
+                    metapass.on('Transfer', (res) => {
+                        // toast.success('Redirecting to opensea in a few seconds')
+                        setIsLoading(false)
+                        setHasBought(true)
+                        event.category.event_type == 'In-Person' &&
+                            generateAndSendUUID(
+                                event.childAddress,
+                                wallet.address,
+                                event.tickets_sold + 1
+                            ).then((uuid) => {
+                                setQrId(String(uuid))
+                            })
+                        let link =
+                            opensea +
+                            '/' +
+                            event.childAddress +
+                            '/' +
+                            ethers.BigNumber.from(res).toNumber()
+
+                        setOpenseaLink(link)
+                    })
+
+                    // metapass.once('Transfer', (res) => {
+                    //     console.log(res)
+                    // })
+                } else {
+                    console.log("Couldn't find ethereum enviornment")
                 }
-
-                metapass.on('Transfer', (res) => {
-                    // toast.success('Redirecting to opensea in a few seconds')
-                    setIsLoading(false)
-                    setHasBought(true)
-                    event.category.event_type == 'In-Person' &&
-                        generateAndSendUUID(
-                            event.childAddress,
-                            wallet.address,
-                            event.tickets_sold + 1
-                        ).then((uuid) => {
-                            setQrId(String(uuid))
-                        })
-                    let link =
-                        opensea +
-                        '/' +
-                        event.childAddress +
-                        '/' +
-                        ethers.BigNumber.from(res).toNumber()
-
-                    setOpenseaLink(link)
-                })
-
-                // metapass.once('Transfer', (res) => {
-                //     console.log(res)
-                // })
             } else {
-                console.log("Couldn't find ethereum enviornment")
+                toast('Please connect your wallet')
             }
-        } else {
-            toast('Please connect your wallet')
         }
+        else {
+            setNotAuthed(true)
+        }
+
         // console.log(eventLink)
     }
     useEffect(() => {
@@ -251,8 +272,17 @@ export default function EventLayout({ event }: { event: Event }) {
             }, 5000)
         }
     }, [hasBought])
+
+
     return (
         <>
+            {notAuthed && (
+                <SignUpModal
+                    isOpen={isOpen}
+                    onOpen={onOpen}
+                    onClose={onClose}
+                />
+            )}
             {hasBought && <Confetti />}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />
