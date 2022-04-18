@@ -44,7 +44,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     }
 
     const actionCodeSettings = {
-        url: document.referrer,
+        url: document?.referrer,
         handleCodeInApp: true,
     }
 
