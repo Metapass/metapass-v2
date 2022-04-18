@@ -9,17 +9,18 @@ import {
     ModalBody,
     ModalCloseButton,
     Button,
+    Box,
+    Input,
+    Text,
+    InputGroup,
+    InputLeftElement,
 } from '@chakra-ui/react'
 
 import { FcGoogle } from 'react-icons/fc'
-import { AiFillGithub } from 'react-icons/ai'
+import { MdMail } from 'react-icons/md'
 
 import { auth } from '../../utils/firebaseUtils'
-import {
-    signInWithRedirect,
-    GoogleAuthProvider,
-    GithubAuthProvider,
-} from 'firebase/auth'
+import { signInWithRedirect, GoogleAuthProvider } from 'firebase/auth'
 import type { AuthProvider } from 'firebase/auth'
 
 const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
@@ -28,7 +29,6 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     onClose,
 }) => {
     const googleProvider = new GoogleAuthProvider()
-    const githubProvider = new GithubAuthProvider()
 
     const signUp = (provider: AuthProvider) => {
         signInWithRedirect(auth, provider)
@@ -46,9 +46,49 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                         flexDir="column"
                         justifyContent="center"
                         alignItems="center"
-                        gap="4"
+                        gap="3"
                         pb="8"
                     >
+                        <Box
+                            display="flex"
+                            flexDir="column"
+                            justifyContent="center"
+                            alignItems="center"
+                            gap="3"
+                        >
+                            <InputGroup>
+                                <InputLeftElement
+                                    pointerEvents="none"
+                                    children={
+                                        <MdMail size="20" color="gray.700" />
+                                    }
+                                />
+                                <Input
+                                    type="email"
+                                    placeholder="enter your email"
+                                    w="xs"
+                                    fontWeight="500"
+                                    textColor="gray.700"
+                                    focusBorderColor="purple.500"
+                                    _placeholder={{
+                                        color: 'gray.600',
+                                        fontWeight: '500',
+                                    }}
+                                />
+                            </InputGroup>
+
+                            <Button colorScheme="purple" _focus={{}}>
+                                continue
+                            </Button>
+                        </Box>
+
+                        <Text
+                            fontFamily="heading"
+                            fontWeight="500"
+                            fontSize="xl"
+                        >
+                            or
+                        </Text>
                         <Button
                             w="72"
                             variant="outline"
@@ -58,16 +98,6 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                         >
                             <FcGoogle size={25} />
                             Sign Up with Google
-                        </Button>
-                        <Button
-                            w="72"
-                            variant="outline"
-                            gap="2"
-                            _focus={{}}
-                            onClick={() => signUp(githubProvider)}
-                        >
-                            <AiFillGithub size={25} />
-                            Sign Up with GitHub
                         </Button>
                     </ModalBody>
                 </ModalContent>
