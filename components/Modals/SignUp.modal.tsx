@@ -1,5 +1,6 @@
 import type { NextComponentType, NextPageContext } from 'next'
 import type { ModalProps } from '../../types/AuthModal.types'
+import { useState } from 'react'
 
 import {
     Modal,
@@ -14,13 +15,18 @@ import {
     Text,
     InputGroup,
     InputLeftElement,
+    useToast,
 } from '@chakra-ui/react'
 
 import { FcGoogle } from 'react-icons/fc'
 import { MdMail } from 'react-icons/md'
 
 import { auth } from '../../utils/firebaseUtils'
-import { signInWithRedirect, GoogleAuthProvider } from 'firebase/auth'
+import {
+    signInWithRedirect,
+    GoogleAuthProvider,
+    sendSignInLinkToEmail,
+} from 'firebase/auth'
 import type { AuthProvider } from 'firebase/auth'
 
 const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
@@ -28,10 +34,37 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     onOpen,
     onClose,
 }) => {
+    const toast = useToast()
+    const [email, setEmail] = useState<string>('')
+
     const googleProvider = new GoogleAuthProvider()
 
     const signUp = (provider: AuthProvider) => {
         signInWithRedirect(auth, provider)
+    }
+
+    const actionCodeSettings = {
+        url: 'https://3000-kranurag-metapassv2-rx3vqy8a1fd.ws-us40.gitpod.io/account',
+        handleCodeInApp: true,
+    }
+
+    const sendEmailLink = () => {
+        sendSignInLinkToEmail(auth, email, actionCodeSettings)
+            .then(() => {
+                window.localStorage.setItem('emailForSignIn', email)
+
+                toast({
+                    title: 'SignIn Link Sent.',
+                    description:
+                        'Please check your email for the link to sign in.',
+                    status: 'success',
+                    duration: 3000,
+                    isClosable: true,
+                })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
     return (
@@ -60,7 +93,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                                 <InputLeftElement
                                     pointerEvents="none"
                                     children={
-                                        <MdMail size="20" color="gray.700" />
+                                        <MdMail size="22" color="gray.700" />
                                     }
                                 />
                                 <Input
@@ -74,10 +107,19 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                                         color: 'gray.600',
                                         fontWeight: '500',
                                     }}
+                                    value={email}
+                                    onChange={(e) =>
+                                        setEmail(e.target.value as string)
+                                    }
                                 />
                             </InputGroup>
 
-                            <Button colorScheme="purple" _focus={{}}>
+                            <Button
+                                colorScheme="purple"
+                                _focus={{}}
+                                onClick={sendEmailLink}
+                                isDisabled={email === '' && true}
+                            >
                                 continue
                             </Button>
                         </Box>
@@ -97,7 +139,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                             onClick={() => signUp(googleProvider)}
                         >
                             <FcGoogle size={25} />
-                            Sign Up with Google
+                            sign up with google
                         </Button>
                     </ModalBody>
                 </ModalContent>
