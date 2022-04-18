@@ -70,6 +70,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     }
 
     return (
+       (typeof document !== "undefined") &&
         <>
             <Modal isOpen onClose={onClose} isCentered>
                 <ModalOverlay />
