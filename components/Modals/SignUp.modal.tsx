@@ -2,6 +2,8 @@ import type { NextComponentType, NextPageContext } from 'next'
 import type { ModalProps } from '../../types/AuthModal.types'
 import { useState } from 'react'
 
+declare const document: any
+
 import {
     Modal,
     ModalOverlay,
