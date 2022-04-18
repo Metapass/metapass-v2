@@ -27,7 +27,7 @@ jobs:
               run: npm i vercel -g
 
             - name: Deploy landing page
-              run: ls && vercel --token $VERCEL_TOKEN && cat > dev-deploy.txt
+              run: ls && vercel --token $VERCEL_TOKEN && cat > dev-deploy.txt && vercel logs metapass-v2-anoushk1234.vercel.app
               env:
                   VERCEL_TOKEN: ${{ secrets.VERCEL_CLI_TOKEN }}
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_LANDING_ORG }}
