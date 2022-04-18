@@ -20,7 +20,6 @@ import {
     useClipboard,
     IconButton,
     Fade,
-    useDisclosure,
 } from '@chakra-ui/react'
 import { useState, useContext, useEffect } from 'react'
 import ReactPlayer from 'react-player'
@@ -52,9 +51,10 @@ import GenerateQR from '../../utils/generateQR'
 import useCheckMobileScreen from '../../utils/useMobileDetect'
 import useMobileDetect from '../../utils/useMobileDetect'
 
-import { SignUpModal } from '../../components'
 import { auth } from '../../utils/firebaseUtils'
 import { onAuthStateChanged } from 'firebase/auth'
+
+import { useRouter } from 'next/router'
 
 declare const window: any
 
@@ -92,19 +92,17 @@ export default function EventLayout({ event }: { event: Event }) {
         'DEC',
     ]
 
-     const [user, setUser] = useState<any>()
-     const [notAuthed, setNotAuthed] = useState<boolean>(false)
+    const [user, setUser] = useState<any>()
+    const router = useRouter()
 
-     onAuthStateChanged(auth, (user) => {
-         user ? setUser(user) : setUser(null)
-     })
-
-     const { isOpen, onOpen, onClose } = useDisclosure()
+    onAuthStateChanged(auth, (user) => {
+        user ? setUser(user) : setUser(null)
+    })
 
     const [wallet] = useContext(walletContext)
     const buyTicket = async () => {
         if (user) {
-            setNotAuthed(false)
+            router.push('/account')
             if (wallet.address) {
                 if (typeof window.ethereum != undefined) {
                     const { magic, web3, network } = LinkMagic(
@@ -212,9 +210,7 @@ export default function EventLayout({ event }: { event: Event }) {
             } else {
                 toast('Please connect your wallet')
             }
-        }
-        else {
-            setNotAuthed(true)
+        } else {
         }
 
         // console.log(eventLink)
@@ -273,16 +269,15 @@ export default function EventLayout({ event }: { event: Event }) {
         }
     }, [hasBought])
 
-
     return (
         <>
-            {notAuthed && (
+            {/* {notAuthed && (
                 <SignUpModal
                     isOpen={isOpen}
                     onOpen={onOpen}
                     onClose={onClose}
                 />
-            )}
+            )} */}
             {hasBought && <Confetti />}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />
