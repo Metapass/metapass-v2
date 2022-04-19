@@ -50,7 +50,12 @@ import { Magic } from 'magic-sdk'
 import { FaBars } from 'react-icons/fa'
 import { getAllowedList } from '../../utils/sendToAirtable'
 
+import { auth } from '../../utils/firebaseUtils'
+import { BiUserCircle } from 'react-icons/bi'
+import { useRouter } from 'next/router'
+
 export default function NavigationBar({ mode = 'dark' }) {
+    const router = useRouter()
     const [address, setAddress] = useState<string>('')
     const [magic, setMagic] = useState<any>()
     const [balance, setBalance] = useState<string>('')
@@ -783,64 +788,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                         alignItems="center"
                         experimental_spaceX="6"
                     >
-                        {/* {eventOrgs.eventOrgs.includes(String(wallet?.address)) ? (
-                        <NextLink href="/create" passHref>
-                            <Link _hover={{}} _focus={{}} _active={{}}>
-                                <Button
-                                    pl="1"
-                                    rounded="full"
-                                    bg={
-                                        mode === 'white'
-                                            ? 'blackAlpha.100'
-                                            : 'whiteAlpha.800'
-                                    }
-                                    color="blackAlpha.700"
-                                    fontWeight="medium"
-                                    _hover={{
-                                        shadow: 'sm',
-                                        bg:
-                                            mode === 'white'
-                                                ? 'blackAlpha.50'
-                                                : 'white',
-                                    }}
-                                    border="2px"
-                                    borderColor={
-                                        mode === 'white'
-                                            ? 'blackAlpha.100'
-                                            : 'white'
-                                    }
-                                    _focus={{}}
-                                    _active={{ transform: 'scale(0.95)' }}
-                                    role="group"
-                                    leftIcon={
-                                        <Flex
-                                            _groupHover={{
-                                                transform: 'scale(1.05)',
-                                            }}
-                                            transitionDuration="200ms"
-                                            justify="center"
-                                            alignItems="center"
-                                            color="white"
-                                            bg="brand.gradient"
-                                            rounded="full"
-                                            p="0.5"
-                                        >
-                                            <IoIosAdd size="25px" />
-                                        </Flex>
-                                    }
-                                >
-                                    Create Event
-                                </Button>
-                            </Link>
-                        </NextLink>
-                    ) : (
-                        <WaitlistModal
-                            email={email}
-                            setEmail={setEmail}
-                            mode={mode}
-                        />
-                    )} */}
-
                         <Button
                             onClick={() => {
                                 if (
@@ -999,6 +946,29 @@ export default function NavigationBar({ mode = 'dark' }) {
                                         color="red.500"
                                     >
                                         Disconnect Wallet
+                                    </MenuItem>
+                                    <MenuDivider color="blackAlpha.200" />
+
+                                    <MenuItem
+                                        onClick={() => router.push('/account')}
+                                        icon={<BiUserCircle size="20px" />}
+                                        color="blackAlpha.700"
+                                    >
+                                        <Text
+                                            color="blackAlpha.700"
+                                            fontWeight="medium"
+                                        >
+                                            Account
+                                        </Text>
+                                    </MenuItem>
+                                    <MenuDivider color="blackAlpha.200" />
+                                    <MenuItem
+                                        onClick={() => auth.signOut()}
+                                        fontSize="sm"
+                                        icon={<IoIosLogOut size="20px" />}
+                                        color="red.500"
+                                    >
+                                        Logout
                                     </MenuItem>
                                 </MenuList>
                             </Menu>
