@@ -45,7 +45,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     }
 
     const actionCodeSettings = {
-        url: 'https://3000-kranurag-metapassv2-7zbomwpucfs.ws-us34.gitpod.io/account',
+        url: 'https://metapass-v2-anoushk1234.vercel.app/account',
         handleCodeInApp: true,
     }
 
