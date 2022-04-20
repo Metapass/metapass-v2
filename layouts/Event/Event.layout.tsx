@@ -58,7 +58,7 @@ import { useRouter } from 'next/router'
 
 declare const window: any
 
-export default function EventLayout({ event }: { event: Event }) {
+export default function EventLayout({ event, address }: { event: Event, address: string }) {
     const [image, setImage] = useState(event.image.image)
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
@@ -210,7 +210,7 @@ export default function EventLayout({ event }: { event: Event }) {
                 toast('Please connect your wallet')
             }
         } else {
-            router.push(`/account?event_id=${event}`)
+            router.push(`/account?event_id=${address}`)
         }
 
         // console.log(eventLink)

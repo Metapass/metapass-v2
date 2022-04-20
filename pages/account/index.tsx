@@ -59,13 +59,13 @@ const Account: NextPage = () => {
         }
     }, [])
 
-    // useEffect(() => {
-    //     if (user) {
-    //         let { event_id } = router.query
+    useEffect(() => {
+        if (user) {
+            let { event_id } = router.query
 
-    //         event_id ? router.push(`event/${event_id}`) : null
-    //     }
-    // }, [user])
+            event_id ? router.push(`event/${event_id}`) : null
+        }
+    }, [user])
 
     return (
         <Box display="flex" flexDir="column">
