@@ -24,8 +24,6 @@ import {
 
 const Account: NextPage = () => {
     const router = useRouter()
-    let { event_id } = router.query
-
     const { isOpen, onOpen, onClose } = useDisclosure()
     const {
         isOpen: isOpen2,
@@ -63,6 +61,8 @@ const Account: NextPage = () => {
 
     useEffect(() => {
         if (user) {
+            let { event_id } = router.query
+
             event_id ? router.push(`event/${event_id}`) : null
         }
     }, [user])
@@ -74,7 +74,6 @@ const Account: NextPage = () => {
                     isOpen={isOpen}
                     onOpen={onOpen}
                     onClose={onClose}
-                    address={event_id as string}
                 />
             )}
             <UpdateProfileModal
