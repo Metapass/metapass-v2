@@ -35,25 +35,17 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     isOpen,
     onOpen,
     onClose,
-    address,
 }) => {
     const toast = useToast()
     const [email, setEmail] = useState<string>('')
-    const [url, setUrl] = useState<string>(
-        'https://metapass-v2-anoushk1234.vercel.app/account'
-    )
     const googleProvider = new GoogleAuthProvider()
 
     const signUp = (provider: AuthProvider) => {
         signInWithRedirect(auth, provider)
     }
 
-    address
-        ? setUrl(`https://metapass-v2-anoushk1234.vercel.app/account?event_id=${address}`)
-        : null
-
     const actionCodeSettings = {
-        url: url,
+        url: 'https://metapass-v2-anoushk1234.vercel.app/account',
         handleCodeInApp: true,
     }
 
