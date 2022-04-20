@@ -2,8 +2,6 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-declare let window: any
-
 import {
     Box,
     Image,
@@ -39,33 +37,35 @@ const Account: NextPage = () => {
         user ? setUser(user) : setUser(null)
     })
 
-    if (window) {
-        if (isSignInWithEmailLink(auth, window?.location.href)) {
-            let email = window.localStorage.getItem('emailForSignIn')
-            if (!email) {
-                toast({
-                    title: 'Error.',
-                    description: 'email not found',
-                    status: 'error',
-                    duration: 5000,
-                    isClosable: true,
-                })
-            }
-            signInWithEmailLink(auth, email as string, window.location.href)
-                .then((result) => {
-                    window?.localStorage.removeItem('emailForSignIn')
-                })
-                .catch((error) => {})
-        }
-    }
-
     useEffect(() => {
-        if (user) {
-            let { event_id } = router.query
-
-            event_id ? router.push(`event/${event_id}`) : null
+        if (typeof window !== undefined) {
+            if (isSignInWithEmailLink(auth, window.location.href!)) {
+                let email = window.localStorage.getItem('emailForSignIn')
+                if (!email) {
+                    toast({
+                        title: 'Error.',
+                        description: 'email not found',
+                        status: 'error',
+                        duration: 5000,
+                        isClosable: true,
+                    })
+                }
+                signInWithEmailLink(auth, email as string, window.location.href)
+                    .then((result) => {
+                        window?.localStorage.removeItem('emailForSignIn')
+                    })
+                    .catch((error) => {})
+            }
         }
-    }, [user])
+    }, [])
+
+    // useEffect(() => {
+    //     if (user) {
+    //         let { event_id } = router.query
+
+    //         event_id ? router.push(`event/${event_id}`) : null
+    //     }
+    // }, [user])
 
     return (
         <Box display="flex" flexDir="column">
