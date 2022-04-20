@@ -1,5 +1,6 @@
 import type { NextPage } from 'next'
-import { useState } from 'react'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 import {
     Box,
@@ -9,33 +10,77 @@ import {
     Center,
     Button,
     Flex,
+    useToast,
 } from '@chakra-ui/react'
 import { SignUpModal, HeroSection, UpdateProfileModal } from '../../components'
 import { HiPencil } from 'react-icons/hi'
 
 import { auth } from '../../utils/firebaseUtils'
-import { onAuthStateChanged } from 'firebase/auth'
+import {
+    onAuthStateChanged,
+    isSignInWithEmailLink,
+    signInWithEmailLink,
+} from 'firebase/auth'
 
 const Account: NextPage = () => {
+    const router = useRouter()
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const {
+        isOpen: isOpen2,
+        onOpen: onOpen2,
+        onClose: onClose2,
+    } = useDisclosure()
     const [user, setUser] = useState<any>()
-
-    console.log(user)
+    const toast = useToast()
 
     onAuthStateChanged(auth, (user) => {
         user ? setUser(user) : setUser(null)
     })
 
+    useEffect(() => {
+        if (typeof window !== undefined) {
+            if (isSignInWithEmailLink(auth, window.location.href!)) {
+                let email = window.localStorage.getItem('emailForSignIn')
+                if (!email) {
+                    toast({
+                        title: 'Error.',
+                        description: 'email not found',
+                        status: 'error',
+                        duration: 5000,
+                        isClosable: true,
+                    })
+                }
+                signInWithEmailLink(auth, email as string, window.location.href)
+                    .then((result) => {
+                        window?.localStorage.removeItem('emailForSignIn')
+                    })
+                    .catch((error) => {})
+            }
+        }
+    }, [])
+
+    // useEffect(() => {
+    //     if (user) {
+    //         let { event_id } = router.query
+
+    //         event_id ? router.push(`event/${event_id}`) : null
+    //     }
+    // }, [user])
+
     return (
         <Box display="flex" flexDir="column">
-            {!user && (
+            {user === null && (
                 <SignUpModal
                     isOpen={isOpen}
                     onOpen={onOpen}
                     onClose={onClose}
                 />
             )}
-
+            <UpdateProfileModal
+                isOpen={isOpen2}
+                onOpen={onOpen2}
+                onClose={onClose2}
+            />
             <HeroSection />
             <Center>
                 <Image
@@ -57,11 +102,14 @@ const Account: NextPage = () => {
                     <Box
                         display="grid"
                         placeItems="center"
-                        h="8"
-                        w="8"
+                        h="10"
+                        w="10"
                         rounded="full"
                         cursor="pointer"
-                        shadow="0px 6px 30px 0px #0000000F"
+                        onClick={onOpen2}
+                        _hover={{ bgColor: 'gray.100' }}
+                        transition="all"
+                        transitionDuration="100ms"
                     >
                         <HiPencil size="20" />
                     </Box>

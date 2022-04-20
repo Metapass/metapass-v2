@@ -102,7 +102,6 @@ export default function EventLayout({ event }: { event: Event }) {
     const [wallet] = useContext(walletContext)
     const buyTicket = async () => {
         if (user) {
-            router.push('/account')
             if (wallet.address) {
                 if (typeof window.ethereum != undefined) {
                     const { magic, web3, network } = LinkMagic(
@@ -211,6 +210,7 @@ export default function EventLayout({ event }: { event: Event }) {
                 toast('Please connect your wallet')
             }
         } else {
+            router.push(`/account?event_id=${event}`)
         }
 
         // console.log(eventLink)

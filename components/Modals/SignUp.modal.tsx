@@ -1,6 +1,6 @@
 import type { NextComponentType, NextPageContext } from 'next'
 import type { ModalProps } from '../../types/AuthModal.types'
-import { useState,useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 declare const document: any
 
@@ -38,21 +38,14 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
 }) => {
     const toast = useToast()
     const [email, setEmail] = useState<string>('')
-    const [Url,setUrl] = useState<string>('')
     const googleProvider = new GoogleAuthProvider()
 
     const signUp = (provider: AuthProvider) => {
         signInWithRedirect(auth, provider)
     }
 
-    
-    
-    useEffect(() => {
-      setUrl(document?.referrer)
-    }, [])
-    
     const actionCodeSettings = {
-        url: Url,
+        url: 'https://3000-kranurag-metapassv2-7zbomwpucfs.ws-us34.gitpod.io/account',
         handleCodeInApp: true,
     }
 
