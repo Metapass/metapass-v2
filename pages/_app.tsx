@@ -11,6 +11,7 @@ import Script from 'next/script'
 import LogRocket from 'logrocket'
 import splitbee from '@splitbee/web'
 import { useEffect } from 'react'
+import ChatwootWidget from '../components/Elements/Chatwoot.component'
 
 function MyApp({ Component, pageProps }: AppProps) {
     useEffect(() => {
@@ -68,6 +69,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                     <Contract>
                         <Toaster />
                         <ChakraProvider theme={theme}>
+                            <ChatwootWidget />
                             <Component {...pageProps} />
                         </ChakraProvider>
                     </Contract>
