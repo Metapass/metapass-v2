@@ -53,7 +53,7 @@ import useMobileDetect from '../../utils/useMobileDetect'
 import { MessageEmbed } from 'discord.js'
 import { auth } from '../../utils/firebaseUtils'
 import { onAuthStateChanged } from 'firebase/auth'
-import { send } from '@ayshptk/msngr'
+// import { send } from '@ayshptk/msngr'
 import { useRouter } from 'next/router'
 
 declare const window: any
@@ -170,22 +170,7 @@ export default function EventLayout({
                             })
                             .catch((err: any) => {
                                 console.log('error', err)
-                                send(
-                                    process.env.NEXT_PUBLIC_MILADY as string,
-                                    `\`\`\`` +
-                                        JSON.stringify({
-                                            user: {
-                                                name: user.displayName,
-                                                email: user.email,
-                                                uid: user.uid,
-                                            },
-                                            user_address: wallet.address,
-                                            event_address: event.childAddress,
-                                            event_title: event.title,
-                                            error: 'err',
-                                        }) +
-                                        `\`\`\``
-                                )
+                        
                                 toast.error(err.data?.message, {
                                     id: 'error10',
                                     style: {
@@ -843,19 +828,7 @@ export default function EventLayout({
                                     cursor: 'not-allowed',
                                 }}
                                 _hover={{}}
-                                onClick={() => {
-                                    send(
-                                        process.env
-                                            .NEXT_PUBLIC_MILADY as string,
-                                        JSON.stringify({
-                                            user: user,
-                                            user_address: wallet.address,
-                                            event_address: event.childAddress,
-                                            event_title: event.title,
-                                            error: 'err',
-                                        })
-                                    )
-                                }}
+                                onClick={buyTicket}
                                 disabled={event.tickets_available === 0}
                                 _focus={{}}
                                 _active={{}}
