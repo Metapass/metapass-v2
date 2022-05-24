@@ -107,7 +107,9 @@ export default function EventLayout({
 
     const [wallet] = useContext(walletContext)
     const buyTicket = async () => {
+        // console.log('user', user)
         if (user) {
+            // console.log('user not undefined')
             if (wallet.address) {
                 if (typeof window.ethereum != undefined) {
                     const { magic, web3, network } = LinkMagic(
@@ -130,7 +132,7 @@ export default function EventLayout({
                     )
                     console.log(metapass)
                     console.log('creating image')
-                    
+
                     // let { img, fastimg } = await ticketToIPFS(
                     //     event.title,
                     //     event.tickets_sold + 1,
@@ -170,7 +172,7 @@ export default function EventLayout({
                             })
                             .catch((err: any) => {
                                 console.log('error', err)
-                        
+
                                 toast.error(err.data?.message, {
                                     id: 'error10',
                                     style: {

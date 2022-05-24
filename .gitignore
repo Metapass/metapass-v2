@@ -12,11 +12,13 @@ v2mp.code-workspace
 /.next/
 /out/
 
+package-lock.json
 # production
 /build
 .env
 # misc
 .DS_Store
+
 *.pem
 .gitignore
 # debug
