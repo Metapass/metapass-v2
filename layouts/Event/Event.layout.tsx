@@ -130,7 +130,7 @@ export default function EventLayout({
                     )
                     console.log(metapass)
                     console.log('creating image')
-                    debugger
+                    
                     // let { img, fastimg } = await ticketToIPFS(
                     //     event.title,
                     //     event.tickets_sold + 1,
@@ -145,6 +145,7 @@ export default function EventLayout({
                     // )
                     // console.log(img, 'created')
                     // setMintedImage(fastimg)
+                    setMintedImage(event.image.image)
                     let metadata = {
                         name: event.title,
                         description: `NFT Ticket for ${event.title}`,
