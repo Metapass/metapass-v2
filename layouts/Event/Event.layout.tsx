@@ -130,28 +130,28 @@ export default function EventLayout({
                         abi.abi,
                         signer
                     )
-                    console.log(metapass)
+                    console.log('created contract')
                     console.log('creating image')
 
-                    // let { img, fastimg } = await ticketToIPFS(
-                    //     event.title,
-                    //     event.tickets_sold + 1,
-                    //     event.image.image,
-                    //     event.date.split('T')[0],
-                    //     wallet?.ens ||
-                    //         wallet?.address?.substring(0, 4) +
-                    //             '...' +
-                    //             wallet?.address?.substring(
-                    //                 wallet?.address?.length - 4
-                    //             )
-                    // )
-                    // console.log(img, 'created')
-                    // setMintedImage(fastimg)
-                    setMintedImage(event.image.image)
+                    let { img, fastimg } = await ticketToIPFS(
+                        event.title,
+                        event.tickets_sold + 1,
+                        event.image.image,
+                        event.date.split('T')[0],
+                        wallet?.ens ||
+                            wallet?.address?.substring(0, 4) +
+                                '...' +
+                                wallet?.address?.substring(
+                                    wallet?.address?.length - 4
+                                )
+                    )
+                    console.log('img created')
+                    setMintedImage(fastimg)
+                    // setMintedImage(event.image.image)
                     let metadata = {
                         name: event.title,
                         description: `NFT Ticket for ${event.title}`,
-                        image: event.image.image,
+                        image: img,
                         properties: {
                             'Ticket Number': event.tickets_sold + 1,
                         },
@@ -166,7 +166,7 @@ export default function EventLayout({
                                 ),
                             })
                             .then(() => {
-                                console.log('Success!')
+                                console.log('Success! Minted!')
                                 // setIsLoading(false)
                                 // toast.success("Ticket Minted! Your txn might take a few seconds to confirm")
                             })

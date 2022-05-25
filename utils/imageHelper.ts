@@ -57,13 +57,13 @@ export const ticketToIPFS = async (
 ) => {
     let parsedDate = date.split('T')[0]
     console.log('here')
-
+    const BASE_ENDPOINT = 'https://ticket-img-production-f075.up.railway.app'
     const res = await axios.get(
-        `https://radiant-caverns-43873.herokuapp.com/v2/2d/edit/url=${url}&hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${
+        `${BASE_ENDPOINT}/api/v2/2d/edit/hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${
             months[new Date(parsedDate).getMonth()] +
             ' ' +
             new Date(parsedDate).getDate()
-        }`
+        }?url=${url}`
     )
     // @ts-ignore
     let { cid } = await ipfs.add(urlSource(res.data[0]))
