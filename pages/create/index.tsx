@@ -34,6 +34,7 @@ import { walletContext } from '../../utils/walletContext'
 import { Event } from '../../types/Event.type'
 import { ethers } from 'ethers'
 import abi from '../../utils/MetapassFactory.json'
+import { send } from '@metapasshq/msngr'
 
 declare const window: any
 
@@ -130,9 +131,61 @@ const Create: NextPage = () => {
                 setInTxn(false)
                 setChild(child)
             })
-        } catch (e) {
+        } catch (err: any) {
             console.log('error while txn')
-            console.log(e)
+            console.log(err)
+            await send(process.env.NEXT_PUBLIC_MILADY as string, {
+                embeds: [
+                    {
+                        author: {
+                            name: 'Create Event',
+                            url: window.location.href,
+                            iconURL:
+                                event.image.image ||
+                                'https://i.imgur.com/R66g1Pe.jpg',
+                        },
+                        title: err.data.message,
+                        url: window.location.href,
+                        description: err.message,
+                        color: 14423100,
+                        fields: [
+                            {
+                                name: 'code',
+                                value: err.data.code,
+                                inline: true,
+                            },
+                            {
+                                name: 'Wallet Address',
+                                value: wallet?.address,
+                                inline: false,
+                            },
+                            {
+                                name: 'Event Address',
+                                value: event.childAddress || 'child',
+                                inline: false,
+                            },
+                            {
+                                name: 'Event',
+                                value: event.title || 'title',
+                            },
+                            {
+                                name: 'data',
+                                value: '```' + JSON.stringify(event) + '```',
+                            },
+                        ],
+                        thumbnail: {
+                            url: 'https://upload.wikimedia.org/wikipedia/commons/3/38/4-Nature-Wallpapers-2014-1_ukaavUI.jpg',
+                        },
+                        image: {
+                            url: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/A_picture_from_China_every_day_108.jpg',
+                        },
+                        footer: {
+                            text: 'Oops',
+                            iconURL: '',
+                        },
+                    },
+                ],
+            })
         }
     }
 

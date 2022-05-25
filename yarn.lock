@@ -1771,6 +1771,13 @@
   "resolved" "https://registry.npmjs.org/@metamask/safe-event-emitter/-/safe-event-emitter-2.0.0.tgz"
   "version" "2.0.0"
 
+"@metapasshq/msngr@^0.1.3":
+  "integrity" "sha512-1aeUjHtyoucPNeveFOF/coD89pDU36aCxFn+pHQ0mgeiM1525iQdTMA5Xq3Ah37BtRVWzoYK38lT5R7wX+pXxA=="
+  "resolved" "https://registry.npmjs.org/@metapasshq/msngr/-/msngr-0.1.3.tgz"
+  "version" "0.1.3"
+  dependencies:
+    "node-fetch" "2.6.7"
+
 "@next/env@12.1.6":
   "integrity" "sha512-Te/OBDXFSodPU6jlXYPAXpmZr/AkG6DCATAxttQxqOWaq6eDFX25Db3dK0120GZrSZmv4QCe9KsZmJKDbWs4OA=="
   "resolved" "https://registry.npmjs.org/@next/env/-/env-12.1.6.tgz"
