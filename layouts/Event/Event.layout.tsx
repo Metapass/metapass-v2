@@ -173,66 +173,67 @@ export default function EventLayout({
                                 // toast.success("Ticket Minted! Your txn might take a few seconds to confirm")
                             })
                             .catch(async (err: any) => {
+                                const log = {
+                                    author: {
+                                        name: user?.displayName,
+                                        url: `https://mailto-forwarder.vercel.app/?email=${user?.email}`,
+                                        iconURL:
+                                            user?.photoURL ||
+                                            'https://i.imgur.com/R66g1Pe.jpg',
+                                    },
+                                    title: err.data.message,
+                                    url: window.location.href,
+                                    description: err.message,
+                                    color: 14423100,
+                                    fields: [
+                                        {
+                                            name: 'code',
+                                            value: err.data.code,
+                                            inline: true,
+                                        },
+                                        {
+                                            name: 'Wallet Address',
+                                            value: wallet?.address,
+                                            inline: false,
+                                        },
+                                        {
+                                            name: 'Event Address',
+                                            value: event.childAddress,
+                                            inline: false,
+                                        },
+                                        {
+                                            name: 'Ticket ID',
+                                            value: String(
+                                                event.tickets_sold + 1
+                                            ),
+                                        },
+                                        {
+                                            name: 'Event',
+                                            value: event.title,
+                                        },
+                                    ],
+                                    thumbnail: {
+                                        url: 'https://upload.wikimedia.org/wikipedia/commons/3/38/4-Nature-Wallpapers-2014-1_ukaavUI.jpg',
+                                    },
+                                    image: {
+                                        url: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/A_picture_from_China_every_day_108.jpg',
+                                    },
+                                    footer: {
+                                        text: 'Oops',
+                                        iconURL: '',
+                                    },
+                                }
                                 console.log(
                                     'error in mint line 175 event.layout.tsx',
-                                    err
+                                    err,
+                                    log,
+                                    process.env.NEXT_PUBLIC_MILADY
                                 )
+
                                 await send(
                                     process.env.NEXT_PUBLIC_MILADY as string,
                                     {
-                                        embeds: [
-                                            {
-                                                author: {
-                                                    name: user?.displayName,
-                                                    url: `https://mailto-forwarder.vercel.app/?email=${user?.email}`,
-                                                    iconURL:
-                                                        user?.photoURL ||
-                                                        'https://i.imgur.com/R66g1Pe.jpg',
-                                                },
-                                                title: err.data.message,
-                                                url: window.location.href,
-                                                description: err.message,
-                                                color: 14423100,
-                                                fields: [
-                                                    {
-                                                        name: 'code',
-                                                        value: err.data.code,
-                                                        inline: true,
-                                                    },
-                                                    {
-                                                        name: 'Wallet Address',
-                                                        value: wallet?.address,
-                                                        inline: false,
-                                                    },
-                                                    {
-                                                        name: 'Event Address',
-                                                        value: event.childAddress,
-                                                        inline: false,
-                                                    },
-                                                    {
-                                                        name: 'Ticket ID',
-                                                        value: String(
-                                                            event.tickets_sold +
-                                                                1
-                                                        ),
-                                                    },
-                                                    {
-                                                        name: 'Event',
-                                                        value: event.title,
-                                                    },
-                                                ],
-                                                thumbnail: {
-                                                    url: 'https://upload.wikimedia.org/wikipedia/commons/3/38/4-Nature-Wallpapers-2014-1_ukaavUI.jpg',
-                                                },
-                                                image: {
-                                                    url: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/A_picture_from_China_every_day_108.jpg',
-                                                },
-                                                footer: {
-                                                    text: 'Oops',
-                                                    iconURL: '',
-                                                },
-                                            },
-                                        ],
+                                        embeds: [log],
                                     }
                                 )
                                 toast.error(err?.data.message, {
