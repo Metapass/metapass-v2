@@ -204,7 +204,7 @@ export default function EventLayout({
                                     fields: [
                                         {
                                             name: 'code',
-                                            value: err.data.code,
+                                            value: err?.data.code,
                                             inline: true,
                                         },
                                         {
@@ -270,7 +270,7 @@ export default function EventLayout({
                                     user?.photoURL ||
                                     'https://i.imgur.com/R66g1Pe.jpg',
                             },
-                            title: err.data.message,
+                            title: err?.data?.message,
                             url: window.location.href,
                             description: err.message,
                             color: 14423100,
