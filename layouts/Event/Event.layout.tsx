@@ -137,8 +137,11 @@ export default function EventLayout({
                     )
                     console.log('created contract')
                     console.log('creating image')
+                    toast.loading('Minting your custom ticket 😊', {
+                        id: 'minting',
+                    })
                     // toast.loading("Creating a custom ticket just fo you",{})
-                    const ticketImagePromise = ticketToIPFS(
+                    let { img, fastimg } = await ticketToIPFS(
                         event.title,
                         event.tickets_sold + 1,
                         event.image.image,
@@ -150,12 +153,12 @@ export default function EventLayout({
                                     wallet?.address?.length - 4
                                 )
                     )
-                    toast.promise(ticketImagePromise, {
-                        loading: 'Processing your custom ticket 😊',
-                        success: 'Ticket processed!',
-                        error: 'Uh oh looks likes theres an issue, contact us in our discord',
-                    })
-                    let { img, fastimg } = await ticketImagePromise
+                    // toast.promise(ticketImagePromise, {
+                    //     loading: 'Processing your custom ticket 😊',
+                    //     success: 'Ticket processed!',
+                    //     error: 'Uh oh looks likes theres an issue, contact us in our discord',
+                    // })
+
                     console.log('img created')
                     setMintedImage(fastimg)
                     // setMintedImage(event.image.image)
@@ -170,7 +173,7 @@ export default function EventLayout({
 
                     try {
                         console.log('starting the minting')
-                        toast.loading('loading...')
+
                         const mintPromise = await metapass.getTix(
                             JSON.stringify(metadata),
                             {
@@ -179,6 +182,7 @@ export default function EventLayout({
                                 ),
                             }
                         )
+                        toast.dismiss('minting')
                         console.log('Success! Minted!')
                         // setIsLoading(false)
                         toast.success(
@@ -190,7 +194,8 @@ export default function EventLayout({
                         //     error: 'Uh oh looks likes theres an issue, contact us in our discord',
                         // })
                     } catch (err: any) {
-                        console.log('Error in line 214 Event.layout.tsx', err)
+                        toast.dismiss('minting')
+                        console.log('Error in line 193 Event.layout.tsx', err)
                         const log = {
                             author: {
                                 name: user?.displayName,
