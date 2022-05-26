@@ -55,6 +55,9 @@ import { auth } from '../../utils/firebaseUtils'
 import { onAuthStateChanged } from 'firebase/auth'
 import { send } from '@metapasshq/msngr'
 import { useRouter } from 'next/router'
+import { JsonRpcError, RPCError } from 'magic-sdk'
+import { EthereumRpcError } from 'eth-rpc-errors'
+import { SerializedEthereumRpcError } from 'eth-rpc-errors/dist/classes'
 
 declare const window: any
 
@@ -197,14 +200,14 @@ export default function EventLayout({
                                             user?.photoURL ||
                                             'https://i.imgur.com/R66g1Pe.jpg',
                                     },
-                                    title: err.data.message,
+                                    title: err?.data?.message,
                                     url: window.location.href,
                                     description: err.message,
                                     color: 14423100,
                                     fields: [
                                         {
                                             name: 'code',
-                                            value: err?.data.code,
+                                            value: err.data.code,
                                             inline: true,
                                         },
                                         {
@@ -241,18 +244,15 @@ export default function EventLayout({
                                 }
                                 console.log(
                                     'error in mint line 175 event.layout.tsx',
-                                    err,
-                                    log,
-                                    process.env.NEXT_PUBLIC_MILADY
+                                    err
                                 )
-
                                 await send(
                                     process.env.NEXT_PUBLIC_MILADY as string,
                                     {
                                         embeds: [log],
                                     }
                                 )
-                                toast.error(err?.data.message, {
+                                toast.error(err?.data?.message as string, {
                                     id: 'error10',
                                     style: {
                                         fontSize: '12px',
@@ -261,7 +261,7 @@ export default function EventLayout({
                                 setIsLoading(false)
                             })
                     } catch (err: any) {
-                        console.log('Error in line 264 Event.layout.tsx', err)
+                        console.log('Error in line 214 Event.layout.tsx', err)
                         const log = {
                             author: {
                                 name: user?.displayName,
@@ -310,17 +310,10 @@ export default function EventLayout({
                                 iconURL: '',
                             },
                         }
-                        console.log(
-                            'error in mint line 175 event.layout.tsx',
-                            err,
-                            log,
-                            process.env.NEXT_PUBLIC_MILADY
-                        )
-
                         await send(process.env.NEXT_PUBLIC_MILADY as string, {
                             embeds: [log],
                         })
-                        toast.error(err?.data.message, {
+                        toast.error(err?.data?.message as string, {
                             id: 'error10',
                             style: {
                                 fontSize: '12px',
@@ -328,8 +321,10 @@ export default function EventLayout({
                         })
                         setIsLoading(false)
                     }
+
                     metapass.on('Transfer', (res) => {
                         // toast.success('Redirecting to opensea in a few seconds')
+
                         setIsLoading(false)
                         setHasBought(true)
                         event.category.event_type == 'In-Person' &&
@@ -349,10 +344,6 @@ export default function EventLayout({
 
                         setOpenseaLink(link)
                     })
-
-                    // metapass.once('Transfer', (res) => {
-                    //     console.log(res)
-                    // })
                 } else {
                     console.log("Couldn't find ethereum enviornment")
                 }
