@@ -51,12 +51,29 @@ export async function loadImage(url: string) {
 export const ticketToIPFS = async (
     title: string,
     ticketNumber: Number,
-    url: String,
+    url: string,
     date: string,
     person: string
 ) => {
+    // const formData = new FormData()
+    // formData.append('file', url)
+    // formData.append(
+    //     'upload_preset',
+    //     process.env.NEXT_PUBLIC_CLOUDINARY_PRESET as string
+    // )
+    // const URL = await axios({
+    //     method: 'post',
+    //     url: `https://api.cloudinary.com/v1_1/${
+    //         process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME as string
+    //     }/upload`,
+    //     data: formData,
+    // })
+
     let parsedDate = date.split('T')[0]
-    console.log('here')
+    // console.log(
+    //     'here',
+    //     'https://res.cloudinary.com/dev-connect/image/upload/v1653499407/s0zwg5wke6ezmvlkv4lg.jpg'
+    // )
     const BASE_ENDPOINT = 'https://ticket-img-production-f075.up.railway.app'
     const res = await axios.get(
         `${BASE_ENDPOINT}/api/v2/2d/edit/hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${

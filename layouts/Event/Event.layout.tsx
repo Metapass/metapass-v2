@@ -134,8 +134,8 @@ export default function EventLayout({
                     )
                     console.log('created contract')
                     console.log('creating image')
-
-                    let { img, fastimg } = await ticketToIPFS(
+                    // toast.loading("Creating a custom ticket just fo you",{})
+                    const ticketImagePromise = ticketToIPFS(
                         event.title,
                         event.tickets_sold + 1,
                         event.image.image,
@@ -147,6 +147,12 @@ export default function EventLayout({
                                     wallet?.address?.length - 4
                                 )
                     )
+                    toast.promise(ticketImagePromise, {
+                        loading: 'Processing your custom ticket 😊',
+                        success: 'Ticket processed!',
+                        error: 'Uh oh looks likes theres an issue, contact us in our discord',
+                    })
+                    let { img, fastimg } = await ticketImagePromise
                     console.log('img created')
                     setMintedImage(fastimg)
                     // setMintedImage(event.image.image)
@@ -161,16 +167,26 @@ export default function EventLayout({
 
                     try {
                         console.log('starting the minting')
-                        metapass
-                            .getTix(JSON.stringify(metadata), {
+                        const mintPromise: Promise<any> = metapass.getTix(
+                            JSON.stringify(metadata),
+                            {
                                 value: ethers.utils.parseEther(
                                     event.fee.toString()
                                 ),
-                            })
+                            }
+                        )
+                        toast.promise(mintPromise, {
+                            loading: 'Minting your ticket 🎫',
+                            success: 'Ticket minted!',
+                            error: 'Uh oh looks likes theres an issue, contact us in our discord',
+                        })
+                        mintPromise
                             .then(() => {
                                 console.log('Success! Minted!')
                                 // setIsLoading(false)
-                                // toast.success("Ticket Minted! Your txn might take a few seconds to confirm")
+                                toast.success(
+                                    'Ticket Minted! Your txn might take a few seconds to confirm'
+                                )
                             })
                             .catch(async (err: any) => {
                                 const log = {
@@ -244,15 +260,74 @@ export default function EventLayout({
                                 })
                                 setIsLoading(false)
                             })
-                    } catch (e: any) {
-                        toast(
-                            'An error occured! Share error code: ' +
-                                e.code +
-                                ' with the team for reference.'
+                    } catch (err: any) {
+                        console.log('Error in line 264 Event.layout.tsx', err)
+                        const log = {
+                            author: {
+                                name: user?.displayName,
+                                url: `https://mailto-forwarder.vercel.app/?email=${user?.email}`,
+                                iconURL:
+                                    user?.photoURL ||
+                                    'https://i.imgur.com/R66g1Pe.jpg',
+                            },
+                            title: err.data.message,
+                            url: window.location.href,
+                            description: err.message,
+                            color: 14423100,
+                            fields: [
+                                {
+                                    name: 'code',
+                                    value: err.data.code,
+                                    inline: true,
+                                },
+                                {
+                                    name: 'Wallet Address',
+                                    value: wallet?.address,
+                                    inline: false,
+                                },
+                                {
+                                    name: 'Event Address',
+                                    value: event.childAddress,
+                                    inline: false,
+                                },
+                                {
+                                    name: 'Ticket ID',
+                                    value: String(event.tickets_sold + 1),
+                                },
+                                {
+                                    name: 'Event',
+                                    value: event.title,
+                                },
+                            ],
+                            thumbnail: {
+                                url: 'https://upload.wikimedia.org/wikipedia/commons/3/38/4-Nature-Wallpapers-2014-1_ukaavUI.jpg',
+                            },
+                            image: {
+                                url: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/A_picture_from_China_every_day_108.jpg',
+                            },
+                            footer: {
+                                text: 'Oops',
+                                iconURL: '',
+                            },
+                        }
+                        console.log(
+                            'error in mint line 175 event.layout.tsx',
+                            err,
+                            log,
+                            process.env.NEXT_PUBLIC_MILADY
                         )
+
+                        await send(process.env.NEXT_PUBLIC_MILADY as string, {
+                            embeds: [log],
+                        })
+                        toast.error(err?.data.message, {
+                            id: 'error10',
+                            style: {
+                                fontSize: '12px',
+                            },
+                        })
                         setIsLoading(false)
                     }
-
                     metapass.on('Transfer', (res) => {
                         // toast.success('Redirecting to opensea in a few seconds')
                         setIsLoading(false)
