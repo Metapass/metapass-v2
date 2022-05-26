@@ -193,10 +193,16 @@ export default function EventLayout({
                         //     success: 'Ticket minted!',
                         //     error: 'Uh oh looks likes theres an issue, contact us in our discord',
                         // })
-                    } catch (e: any) {
-                        let err = e.data
+                    } catch (e: unknown) {
+                        let error =
+                            e as EthereumRpcError<SerializedEthereumRpcError>
+                        let err = error.data
                         toast.dismiss('minting')
-                        console.log('Error in line 193 Event.layout.tsx', err)
+                        console.log(
+                            'Error in line 193 Event.layout.tsx',
+                            err,
+                            e
+                        )
                         const log = {
                             author: {
                                 name: user?.displayName,
