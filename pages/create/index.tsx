@@ -144,7 +144,7 @@ const Create: NextPage = () => {
                                 event.image.image ||
                                 'https://i.imgur.com/R66g1Pe.jpg',
                         },
-                        title: err.data.message,
+                        title: err.data?.message,
                         url: window.location.href,
                         description: err.message,
                         color: 14423100,

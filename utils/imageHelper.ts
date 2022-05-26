@@ -28,6 +28,19 @@ export async function uploadImage(image: any) {
     return `https://ipfs.io/ipfs/${id.cid}`
 }
 
+export async function uploadToCloudinary(image: any) {
+    const formData = new FormData()
+
+    formData.append('file', image)
+    formData.append('upload_preset', 'public')
+    let post = await axios.post(
+        'https://api.cloudinary.com/v1_1/metapass/image/upload',
+        formData
+    )
+    return post.data.secure_url
+
+}
+
 export function getBlob(file: any) {
     if (file) {
         return URL.createObjectURL(file)
@@ -76,10 +89,9 @@ export const ticketToIPFS = async (
     // )
     const BASE_ENDPOINT = 'https://ticket-img-production-f075.up.railway.app'
     const res = await axios.get(
-        `${BASE_ENDPOINT}/api/v2/2d/edit/hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${
-            months[new Date(parsedDate).getMonth()] +
-            ' ' +
-            new Date(parsedDate).getDate()
+        `${BASE_ENDPOINT}/api/v2/2d/edit/hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${months[new Date(parsedDate).getMonth()] +
+        ' ' +
+        new Date(parsedDate).getDate()
         }?url=${url}`
     )
     // @ts-ignore
