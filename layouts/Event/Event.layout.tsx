@@ -193,14 +193,11 @@ export default function EventLayout({
                         //     success: 'Ticket minted!',
                         //     error: 'Uh oh looks likes theres an issue, contact us in our discord',
                         // })
-                    } catch (e: unknown) {
-                        let error =
-                            e as EthereumRpcError<SerializedEthereumRpcError>
-                        let err = error.data
+                    } catch (e: any) {
                         toast.dismiss('minting')
                         console.log(
                             'Error in line 193 Event.layout.tsx',
-                            err,
+
                             e
                         )
                         const log = {
@@ -211,15 +208,16 @@ export default function EventLayout({
                                     user?.photoURL ||
                                     'https://i.imgur.com/R66g1Pe.jpg',
                             },
-                            title: e?.message,
+                            title: 'Mint Error',
                             url: window.location.href,
-                            description: err.message,
+                            description:
+                                'Error while minting possible json rpc error due to minting more than once',
                             color: 14423100,
                             fields: [
                                 {
-                                    name: 'code',
-                                    value: err.code,
-                                    inline: true,
+                                    name: 'error',
+                                    value: JSON.stringify(e),
+                                    inline: false,
                                 },
                                 {
                                     name: 'Wallet Address',
@@ -254,7 +252,7 @@ export default function EventLayout({
                         await send(process.env.NEXT_PUBLIC_MILADY as string, {
                             embeds: [log],
                         })
-                        toast.error(err?.message as string, {
+                        toast.error(e?.message as string, {
                             id: 'error10',
                             style: {
                                 fontSize: '12px',
