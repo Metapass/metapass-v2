@@ -193,7 +193,8 @@ export default function EventLayout({
                         //     success: 'Ticket minted!',
                         //     error: 'Uh oh looks likes theres an issue, contact us in our discord',
                         // })
-                    } catch (err: any) {
+                    } catch (e: any) {
+                        let err = e.data
                         toast.dismiss('minting')
                         console.log('Error in line 193 Event.layout.tsx', err)
                         const log = {
@@ -204,14 +205,14 @@ export default function EventLayout({
                                     user?.photoURL ||
                                     'https://i.imgur.com/R66g1Pe.jpg',
                             },
-                            title: err?.data?.message,
+                            title: e?.message,
                             url: window.location.href,
                             description: err.message,
                             color: 14423100,
                             fields: [
                                 {
                                     name: 'code',
-                                    value: err.data.code,
+                                    value: err.code,
                                     inline: true,
                                 },
                                 {
@@ -247,7 +248,7 @@ export default function EventLayout({
                         await send(process.env.NEXT_PUBLIC_MILADY as string, {
                             embeds: [log],
                         })
-                        toast.error(err?.data?.message as string, {
+                        toast.error(err?.message as string, {
                             id: 'error10',
                             style: {
                                 fontSize: '12px',
