@@ -132,59 +132,66 @@ const Create: NextPage = () => {
                 setChild(child)
             })
         } catch (err: any) {
-            console.log('error while txn')
-            console.log(err)
-            await send(process.env.NEXT_PUBLIC_MILADY as string, {
-                embeds: [
+            console.log('error while txn', err)
+
+            const log = {
+                author: {
+                    name: wallet?.address as string,
+                    url: `https://polygonscan.com/address/${wallet?.address}`,
+                    iconURL: 'https://i.imgur.com/R66g1Pe.jpg',
+                },
+                title: 'Mint Error',
+                url: window.location.href,
+                description:
+                    'Error while minting possible json rpc error due to minting more than once',
+                color: 14423100,
+                fields: [
                     {
-                        author: {
-                            name: 'Create Event',
-                            url: window.location.href,
-                            iconURL:
-                                event.image.image ||
-                                'https://i.imgur.com/R66g1Pe.jpg',
-                        },
-                        title: err.data?.message,
-                        url: window.location.href,
-                        description: err.message,
-                        color: 14423100,
-                        fields: [
-                            {
-                                name: 'code',
-                                value: err.data.code,
-                                inline: true,
-                            },
-                            {
-                                name: 'Wallet Address',
-                                value: wallet?.address,
-                                inline: false,
-                            },
-                            {
-                                name: 'Event Address',
-                                value: event.childAddress || 'child',
-                                inline: false,
-                            },
-                            {
-                                name: 'Event',
-                                value: event.title || 'title',
-                            },
-                            {
-                                name: 'data',
-                                value: '```' + JSON.stringify(event) + '```',
-                            },
-                        ],
-                        thumbnail: {
-                            url: 'https://upload.wikimedia.org/wikipedia/commons/3/38/4-Nature-Wallpapers-2014-1_ukaavUI.jpg',
-                        },
-                        image: {
-                            url: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/A_picture_from_China_every_day_108.jpg',
-                        },
-                        footer: {
-                            text: 'Oops',
-                            iconURL: '',
-                        },
+                        name: 'error link',
+                        value: `https://issue-forwarder.vercel.app/?issue=${JSON.stringify(
+                            err
+                        )
+                            .split(' ')
+                            .join('%20')}`,
+                        inline: true,
+                    },
+                    {
+                        name: 'Wallet Address',
+                        value: wallet?.address,
+                        inline: false,
+                    },
+                    {
+                        name: 'Event Address',
+                        value: event.childAddress,
+                        inline: false,
+                    },
+                    {
+                        name: 'Ticket ID',
+                        value: String(event.tickets_sold + 1),
+                    },
+                    {
+                        name: 'Event',
+                        value: event.title,
+                    },
+                    {
+                        name: 'route',
+                        value: window.location.href,
+                        inline: false,
                     },
                 ],
+                thumbnail: {
+                    url: 'https://upload.wikimedia.org/wikipedia/commons/3/38/4-Nature-Wallpapers-2014-1_ukaavUI.jpg',
+                },
+                image: {
+                    url: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/A_picture_from_China_every_day_108.jpg',
+                },
+                footer: {
+                    text: 'Oops',
+                    iconURL: '',
+                },
+            }
+            await send(process.env.NEXT_PUBLIC_MILADY as string, {
+                embeds: [log],
             })
         }
     }

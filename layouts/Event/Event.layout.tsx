@@ -215,9 +215,13 @@ export default function EventLayout({
                             color: 14423100,
                             fields: [
                                 {
-                                    name: 'error',
-                                    value: JSON.stringify(e),
-                                    inline: false,
+                                    name: 'error link',
+                                    value: `https://issue-forwarder.vercel.app/?issue=${JSON.stringify(
+                                        e
+                                    )
+                                        .split(' ')
+                                        .join('%20')}`,
+                                    inline: true,
                                 },
                                 {
                                     name: 'Wallet Address',
@@ -236,6 +240,11 @@ export default function EventLayout({
                                 {
                                     name: 'Event',
                                     value: event.title,
+                                },
+                                {
+                                    name: 'route',
+                                    value: window.location.href,
+                                    inline: false,
                                 },
                             ],
                             thumbnail: {
