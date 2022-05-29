@@ -71,7 +71,7 @@ const Create: NextPage = () => {
 
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
-            ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
+            ? '0x40C022EFf201b45cdd1A160f8f3869cB8Ef0BFEF'
             : process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
     let contract: any
 
@@ -109,6 +109,7 @@ const Create: NextPage = () => {
         }
         try {
             console.log('starting txn')
+            console.log(contract)
             let txn = await contract?.createEvent(
                 String(event.title),
                 ethers.utils.parseEther(event.fee.toString()),
@@ -188,7 +189,7 @@ const Create: NextPage = () => {
                                     alt="twitter"
                                     onClick={() => {
                                         window.open(
-                                            `http://twitter.com/share?text=I bought my NFT Ticket for ${event.title} on metapass. Get yours now!&url=https://metapasshq.xyz/event/${child}`,
+                                            `http://twitter.com/share?text=I just created NFT Ticketed event for ${event.title} on metapass. Get your NFT Ticket now!&url=https://metapasshq.xyz/event/${child}`,
                                             '_blank'
                                         )
                                     }}
@@ -209,7 +210,7 @@ const Create: NextPage = () => {
                                     alt="whatsapp"
                                     onClick={() => {
                                         window.open(
-                                            `https://api.whatsapp.com/send?text=I just bought NFT Ticket to ${event.title} on Metapass. Get yours at https://metapasshq.xyz/event/${child}`
+                                            `https://api.whatsapp.com/send?text=I just created NFT Ticketed event for ${event.title} on metapass. Get your NFT Ticket now at https://metapasshq.xyz/event/${child}`
                                         )
                                     }}
                                 />
@@ -229,7 +230,7 @@ const Create: NextPage = () => {
                                     alt="telegram"
                                     onClick={() => {
                                         window.open(
-                                            `https://telegram.me/share/url?url=https://metapasshq.xyz/event/${child}&text=I just bought my NFT Ticket to ${event.title} on Metapass. Get yours now`,
+                                            `https://telegram.me/share/url?url=https://metapasshq.xyz/event/${child}&text=I just created NFT Ticketed event for ${event.title} on metapass. Get your NFT Ticket now.`,
                                             '_blank'
                                         )
                                     }}

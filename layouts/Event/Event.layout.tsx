@@ -50,6 +50,7 @@ import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import useCheckMobileScreen from '../../utils/useMobileDetect'
 import useMobileDetect from '../../utils/useMobileDetect'
+import { Biconomy } from '@biconomy/mexa'
 
 declare const window: any
 
@@ -95,6 +96,7 @@ export default function EventLayout({ event }: { event: Event }) {
                     process.env.NEXT_PUBLIC_ENV as string
                 )
                 console.log(wallet.type)
+
                 const provider = new ethers.providers.Web3Provider(
                     wallet.type === 'magic'
                         ? magic.rpcProvider
@@ -102,8 +104,14 @@ export default function EventLayout({ event }: { event: Event }) {
                         ? window.w3.currentProvider
                         : window.ethereum
                 )
+                const biconomy = new Biconomy(provider, {
+                    apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
+                    debug: true,
+                })
                 setIsLoading(true)
-                const signer = provider.getSigner()
+                let ethersProvider = new ethers.providers.Web3Provider(biconomy)
+
+                const signer = ethersProvider.getSigner()
                 let metapass = new ethers.Contract(
                     event.childAddress,
                     abi.abi,
@@ -140,6 +148,8 @@ export default function EventLayout({ event }: { event: Event }) {
                             value: ethers.utils.parseEther(
                                 event.fee.toString()
                             ),
+                            gasPrice: ethers.utils.parseEther('100')._hex,
+                            gasLimit: ethers.BigNumber.from('900000')._hex,
                         })
                         .then(() => {
                             console.log('Success!')
