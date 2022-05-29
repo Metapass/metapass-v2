@@ -71,7 +71,7 @@ const Create: NextPage = () => {
 
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
-            ? '0x40C022EFf201b45cdd1A160f8f3869cB8Ef0BFEF'
+            ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
             : process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
     let contract: any
 
