@@ -12,7 +12,7 @@ function Contract({ children }: any) {
     const [web3] = useContext(web3Context)
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
-            ? '0xbab99eBBb6E068b7Ad69DC57745dD9f50D546585'
+            ? process.env.NEXT_PUBLIC_FACTORY_CONTRACT
             : process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
 
     const [factoryContract, setFactoryContract]: any = useState(undefined)
