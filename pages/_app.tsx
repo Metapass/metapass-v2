@@ -8,16 +8,13 @@ import Web3Wrapper from '../utils/web3Context'
 import { Toaster } from 'react-hot-toast'
 import Contract from '../utils/contractContext'
 import Script from 'next/script'
-import LogRocket from 'logrocket'
+
 import splitbee from '@splitbee/web'
 import { useEffect } from 'react'
+import ChatwootWidget from '../components/Elements/Chatwoot.component'
 
 function MyApp({ Component, pageProps }: AppProps) {
-    useEffect(() => {
-        LogRocket.init(process.env.NEXT_PUBLIC_LOGROCKET_APP_ID as string)
-        splitbee.init()
-        console.log('Enviroment ', process.env.NEXT_PUBLIC_ENV)
-    }, [])
+ 
 
     return (
         <>
@@ -68,6 +65,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                     <Contract>
                         <Toaster />
                         <ChakraProvider theme={theme}>
+                            <ChatwootWidget />
                             <Component {...pageProps} />
                         </ChakraProvider>
                     </Contract>

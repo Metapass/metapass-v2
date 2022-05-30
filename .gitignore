@@ -4,21 +4,22 @@
 /node_modules
 /.pnp
 .pnp.js
-package-lock.json
 v2mp.code-workspace
-yarn.lock
 # testing
 /coverage
 
 # next.js
 /.next/
 /out/
+.vscode
 
+package-lock.json
 # production
 /build
 .env
 # misc
 .DS_Store
+
 *.pem
 .gitignore
 # debug
@@ -37,8 +38,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-# package-lock.json
-yarn.lock
 nextconfig.txt
 pages/events/
 /.github/

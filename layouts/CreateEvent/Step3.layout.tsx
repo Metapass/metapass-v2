@@ -38,7 +38,7 @@ import { useContext, useState } from 'react'
 import { FaTrash, FaYoutube } from 'react-icons/fa'
 import Dropzone from 'react-dropzone'
 import { HiOutlineChevronRight, HiUpload } from 'react-icons/hi'
-import { getBuffer, getBlob, uploadImage } from '../../utils/imageHelper'
+import { getBuffer, getBlob, uploadToCloudinary } from '../../utils/imageHelper'
 import { walletContext } from '../../utils/walletContext'
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
@@ -145,9 +145,10 @@ export default function Step3({
                                         let data = await getBuffer(
                                             acceptedFiles[0]
                                         )
-                                        let res: string = await uploadImage(
-                                            data
-                                        )
+                                        let res: string =
+                                            await uploadToCloudinary(
+                                                acceptedFiles[0]
+                                            )
                                         console.log(res)
                                         setFormDetails({
                                             ...formDetails,
@@ -355,8 +356,8 @@ export default function Step3({
                                                                 data
                                                             )
                                                         let res: string =
-                                                            await uploadImage(
-                                                                bytedata
+                                                            await uploadToCloudinary(
+                                                                data
                                                             )
                                                         console.log(res)
                                                         setFormDetails({
@@ -429,8 +430,8 @@ export default function Step3({
                                                                 data
                                                             )
                                                         let res: string =
-                                                            await uploadImage(
-                                                                bytedata
+                                                            await uploadToCloudinary(
+                                                                data
                                                             )
                                                         console.log(res)
                                                         setFormDetails({
@@ -651,8 +652,8 @@ export default function Step3({
                                                                             data
                                                                         )
                                                                     let res: string =
-                                                                        await uploadImage(
-                                                                            bytedata
+                                                                        await uploadToCloudinary(
+                                                                            data
                                                                         )
                                                                     console.log(
                                                                         res

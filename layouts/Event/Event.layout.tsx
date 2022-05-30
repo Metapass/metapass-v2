@@ -52,9 +52,23 @@ import useCheckMobileScreen from '../../utils/useMobileDetect'
 import useMobileDetect from '../../utils/useMobileDetect'
 import { Biconomy } from '@biconomy/mexa'
 
+import { auth } from '../../utils/firebaseUtils'
+import { onAuthStateChanged } from 'firebase/auth'
+import { send } from '@metapasshq/msngr'
+import { useRouter } from 'next/router'
+import { JsonRpcError, RPCError } from 'magic-sdk'
+import { EthereumRpcError } from 'eth-rpc-errors'
+import { SerializedEthereumRpcError } from 'eth-rpc-errors/dist/classes'
+
 declare const window: any
 
-export default function EventLayout({ event }: { event: Event }) {
+export default function EventLayout({
+    event,
+    address,
+}: {
+    event: Event
+    address: string
+}) {
     const [image, setImage] = useState(event.image.image)
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
@@ -88,8 +102,16 @@ export default function EventLayout({ event }: { event: Event }) {
         'DEC',
     ]
 
+    const [user, setUser] = useState<any>()
+    const router = useRouter()
+
+    onAuthStateChanged(auth, (user) => {
+        user ? setUser(user) : setUser(null)
+    })
+
     const [wallet] = useContext(walletContext)
     const buyTicket = async () => {
+      if (user){
         if (wallet.address) {
             if (typeof window.ethereum != undefined) {
                 const { magic, web3, network } = LinkMagic(
@@ -167,45 +189,119 @@ export default function EventLayout({ event }: { event: Event }) {
                             setIsLoading(false)
                         })
                 } catch (e: any) {
+                   toast.dismiss('minting')
                     toast(
                         'An error occured! Share error code: ' +
                             e.code +
-                            ' with the team for reference.'
-                    )
-                    setIsLoading(false)
+                            ' with the team for reference.')
+                    
+                   
+                        const log = {
+                            author: {
+                                name: user?.displayName,
+                                url: `https://mailto-forwarder.vercel.app/?email=${user?.email}`,
+                                iconURL:
+                                    user?.photoURL ||
+                                    'https://i.imgur.com/R66g1Pe.jpg',
+                            },
+                            title: 'Mint Error',
+                            url: window.location.href,
+                            description:
+                                'Error while minting possible json rpc error due to minting more than once',
+                            color: 14423100,
+                            fields: [
+                                {
+                                    name: 'error link',
+                                    value: `https://issue-forwarder.vercel.app/?issue=${JSON.stringify(
+                                        e
+                                    )
+                                        .split(' ')
+                                        .join('%20')}`,
+                                    inline: true,
+                                },
+                                {
+                                    name: 'Wallet Address',
+                                    value: wallet?.address,
+                                    inline: false,
+                                },
+                                {
+                                    name: 'Event Address',
+                                    value: event.childAddress,
+                                    inline: false,
+                                },
+                                {
+                                    name: 'Ticket ID',
+                                    value: String(event.tickets_sold + 1),
+                                },
+                                {
+                                    name: 'Event',
+                                    value: event.title,
+                                },
+                                {
+                                    name: 'route',
+                                    value: window.location.href,
+                                    inline: false,
+                                },
+                            ],
+                            thumbnail: {
+                                url: 'https://upload.wikimedia.org/wikipedia/commons/3/38/4-Nature-Wallpapers-2014-1_ukaavUI.jpg',
+                            },
+                            image: {
+                                url: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/A_picture_from_China_every_day_108.jpg',
+                            },
+                            footer: {
+                                text: 'Oops',
+                                iconURL: '',
+                            },
+                        }
+                        await send(process.env.NEXT_PUBLIC_MILADY as string, {
+                            embeds: [log],
+                        })
+                        toast.error(e?.message as string, {
+                            id: 'error10',
+                            style: {
+                                fontSize: '12px',
+                            },
+                        })
+                        setIsLoading(false)
                 }
 
-                metapass.on('Transfer', (res) => {
-                    // toast.success('Redirecting to opensea in a few seconds')
-                    setIsLoading(false)
-                    setHasBought(true)
-                    event.category.event_type == 'In-Person' &&
-                        generateAndSendUUID(
-                            event.childAddress,
-                            wallet.address,
-                            event.tickets_sold + 1
-                        ).then((uuid) => {
-                            setQrId(String(uuid))
-                        })
-                    let link =
-                        opensea +
-                        '/' +
-                        event.childAddress +
-                        '/' +
-                        ethers.BigNumber.from(res).toNumber()
 
-                    setOpenseaLink(link)
-                })
+        
+              
 
-                // metapass.once('Transfer', (res) => {
-                //     console.log(res)
-                // })
+                    metapass.on('Transfer', (res) => {
+                        // toast.success('Redirecting to opensea in a few seconds')
+
+                        setIsLoading(false)
+                        setHasBought(true)
+                        event.category.event_type == 'In-Person' &&
+                            generateAndSendUUID(
+                                event.childAddress,
+                                wallet.address,
+                                event.tickets_sold + 1
+                            ).then((uuid) => {
+                                setQrId(String(uuid))
+                            })
+                        let link =
+                            opensea +
+                            '/' +
+                            event.childAddress +
+                            '/' +
+                            ethers.BigNumber.from(res).toNumber()
+
+                        setOpenseaLink(link)
+                    })
+                } else {
+                    console.log("Couldn't find ethereum enviornment")
+                }
             } else {
-                console.log("Couldn't find ethereum enviornment")
+                toast('Please connect your wallet')
             }
         } else {
-            toast('Please connect your wallet')
+            router.push(`/account?event_id=${address}`)
         }
+
         // console.log(eventLink)
     }
     useEffect(() => {
@@ -261,8 +357,16 @@ export default function EventLayout({ event }: { event: Event }) {
             }, 5000)
         }
     }, [hasBought])
+
     return (
         <>
+            {/* {notAuthed && (
+                <SignUpModal
+                    isOpen={isOpen}
+                    onOpen={onOpen}
+                    onClose={onClose}
+                />
+            )} */}
             {hasBought && <Confetti />}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />

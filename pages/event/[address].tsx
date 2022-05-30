@@ -160,7 +160,7 @@ const Event: NextPage = () => {
             >
                 <Box maxW="1000px" w="full">
                     <Skeleton isLoaded={featEvent.id !== ''}>
-                        <EventLayout event={featEvent} />
+                        <EventLayout event={featEvent} address={address as string} />
                     </Skeleton>
                 </Box>
             </Flex>
