@@ -229,7 +229,7 @@ const Create: NextPage = () => {
                                     alt="twitter"
                                     onClick={() => {
                                         window.open(
-                                            `http://twitter.com/share?text=I just created NFT Ticketed event for ${event.title} on metapass. Get your NFT Ticket now!&url=https://app.metapasshq.xyz/event/${child}`,
+                                            `http://twitter.com/share?text=I just created NFT Ticketed event for ${event.title} on Metapass. Get your NFT Ticket now!&url=https://app.metapasshq.xyz/event/${child}`,
                                             '_blank'
                                         )
                                     }}
@@ -250,7 +250,7 @@ const Create: NextPage = () => {
                                     alt="whatsapp"
                                     onClick={() => {
                                         window.open(
-                                            `https://api.whatsapp.com/send?text=I just created NFT Ticketed event for ${event.title} on metapass. Get your NFT Ticket now at https://app.metapasshq.xyz/event/${child}`
+                                            `https://api.whatsapp.com/send?text=I just created NFT Ticketed event for ${event.title} on Metapass. Get your NFT Ticket now at https://app.metapasshq.xyz/event/${child}`
                                         )
                                     }}
                                 />
@@ -270,7 +270,7 @@ const Create: NextPage = () => {
                                     alt="telegram"
                                     onClick={() => {
                                         window.open(
-                                            `https://telegram.me/share/url?url=https://app.metapasshq.xyz/event/${child}&text=I just created NFT Ticketed event for ${event.title} on metapass. Get your NFT Ticket now.`,
+                                            `https://telegram.me/share/url?url=https://app.metapasshq.xyz/event/${child}&text=I just created NFT Ticketed event for ${event.title} on Metapass. Get your NFT Ticket now.`,
                                             '_blank'
                                         )
                                     }}
