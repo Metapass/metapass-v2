@@ -111,152 +111,98 @@ export default function EventLayout({
 
     const [wallet] = useContext(walletContext)
     const buyTicket = async () => {
-      if (user){
-        if (wallet.address) {
-            if (typeof window.ethereum != undefined) {
-                const { magic, web3, network } = LinkMagic(
-                    process.env.NEXT_PUBLIC_ENV as string
-                )
-                console.log(wallet.type)
+        if (user) {
+            if (wallet.address) {
+                if (typeof window.ethereum != undefined) {
+                    const { magic, web3, network } = LinkMagic(
+                        process.env.NEXT_PUBLIC_ENV as string
+                    )
+                    console.log(wallet.type)
 
-                const provider = new ethers.providers.Web3Provider(
-                    wallet.type === 'magic'
-                        ? magic.rpcProvider
-                        : wallet.type === 'wc'
-                        ? window.w3.currentProvider
-                        : window.ethereum
-                )
-                const biconomy = new Biconomy(provider, {
-                    apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
-                    debug: true,
-                })
-                setIsLoading(true)
-                let ethersProvider = new ethers.providers.Web3Provider(biconomy)
+                    const provider = new ethers.providers.Web3Provider(
+                        wallet.type === 'magic'
+                            ? magic.rpcProvider
+                            : wallet.type === 'wc'
+                            ? window.w3.currentProvider
+                            : window.ethereum
+                    )
+                    const biconomy = new Biconomy(provider, {
+                        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
+                        debug: true,
+                    })
+                    setIsLoading(true)
+                    let ethersProvider = new ethers.providers.Web3Provider(
+                        biconomy
+                    )
 
-                const signer = ethersProvider.getSigner()
-                let metapass = new ethers.Contract(
-                    event.childAddress,
-                    abi.abi,
-                    signer
-                )
-                console.log(metapass)
-                // console.log("creating image")
-                let { img, fastimg } = await ticketToIPFS(
-                    event.title,
-                    event.tickets_sold + 1,
-                    event.image.image,
-                    event.date.split('T')[0],
-                    wallet?.ens ||
-                        wallet?.address?.substring(0, 4) +
-                            '...' +
-                            wallet?.address?.substring(
-                                wallet?.address?.length - 4
-                            )
-                )
-                // console.log(img,"created")
-                setMintedImage(fastimg)
-                let metadata = {
-                    name: event.title,
-                    description: `NFT Ticket for ${event.title}`,
-                    image: img,
-                    properties: {
-                        'Ticket Number': event.tickets_sold + 1,
-                    },
-                }
+                    const signer = ethersProvider.getSigner()
+                    let metapass = new ethers.Contract(
+                        event.childAddress,
+                        abi.abi,
+                        signer
+                    )
+                    console.log(metapass)
+                    toast.loading('Generating your unique ticket', {
+                        duration: 5000,
+                    })
+                    let { img, fastimg } = await ticketToIPFS(
+                        event.title,
+                        event.tickets_sold + 1,
+                        event.image.image,
+                        event.date.split('T')[0],
+                        wallet?.ens ||
+                            wallet?.address?.substring(0, 4) +
+                                '...' +
+                                wallet?.address?.substring(
+                                    wallet?.address?.length - 4
+                                )
+                    )
+                    setMintedImage(fastimg)
+                    let metadata = {
+                        name: event.title,
+                        description: `NFT Ticket for ${event.title}`,
+                        image: img,
+                        properties: {
+                            'Ticket Number': event.tickets_sold + 1,
+                        },
+                    }
 
-                try {
-                    metapass
-                        .getTix(JSON.stringify(metadata), {
-                            value: ethers.utils.parseEther(
-                                event.fee.toString()
-                            ),
-                            gasPrice: ethers.utils.parseEther('100')._hex,
-                            gasLimit: ethers.BigNumber.from('900000')._hex,
-                        })
-                        .then(() => {
-                            console.log('Success!')
-                            // setIsLoading(false)
-                            // toast.success("Ticket Minted! Your txn might take a few seconds to confirm")
-                        })
-                        .catch((err: any) => {
-                            console.log('error', err)
-                            toast.error(err.data?.message, {
-                                id: 'error10',
-                                style: {
-                                    fontSize: '12px',
-                                },
+                    try {
+                        metapass
+                            .getTix(JSON.stringify(metadata), {
+                                value: ethers.utils.parseEther(
+                                    event.fee.toString()
+                                )._hex,
+                                gasPrice:
+                                    event.fee == 0
+                                        ? ethers.utils.parseEther('100')._hex
+                                        : ethers.utils.parseEther('0.01')._hex,
+                                gasLimit:
+                                    event.fee == 0
+                                        ? ethers.utils.parseEther('900000')._hex
+                                        : ethers.utils.parseEther('0.1')._hex,
                             })
-                            setIsLoading(false)
-                        })
-                } catch (e: any) {
-                   toast.dismiss('minting')
-                    toast(
-                        'An error occured! Share error code: ' +
-                            e.code +
-                            ' with the team for reference.')
-                    
-                   
-                        const log = {
-                            author: {
-                                name: user?.displayName,
-                                url: `https://mailto-forwarder.vercel.app/?email=${user?.email}`,
-                                iconURL:
-                                    user?.photoURL ||
-                                    'https://i.imgur.com/R66g1Pe.jpg',
-                            },
-                            title: 'Mint Error',
-                            url: window.location.href,
-                            description:
-                                'Error while minting possible json rpc error due to minting more than once',
-                            color: 14423100,
-                            fields: [
-                                {
-                                    name: 'error link',
-                                    value: `https://issue-forwarder.vercel.app/?issue=${JSON.stringify(
-                                        e
-                                    )
-                                        .split(' ')
-                                        .join('%20')}`,
-                                    inline: true,
-                                },
-                                {
-                                    name: 'Wallet Address',
-                                    value: wallet?.address,
-                                    inline: false,
-                                },
-                                {
-                                    name: 'Event Address',
-                                    value: event.childAddress,
-                                    inline: false,
-                                },
-                                {
-                                    name: 'Ticket ID',
-                                    value: String(event.tickets_sold + 1),
-                                },
-                                {
-                                    name: 'Event',
-                                    value: event.title,
-                                },
-                                {
-                                    name: 'route',
-                                    value: window.location.href,
-                                    inline: false,
-                                },
-                            ],
-                            thumbnail: {
-                                url: 'https://upload.wikimedia.org/wikipedia/commons/3/38/4-Nature-Wallpapers-2014-1_ukaavUI.jpg',
-                            },
-                            image: {
-                                url: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/A_picture_from_China_every_day_108.jpg',
-                            },
-                            footer: {
-                                text: 'Oops',
-                                iconURL: '',
-                            },
-                        }
-                        await send(process.env.NEXT_PUBLIC_MILADY as string, {
-                            embeds: [log],
-                        })
+                            .then(() => {
+                                console.log('Success!')
+                            })
+                            .catch((err: any) => {
+                                console.log('error', err)
+                                toast.error(err.data?.message, {
+                                    id: 'error10',
+                                    style: {
+                                        fontSize: '12px',
+                                    },
+                                })
+                                setIsLoading(false)
+                            })
+                    } catch (e: any) {
+                        toast.dismiss('minting')
+                        toast(
+                            'An error occured! Share error code: ' +
+                                e.code +
+                                ' with the team for reference.'
+                        )
+
                         toast.error(e?.message as string, {
                             id: 'error10',
                             style: {
@@ -264,15 +210,9 @@ export default function EventLayout({
                             },
                         })
                         setIsLoading(false)
-                }
-
-
-        
-              
+                    }
 
                     metapass.on('Transfer', (res) => {
-                        // toast.success('Redirecting to opensea in a few seconds')
-
                         setIsLoading(false)
                         setHasBought(true)
                         event.category.event_type == 'In-Person' &&

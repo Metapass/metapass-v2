@@ -34,7 +34,9 @@ import { walletContext } from '../../utils/walletContext'
 import { Event } from '../../types/Event.type'
 import { ethers } from 'ethers'
 import abi from '../../utils/MetapassFactory.json'
+import MetapassABI from '../../utils/Metapass.json'
 import { send } from '@metapasshq/msngr'
+import axios from 'axios'
 
 declare const window: any
 
@@ -74,6 +76,7 @@ const Create: NextPage = () => {
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
             : process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
+
     let contract: any
 
     const [eventLink, setEventLink] = useState<any>(undefined)
@@ -123,10 +126,47 @@ const Create: NextPage = () => {
                 b64EncodeUnicode(JSON.stringify(event.category)),
                 'undefined'
             )
-            txn.wait().then((res: any) => {
+            txn.wait().then(async (res: any) => {
                 let child = res.events.filter(
                     (e: any) => e.event === 'childEvent'
                 )[0].args[0]
+                if (event.fee == 0) {
+                    await axios({
+                        method: 'post',
+                        url: 'https://api.biconomy.io/api/v1/smart-contract/public-api/addContract',
+                        data: {
+                            contractName: event.title,
+                            contractAddress: child,
+                            contractType: 'SC',
+                            abi: JSON.stringify(MetapassABI.abi),
+                            walletType: '',
+                            metaTransactionType: 'TRUSTED_FORWARDER',
+                        },
+                        headers: {
+                            authToken: process.env
+                                .NEXT_PUBLIC_BICONOMY_DASH_API as string,
+                            apiKey: process.env
+                                .NEXT_PUBLIC_BICONOMY_API as string,
+                        },
+                    })
+                    await axios({
+                        method: 'post',
+                        url: 'https://api.biconomy.io/api/v1/meta-api/public-api/addMethod',
+                        data: {
+                            name: event.title,
+                            apiType: 'native',
+                            methodType: 'write',
+                            contractAddress: child,
+                            method: 'getTix',
+                        },
+                        headers: {
+                            authToken: process.env
+                                .NEXT_PUBLIC_BICONOMY_DASH_API as string,
+                            apiKey: process.env
+                                .NEXT_PUBLIC_BICONOMY_API as string,
+                        },
+                    })
+                }
                 setEventLink(`${window.location.origin}/event/${child}`)
                 setIsPublished(true)
                 setInTxn(false)
@@ -134,66 +174,6 @@ const Create: NextPage = () => {
             })
         } catch (err: any) {
             console.log('error while txn', err)
-
-            const log = {
-                author: {
-                    name: wallet?.address as string,
-                    url: `https://polygonscan.com/address/${wallet?.address}`,
-                    iconURL: 'https://i.imgur.com/R66g1Pe.jpg',
-                },
-                title: 'Mint Error',
-                url: window.location.href,
-                description:
-                    'Error while minting possible json rpc error due to minting more than once',
-                color: 14423100,
-                fields: [
-                    {
-                        name: 'error link',
-                        value: `https://issue-forwarder.vercel.app/?issue=${JSON.stringify(
-                            err
-                        )
-                            .split(' ')
-                            .join('%20')}`,
-                        inline: true,
-                    },
-                    {
-                        name: 'Wallet Address',
-                        value: wallet?.address,
-                        inline: false,
-                    },
-                    {
-                        name: 'Event Address',
-                        value: event.childAddress,
-                        inline: false,
-                    },
-                    {
-                        name: 'Ticket ID',
-                        value: String(event.tickets_sold + 1),
-                    },
-                    {
-                        name: 'Event',
-                        value: event.title,
-                    },
-                    {
-                        name: 'route',
-                        value: window.location.href,
-                        inline: false,
-                    },
-                ],
-                thumbnail: {
-                    url: 'https://upload.wikimedia.org/wikipedia/commons/3/38/4-Nature-Wallpapers-2014-1_ukaavUI.jpg',
-                },
-                image: {
-                    url: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/A_picture_from_China_every_day_108.jpg',
-                },
-                footer: {
-                    text: 'Oops',
-                    iconURL: '',
-                },
-            }
-            await send(process.env.NEXT_PUBLIC_MILADY as string, {
-                embeds: [log],
-            })
         }
     }
 
@@ -249,7 +229,7 @@ const Create: NextPage = () => {
                                     alt="twitter"
                                     onClick={() => {
                                         window.open(
-                                            `http://twitter.com/share?text=I just created NFT Ticketed event for ${event.title} on metapass. Get your NFT Ticket now!&url=https://metapasshq.xyz/event/${child}`,
+                                            `http://twitter.com/share?text=I just created NFT Ticketed event for ${event.title} on metapass. Get your NFT Ticket now!&url=https://app.metapasshq.xyz/event/${child}`,
                                             '_blank'
                                         )
                                     }}
@@ -270,7 +250,7 @@ const Create: NextPage = () => {
                                     alt="whatsapp"
                                     onClick={() => {
                                         window.open(
-                                            `https://api.whatsapp.com/send?text=I just created NFT Ticketed event for ${event.title} on metapass. Get your NFT Ticket now at https://metapasshq.xyz/event/${child}`
+                                            `https://api.whatsapp.com/send?text=I just created NFT Ticketed event for ${event.title} on metapass. Get your NFT Ticket now at https://app.metapasshq.xyz/event/${child}`
                                         )
                                     }}
                                 />
@@ -290,7 +270,7 @@ const Create: NextPage = () => {
                                     alt="telegram"
                                     onClick={() => {
                                         window.open(
-                                            `https://telegram.me/share/url?url=https://metapasshq.xyz/event/${child}&text=I just created NFT Ticketed event for ${event.title} on metapass. Get your NFT Ticket now.`,
+                                            `https://telegram.me/share/url?url=https://app.metapasshq.xyz/event/${child}&text=I just created NFT Ticketed event for ${event.title} on metapass. Get your NFT Ticket now.`,
                                             '_blank'
                                         )
                                     }}
