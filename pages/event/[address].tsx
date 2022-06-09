@@ -1,6 +1,6 @@
 import { Box, Flex } from '@chakra-ui/react'
 import type { NextPage } from 'next'
-import EventCard from '../../components/Card/EventCard.component'
+
 import {
     Event,
     DescriptionType,
@@ -10,8 +10,7 @@ import {
 import { useEffect, useState } from 'react'
 import NavigationBar from '../../components/Navigation/NavigationBar.component'
 import EventLayout from '../../layouts/Event/Event.layout'
-import EventPageCTA from '../../layouts/EventPage/EventPageCTA.layout'
-// import { events } from "../../utils/testData";
+
 import { Skeleton } from '@chakra-ui/react'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import axios from 'axios'
@@ -145,6 +144,7 @@ const Event: NextPage = () => {
             })
         // console.log(featEvents)
     }, [address])
+
     return (
         <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
             <NavigationBar mode="white" />
@@ -160,7 +160,10 @@ const Event: NextPage = () => {
             >
                 <Box maxW="1000px" w="full">
                     <Skeleton isLoaded={featEvent.id !== ''}>
-                        <EventLayout event={featEvent} address={address as string} />
+                        <EventLayout
+                            event={featEvent}
+                            address={address as string}
+                        />
                     </Skeleton>
                 </Box>
             </Flex>

@@ -70,7 +70,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
 
     return (
         <>
-            <Modal isOpen onClose={onClose} isCentered>
+            <Modal isOpen={isOpen} onClose={onClose} isCentered>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader textAlign="center">Get Started</ModalHeader>

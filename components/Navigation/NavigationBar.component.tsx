@@ -936,20 +936,22 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     </MenuItem>
                                     <MenuDivider color="blackAlpha.200" />
                                     <MenuItem
-                                        onClick={
+                                        onClick={() => {
                                             walletType === 'wc'
-                                                ? disconnectWc
-                                                : disconnectMetaMask
-                                        }
+                                                ? disconnectWc()
+                                                : disconnectMetaMask()
+
+                                            auth.signOut()
+                                        }}
                                         fontSize="sm"
                                         icon={<IoIosLogOut size="20px" />}
                                         color="red.500"
                                     >
-                                        Disconnect Wallet
+                                        Logout
                                     </MenuItem>
-                                    <MenuDivider color="blackAlpha.200" />
+                                    {/* <MenuDivider color="blackAlpha.200" /> */}
 
-                                    <MenuItem
+                                    {/* <MenuItem
                                         onClick={() => router.push('/account')}
                                         icon={<BiUserCircle size="20px" />}
                                         color="blackAlpha.700"
@@ -960,16 +962,16 @@ export default function NavigationBar({ mode = 'dark' }) {
                                         >
                                             Account
                                         </Text>
-                                    </MenuItem>
-                                    <MenuDivider color="blackAlpha.200" />
-                                    <MenuItem
+                                    </MenuItem> */}
+                                    {/* <MenuDivider color="blackAlpha.200" /> */}
+                                    {/* <MenuItem
                                         onClick={() => auth.signOut()}
                                         fontSize="sm"
                                         icon={<IoIosLogOut size="20px" />}
                                         color="red.500"
                                     >
                                         Logout
-                                    </MenuItem>
+                                    </MenuItem> */}
                                 </MenuList>
                             </Menu>
                         ) : (

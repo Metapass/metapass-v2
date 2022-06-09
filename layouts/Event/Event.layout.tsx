@@ -20,6 +20,7 @@ import {
     useClipboard,
     IconButton,
     Fade,
+    useDisclosure,
 } from '@chakra-ui/react'
 import { useState, useContext, useEffect } from 'react'
 import ReactPlayer from 'react-player'
@@ -51,14 +52,16 @@ import GenerateQR from '../../utils/generateQR'
 import useCheckMobileScreen from '../../utils/useMobileDetect'
 import useMobileDetect from '../../utils/useMobileDetect'
 import { Biconomy } from '@biconomy/mexa'
-
+import {
+    onAuthStateChanged,
+    isSignInWithEmailLink,
+    signInWithEmailLink,
+} from 'firebase/auth'
 import { auth } from '../../utils/firebaseUtils'
-import { onAuthStateChanged } from 'firebase/auth'
-import { send } from '@metapasshq/msngr'
+
 import { useRouter } from 'next/router'
-import { JsonRpcError, RPCError } from 'magic-sdk'
-import { EthereumRpcError } from 'eth-rpc-errors'
-import { SerializedEthereumRpcError } from 'eth-rpc-errors/dist/classes'
+
+import SignUpModal from '../../components/Modals/SignUp.modal'
 
 declare const window: any
 
@@ -82,6 +85,8 @@ export default function EventLayout({
     const [openseaLink, setOpenseaLink] = useState<string>('')
     const [qrId, setQrId] = useState<string>('')
     const currentDevice = useMobileDetect()
+    const { isOpen, onOpen, onClose } = useDisclosure()
+
     let opensea =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? 'https://testnets.opensea.io/assets/mumbai'
@@ -239,11 +244,29 @@ export default function EventLayout({
                 toast('Please connect your wallet')
             }
         } else {
-            router.push(`/account?event_id=${address}`)
+            onOpen()
         }
 
         // console.log(eventLink)
     }
+    useEffect(() => {
+        if (typeof window !== undefined) {
+            if (isSignInWithEmailLink(auth, window.location.href!)) {
+                let email = window.localStorage.getItem('emailForSignIn')
+                if (!email) {
+                    toast.error('Could not get email', {
+                        id: 'error10',
+                        duration: 5000,
+                    })
+                }
+                signInWithEmailLink(auth, email as string, window.location.href)
+                    .then((result) => {
+                        window?.localStorage.removeItem('emailForSignIn')
+                    })
+                    .catch((error) => {})
+            }
+        }
+    }, [])
     useEffect(() => {
         getAllEnsLinked(event.owner)
             .then((data) => {
@@ -271,25 +294,25 @@ export default function EventLayout({
 
         // console.log(currentDevice.isMobile(), 'is mobile')
         if (event.link) {
-            const exceptions = [
-                'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                'https://thememe.club',
-                'https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058',
-            ]
-            if (!exceptions.includes(event.link)) {
-                const declink = decryptLink(event.link)
-                console.log(declink, 'if')
-                setEventLink(declink)
-            } else {
-                console.log(event.link, 'else')
-                setEventLink(event.link)
-            }
+            // const exceptions = [
+            //     'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            //     'https://thememe.club',
+            //     'https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058',
+            // ]
+            // if (!exceptions.includes(event.link)) {
+            const declink = decryptLink(event.link)
+            console.log(declink, 'decrypted link')
+            setEventLink(declink)
+            // } else {
+            //     console.log(event.link, 'else')
+            //     setEventLink(event.link)
+            // }
             // console.log(eventLink,value)
         }
     }, [])
 
     const [isDisplayed, setIsDisplayed] = useState(false)
-    // const {isOpen:isTicketOpen, onOpen:onTicketOpen, onClose:onTicketClose} = useDisclosure();
+
     useEffect(() => {
         if (hasBought) {
             setInterval(() => {
@@ -308,6 +331,13 @@ export default function EventLayout({
                 />
             )} */}
             {hasBought && <Confetti />}
+            {user === null && (
+                <SignUpModal
+                    isOpen={isOpen}
+                    onOpen={onOpen}
+                    onClose={onClose}
+                />
+            )}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />
                 <ModalContent rounded="2xl" bgColor={'transparent'}>
