@@ -45,7 +45,7 @@ import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 import { decryptLink } from '../../utils/linkResolvers'
-import LinkMagic from '../../utils/Magic'
+
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import useCheckMobileScreen from '../../utils/useMobileDetect'
@@ -91,14 +91,9 @@ export default function EventLayout({ event }: { event: Event }) {
     const buyTicket = async () => {
         if (wallet.address) {
             if (typeof window.ethereum != undefined) {
-                const { magic, web3, network } = LinkMagic(
-                    process.env.NEXT_PUBLIC_ENV as string
-                )
                 console.log(wallet.type)
                 const provider = new ethers.providers.Web3Provider(
-                    wallet.type === 'magic'
-                        ? magic.rpcProvider
-                        : wallet.type === 'wc'
+                    wallet.type === 'wc'
                         ? window.w3.currentProvider
                         : window.ethereum
                 )

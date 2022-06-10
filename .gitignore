@@ -9,7 +9,8 @@ v2mp.code-workspace
 yarn.lock
 # testing
 /coverage
-
+archives/
+.vscode
 # next.js
 /.next/
 /out/
