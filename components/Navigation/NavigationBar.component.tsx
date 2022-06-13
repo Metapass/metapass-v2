@@ -941,7 +941,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                                 ? disconnectWc()
                                                 : disconnectMetaMask()
 
-                                            auth.signOut()
+                                            // auth.signOut()
                                         }}
                                         fontSize="sm"
                                         icon={<IoIosLogOut size="20px" />}
