@@ -178,14 +178,8 @@ export default function EventLayout({
                                 value: ethers.utils.parseEther(
                                     event.fee.toString()
                                 )._hex,
-                                gasPrice:
-                                    event.fee == 0
-                                        ? ethers.utils.parseEther('100')._hex
-                                        : ethers.utils.parseEther('0.01')._hex,
-                                gasLimit:
-                                    event.fee == 0
-                                        ? ethers.utils.parseEther('900000')._hex
-                                        : ethers.utils.parseEther('0.1')._hex,
+                                gasPrice: 25,
+                                gasLimit: event.fee == 0 ? 900000 : 200000,
                             })
                             .then(() => {
                                 console.log('Success!')
