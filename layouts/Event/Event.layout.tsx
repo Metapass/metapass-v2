@@ -84,7 +84,6 @@ export default function EventLayout({
     const [ensName, setEnsName] = useState<string>('')
     const [openseaLink, setOpenseaLink] = useState<string>('')
     const [qrId, setQrId] = useState<string>('')
-    const currentDevice = useMobileDetect()
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     let opensea =
@@ -173,27 +172,49 @@ export default function EventLayout({
                     }
 
                     try {
-                        metapass
-                            .getTix(JSON.stringify(metadata), {
-                                value: ethers.utils.parseEther(
-                                    event.fee.toString()
-                                )._hex,
-                                gasPrice: 25,
-                                gasLimit: event.fee == 0 ? 900000 : 200000,
-                            })
-                            .then(() => {
-                                console.log('Success!')
-                            })
-                            .catch((err: any) => {
-                                console.log('error', err)
-                                toast.error(err.data?.message, {
-                                    id: 'error10',
-                                    style: {
-                                        fontSize: '12px',
-                                    },
+                        if (event.fee === 0) {
+                            metapass
+                                .getTix(JSON.stringify(metadata), {
+                                    value: ethers.utils.parseEther(
+                                        event.fee.toString()
+                                    )._hex,
+                                    gasPrice: 25,
+                                    gasLimit: event.fee == 0 ? 900000 : 200000,
                                 })
-                                setIsLoading(false)
-                            })
+                                .then(() => {
+                                    console.log('Success!')
+                                })
+                                .catch((err: any) => {
+                                    console.log('error', err)
+                                    toast.error(err.data?.message, {
+                                        id: 'error10',
+                                        style: {
+                                            fontSize: '12px',
+                                        },
+                                    })
+                                    setIsLoading(false)
+                                })
+                        } else {
+                            metapass
+                                .getTix(JSON.stringify(metadata), {
+                                    value: ethers.utils.parseEther(
+                                        event.fee.toString()
+                                    )._hex,
+                                })
+                                .then(() => {
+                                    console.log('Success!')
+                                })
+                                .catch((err: any) => {
+                                    console.log('error', err)
+                                    toast.error(err.data?.message, {
+                                        id: 'error10',
+                                        style: {
+                                            fontSize: '12px',
+                                        },
+                                    })
+                                    setIsLoading(false)
+                                })
+                        }
                     } catch (e: any) {
                         toast.dismiss('minting')
                         toast(

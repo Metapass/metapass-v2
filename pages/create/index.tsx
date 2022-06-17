@@ -174,6 +174,7 @@ const Create: NextPage = () => {
             })
         } catch (err: any) {
             console.log('error while txn', err)
+            setInTxn(false)
         }
     }
 
