@@ -234,7 +234,7 @@ const Create: NextPage = () => {
                                     .NEXT_PUBLIC_BICONOMY_API as string,
                             },
                         })
-                        axios({
+                        await axios({
                             method: 'post',
                             url:
                                 process.env.NEXT_PUBLIC_HUDDLE_API +
@@ -252,13 +252,22 @@ const Create: NextPage = () => {
                                     process.env.NEXT_PUBLIC_HUDDLE_KEY,
                                 ContentType: 'application/json',
                             },
-                        }).then((res: any) => {
-                            try {
-                                contract.updateLink(child, res.data.meetingLink)
-                            } catch (e) {
-                                console.log('error making huddle room ', e)
-                            }
                         })
+                            .then((res: any) => {
+                                try {
+                                    contract.updateLink(
+                                        child,
+                                        res.data.meetingLink
+                                    )
+                                } catch (e) {
+                                    console.log('error making huddle room ', e)
+                                }
+                            })
+                            .catch((e) => {
+                                console.log(e)
+                                setIsPublished(false)
+                                setInTxn(false)
+                            })
                     } else {
                         axios({
                             method: 'post',
