@@ -234,57 +234,42 @@ const Create: NextPage = () => {
                                     .NEXT_PUBLIC_BICONOMY_API as string,
                             },
                         })
-                        axios({
-                            method: 'post',
-                            url:
-                                process.env.NEXT_PUBLIC_HUDDLE_API +
-                                '/create-meeting',
-                            data: {
-                                title: event.title,
-                                contractAd1: child,
-                                chain: 'polygon',
+                        let roomLink = await axios.post(
+                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                            {
                                 host: event.eventHost,
-                            },
-                            headers: {
-                                Accept: '*/*',
-                                Authorization:
-                                    'Bearer ' +
-                                    process.env.NEXT_PUBLIC_HUDDLE_KEY,
-                                ContentType: 'application/json',
-                            },
-                        }).then((res: any) => {
-                            try {
-                                contract.updateLink(child, res.data.meetingLink)
-                            } catch (e) {
-                                console.log('error making huddle room ', e)
+                                title: event.title,
+                                childAddress: child,
                             }
-                        })
+                        )
+                        try {
+                            console.log(roomLink.data)
+                            await contract.updateLink(
+                                child,
+                                roomLink.data.meetingLink
+                            )
+                        } catch (e) {
+                            console.log('error making huddle room ', e)
+                        }
                     } else {
-                        axios({
-                            method: 'post',
-                            url:
-                                process.env.NEXT_PUBLIC_HUDDLE_API +
-                                '/create-meeting',
-                            data: {
-                                title: event.title,
-                                contractAd1: child,
-                                chain: 'polygon',
+                        let roomLink = await axios.post(
+                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                            {
                                 host: event.eventHost,
-                            },
-                            headers: {
-                                Accept: '*/*',
-                                Authorization:
-                                    'Bearer ' +
-                                    process.env.NEXT_PUBLIC_HUDDLE_KEY,
-                                ContentType: 'application/json',
-                            },
-                        }).then((res: any) => {
-                            try {
-                                contract.updateLink(child, res.data.meetingLink)
-                            } catch (e) {
-                                console.log('error making huddle room ', e)
+                                title: event.title,
+                                childAddress: child,
                             }
-                        })
+                        )
+                        try {
+                            console.log(roomLink.data.roomLink)
+
+                            await contract.updateLink(
+                                child,
+                                roomLink.data.meetingLink
+                            )
+                        } catch (e) {
+                            console.log('error making huddle room ', e)
+                        }
                     }
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
