@@ -234,66 +234,36 @@ const Create: NextPage = () => {
                                     .NEXT_PUBLIC_BICONOMY_API as string,
                             },
                         })
-                        await axios({
-                            method: 'post',
-                            url:
-                                process.env.NEXT_PUBLIC_HUDDLE_API +
-                                '/create-meeting',
-                            data: {
-                                title: event.title,
-                                contractAd1: child,
-                                chain: 'polygon',
-                                host: event.eventHost,
-                            },
-                            headers: {
-                                Accept: '*/*',
-                                Authorization:
-                                    'Bearer ' +
-                                    process.env.NEXT_PUBLIC_HUDDLE_KEY,
-                                ContentType: 'application/json',
-                            },
+                        let roomLink = await axios.post('/api/createRoom', {
+                            host: event.eventHost,
+                            title: event.title,
+                            child: child,
                         })
-                            .then((res: any) => {
-                                try {
-                                    contract.updateLink(
-                                        child,
-                                        res.data.meetingLink
-                                    )
-                                } catch (e) {
-                                    console.log('error making huddle room ', e)
-                                }
-                            })
-                            .catch((e) => {
-                                console.log(e)
-                                setIsPublished(false)
-                                setInTxn(false)
-                            })
+                        try {
+                            console.log(roomLink.data)
+                            await contract.updateLink(
+                                child,
+                                'https://dakshk.xyz'
+                            )
+                        } catch (e) {
+                            console.log('error making huddle room ', e)
+                        }
                     } else {
-                        axios({
-                            method: 'post',
-                            url:
-                                process.env.NEXT_PUBLIC_HUDDLE_API +
-                                '/create-meeting',
-                            data: {
-                                title: event.title,
-                                contractAd1: child,
-                                chain: 'polygon',
-                                host: event.eventHost,
-                            },
-                            headers: {
-                                Accept: '*/*',
-                                Authorization:
-                                    'Bearer ' +
-                                    process.env.NEXT_PUBLIC_HUDDLE_KEY,
-                                ContentType: 'application/json',
-                            },
-                        }).then((res: any) => {
-                            try {
-                                contract.updateLink(child, res.data.meetingLink)
-                            } catch (e) {
-                                console.log('error making huddle room ', e)
-                            }
+                        let roomLink = await axios.post('/api/createRoom', {
+                            host: event.eventHost,
+                            title: event.title,
+                            child: child,
                         })
+                        try {
+                            console.log(roomLink.data.roomLink)
+
+                            await contract.updateLink(
+                                child,
+                                'https://dakshk.xyz'
+                            )
+                        } catch (e) {
+                            console.log('error making huddle room ', e)
+                        }
                     }
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
