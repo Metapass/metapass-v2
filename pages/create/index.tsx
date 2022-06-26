@@ -234,32 +234,38 @@ const Create: NextPage = () => {
                                     .NEXT_PUBLIC_BICONOMY_API as string,
                             },
                         })
-                        let roomLink = await axios.post('/api/createRoom', {
-                            host: event.eventHost,
-                            title: event.title,
-                            child: child,
-                        })
+                        let roomLink = await axios.post(
+                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                            {
+                                host: event.eventHost,
+                                title: event.title,
+                                childAddress: child,
+                            }
+                        )
                         try {
                             console.log(roomLink.data)
                             await contract.updateLink(
                                 child,
-                                'https://dakshk.xyz'
+                                roomLink.data.meetingLink
                             )
                         } catch (e) {
                             console.log('error making huddle room ', e)
                         }
                     } else {
-                        let roomLink = await axios.post('/api/createRoom', {
-                            host: event.eventHost,
-                            title: event.title,
-                            child: child,
-                        })
+                        let roomLink = await axios.post(
+                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                            {
+                                host: event.eventHost,
+                                title: event.title,
+                                childAddress: child,
+                            }
+                        )
                         try {
                             console.log(roomLink.data.roomLink)
 
                             await contract.updateLink(
                                 child,
-                                'https://dakshk.xyz'
+                                roomLink.data.meetingLink
                             )
                         } catch (e) {
                             console.log('error making huddle room ', e)
