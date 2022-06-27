@@ -46,7 +46,7 @@ import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 import { decryptLink } from '../../utils/linkResolvers'
-import LinkMagic from '../../utils/Magic'
+
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import useCheckMobileScreen from '../../utils/useMobileDetect'
@@ -115,13 +115,46 @@ export default function EventLayout({
 
     const [wallet] = useContext(walletContext)
     const buyTicket = async () => {
-        if (user) {
-            if (wallet.address) {
-                if (typeof window.ethereum != undefined) {
-                    const { magic, web3, network } = LinkMagic(
-                        process.env.NEXT_PUBLIC_ENV as string
-                    )
-                    console.log(wallet.type)
+        if (wallet.address) {
+            if (typeof window.ethereum != undefined) {
+                console.log(wallet.type)
+                const provider = new ethers.providers.Web3Provider(
+                    wallet.type === 'wc'
+                        ? window.w3.currentProvider
+                        : window.ethereum
+                )
+                setIsLoading(true)
+                const signer = provider.getSigner()
+                let metapass = new ethers.Contract(
+                    event.childAddress,
+                    abi.abi,
+                    signer
+                )
+                console.log(metapass)
+                // console.log("creating image")
+                let { img, fastimg } = await ticketToIPFS(
+                    event.title,
+                    event.tickets_sold + 1,
+                    event.image.image,
+                    event.date.split('T')[0],
+                    wallet?.ens ||
+                        wallet?.address?.substring(0, 4) +
+                            '...' +
+                            wallet?.address?.substring(
+                                wallet?.address?.length - 4
+                            )
+                )
+                // console.log(img,"created")
+                setMintedImage(fastimg)
+                let metadata = {
+                    name: event.title,
+                    description: `NFT Ticket for ${event.title}`,
+                    image: img,
+                    properties: {
+                        'Ticket Number': event.tickets_sold + 1,
+                    },
+                }
+
 
                     const provider = new ethers.providers.Web3Provider(
                         wallet.type === 'magic'

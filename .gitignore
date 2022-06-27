@@ -8,6 +8,9 @@ v2mp.code-workspace
 # testing
 /coverage
 archives/
+
+.vscode
+
 # next.js
 /.next/
 /out/
