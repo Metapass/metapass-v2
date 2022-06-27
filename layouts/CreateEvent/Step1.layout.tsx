@@ -103,6 +103,10 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                         <Switch
                             onChange={(e) => {
                                 setIsPaid(e.target.checked)
+                                setFormDetails({
+                                    ...formDetails,
+                                    fee: 0,
+                                })
                             }}
                             isChecked={isPaid}
                             id="price"

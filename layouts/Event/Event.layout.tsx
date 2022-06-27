@@ -20,6 +20,7 @@ import {
     useClipboard,
     IconButton,
     Fade,
+    useDisclosure,
 } from '@chakra-ui/react'
 import { useState, useContext, useEffect } from 'react'
 import ReactPlayer from 'react-player'
@@ -50,10 +51,27 @@ import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import useCheckMobileScreen from '../../utils/useMobileDetect'
 import useMobileDetect from '../../utils/useMobileDetect'
+import { Biconomy } from '@biconomy/mexa'
+import {
+    onAuthStateChanged,
+    isSignInWithEmailLink,
+    signInWithEmailLink,
+} from 'firebase/auth'
+import { auth } from '../../utils/firebaseUtils'
+
+import { useRouter } from 'next/router'
+
+import SignUpModal from '../../components/Modals/SignUp.modal'
 
 declare const window: any
 
-export default function EventLayout({ event }: { event: Event }) {
+export default function EventLayout({
+    event,
+    address,
+}: {
+    event: Event
+    address: string
+}) {
     const [image, setImage] = useState(event.image.image)
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
@@ -66,7 +84,8 @@ export default function EventLayout({ event }: { event: Event }) {
     const [ensName, setEnsName] = useState<string>('')
     const [openseaLink, setOpenseaLink] = useState<string>('')
     const [qrId, setQrId] = useState<string>('')
-    const currentDevice = useMobileDetect()
+    const { isOpen, onOpen, onClose } = useDisclosure()
+
     let opensea =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? 'https://testnets.opensea.io/assets/mumbai'
@@ -86,6 +105,13 @@ export default function EventLayout({ event }: { event: Event }) {
         'NOV',
         'DEC',
     ]
+
+    const [user, setUser] = useState<any>()
+    const router = useRouter()
+
+    onAuthStateChanged(auth, (user) => {
+        user ? setUser(user) : setUser(null)
+    })
 
     const [wallet] = useContext(walletContext)
     const buyTicket = async () => {
@@ -129,70 +155,166 @@ export default function EventLayout({ event }: { event: Event }) {
                     },
                 }
 
-                try {
-                    metapass
-                        .getTix(JSON.stringify(metadata), {
-                            value: ethers.utils.parseEther(
-                                event.fee.toString()
-                            ),
-                        })
-                        .then(() => {
-                            console.log('Success!')
-                            // setIsLoading(false)
-                            // toast.success("Ticket Minted! Your txn might take a few seconds to confirm")
-                        })
-                        .catch((err: any) => {
-                            console.log('error', err)
-                            toast.error(err.data?.message, {
-                                id: 'error10',
-                                style: {
-                                    fontSize: '12px',
-                                },
-                            })
-                            setIsLoading(false)
-                        })
-                } catch (e: any) {
-                    toast(
-                        'An error occured! Share error code: ' +
-                            e.code +
-                            ' with the team for reference.'
+
+                    const provider = new ethers.providers.Web3Provider(
+                        wallet.type === 'magic'
+                            ? magic.rpcProvider
+                            : wallet.type === 'wc'
+                            ? window.w3.currentProvider
+                            : window.ethereum
                     )
-                    setIsLoading(false)
-                }
+                    const biconomy = new Biconomy(provider, {
+                        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
+                        debug: true,
+                    })
+                    setIsLoading(true)
+                    let ethersProvider = new ethers.providers.Web3Provider(
+                        biconomy
+                    )
 
-                metapass.on('Transfer', (res) => {
-                    // toast.success('Redirecting to opensea in a few seconds')
-                    setIsLoading(false)
-                    setHasBought(true)
-                    event.category.event_type == 'In-Person' &&
-                        generateAndSendUUID(
-                            event.childAddress,
-                            wallet.address,
-                            event.tickets_sold + 1
-                        ).then((uuid) => {
-                            setQrId(String(uuid))
+                    const signer = ethersProvider.getSigner()
+                    let metapass = new ethers.Contract(
+                        event.childAddress,
+                        abi.abi,
+                        signer
+                    )
+                    console.log(metapass)
+                    toast.loading('Generating your unique ticket', {
+                        duration: 5000,
+                    })
+                    let { img, fastimg } = await ticketToIPFS(
+                        event.title,
+                        event.tickets_sold + 1,
+                        event.image.image,
+                        event.date.split('T')[0],
+                        wallet?.ens ||
+                            wallet?.address?.substring(0, 4) +
+                                '...' +
+                                wallet?.address?.substring(
+                                    wallet?.address?.length - 4
+                                )
+                    )
+                    setMintedImage(fastimg)
+                    let metadata = {
+                        name: event.title,
+                        description: `NFT Ticket for ${event.title}`,
+                        image: img,
+                        properties: {
+                            'Ticket Number': event.tickets_sold + 1,
+                        },
+                    }
+
+                    try {
+                        if (event.fee === 0) {
+                            metapass
+                                .getTix(JSON.stringify(metadata), {
+                                    value: ethers.utils.parseEther(
+                                        event.fee.toString()
+                                    )._hex,
+                                    gasPrice: 25,
+                                    gasLimit: event.fee == 0 ? 900000 : 200000,
+                                })
+                                .then(() => {
+                                    console.log('Success!')
+                                })
+                                .catch((err: any) => {
+                                    console.log('error', err)
+                                    toast.error(err.data?.message, {
+                                        id: 'error10',
+                                        style: {
+                                            fontSize: '12px',
+                                        },
+                                    })
+                                    setIsLoading(false)
+                                })
+                        } else {
+                            metapass
+                                .getTix(JSON.stringify(metadata), {
+                                    value: ethers.utils.parseEther(
+                                        event.fee.toString()
+                                    )._hex,
+                                })
+                                .then(() => {
+                                    console.log('Success!')
+                                })
+                                .catch((err: any) => {
+                                    console.log('error', err)
+                                    toast.error(err.data?.message, {
+                                        id: 'error10',
+                                        style: {
+                                            fontSize: '12px',
+                                        },
+                                    })
+                                    setIsLoading(false)
+                                })
+                        }
+                    } catch (e: any) {
+                        toast.dismiss('minting')
+                        toast(
+                            'An error occured! Share error code: ' +
+                                e.code +
+                                ' with the team for reference.'
+                        )
+
+                        toast.error(e?.message as string, {
+                            id: 'error10',
+                            style: {
+                                fontSize: '12px',
+                            },
                         })
-                    let link =
-                        opensea +
-                        '/' +
-                        event.childAddress +
-                        '/' +
-                        ethers.BigNumber.from(res).toNumber()
+                        setIsLoading(false)
+                    }
 
-                    setOpenseaLink(link)
-                })
+                    metapass.on('Transfer', (res) => {
+                        setIsLoading(false)
+                        setHasBought(true)
+                        event.category.event_type == 'In-Person' &&
+                            generateAndSendUUID(
+                                event.childAddress,
+                                wallet.address,
+                                event.tickets_sold + 1
+                            ).then((uuid) => {
+                                setQrId(String(uuid))
+                            })
+                        let link =
+                            opensea +
+                            '/' +
+                            event.childAddress +
+                            '/' +
+                            ethers.BigNumber.from(res).toNumber()
 
-                // metapass.once('Transfer', (res) => {
-                //     console.log(res)
-                // })
+                        setOpenseaLink(link)
+                    })
+                } else {
+                    console.log("Couldn't find ethereum enviornment")
+                }
             } else {
-                console.log("Couldn't find ethereum enviornment")
+                toast('Please connect your wallet')
             }
         } else {
-            toast('Please connect your wallet')
+            onOpen()
         }
+
         // console.log(eventLink)
     }
+    useEffect(() => {
+        if (typeof window !== undefined) {
+            if (isSignInWithEmailLink(auth, window.location.href!)) {
+                let email = window.localStorage.getItem('emailForSignIn')
+                if (!email) {
+                    toast.error('Could not get email', {
+                        id: 'error10',
+                        duration: 5000,
+                    })
+                }
+                signInWithEmailLink(auth, email as string, window.location.href)
+                    .then((result) => {
+                        window?.localStorage.removeItem('emailForSignIn')
+                    })
+                    .catch((error) => {})
+            }
+        }
+    }, [])
     useEffect(() => {
         getAllEnsLinked(event.owner)
             .then((data) => {
@@ -216,29 +338,19 @@ export default function EventLayout({ event }: { event: Event }) {
     }, [event.owner])
 
     useEffect(() => {
-        console.log(event.link)
-
-        // console.log(currentDevice.isMobile(), 'is mobile')
         if (event.link) {
-            const exceptions = [
-                'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                'https://thememe.club',
-                'https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058',
-            ]
-            if (!exceptions.includes(event.link)) {
-                const declink = decryptLink(event.link)
-                console.log(declink, 'if')
-                setEventLink(declink)
-            } else {
-                console.log(event.link, 'else')
-                setEventLink(event.link)
-            }
-            // console.log(eventLink,value)
+            event.link.includes('huddle01')
+                ? setEventLink(event.link)
+                : () => {
+                      const declink = decryptLink(event.link as string)
+                      console.log(declink, 'decrypted link')
+                      setEventLink(declink)
+                  }
         }
     }, [])
 
     const [isDisplayed, setIsDisplayed] = useState(false)
-    // const {isOpen:isTicketOpen, onOpen:onTicketOpen, onClose:onTicketClose} = useDisclosure();
+
     useEffect(() => {
         if (hasBought) {
             setInterval(() => {
@@ -246,9 +358,24 @@ export default function EventLayout({ event }: { event: Event }) {
             }, 5000)
         }
     }, [hasBought])
+
     return (
         <>
+            {/* {notAuthed && (
+                <SignUpModal
+                    isOpen={isOpen}
+                    onOpen={onOpen}
+                    onClose={onClose}
+                />
+            )} */}
             {hasBought && <Confetti />}
+            {user === null && (
+                <SignUpModal
+                    isOpen={isOpen}
+                    onOpen={onOpen}
+                    onClose={onClose}
+                />
+            )}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />
                 <ModalContent rounded="2xl" bgColor={'transparent'}>

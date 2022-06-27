@@ -34,6 +34,9 @@ import { walletContext } from '../../utils/walletContext'
 import { Event } from '../../types/Event.type'
 import { ethers } from 'ethers'
 import abi from '../../utils/MetapassFactory.json'
+import MetapassABI from '../../utils/Metapass.json'
+import { send } from '@metapasshq/msngr'
+import axios from 'axios'
 
 declare const window: any
 
@@ -67,12 +70,14 @@ const Create: NextPage = () => {
         tickets_sold: 0,
         buyers: [],
         link: '',
+        isHuddle: false,
     })
 
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
             : process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
+
     let contract: any
 
     const [eventLink, setEventLink] = useState<any>(undefined)
@@ -107,32 +112,174 @@ const Create: NextPage = () => {
         function b64EncodeUnicode(str: any) {
             return btoa(encodeURIComponent(str))
         }
-        try {
-            console.log('starting txn')
-            let txn = await contract?.createEvent(
-                String(event.title),
-                ethers.utils.parseEther(event.fee.toString()),
-                Number(event.seats),
-                b64EncodeUnicode(JSON.stringify(event.image)),
-                wallet.address,
-                b64EncodeUnicode(JSON.stringify(event.description)),
-                event.link,
-                event.date,
-                b64EncodeUnicode(JSON.stringify(event.category)),
-                'undefined'
-            )
-            txn.wait().then((res: any) => {
-                let child = res.events.filter(
-                    (e: any) => e.event === 'childEvent'
-                )[0].args[0]
-                setEventLink(`${window.location.origin}/event/${child}`)
-                setIsPublished(true)
+        if (!event.isHuddle) {
+            try {
+                console.log('starting txn')
+                console.log(contract)
+                let txn = await contract?.createEvent(
+                    String(event.title),
+                    ethers.utils.parseEther(event.fee.toString()),
+                    Number(event.seats),
+                    b64EncodeUnicode(JSON.stringify(event.image)),
+                    wallet.address,
+                    b64EncodeUnicode(JSON.stringify(event.description)),
+                    event.link,
+                    event.date,
+                    b64EncodeUnicode(JSON.stringify(event.category)),
+                    'undefined'
+                )
+                txn.wait().then(async (res: any) => {
+                    let child = res.events.filter(
+                        (e: any) => e.event === 'childEvent'
+                    )[0].args[0]
+                    if (event.fee == 0) {
+                        await axios({
+                            method: 'post',
+                            url: 'https://api.biconomy.io/api/v1/smart-contract/public-api/addContract',
+                            data: {
+                                contractName: event.title,
+                                contractAddress: child,
+                                contractType: 'SC',
+                                abi: JSON.stringify(MetapassABI.abi),
+                                walletType: '',
+                                metaTransactionType: 'TRUSTED_FORWARDER',
+                            },
+                            headers: {
+                                authToken: process.env
+                                    .NEXT_PUBLIC_BICONOMY_DASH_API as string,
+                                apiKey: process.env
+                                    .NEXT_PUBLIC_BICONOMY_API as string,
+                            },
+                        })
+                        await axios({
+                            method: 'post',
+                            url: 'https://api.biconomy.io/api/v1/meta-api/public-api/addMethod',
+                            data: {
+                                name: event.title,
+                                apiType: 'native',
+                                methodType: 'write',
+                                contractAddress: child,
+                                method: 'getTix',
+                            },
+                            headers: {
+                                authToken: process.env
+                                    .NEXT_PUBLIC_BICONOMY_DASH_API as string,
+                                apiKey: process.env
+                                    .NEXT_PUBLIC_BICONOMY_API as string,
+                            },
+                        })
+                    }
+                    setEventLink(`${window.location.origin}/event/${child}`)
+                    setIsPublished(true)
+                    setInTxn(false)
+                    setChild(child)
+                })
+            } catch (err: any) {
+                console.log('error while txn', err)
                 setInTxn(false)
-                setChild(child)
-            })
-        } catch (e) {
-            console.log('error while txn')
-            console.log(e)
+            }
+        } else {
+            try {
+                console.log('starting txn')
+                console.log(contract)
+                let txn = await contract?.createEvent(
+                    String(event.title),
+                    ethers.utils.parseEther(event.fee.toString()),
+                    Number(event.seats),
+                    b64EncodeUnicode(JSON.stringify(event.image)),
+                    wallet.address,
+                    b64EncodeUnicode(JSON.stringify(event.description)),
+                    '',
+                    event.date,
+                    b64EncodeUnicode(JSON.stringify(event.category)),
+                    'undefined'
+                )
+                txn.wait().then(async (res: any) => {
+                    let child = res.events.filter(
+                        (e: any) => e.event === 'childEvent'
+                    )[0].args[0]
+                    if (event.fee == 0) {
+                        await axios({
+                            method: 'post',
+                            url: 'https://api.biconomy.io/api/v1/smart-contract/public-api/addContract',
+                            data: {
+                                contractName: event.title,
+                                contractAddress: child,
+                                contractType: 'SC',
+                                abi: JSON.stringify(MetapassABI.abi),
+                                walletType: '',
+                                metaTransactionType: 'TRUSTED_FORWARDER',
+                            },
+                            headers: {
+                                authToken: process.env
+                                    .NEXT_PUBLIC_BICONOMY_DASH_API as string,
+                                apiKey: process.env
+                                    .NEXT_PUBLIC_BICONOMY_API as string,
+                            },
+                        })
+                        await axios({
+                            method: 'post',
+                            url: 'https://api.biconomy.io/api/v1/meta-api/public-api/addMethod',
+                            data: {
+                                name: event.title,
+                                apiType: 'native',
+                                methodType: 'write',
+                                contractAddress: child,
+                                method: 'getTix',
+                            },
+                            headers: {
+                                authToken: process.env
+                                    .NEXT_PUBLIC_BICONOMY_DASH_API as string,
+                                apiKey: process.env
+                                    .NEXT_PUBLIC_BICONOMY_API as string,
+                            },
+                        })
+                        let roomLink = await axios.post(
+                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                            {
+                                host: event.eventHost,
+                                title: event.title,
+                                childAddress: child,
+                            }
+                        )
+                        try {
+                            console.log(roomLink.data)
+                            await contract.updateLink(
+                                child,
+                                roomLink.data.meetingLink
+                            )
+                        } catch (e) {
+                            console.log('error making huddle room ', e)
+                        }
+                    } else {
+                        let roomLink = await axios.post(
+                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                            {
+                                host: event.eventHost,
+                                title: event.title,
+                                childAddress: child,
+                            }
+                        )
+                        try {
+                            console.log(roomLink.data.roomLink)
+
+                            await contract.updateLink(
+                                child,
+                                roomLink.data.meetingLink
+                            )
+                        } catch (e) {
+                            console.log('error making huddle room ', e)
+                        }
+                    }
+                    setEventLink(`${window.location.origin}/event/${child}`)
+                    setIsPublished(true)
+                    setInTxn(false)
+                    setChild(child)
+                })
+            } catch (err: any) {
+                console.log('error while txn', err)
+                setInTxn(false)
+            }
         }
     }
 
@@ -188,7 +335,7 @@ const Create: NextPage = () => {
                                     alt="twitter"
                                     onClick={() => {
                                         window.open(
-                                            `http://twitter.com/share?text=I bought my NFT Ticket for ${event.title} on metapass. Get yours now!&url=https://metapasshq.xyz/event/${child}`,
+                                            `http://twitter.com/share?text=I just created NFT Ticketed event for ${event.title} on Metapass. Get your NFT Ticket now!&url=https://app.metapasshq.xyz/event/${child}`,
                                             '_blank'
                                         )
                                     }}
@@ -209,7 +356,7 @@ const Create: NextPage = () => {
                                     alt="whatsapp"
                                     onClick={() => {
                                         window.open(
-                                            `https://api.whatsapp.com/send?text=I just bought NFT Ticket to ${event.title} on Metapass. Get yours at https://metapasshq.xyz/event/${child}`
+                                            `https://api.whatsapp.com/send?text=I just created NFT Ticketed event for ${event.title} on Metapass. Get your NFT Ticket now at https://app.metapasshq.xyz/event/${child}`
                                         )
                                     }}
                                 />
@@ -229,7 +376,7 @@ const Create: NextPage = () => {
                                     alt="telegram"
                                     onClick={() => {
                                         window.open(
-                                            `https://telegram.me/share/url?url=https://metapasshq.xyz/event/${child}&text=I just bought my NFT Ticket to ${event.title} on Metapass. Get yours now`,
+                                            `https://telegram.me/share/url?url=https://app.metapasshq.xyz/event/${child}&text=I just created NFT Ticketed event for ${event.title} on Metapass. Get your NFT Ticket now.`,
                                             '_blank'
                                         )
                                     }}
@@ -369,11 +516,12 @@ const Create: NextPage = () => {
                             {/* STEP4🔺 */}
                             <Step4
                                 event={event}
-                                onSubmit={(link: any) => {
+                                onSubmit={(link: any, huddle: boolean) => {
                                     setStep(4)
                                     setEvent({
                                         ...event,
                                         link,
+                                        isHuddle: huddle,
                                     })
                                 }}
                             />

@@ -11,13 +11,13 @@ export type Event = {
     seats: number
     owner: string
     type: string
-
     buyers: Array<string>
-
     tickets_available: number
     tickets_sold: number
     link?: string
-} //featuring event
+    isHuddle: boolean
+}
+
 export type ImageType = {
     image: string
     gallery: []

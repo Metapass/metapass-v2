@@ -12,39 +12,21 @@ import {
     InputRightElement,
     Menu,
     MenuButton,
-    MenuDivider,
     MenuItem,
     MenuList,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    Select,
-    Switch,
     Text,
     useDisclosure,
 } from '@chakra-ui/react'
 
-// import { MdCalendarToday as CalendarToday } from "react-icons/md";
+import { FaChevronDown } from 'react-icons/fa'
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
-import dynamic from 'next/dynamic'
 import { useContext, useEffect, useState } from 'react'
-import { FaChevronDown } from 'react-icons/fa'
-import EventCard from '../../components/Card/EventCard.component'
-import { events } from '../../utils/testData'
-import DateModal from './DateModal.layout'
 import { walletContext } from '../../utils/walletContext'
-// import gravatarUrl from 'gravatar-url'
 import { encryptLink } from '../../utils/linkResolvers'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
-
-const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
 export default function Step4({
     event,
@@ -56,6 +38,7 @@ export default function Step4({
     const [wallet, setWallet] = useContext(walletContext)
     const [_link, setLink] = useState<string>('')
     const [ensName, setEnsName] = useState<string>('')
+    const [huddle, setHuddle] = useState(true)
 
     useEffect(() => {
         getAllEnsLinked(event.owner)
@@ -85,7 +68,7 @@ export default function Step4({
                 <form
                     onSubmit={(e) => {
                         e.preventDefault()
-                        onSubmit(encryptLink(_link))
+                        onSubmit(encryptLink(_link), huddle)
                     }}
                 >
                     <Box color="brand.black">
@@ -155,7 +138,6 @@ export default function Step4({
                                         </Flex>
                                     </Flex>
                                 </FormControl>
-
                                 <FormControl
                                     maxW="500px"
                                     mt="8"
@@ -171,27 +153,94 @@ export default function Step4({
                                         color="blackAlpha.700"
                                         my="0"
                                     >
-                                        Link for attendees.
+                                        Event Location
                                     </FormLabel>
-
-                                    <Input
-                                        onChange={(e) => {
-                                            setLink(e.target.value)
-                                        }}
-                                        fontSize="sm"
-                                        value={_link}
-                                        required
-                                        px="0"
-                                        _placeholder={{ color: 'gray.300' }}
-                                        placeholder="Link for attendees to join"
-                                        bg="transparent"
-                                        border="none"
-                                        rounded="none"
-                                        _hover={{}}
-                                        _focus={{}}
-                                        _active={{}}
-                                    />
+                                    <Menu>
+                                        <MenuButton type="button" w="full">
+                                            <InputGroup>
+                                                <Input
+                                                    fontSize="sm"
+                                                    required
+                                                    px="0"
+                                                    _placeholder={{
+                                                        color: 'gray.300',
+                                                    }}
+                                                    value={
+                                                        huddle
+                                                            ? 'Huddle'
+                                                            : 'Self Hosted'
+                                                    }
+                                                    placeholder="Is this event using huddle01/self hosted?"
+                                                    bg="transparent"
+                                                    border="none"
+                                                    rounded="none"
+                                                    _hover={{}}
+                                                    _focus={{}}
+                                                    _active={{}}
+                                                />
+                                                <InputRightElement color="gray.400">
+                                                    <FaChevronDown />
+                                                </InputRightElement>
+                                            </InputGroup>
+                                        </MenuButton>
+                                        <MenuList
+                                            rounded="lg"
+                                            shadow="sm"
+                                            fontSize="sm"
+                                            mt="1"
+                                            zIndex={9}
+                                        >
+                                            <MenuItem
+                                                onClick={() => setHuddle(true)}
+                                            >
+                                                Huddle
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() => setHuddle(false)}
+                                            >
+                                                Self Hosted
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Menu>
                                 </FormControl>
+                                {!huddle ? (
+                                    <FormControl
+                                        maxW="500px"
+                                        mt="8"
+                                        isRequired
+                                        borderBottom="2px"
+                                        borderBottomColor="gray.200"
+                                        _focusWithin={{
+                                            borderBottomColor: 'gray.300',
+                                        }}
+                                    >
+                                        <FormLabel
+                                            fontSize={{ base: 'md', xl: 'lg' }}
+                                            color="blackAlpha.700"
+                                            my="0"
+                                        >
+                                            Link for attendees.
+                                        </FormLabel>
+
+                                        <Input
+                                            onChange={(e) => {
+                                                setLink(e.target.value)
+                                            }}
+                                            fontSize="sm"
+                                            value={_link}
+                                            required
+                                            px="0"
+                                            _placeholder={{ color: 'gray.300' }}
+                                            placeholder="Link for attendees to join"
+                                            bg="transparent"
+                                            border="none"
+                                            rounded="none"
+                                            _hover={{}}
+                                            _focus={{}}
+                                            _active={{}}
+                                        />
+                                    </FormControl>
+                                ) : null}
                             </Box>
                             <Box h="auto" w="2px" my="10" bg="gray.100" />
                             <Box>

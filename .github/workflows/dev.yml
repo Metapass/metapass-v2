@@ -2,7 +2,7 @@ name: deploy all apps to prod
 
 on:
     push:
-        branches: [prod]
+        branches: [dev]
 
 jobs:
     pre-job:
@@ -27,7 +27,13 @@ jobs:
               run: npm i vercel -g
 
             - name: Deploy landing page
-              run: ls && vercel --token $VERCEL_TOKEN --prod
+              run: ls && vercel --token $VERCEL_TOKEN && cat > deployment-url.txt
+              env:
+                  VERCEL_TOKEN: ${{ secrets.VERCEL_CLI_TOKEN }}
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_LANDING_ORG }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_LANDING_PROJ }}
+            - name: Show logs
+              run: vercel logs metapass-v2-anoushk1234.vercel.app --token $VERCEL_TOKEN
               env:
                   VERCEL_TOKEN: ${{ secrets.VERCEL_CLI_TOKEN }}
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_LANDING_ORG }}
