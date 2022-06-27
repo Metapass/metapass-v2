@@ -118,20 +118,29 @@ export default function EventLayout({
         if (wallet.address) {
             if (typeof window.ethereum != undefined) {
                 console.log(wallet.type)
+
                 const provider = new ethers.providers.Web3Provider(
                     wallet.type === 'wc'
                         ? window.w3.currentProvider
                         : window.ethereum
                 )
+                const biconomy = new Biconomy(provider, {
+                    apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
+                    debug: true,
+                })
                 setIsLoading(true)
-                const signer = provider.getSigner()
+                let ethersProvider = new ethers.providers.Web3Provider(biconomy)
+
+                const signer = ethersProvider.getSigner()
                 let metapass = new ethers.Contract(
                     event.childAddress,
                     abi.abi,
                     signer
                 )
                 console.log(metapass)
-                // console.log("creating image")
+                toast.loading('Generating your unique ticket', {
+                    duration: 5000,
+                })
                 let { img, fastimg } = await ticketToIPFS(
                     event.title,
                     event.tickets_sold + 1,
@@ -144,7 +153,6 @@ export default function EventLayout({
                                 wallet?.address?.length - 4
                             )
                 )
-                // console.log(img,"created")
                 setMintedImage(fastimg)
                 let metadata = {
                     name: event.title,
@@ -155,147 +163,93 @@ export default function EventLayout({
                     },
                 }
 
-
-                    const provider = new ethers.providers.Web3Provider(
-                        wallet.type === 'magic'
-                            ? magic.rpcProvider
-                            : wallet.type === 'wc'
-                            ? window.w3.currentProvider
-                            : window.ethereum
-                    )
-                    const biconomy = new Biconomy(provider, {
-                        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
-                        debug: true,
-                    })
-                    setIsLoading(true)
-                    let ethersProvider = new ethers.providers.Web3Provider(
-                        biconomy
-                    )
-
-                    const signer = ethersProvider.getSigner()
-                    let metapass = new ethers.Contract(
-                        event.childAddress,
-                        abi.abi,
-                        signer
-                    )
-                    console.log(metapass)
-                    toast.loading('Generating your unique ticket', {
-                        duration: 5000,
-                    })
-                    let { img, fastimg } = await ticketToIPFS(
-                        event.title,
-                        event.tickets_sold + 1,
-                        event.image.image,
-                        event.date.split('T')[0],
-                        wallet?.ens ||
-                            wallet?.address?.substring(0, 4) +
-                                '...' +
-                                wallet?.address?.substring(
-                                    wallet?.address?.length - 4
-                                )
-                    )
-                    setMintedImage(fastimg)
-                    let metadata = {
-                        name: event.title,
-                        description: `NFT Ticket for ${event.title}`,
-                        image: img,
-                        properties: {
-                            'Ticket Number': event.tickets_sold + 1,
-                        },
-                    }
-
-                    try {
-                        if (event.fee === 0) {
-                            metapass
-                                .getTix(JSON.stringify(metadata), {
-                                    value: ethers.utils.parseEther(
-                                        event.fee.toString()
-                                    )._hex,
-                                    gasPrice: 25,
-                                    gasLimit: event.fee == 0 ? 900000 : 200000,
-                                })
-                                .then(() => {
-                                    console.log('Success!')
-                                })
-                                .catch((err: any) => {
-                                    console.log('error', err)
-                                    toast.error(err.data?.message, {
-                                        id: 'error10',
-                                        style: {
-                                            fontSize: '12px',
-                                        },
-                                    })
-                                    setIsLoading(false)
-                                })
-                        } else {
-                            metapass
-                                .getTix(JSON.stringify(metadata), {
-                                    value: ethers.utils.parseEther(
-                                        event.fee.toString()
-                                    )._hex,
-                                })
-                                .then(() => {
-                                    console.log('Success!')
-                                })
-                                .catch((err: any) => {
-                                    console.log('error', err)
-                                    toast.error(err.data?.message, {
-                                        id: 'error10',
-                                        style: {
-                                            fontSize: '12px',
-                                        },
-                                    })
-                                    setIsLoading(false)
-                                })
-                        }
-                    } catch (e: any) {
-                        toast.dismiss('minting')
-                        toast(
-                            'An error occured! Share error code: ' +
-                                e.code +
-                                ' with the team for reference.'
-                        )
-
-                        toast.error(e?.message as string, {
-                            id: 'error10',
-                            style: {
-                                fontSize: '12px',
-                            },
-                        })
-                        setIsLoading(false)
-                    }
-
-                    metapass.on('Transfer', (res) => {
-                        setIsLoading(false)
-                        setHasBought(true)
-                        event.category.event_type == 'In-Person' &&
-                            generateAndSendUUID(
-                                event.childAddress,
-                                wallet.address,
-                                event.tickets_sold + 1
-                            ).then((uuid) => {
-                                setQrId(String(uuid))
+                try {
+                    if (event.fee === 0) {
+                        metapass
+                            .getTix(JSON.stringify(metadata), {
+                                value: ethers.utils.parseEther(
+                                    event.fee.toString()
+                                )._hex,
+                                gasPrice: 25,
+                                gasLimit: event.fee == 0 ? 900000 : 200000,
                             })
-                        let link =
-                            opensea +
-                            '/' +
-                            event.childAddress +
-                            '/' +
-                            ethers.BigNumber.from(res).toNumber()
+                            .then(() => {
+                                console.log('Success!')
+                            })
+                            .catch((err: any) => {
+                                console.log('error', err)
+                                toast.error(err.data?.message, {
+                                    id: 'error10',
+                                    style: {
+                                        fontSize: '12px',
+                                    },
+                                })
+                                setIsLoading(false)
+                            })
+                    } else {
+                        metapass
+                            .getTix(JSON.stringify(metadata), {
+                                value: ethers.utils.parseEther(
+                                    event.fee.toString()
+                                )._hex,
+                            })
+                            .then(() => {
+                                console.log('Success!')
+                            })
+                            .catch((err: any) => {
+                                console.log('error', err)
+                                toast.error(err.data?.message, {
+                                    id: 'error10',
+                                    style: {
+                                        fontSize: '12px',
+                                    },
+                                })
+                                setIsLoading(false)
+                            })
+                    }
+                } catch (e: any) {
+                    toast.dismiss('minting')
+                    toast(
+                        'An error occured! Share error code: ' +
+                            e.code +
+                            ' with the team for reference.'
+                    )
 
-                        setOpenseaLink(link)
+                    toast.error(e?.message as string, {
+                        id: 'error10',
+                        style: {
+                            fontSize: '12px',
+                        },
                     })
-                } else {
-                    console.log("Couldn't find ethereum enviornment")
+                    setIsLoading(false)
                 }
+
+                metapass.on('Transfer', (res) => {
+                    setIsLoading(false)
+                    setHasBought(true)
+                    event.category.event_type == 'In-Person' &&
+                        generateAndSendUUID(
+                            event.childAddress,
+                            wallet.address,
+                            event.tickets_sold + 1
+                        ).then((uuid) => {
+                            setQrId(String(uuid))
+                        })
+                    let link =
+                        opensea +
+                        '/' +
+                        event.childAddress +
+                        '/' +
+                        ethers.BigNumber.from(res).toNumber()
+
+                    setOpenseaLink(link)
+                })
             } else {
-                toast('Please connect your wallet')
+                console.log("Couldn't find ethereum enviornment")
             }
         } else {
-            onOpen()
+            toast('Please connect your wallet')
         }
-
-        // console.log(eventLink)
     }
     useEffect(() => {
         if (typeof window !== undefined) {
