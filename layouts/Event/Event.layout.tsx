@@ -305,24 +305,14 @@ export default function EventLayout({
     }, [event.owner])
 
     useEffect(() => {
-        console.log(event.link)
-
-        // console.log(currentDevice.isMobile(), 'is mobile')
         if (event.link) {
-            // const exceptions = [
-            //     'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            //     'https://thememe.club',
-            //     'https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058',
-            // ]
-            // if (!exceptions.includes(event.link)) {
-            const declink = decryptLink(event.link)
-            console.log(declink, 'decrypted link')
-            setEventLink(declink)
-            // } else {
-            //     console.log(event.link, 'else')
-            //     setEventLink(event.link)
-            // }
-            // console.log(eventLink,value)
+            event.link.includes('huddle01')
+                ? setEventLink(event.link)
+                : () => {
+                      const declink = decryptLink(event.link as string)
+                      console.log(declink, 'decrypted link')
+                      setEventLink(declink)
+                  }
         }
     }, [])
 
