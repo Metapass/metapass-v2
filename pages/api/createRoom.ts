@@ -33,6 +33,6 @@ export default function handler(
             res.json({ error: e });
         })
     } else {
-        res.status(400).json({ msg: 'wrong method' })
+        res.status(400).json({ msg: 'Incorrect Method' })
     }
 }
