@@ -199,6 +199,7 @@ const Create: NextPage = () => {
                         (e: any) => e.event === 'childEvent'
                     )[0].args[0]
                     if (event.fee == 0) {
+                        console.log('adding contract')
                         await axios({
                             method: 'post',
                             url: 'https://api.biconomy.io/api/v1/smart-contract/public-api/addContract',
@@ -217,6 +218,7 @@ const Create: NextPage = () => {
                                     .NEXT_PUBLIC_BICONOMY_API as string,
                             },
                         })
+                        console.log('adding API')
                         await axios({
                             method: 'post',
                             url: 'https://api.biconomy.io/api/v1/meta-api/public-api/addMethod',
