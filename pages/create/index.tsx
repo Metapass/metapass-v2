@@ -218,7 +218,6 @@ const Create: NextPage = () => {
                                     .NEXT_PUBLIC_BICONOMY_API as string,
                             },
                         })
-                        console.log(c)
                         console.log('adding API')
                         let a = await axios({
                             method: 'post',
@@ -237,7 +236,6 @@ const Create: NextPage = () => {
                                     .NEXT_PUBLIC_BICONOMY_API as string,
                             },
                         })
-                        console.log(a)
                         let roomLink = await axios.post(
                             process.env.NEXT_PUBLIC_HUDDLE_API as string,
                             {
