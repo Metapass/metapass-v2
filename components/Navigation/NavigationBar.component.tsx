@@ -727,15 +727,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                     >
                         <Button
                             onClick={() => {
-                                if (
-                                    allowedList &&
-                                    (allowedList?.includes(wallet.address) ||
-                                        allowedList?.includes(ensName))
-                                ) {
-                                    window.location.href = '/create'
-                                } else {
-                                    onOpen2()
-                                }
+                                window.location.href = '/create'
                             }}
                             pl="1"
                             rounded="full"
