@@ -200,7 +200,7 @@ const Create: NextPage = () => {
                     )[0].args[0]
                     if (event.fee == 0) {
                         console.log('adding contract')
-                        await axios({
+                        let c = await axios({
                             method: 'post',
                             url: 'https://api.biconomy.io/api/v1/smart-contract/public-api/addContract',
                             data: {
@@ -218,8 +218,9 @@ const Create: NextPage = () => {
                                     .NEXT_PUBLIC_BICONOMY_API as string,
                             },
                         })
+                        console.log(c)
                         console.log('adding API')
-                        await axios({
+                        let a = await axios({
                             method: 'post',
                             url: 'https://api.biconomy.io/api/v1/meta-api/public-api/addMethod',
                             data: {
@@ -236,6 +237,7 @@ const Create: NextPage = () => {
                                     .NEXT_PUBLIC_BICONOMY_API as string,
                             },
                         })
+                        console.log(a)
                         let roomLink = await axios.post(
                             process.env.NEXT_PUBLIC_HUDDLE_API as string,
                             {
