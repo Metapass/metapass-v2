@@ -1,42 +1,20 @@
 import {
     Box,
     Button,
-    Divider,
     Flex,
     FormControl,
     FormLabel,
     Image,
     Input,
-    InputGroup,
-    InputRightElement,
-    Menu,
-    MenuButton,
-    MenuDivider,
-    MenuItem,
-    MenuList,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    Select,
-    Switch,
     Text,
-    useDisclosure,
 } from '@chakra-ui/react'
 
-// import { MdCalendarToday as CalendarToday } from "react-icons/md";
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
 import { useContext, useEffect, useState } from 'react'
-import { FaChevronDown } from 'react-icons/fa'
 import EventCard from '../../components/Card/EventCard.component'
-import { events } from '../../utils/testData'
-import DateModal from './DateModal.layout'
 import { walletContext } from '../../utils/walletContext'
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
@@ -197,6 +175,7 @@ export default function Step2({
                                     seats: event.seats,
                                     tickets_available: event.seats,
                                     tickets_sold: 0,
+                                    isHuddle: true,
                                 }}
                             />
                         </Box>

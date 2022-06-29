@@ -65,13 +65,7 @@ import SignUpModal from '../../components/Modals/SignUp.modal'
 
 declare const window: any
 
-export default function EventLayout({
-    event,
-    address,
-}: {
-    event: Event
-    address: string
-}) {
+export default function EventLayout({ event }: { event: Event }) {
     const [image, setImage] = useState(event.image.image)
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'

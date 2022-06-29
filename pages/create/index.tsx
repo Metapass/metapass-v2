@@ -236,12 +236,18 @@ const Create: NextPage = () => {
                                     .NEXT_PUBLIC_BICONOMY_API as string,
                             },
                         })
+                        console.log('generating huddle')
+                        console.log({
+                            title: event.title,
+                            host: event.owner,
+                            childAddress: child,
+                        })
                         let roomLink = await axios.post(
                             process.env.NEXT_PUBLIC_HUDDLE_API as string,
                             {
-                                host: event.eventHost,
                                 title: event.title,
-                                childAddress: child,
+                                host: event.owner,
+                                contractAddress: child,
                             }
                         )
                         try {
@@ -257,14 +263,13 @@ const Create: NextPage = () => {
                         let roomLink = await axios.post(
                             process.env.NEXT_PUBLIC_HUDDLE_API as string,
                             {
-                                host: event.eventHost,
                                 title: event.title,
-                                childAddress: child,
+                                host: event.owner,
+                                contractAddress: child,
                             }
                         )
                         try {
-                            console.log(roomLink.data.roomLink)
-
+                            console.log(roomLink.data)
                             await contract.updateLink(
                                 child,
                                 roomLink.data.meetingLink
