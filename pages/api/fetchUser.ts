@@ -36,7 +36,7 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                           address: address,
                       })
                     : res.status(404).json({
-                          message: 'Failed to load users',
+                          message: 'Failed to load user data',
                       })
             } else {
                 res.status(400).send('Please add in address')
