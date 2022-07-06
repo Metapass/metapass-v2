@@ -52,7 +52,7 @@ import GenerateQR from '../../utils/generateQR'
 import useCheckMobileScreen from '../../utils/useMobileDetect'
 import useMobileDetect from '../../utils/useMobileDetect'
 import { Biconomy } from '@biconomy/mexa'
-import { db } from '../../utils/firebaseUtils'
+import { db, setDoc } from '../../utils/firebaseUtils'
 import {
     onAuthStateChanged,
     isSignInWithEmailLink,
@@ -108,21 +108,22 @@ export default function EventLayout({ event }: { event: Event }) {
         user ? setUser(user) : setUser(null)
     })
 
+    const [wallet] = useContext(walletContext)
+
     useEffect(() => {
         const addUser = async () => {
             if (typeof user !== null) {
-                const allUsersRef = doc(db, 'users', 'all-users')
+                const docRef = doc(db, 'users', wallet)
 
-                await updateDoc(allUsersRef, {
-                    users: arrayUnion(user?.email),
+                await setDoc(docRef, {
+                    email: user?.email,
                 })
             }
         }
 
         addUser()
-    }, [user])
+    }, [user, wallet])
 
-    const [wallet] = useContext(walletContext)
     const buyTicket = async () => {
         if (wallet.address) {
             if (typeof window.ethereum != undefined) {
