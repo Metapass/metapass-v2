@@ -24,17 +24,23 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (req.method === 'POST') {
         const auth = req.headers.authorization
+        const { address } = req.body
 
         if (auth === `Bearer ${process.env.API_KEY}`) {
-            const docRef = doc(db, 'users', 'all-users')
-            const docSnap = await getDoc(docRef)
-            docSnap.exists()
-                ? res.status(200).json({
-                      users: docSnap.data().users,
-                  })
-                : res.status(404).json({
-                      message: 'Failed to load users',
-                  })
+            if (address !== undefined) {
+                const docRef = doc(db, 'users', address as string)
+                const docSnap = await getDoc(docRef)
+                docSnap.exists()
+                    ? res.status(200).json({
+                          email: docSnap.data().email,
+                          address: address,
+                      })
+                    : res.status(404).json({
+                          message: 'Failed to load users',
+                      })
+            } else {
+                res.status(400).send('Please add in address')
+            }
         } else {
             res.status(401).send('Authorization Code required')
         }
