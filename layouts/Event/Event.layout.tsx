@@ -46,12 +46,13 @@ import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 import { decryptLink } from '../../utils/linkResolvers'
-
+import { doc, updateDoc, arrayUnion } from '../../utils/firebaseUtils'
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import useCheckMobileScreen from '../../utils/useMobileDetect'
 import useMobileDetect from '../../utils/useMobileDetect'
 import { Biconomy } from '@biconomy/mexa'
+import { db } from '../../utils/firebaseUtils'
 import {
     onAuthStateChanged,
     isSignInWithEmailLink,
@@ -106,6 +107,20 @@ export default function EventLayout({ event }: { event: Event }) {
     onAuthStateChanged(auth, (user) => {
         user ? setUser(user) : setUser(null)
     })
+
+    useEffect(() => {
+        const addUser = async () => {
+            if (typeof user !== null) {
+                const allUsersRef = doc(db, 'users', 'all-users')
+
+                await updateDoc(allUsersRef, {
+                    users: arrayUnion(user?.email),
+                })
+            }
+        }
+
+        addUser()
+    }, [user])
 
     const [wallet] = useContext(walletContext)
     const buyTicket = async () => {
