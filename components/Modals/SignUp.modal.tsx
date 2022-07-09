@@ -1,9 +1,6 @@
 import type { NextComponentType, NextPageContext } from 'next'
 import type { ModalProps } from '../../types/AuthModal.types'
-import { useState, useEffect } from 'react'
-
-declare const document: any
-
+import { useState } from 'react'
 import {
     Modal,
     ModalOverlay,
@@ -19,10 +16,8 @@ import {
     InputLeftElement,
     useToast,
 } from '@chakra-ui/react'
-
 import { FcGoogle } from 'react-icons/fc'
 import { MdMail } from 'react-icons/md'
-
 import { auth } from '../../utils/firebaseUtils'
 import {
     signInWithRedirect,
@@ -45,7 +40,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     }
 
     const actionCodeSettings = {
-        url: 'https://metapass-v2-anoushk1234.vercel.app/account',
+        url: 'https://app.metapass.xyz/account',
         handleCodeInApp: true,
     }
 
@@ -70,7 +65,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
 
     return (
         <>
-            <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <Modal isOpen onClose={onClose} isCentered>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader textAlign="center">Get Started</ModalHeader>
@@ -91,12 +86,9 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                             gap="3"
                         >
                             <InputGroup>
-                                <InputLeftElement
-                                    pointerEvents="none"
-                                    children={
-                                        <MdMail size="22" color="gray.700" />
-                                    }
-                                />
+                                <InputLeftElement pointerEvents="none">
+                                    <MdMail size="22" color="gray.700" />
+                                </InputLeftElement>
                                 <Input
                                     type="email"
                                     placeholder="enter your email"

@@ -18,6 +18,7 @@ import {
     InputLeftElement,
     Link,
     useClipboard,
+    useDisclosure,
 } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
@@ -37,6 +38,10 @@ import abi from '../../utils/MetapassFactory.json'
 import MetapassABI from '../../utils/Metapass.json'
 import { send } from '@metapasshq/msngr'
 import axios from 'axios'
+import { SignUpModal } from '../../components'
+import { useUser } from '../../hooks/useUser'
+import { setDoc, doc } from 'firebase/firestore'
+import { db } from '../../utils/firebaseUtils'
 
 declare const window: any
 
@@ -73,6 +78,26 @@ const Create: NextPage = () => {
         isHuddle: false,
     })
 
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { user } = useUser()
+
+    useEffect(() => {
+        const addData = async () => {
+            if (user && wallet) {
+                const docRef = doc(db, 'users', wallet)
+                await setDoc(
+                    docRef,
+                    {
+                        email: user?.email,
+                    },
+                    { merge: true }
+                )
+            }
+        }
+
+        addData()
+    }, [user, wallet])
+
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
@@ -91,7 +116,7 @@ const Create: NextPage = () => {
             ...event,
             owner: wallet.address,
         })
-    }, [wallet])
+    }, [wallet, event])
 
     useEffect(() => {
         if (window.ethereum !== undefined && contractAddress) {
@@ -292,6 +317,13 @@ const Create: NextPage = () => {
 
     return (
         <>
+            {!user && (
+                <SignUpModal
+                    isOpen={isOpen}
+                    onOpen={onOpen}
+                    onClose={onClose}
+                />
+            )}
             <Head>
                 <title>MetaPass | Create Event</title>
             </Head>

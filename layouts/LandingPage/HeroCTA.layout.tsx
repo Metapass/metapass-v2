@@ -16,7 +16,7 @@ export default function HeroCTA() {
             >
                 <Box p={{ base: '8', md: '12' }} />
                 <Box display={{ base: 'none', md: 'block' }}>
-                    <video
+                    {/* <video
                         autoPlay
                         muted
                         loop
@@ -30,7 +30,7 @@ export default function HeroCTA() {
                         }}
                     >
                         <source src="/assets/gradient.mp4" type="video/mp4" />
-                    </video>
+                    </video> */}
                 </Box>
 
                 <Box
