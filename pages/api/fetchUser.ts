@@ -2,7 +2,7 @@ import { db } from '../../utils/firebaseUtils'
 import { doc, getDoc } from 'firebase/firestore'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import Cors from 'cors'
-
+import { ethers } from 'ethers'
 const cors = Cors({
     methods: ['GET', 'POST'],
 })
@@ -33,7 +33,7 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 docSnap.exists()
                     ? res.status(200).json({
                           email: docSnap.data().email,
-                          address: address,
+                          address: ethers.utils.getAddress(address),
                       })
                     : res.status(404).json({
                           message: 'Failed to load user data',
