@@ -30,7 +30,7 @@ import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
 import moment from 'moment'
 import { motion } from 'framer-motion'
-import { walletContext } from '../../utils/walletContext'
+import { walletContext, WalletType } from '../../utils/walletContext'
 import { ethers } from 'ethers'
 import { BsCalendarPlus } from 'react-icons/bs'
 import abi from '../../utils/Metapass.json'
@@ -44,13 +44,12 @@ import Confetti from '../../components/Misc/Confetti.component'
 import { ticketToIPFS } from '../../utils/imageHelper'
 import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
-import { getAllEnsLinked } from '../../utils/resolveEns'
+
 import { decryptLink } from '../../utils/linkResolvers'
 
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
-import useCheckMobileScreen from '../../utils/useMobileDetect'
-import useMobileDetect from '../../utils/useMobileDetect'
+
 import { Biconomy } from '@biconomy/mexa'
 import {
     onAuthStateChanged,
@@ -58,14 +57,33 @@ import {
     signInWithEmailLink,
 } from 'firebase/auth'
 import { auth } from '../../utils/firebaseUtils'
-
+import { useWallet } from '@solana/wallet-adapter-react'
+import * as web3 from '@solana/web3.js'
+import {
+    getHostPDA,
+    getAdminPDA,
+    createMintTicketInstruction,
+    MintTicketInstructionAccounts,
+} from 'metapass-sdk'
+import {
+    ASSOCIATED_TOKEN_PROGRAM_ID,
+    getAssociatedTokenAddress,
+    TOKEN_PROGRAM_ID,
+} from '@solana/spl-token'
+// import updateEventData from '../../utils/updateEventData'
+import { Connection, clusterApiUrl } from '@solana/web3.js'
 import { useRouter } from 'next/router'
 
 import SignUpModal from '../../components/Modals/SignUp.modal'
+import { useDomain } from '../../hooks/useDomain'
+import axios from 'axios'
+import { generateMetadata } from '../../utils/generateMetadata'
 
 declare const window: any
 
 export default function EventLayout({ event }: { event: Event }) {
+    const network =
+        process.env.NEXT_PUBLIC_ENV === 'prod' ? 'mainnet-beta' : 'mainnet-beta'
     const [image, setImage] = useState(event.image.image)
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
@@ -79,7 +97,12 @@ export default function EventLayout({ event }: { event: Event }) {
     const [openseaLink, setOpenseaLink] = useState<string>('')
     const [qrId, setQrId] = useState<string>('')
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const [wallet] = useContext<WalletType[]>(walletContext)
+    const solanaWallet = useWallet()
+    const connection = new Connection(clusterApiUrl(network ?? 'devnet'))
 
+    const [domain] = useDomain(event.isSolana ? 'SOL' : 'POLYGON', event.owner)
+    const [explorerLink, setExplorerLink] = useState<string>('')
     let opensea =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? 'https://testnets.opensea.io/assets/mumbai'
@@ -107,8 +130,7 @@ export default function EventLayout({ event }: { event: Event }) {
         user ? setUser(user) : setUser(null)
     })
 
-    const [wallet] = useContext(walletContext)
-    const buyTicket = async () => {
+    const buyPolygonTicket = async () => {
         if (wallet.address) {
             if (typeof window.ethereum != undefined) {
                 console.log(wallet.type)
@@ -140,7 +162,7 @@ export default function EventLayout({ event }: { event: Event }) {
                     event.tickets_sold + 1,
                     event.image.image,
                     event.date.split('T')[0],
-                    wallet?.ens ||
+                    wallet?.domain ||
                         wallet?.address?.substring(0, 4) +
                             '...' +
                             wallet?.address?.substring(
@@ -224,7 +246,7 @@ export default function EventLayout({ event }: { event: Event }) {
                     event.category.event_type == 'In-Person' &&
                         generateAndSendUUID(
                             event.childAddress,
-                            wallet.address,
+                            wallet.address as string,
                             event.tickets_sold + 1
                         ).then((uuid) => {
                             setQrId(String(uuid))
@@ -243,6 +265,175 @@ export default function EventLayout({ event }: { event: Event }) {
             }
         } else {
             toast('Please connect your wallet')
+        }
+    }
+    const buySolanaTicket = async () => {
+        const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey(
+            'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
+        )
+        const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID = new web3.PublicKey(
+            'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+        )
+        const customSPL = new web3.PublicKey(
+            event.customSPLToken ||
+                'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+        )
+        const getMetadata = async (
+            mint: web3.PublicKey
+        ): Promise<web3.PublicKey> => {
+            return (
+                await web3.PublicKey.findProgramAddress(
+                    [
+                        Buffer.from('metadata'),
+                        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                        mint.toBuffer(),
+                    ],
+                    TOKEN_METADATA_PROGRAM_ID
+                )
+            )[0]
+        }
+
+        const getMasterEdition = async (
+            mint: web3.PublicKey
+        ): Promise<web3.PublicKey> => {
+            return (
+                await web3.PublicKey.findProgramAddress(
+                    [
+                        Buffer.from('metadata'),
+                        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                        mint.toBuffer(),
+                        Buffer.from('edition'),
+                    ],
+                    TOKEN_METADATA_PROGRAM_ID
+                )
+            )[0]
+        }
+
+        const mint = web3.Keypair.generate()
+        const metadataAddress = await getMetadata(mint.publicKey)
+        const masterEdition = await getMasterEdition(mint.publicKey)
+        const NftTokenAccount: web3.PublicKey = await getAssociatedTokenAddress(
+            mint.publicKey,
+            solanaWallet.publicKey as web3.PublicKey
+        )
+        const hostPDA: web3.PublicKey = await getHostPDA(
+            new web3.PublicKey(event.eventHost)
+        )
+        const adminPDA: web3.PublicKey = await getAdminPDA()
+
+        const hostCustomSplTokenAta = await getAssociatedTokenAddress(
+            customSPL,
+            new web3.PublicKey(event.eventHost) // the receiver
+        )
+        const adminCustomSplTokenATA = await getAssociatedTokenAddress(
+            customSPL,
+            new web3.PublicKey('B641ooUCSG8ToLRki3YuxWMiNj6BS5c4eSM1rWcSazeV')
+        )
+        const senderCustomTokenATA: web3.PublicKey =
+            await getAssociatedTokenAddress(
+                customSPL,
+                solanaWallet.publicKey as web3.PublicKey
+            )
+        const accounts: MintTicketInstructionAccounts = {
+            mintAuthority: solanaWallet.publicKey as web3.PublicKey,
+            eventAccount: new web3.PublicKey(event.childAddress),
+            mint: mint.publicKey,
+            metadata: metadataAddress,
+            tokenAccount: NftTokenAccount,
+            tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+            payer: solanaWallet.publicKey as web3.PublicKey,
+            masterEdition: masterEdition,
+            eventHost: hostPDA,
+
+            eventHostKey: new web3.PublicKey(event.eventHost),
+            adminAccount: adminPDA,
+            adminKey: new web3.PublicKey(
+                'B641ooUCSG8ToLRki3YuxWMiNj6BS5c4eSM1rWcSazeV'
+            ),
+            customSplToken: customSPL,
+            customSplTokenProgram: TOKEN_PROGRAM_ID,
+            senderCustomSplTokenAta: senderCustomTokenATA,
+            hostCustomSplTokenAta: hostCustomSplTokenAta,
+            adminCustomTokenAta: adminCustomSplTokenATA,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        }
+        const { img, fastimg } = await ticketToIPFS(
+            event.title,
+            event.tickets_sold + 1,
+            event.image.image,
+            event.date.split('T')[0],
+            wallet?.domain ||
+                wallet?.address?.substring(0, 4) +
+                    '...' +
+                    wallet?.address?.substring(wallet?.address?.length - 4)
+        )
+        const uri = await generateMetadata(event, img)
+        console.log(uri)
+
+        const transactionInstruction = createMintTicketInstruction(accounts, {
+            uri:
+                uri ||
+                'https://cdukzux2wfzaaxbnissg6emgojrtdxzw5klsqnpmqhcusvi.arweave.net/EOis0vqxcg_BcLUSkbxGG-c_mMx3zbq-lyg17IHFSVU',
+        })
+
+        const transaction = new web3.Transaction().add(transactionInstruction)
+        setIsLoading(true)
+        const { blockhash } = await connection.getLatestBlockhash()
+        transaction.recentBlockhash = blockhash
+        transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
+
+        if (solanaWallet.signTransaction) {
+            try {
+                transaction.sign(mint)
+                const signedTx = await solanaWallet.signTransaction(transaction)
+                const txid = await connection.sendRawTransaction(
+                    signedTx.serialize(),
+                    {
+                        preflightCommitment: 'recent',
+                    }
+                )
+                await axios.post(
+                    `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/buyTicket`,
+                    {
+                        eventPDA: event.childAddress,
+                        publicKey: solanaWallet.publicKey?.toString(),
+                    }
+                )
+
+                setExplorerLink(
+                    `https://solscan.io/tx/${txid}?cluster=${network}`
+                )
+
+                setMintedImage(fastimg)
+                setHasBought(true)
+                setIsLoading(false)
+                // await updateEventData(
+                //     event.childAddress,
+                //     wallet.publicKey?.toString() as string,
+                //     event.tickets_sold + 1
+                // )
+                // event.category.event_type == 'In-Person' &&
+                //     generateAndSendUUID(
+                //         event.childAddress,
+                //         wallet.publicKey?.toString() as string,
+                //         event.tickets_sold + 1,
+                //         chain
+                //     ).then((uuid) => {
+                //         setQrId(String(uuid))
+                //     })
+            } catch (error) {
+                const e = error as Error
+                toast.error(e.message)
+                console.log(
+                    'Error in sending txn, line 323, Event.layout.tsx',
+                    error
+                )
+                setIsLoading(false)
+            }
+        } else {
+            throw Error(
+                'signTransaction is undefined, line 205 create/index.tsx'
+            )
         }
     }
     useEffect(() => {
@@ -264,38 +455,21 @@ export default function EventLayout({ event }: { event: Event }) {
         }
     }, [])
     useEffect(() => {
-        getAllEnsLinked(event.owner)
-            .then((data) => {
-                if (data?.data?.domains && data && data?.data) {
-                    console.log(
-                        data?.data?.domains?.length,
-                        data?.data?.domains?.length > 0 &&
-                            data?.data?.domains[data?.data?.domains.length - 1]
-                                .name
-                    )
-                    const ens_name =
-                        data?.data?.domains?.length > 0 &&
-                        data?.data?.domains[data?.data?.domains.length - 1].name
-                    setEnsName(ens_name)
-                }
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-        // console.log(wallet)
-    }, [event.owner])
+        domain && setEnsName(domain as string)
+    }, [domain, event.owner])
 
     useEffect(() => {
         if (event.link) {
-            event.link.includes('huddle01')
-                ? setEventLink(event.link)
-                : () => {
-                      const declink = decryptLink(event.link as string)
-                      console.log(declink, 'decrypted link')
-                      setEventLink(declink)
-                  }
+            if (event.link.includes('huddle')) {
+                setEventLink(event.link)
+                console.log(event.link)
+            } else {
+                const declink = decryptLink(event.link as string)
+                console.log(declink, 'decrypted link')
+                setEventLink(declink)
+            }
         }
-    }, [])
+    }, [event.link])
 
     const [isDisplayed, setIsDisplayed] = useState(false)
 
@@ -453,11 +627,20 @@ export default function EventLayout({ event }: { event: Event }) {
                                     rounded="full"
                                     _hover={{ shadow: 'md' }}
                                     onClick={() => {
-                                        window.open(openseaLink, '_blank')
+                                        window.open(
+                                            event.isSolana
+                                                ? explorerLink
+                                                : openseaLink,
+                                            '_blank'
+                                        )
                                     }}
                                 >
                                     <Image
-                                        src="/assets/opensea.png"
+                                        src={
+                                            event.isSolana
+                                                ? '/assets/solscan.png'
+                                                : '/assets/opensea.png'
+                                        }
                                         w="5"
                                         alt="opensea"
                                         borderRadius="full"
@@ -634,7 +817,9 @@ export default function EventLayout({ event }: { event: Event }) {
                             cursor: 'not-allowed',
                         }}
                         _hover={{}}
-                        onClick={buyTicket}
+                        onClick={
+                            event.isSolana ? buySolanaTicket : buyPolygonTicket
+                        }
                         disabled={event.tickets_available === 0}
                         _focus={{}}
                         _active={{}}
@@ -863,7 +1048,11 @@ export default function EventLayout({ event }: { event: Event }) {
                                     cursor: 'not-allowed',
                                 }}
                                 _hover={{}}
-                                onClick={buyTicket}
+                                onClick={
+                                    event.isSolana
+                                        ? buySolanaTicket
+                                        : buyPolygonTicket
+                                }
                                 disabled={event.tickets_available === 0}
                                 _focus={{}}
                                 _active={{}}
@@ -1020,8 +1209,11 @@ export default function EventLayout({ event }: { event: Event }) {
                                     {event.buyers
                                         ?.reverse()
                                         .map((data, key) => {
-                                            const { id }: any = data
-                                            // console.log(data)
+                                            let id = key.toString()
+                                            event.isSolana === true
+                                                ? (id = data) // @ts-ignore
+                                                : (id = data.id)
+
                                             return (
                                                 <Box
                                                     _hover={{ zIndex: 10 }}

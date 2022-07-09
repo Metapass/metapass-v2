@@ -32,7 +32,7 @@ import { gqlEndpoint } from '../../utils/subgraphApi'
 // import { MdCalendarToday as CalendarToday } from "react-icons/md";
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import axios from 'axios'
-import { getAllEnsLinked } from '../../utils/resolveEns'
+
 import { MdTag } from 'react-icons/md'
 import { AiOutlineSend } from 'react-icons/ai'
 import { SetStateAction } from 'react'
@@ -68,10 +68,12 @@ export default function FeaturedEvents() {
             tickets_available: 0,
             tickets_sold: 0,
             buyers: [],
+            isHuddle: false,
+            isSolana: false,
         },
     ])
     const { isOpen, onOpen, onClose } = useDisclosure()
-    async function getFeaturedEvents() {
+    async function getPolygonFeaturedEvents() {
         const featuredQuery = {
             operationName: 'fetchFeaturedEvents',
             query: `query fetchFeaturedEvents {
@@ -157,21 +159,50 @@ export default function FeaturedEvents() {
                     event.event.seats - event.event.ticketsBought.length,
                 tickets_sold: event.event.ticketsBought.length,
                 buyers: event.event.buyers,
+                isHuddle: event.event.link.includes('huddle'),
+                isSolana: false,
             } as Event
         })
     }
+    const getSolanaFetauredEvents = async (): Promise<Event[]> => {
+        let data: Event[] = []
+        const event = await axios.get(
+            `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/featuredEvents`
+        )
+        if (event.data) {
+            console.log(event.data)
+            let events = event.data
+
+            events.forEach((event: any) => {
+                data.push({
+                    ...event,
+                    category: JSON.parse(event.category),
+                    image: JSON.parse(event.image),
+                    description: JSON.parse(event.description),
+                    owner: event.eventHost,
+                    childAddress: event.eventPDA,
+                    isSolana: true,
+                })
+            })
+            return data
+        } else {
+            console.log('No such document! solana events')
+            return []
+        }
+    }
+    const getFeaturedEvents = async () => {
+        let allEvents: Event[] = []
+        const polygonEvents = await getPolygonFeaturedEvents()
+        const polygonData: Event[] = parseFeaturedEvents(
+            polygonEvents.data.featuredEntities
+        )
+        const solanaEvents: Event[] = await getSolanaFetauredEvents()
+        allEvents = [...polygonData, ...solanaEvents]
+        setFeatEvents(allEvents)
+    }
     useEffect(() => {
+        setFeatEvents([])
         getFeaturedEvents()
-            .then((res) => {
-                const data: Event[] = parseFeaturedEvents(
-                    res.data.featuredEntities
-                )
-                setFeatEvents(data)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-        // console.log(featEvents)
     }, [])
 
     return (
@@ -202,7 +233,7 @@ export default function FeaturedEvents() {
                         style={{
                             paddingTop: '100px',
                             paddingBottom: '100px',
-
+                            overflow: 'scroll',
                             transform: 'translateY(-100px)',
                         }}
                     >
@@ -242,11 +273,10 @@ export default function FeaturedEvents() {
                     {featEvents.map((data, key) => (
                         <Skeleton
                             maxW={{ base: '330px', xl: '390px' }}
-                            key={key}
                             minW={{ base: '330px', xl: '390px' }}
-                            isLoaded={data.id !== ''}
+                            isLoaded={data !== undefined && data !== null}
                         >
-                            <EventCard event={data} />
+                            <EventCard key={key} event={data} />
                         </Skeleton>
                     ))}
                 </Flex>

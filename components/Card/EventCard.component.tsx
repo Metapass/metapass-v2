@@ -59,7 +59,6 @@ export default function EventCard({
             }}
             rounded="lg"
             overflow="hidden"
-            h="full"
             bg="white"
             _hover={{ transform: 'scale(1.01)' }}
             _active={{ transform: 'scale(1.03)' }}
@@ -69,6 +68,7 @@ export default function EventCard({
             w="full"
             border="1px"
             position="relative"
+            h="20rem"
             borderColor="blackAlpha.200"
         >
             {!previewOnly && showEventModal && (
@@ -148,9 +148,13 @@ export default function EventCard({
                     ) : (
                         <>
                             <Image
-                                src="/assets/matic_logo.svg"
+                                src={
+                                    event.isSolana
+                                        ? '/assets/solana-logo.png'
+                                        : '/assets/matic_logo.svg'
+                                }
                                 w="3"
-                                filter="brightness(0%)"
+                                filter="brightness(100%)"
                                 alt="matic"
                             />
                             <Text> {event.fee}</Text>

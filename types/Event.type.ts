@@ -16,6 +16,10 @@ export type Event = {
     tickets_sold: number
     link?: string
     isHuddle: boolean
+    isSolana: boolean
+    displayName?: string
+    profileImage?: string
+    customSPLToken?: string
 }
 
 export type ImageType = {

@@ -30,18 +30,40 @@ import Step2 from '../../layouts/CreateEvent/Step2.layout'
 import Step3 from '../../layouts/CreateEvent/Step3.layout'
 import Step4 from '../../layouts/CreateEvent/Step4.layout'
 import Step5 from '../../layouts/CreateEvent/Step5.layout'
-import { walletContext } from '../../utils/walletContext'
+import { walletContext, WalletType } from '../../utils/walletContext'
 import { Event } from '../../types/Event.type'
 import { ethers } from 'ethers'
 import abi from '../../utils/MetapassFactory.json'
 import MetapassABI from '../../utils/Metapass.json'
 import { send } from '@metapasshq/msngr'
 import axios from 'axios'
-
+import { useMultichainProvider } from '../../hooks/useMultichainProvider'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import {
+    AccountInfo,
+    clusterApiUrl,
+    Connection,
+    LAMPORTS_PER_SOL,
+    PublicKey,
+    Transaction,
+} from '@solana/web3.js'
+import * as anchor from '@project-serum/anchor'
+import {
+    createInitializeHostInstruction,
+    InitializeHostInstructionArgs,
+    InitializeHostInstructionAccounts,
+    createInitializeEventInstruction,
+    idl,
+    PROGRAM_ID,
+    EventHostAccount,
+} from 'metapass-sdk'
+import toast from 'react-hot-toast'
+import { MetapassProgram } from '../../types/MetapassProgram.types'
 declare const window: any
 
 const Create: NextPage = () => {
-    const [wallet] = useContext(walletContext)
+    const [wallet] = useContext<WalletType[]>(walletContext)
+    const solanaWallet = useWallet()
     const [step, setStep] = useState(0)
     const [event, setEvent] = useState<Event>({
         id: '',
@@ -71,6 +93,10 @@ const Create: NextPage = () => {
         buyers: [],
         link: '',
         isHuddle: false,
+        isSolana: false,
+        displayName: '',
+        profileImage: '',
+        customSPLToken: '',
     })
 
     const contractAddress =
@@ -79,34 +105,55 @@ const Create: NextPage = () => {
             : process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
 
     let contract: any
-
+    let program: anchor.Program<MetapassProgram>
     const [eventLink, setEventLink] = useState<any>(undefined)
+    const [txnId, setTxnId] = useState<string | null>(null)
     const [isPublished, setIsPublished] = useState(false)
     const [inTxn, setInTxn] = useState(false)
     const { hasCopied, onCopy } = useClipboard(eventLink)
     const [child, setChild] = useState<any>('')
-
+    const [multichainProvider] = useMultichainProvider(
+        'POLYGON',
+        wallet.address as string
+    )
     useEffect(() => {
         setEvent({
             ...event,
-            owner: wallet.address,
+            owner: wallet.address as string,
         })
     }, [wallet])
 
     useEffect(() => {
-        if (window.ethereum !== undefined && contractAddress) {
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            const signer = provider.getSigner()
+        try {
+            if (
+                window.ethereum !== undefined &&
+                contractAddress &&
+                wallet.chain === 'POLYGON'
+            ) {
+                const provider =
+                    multichainProvider as ethers.providers.Web3Provider
+                const signer = provider?.getSigner()
 
-            contract = new ethers.Contract(
-                contractAddress as string,
-                abi.abi,
-                signer
-            )
+                contract = new ethers.Contract(
+                    contractAddress as string,
+                    abi.abi,
+                    signer
+                )
+            } else {
+                const provider = multichainProvider as anchor.AnchorProvider
+                const prog = new anchor.Program(
+                    idl as anchor.Idl,
+                    PROGRAM_ID,
+                    provider
+                ) as unknown
+                program = prog as anchor.Program<MetapassProgram>
+            }
+        } catch (error) {
+            console.log(error)
         }
     })
 
-    const onSubmit = async () => {
+    const onPolygonSubmit = async () => {
         setInTxn(true)
 
         function b64EncodeUnicode(str: any) {
@@ -290,6 +337,238 @@ const Create: NextPage = () => {
         }
     }
 
+    const onSolanaSubmit = async () => {
+        const wallet = solanaWallet
+        const connection = new Connection(
+            clusterApiUrl(
+                process.env.NEXT_PUBLIC_ENV == 'prod'
+                    ? 'mainnet-beta'
+                    : 'mainnet-beta'
+            )
+        )
+        setInTxn(true)
+
+        if (wallet.publicKey && program) {
+            console.log('starting txn', event)
+            // return
+            const [hostPDA, hostBump] = await PublicKey.findProgramAddress(
+                [
+                    anchor.utils.bytes.utf8.encode('event-host-key'),
+                    wallet.publicKey.toBuffer(),
+                ],
+                PROGRAM_ID
+            )
+            console.log('host', hostPDA.toString(), program)
+            let hostExist = await connection.getAccountInfo(hostPDA)
+            console.log(hostExist, 'hoste')
+            if (hostExist == null) {
+                try {
+                    const accounts1: InitializeHostInstructionAccounts = {
+                        eventHostAccount: hostPDA,
+                        authority: wallet.publicKey,
+                    }
+                    const args: InitializeHostInstructionArgs = {
+                        displayName: event.displayName as string,
+                        profileImg: event.profileImage as string,
+                    }
+
+                    const transactionInstruction1 =
+                        createInitializeHostInstruction(accounts1, args)
+
+                    const transaction1 = new Transaction().add(
+                        transactionInstruction1
+                    )
+                    const { blockhash } = await connection.getLatestBlockhash()
+                    transaction1.recentBlockhash = blockhash
+                    transaction1.feePayer = wallet.publicKey
+                    if (wallet.signTransaction) {
+                        const signedTx = await wallet.signTransaction(
+                            transaction1
+                        )
+                        const txid = await connection.sendRawTransaction(
+                            signedTx.serialize()
+                        )
+                        console.log(
+                            'Host created',
+                            `https://solscan.io/tx/${txid}`
+                        )
+                    } else {
+                        throw Error(
+                            'signTransaction is undefined, line 205 create/index.tsx'
+                        )
+                    }
+
+                    let nonce = '0' // if new host is created obviously the nonce is zero
+                    const [eventPDA, _] = await PublicKey.findProgramAddress(
+                        [
+                            anchor.utils.bytes.utf8.encode('event_account'),
+                            wallet.publicKey.toBuffer(),
+                            new anchor.BN(nonce).toArrayLike(Buffer),
+                        ],
+                        PROGRAM_ID
+                    )
+
+                    console.log(hostPDA.toString(), nonce, eventPDA.toString())
+
+                    const accounts = {
+                        eventAccount: eventPDA,
+                        authority: wallet.publicKey,
+                        eventHostAccount: hostPDA,
+                    }
+                    const CST = new PublicKey(
+                        (event.customSPLToken as string) ??
+                            'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+                    )
+                    const transactionData = {
+                        createEventInfo: {
+                            title: event.title,
+                            description: JSON.stringify(event.description),
+                            uri: 'https://arweave.net/AhzTMchxDglQbfLWzQHOOGV9BA-CeEy36C-DJwFfqUc', // @deprecated
+                            link: event.link as string,
+                            fee: new anchor.BN(
+                                (event.fee as number) * LAMPORTS_PER_SOL
+                            ),
+                            seats: new anchor.BN(event.seats as number),
+                            date: event.date,
+                            venue: event.type,
+                            isCutPayedByCreator: true,
+                            isCustomSplToken: event.customSPLToken
+                                ? true
+                                : false,
+                            customSplToken: CST,
+                        },
+                    }
+                    const txnInstruction = createInitializeEventInstruction(
+                        accounts,
+                        transactionData
+                    )
+                    const transaction = new Transaction().add(txnInstruction)
+                    const signature = await wallet.sendTransaction(
+                        transaction,
+                        connection
+                    )
+                    console.log('tx sign', signature)
+                    setEventLink(
+                        window.location.origin + '/event/' + eventPDA.toString()
+                    )
+                    setTxnId(signature)
+                    await axios.post(
+                        `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/create`,
+                        {
+                            id: nonce,
+                            title: event.title,
+                            category: JSON.stringify(event.category),
+                            image: JSON.stringify(event.image),
+                            eventPDA: eventPDA.toString(),
+                            eventHost: wallet.publicKey.toString(),
+                            date: event.date,
+                            description: JSON.stringify(event.description),
+                            seats: event.seats,
+                            type: event.category.event_type,
+                            link: event.link,
+                            fee: event.fee,
+                        }
+                    )
+                    setIsPublished(true)
+                    setInTxn(false)
+                } catch (error) {
+                    console.log('error', error)
+                }
+            } else {
+                try {
+                    console.log('host', hostPDA.toBase58())
+                    let host = await connection.getAccountInfo(hostPDA)
+                    let nonce = EventHostAccount.deserialize(
+                        host?.data as Buffer
+                    )[0].eventHostStruct.eventCount.toString()
+
+                    console.log('host', host, hostPDA.toBase58(), nonce)
+
+                    const [eventPDA, _] = await PublicKey.findProgramAddress(
+                        [
+                            anchor.utils.bytes.utf8.encode('event_account'),
+                            wallet.publicKey.toBuffer(),
+                            new anchor.BN(nonce).toArrayLike(Buffer),
+                        ],
+                        PROGRAM_ID
+                    )
+                    const accounts = {
+                        eventAccount: eventPDA,
+                        authority: wallet.publicKey,
+                        eventHostAccount: hostPDA,
+                    }
+                    console.log(
+                        event.customSPLToken,
+                        event.customSPLToken ||
+                            'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+                        'CST'
+                    )
+                    const CST = new PublicKey(
+                        event.customSPLToken ||
+                            'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+                    )
+                    const transactionData = {
+                        createEventInfo: {
+                            title: event.title,
+                            description: JSON.stringify(event.description),
+                            uri: 'https://arweave.net/AhzTMchxDglQbfLWzQHOOGV9BA-CeEy36C-DJwFfqUc', //@deprecated
+                            link: event.link as string,
+                            fee: new anchor.BN(
+                                (event.fee as number) * LAMPORTS_PER_SOL // have to change this for custom where decimals are not same
+                            ),
+                            seats: new anchor.BN(event.seats as number),
+                            date: event.date,
+                            venue: event.type,
+                            isCutPayedByCreator: true,
+                            isCustomSplToken: event.customSPLToken
+                                ? true
+                                : false,
+                            customSplToken: CST,
+                        },
+                    }
+                    const txnInstruction = createInitializeEventInstruction(
+                        accounts,
+                        transactionData
+                    )
+                    const transaction = new Transaction().add(txnInstruction)
+                    const signature = await wallet.sendTransaction(
+                        transaction,
+                        connection
+                    )
+                    console.log('tx sign', signature)
+                    setEventLink(
+                        window.location.origin + '/event/' + eventPDA.toString()
+                    )
+                    setTxnId(signature)
+
+                    await axios.post(
+                        `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/create`,
+                        {
+                            id: nonce,
+                            title: event.title,
+                            category: JSON.stringify(event.category),
+                            image: JSON.stringify(event.image),
+                            eventPDA: eventPDA.toString(),
+                            eventHost: wallet.publicKey.toString(),
+                            date: event.date,
+                            description: JSON.stringify(event.description),
+                            seats: event.seats,
+                            type: event.category.event_type,
+                            link: event.link,
+                            fee: event.fee,
+                        }
+                    )
+
+                    setIsPublished(true)
+                    setInTxn(false)
+                } catch (error) {
+                    console.log('error', error)
+                }
+            }
+        } else {
+            toast('Connect your solana wallet')
+        }
+    }
     return (
         <>
             <Head>
@@ -485,10 +764,12 @@ const Create: NextPage = () => {
                                     setEvent({
                                         ...event,
                                         ...formDetails,
+                                        isSolana: wallet.chain === 'SOL',
                                     })
 
                                     setStep(1)
                                 }}
+                                systemWallet={wallet}
                             />
                         </Box>
                         <Box display={step === 1 ? 'block' : 'none'}>
@@ -538,9 +819,11 @@ const Create: NextPage = () => {
                             <Step5
                                 event={event}
                                 inTxn={inTxn}
-                                onSubmit={() => {
-                                    onSubmit()
-                                }}
+                                onSubmit={
+                                    wallet.chain === 'SOL'
+                                        ? onSolanaSubmit
+                                        : onPolygonSubmit
+                                }
                             />
                         </Box>
                     </Box>

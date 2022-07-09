@@ -47,7 +47,8 @@ const Event: NextPage = () => {
         tickets_available: 0,
         tickets_sold: 0,
         buyers: [],
-        // slides: [],
+        isSolana: false,
+        isHuddle: false,
     })
 
     async function getFeaturedEvents() {
@@ -126,23 +127,50 @@ const Event: NextPage = () => {
             tickets_sold: event.ticketsBought?.length,
             buyers: event.buyers,
             slides: image.gallery,
+            isSolana: false,
+            isHuddle: event.link.includes('huddle'),
         } as Event
     }
 
+    const getSolanaEvents = async () => {
+        const event = await axios.get(
+            `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/getEvent/${address}`
+        )
+        if (event.data) {
+            const data = event.data
+            console.log(data)
+            console.log(address)
+            setFeatEvent({
+                ...data,
+                owner: data.eventHost,
+                childAddress: address as string,
+                category: JSON.parse(data.category),
+                image: JSON.parse(data.image),
+                description: JSON.parse(data.description),
+                isSolana: true,
+            })
+        } else {
+            console.log('No such document!')
+        }
+    }
     useEffect(() => {
         getFeaturedEvents()
             .then((res) => {
                 // console.log(res.data.childCreatedEntities[0],"res")
-                const data: Event = parseFeaturedEvents(
-                    res.data.childCreatedEntities[0]
-                )
-                // console.log(data, 'data')
-                setFeatEvent(data)
+                if (res.data.childCreatedEntities[0]) {
+                    const data: Event = parseFeaturedEvents(
+                        res.data.childCreatedEntities[0]
+                    )
+
+                    // console.log(data, 'data')
+                    setFeatEvent(data)
+                } else {
+                    getSolanaEvents()
+                }
             })
             .catch((err) => {
                 console.log(err)
             })
-        // console.log(featEvents)
     }, [address])
 
     return (
@@ -162,7 +190,7 @@ const Event: NextPage = () => {
                     <Skeleton isLoaded={featEvent.id !== ''}>
                         <EventLayout
                             event={featEvent}
-                            address={address as string}
+                            // address={address as string}
                         />
                     </Skeleton>
                 </Box>

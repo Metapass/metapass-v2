@@ -152,8 +152,9 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                 <Image
                     w="full"
                     src={
+                        // @ts-ignore
                         event.image.hero_image ||
-                        event.image.image ||
+                        event.image.image || // @ts-ignore
                         event.image.display
                     }
                     alt="event image"

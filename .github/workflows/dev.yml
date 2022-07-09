@@ -2,7 +2,7 @@ name: deploy all apps to prod
 
 on:
     push:
-        branches: [prod]
+        branches: []
 
 jobs:
     pre-job:
