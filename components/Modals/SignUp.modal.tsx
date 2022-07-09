@@ -40,7 +40,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     }
 
     const actionCodeSettings = {
-        url: 'https://app.metapass.xyz/',
+        url: 'https://app.metapasshq.xyz/',
         handleCodeInApp: true,
     }
 
