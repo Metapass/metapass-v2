@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 
 import {
@@ -7,18 +7,44 @@ import {
     CategoryType,
     ImageType,
 } from '../../types/Event.type'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import NavigationBar from '../../components/Navigation/NavigationBar.component'
 import EventLayout from '../../layouts/Event/Event.layout'
-
 import { Skeleton } from '@chakra-ui/react'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import { SignUpModal } from '../../components'
+import { setDoc, doc } from 'firebase/firestore'
+import { auth, db } from '../../utils/firebaseUtils'
+import { walletContext } from '../../utils/walletContext'
+import { onAuthStateChanged, User } from 'firebase/auth'
 
 const Event: NextPage = () => {
     const router = useRouter()
     const { address } = router.query
+    const [wallet] = useContext(walletContext)
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [user, setUser] = useState<User>()
+
+    onAuthStateChanged(auth, (user) => {
+        setUser(user as User)
+    })
+
+    useEffect(() => {
+        const addData = async () => {
+            const docRef = doc(db, 'users', wallet.address)
+            await setDoc(
+                docRef,
+                {
+                    email: user?.email,
+                },
+                { merge: true }
+            )
+        }
+
+        addData()
+    }, [user, wallet])
 
     const [featEvent, setFeatEvent] = useState<Event>({
         id: '',
@@ -48,7 +74,7 @@ const Event: NextPage = () => {
         tickets_sold: 0,
         buyers: [],
         // slides: [],
-    })
+    } as Event)
 
     async function getFeaturedEvents() {
         const featuredQuery = {
@@ -146,28 +172,37 @@ const Event: NextPage = () => {
     }, [address])
 
     return (
-        <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
-            <NavigationBar mode="white" />
-            <Box p="4" />
-            <Flex
-                justify="center"
-                mx="auto"
-                mt="16"
-                px="6"
-                w="full"
-                maxW="1400px"
-                experimental_spaceX="10"
-            >
-                <Box maxW="1000px" w="full">
-                    <Skeleton isLoaded={featEvent.id !== ''}>
-                        <EventLayout
-                            event={featEvent}
-                            address={address as string}
-                        />
-                    </Skeleton>
-                </Box>
-            </Flex>
-        </Box>
+        <>
+            {!user && (
+                <SignUpModal
+                    isOpen={isOpen}
+                    onOpen={onOpen}
+                    onClose={onClose}
+                />
+            )}
+            <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
+                <NavigationBar mode="white" />
+                <Box p="4" />
+                <Flex
+                    justify="center"
+                    mx="auto"
+                    mt="16"
+                    px="6"
+                    w="full"
+                    maxW="1400px"
+                    experimental_spaceX="10"
+                >
+                    <Box maxW="1000px" w="full">
+                        <Skeleton isLoaded={featEvent.id !== ''}>
+                            <EventLayout
+                                event={featEvent}
+                                address={address as string}
+                            />
+                        </Skeleton>
+                    </Box>
+                </Flex>
+            </Box>
+        </>
     )
 }
 
