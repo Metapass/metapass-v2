@@ -10,35 +10,37 @@ import {
 import { useContext, useEffect, useState } from 'react'
 import NavigationBar from '../../components/Navigation/NavigationBar.component'
 import EventLayout from '../../layouts/Event/Event.layout'
-import { useUser } from '../../hooks/useUser'
 import { Skeleton } from '@chakra-ui/react'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { SignUpModal } from '../../components'
 import { setDoc, doc } from 'firebase/firestore'
-import { db } from '../../utils/firebaseUtils'
+import { auth, db } from '../../utils/firebaseUtils'
 import { walletContext } from '../../utils/walletContext'
+import { onAuthStateChanged, User } from 'firebase/auth'
 
 const Event: NextPage = () => {
     const router = useRouter()
     const { address } = router.query
     const [wallet] = useContext(walletContext)
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const { user } = useUser()
+    const [user, setUser] = useState<User>()
+
+    onAuthStateChanged(auth, (user) => {
+        setUser(user as User)
+    })
 
     useEffect(() => {
         const addData = async () => {
-            if (user !== null) {
-                const docRef = doc(db, 'users', wallet)
-                await setDoc(
-                    docRef,
-                    {
-                        email: user?.email,
-                    },
-                    { merge: true }
-                )
-            }
+            const docRef = doc(db, 'users', wallet.address)
+            await setDoc(
+                docRef,
+                {
+                    email: user?.email,
+                },
+                { merge: true }
+            )
         }
 
         addData()
@@ -72,7 +74,7 @@ const Event: NextPage = () => {
         tickets_sold: 0,
         buyers: [],
         // slides: [],
-    })
+    } as Event)
 
     async function getFeaturedEvents() {
         const featuredQuery = {

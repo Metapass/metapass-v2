@@ -39,9 +39,9 @@ import MetapassABI from '../../utils/Metapass.json'
 import { send } from '@metapasshq/msngr'
 import axios from 'axios'
 import { SignUpModal } from '../../components'
-import { useUser } from '../../hooks/useUser'
 import { setDoc, doc } from 'firebase/firestore'
-import { db } from '../../utils/firebaseUtils'
+import { auth, db } from '../../utils/firebaseUtils'
+import { onAuthStateChanged, User } from 'firebase/auth'
 
 declare const window: any
 
@@ -79,12 +79,17 @@ const Create: NextPage = () => {
     })
 
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const { user } = useUser()
+
+    const [user, setUser] = useState<User>()
+
+    onAuthStateChanged(auth, (user) => {
+        setUser(user as User)
+    })
 
     useEffect(() => {
         const addData = async () => {
             if (user && wallet) {
-                const docRef = doc(db, 'users', wallet)
+                const docRef = doc(db, 'users', wallet.address)
                 await setDoc(
                     docRef,
                     {

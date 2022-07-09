@@ -20,7 +20,7 @@ import { FcGoogle } from 'react-icons/fc'
 import { MdMail } from 'react-icons/md'
 import { auth } from '../../utils/firebaseUtils'
 import {
-    signInWithRedirect,
+    signInWithPopup,
     GoogleAuthProvider,
     sendSignInLinkToEmail,
 } from 'firebase/auth'
@@ -36,11 +36,11 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     const googleProvider = new GoogleAuthProvider()
 
     const signUp = (provider: AuthProvider) => {
-        signInWithRedirect(auth, provider)
+        signInWithPopup(auth, provider)
     }
 
     const actionCodeSettings = {
-        url: 'https://app.metapass.xyz/account',
+        url: 'https://app.metapass.xyz/',
         handleCodeInApp: true,
     }
 
