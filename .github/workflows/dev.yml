@@ -1,5 +1,6 @@
 name: deploy all apps to prod
 
+
 on:
     push:
         branches: [prod]
