@@ -340,13 +340,6 @@ export default function EventLayout({ event }: { event: Event }) {
                 />
             )}
             {hasBought && <Confetti />}
-            {user === null && (
-                <SignUpModal
-                    isOpen={isOpen}
-                    onOpen={onOpen}
-                    onClose={onClose}
-                />
-            )}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />
                 <ModalContent rounded="2xl" bgColor={'transparent'}>
