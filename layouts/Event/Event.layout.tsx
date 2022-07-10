@@ -102,7 +102,7 @@ export default function EventLayout({ event }: { event: Event }) {
     ]
 
     const [user, setUser] = useState<any>()
-    const router = useRouter()
+    const [toOpen, setOpen] = useState<boolean>(false)
 
     onAuthStateChanged(auth, (user) => {
         user ? setUser(user) : setUser(null)
@@ -125,140 +125,147 @@ export default function EventLayout({ event }: { event: Event }) {
     }, [user, wallet])
 
     const buyTicket = async () => {
-        if (wallet.address) {
-            if (typeof window.ethereum != undefined) {
-                console.log(wallet.type)
+        if (!user) {
+            setOpen(true)
+        } else {
+            setOpen(false)
+            if (wallet.address) {
+                if (typeof window.ethereum != undefined) {
+                    console.log(wallet.type)
 
-                const provider = new ethers.providers.Web3Provider(
-                    wallet.type === 'wc'
-                        ? window.w3.currentProvider
-                        : window.ethereum
-                )
-                const biconomy = new Biconomy(provider, {
-                    apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
-                    debug: true,
-                })
-                setIsLoading(true)
-                let ethersProvider = new ethers.providers.Web3Provider(biconomy)
-
-                const signer = ethersProvider.getSigner()
-                let metapass = new ethers.Contract(
-                    event.childAddress,
-                    abi.abi,
-                    signer
-                )
-                console.log(metapass)
-                toast.loading('Generating your unique ticket', {
-                    duration: 5000,
-                })
-                let { img, fastimg } = await ticketToIPFS(
-                    event.title,
-                    event.tickets_sold + 1,
-                    event.image.image,
-                    event.date.split('T')[0],
-                    wallet?.ens ||
-                        wallet?.address?.substring(0, 4) +
-                            '...' +
-                            wallet?.address?.substring(
-                                wallet?.address?.length - 4
-                            )
-                )
-                setMintedImage(fastimg)
-                let metadata = {
-                    name: event.title,
-                    description: `NFT Ticket for ${event.title}`,
-                    image: img,
-                    properties: {
-                        'Ticket Number': event.tickets_sold + 1,
-                    },
-                }
-
-                try {
-                    if (event.fee === 0) {
-                        metapass
-                            .getTix(JSON.stringify(metadata), {
-                                value: ethers.utils.parseEther(
-                                    event.fee.toString()
-                                )._hex,
-                                gasPrice: 50,
-                                gasLimit: 900000,
-                            })
-                            .then(() => {
-                                console.log('Success!')
-                            })
-                            .catch((err: any) => {
-                                console.log('error', err)
-                                toast.error(err.data?.message, {
-                                    id: 'error10',
-                                    style: {
-                                        fontSize: '12px',
-                                    },
-                                })
-                                setIsLoading(false)
-                            })
-                    } else {
-                        metapass
-                            .getTix(JSON.stringify(metadata), {
-                                value: ethers.utils.parseEther(
-                                    event.fee.toString()
-                                )._hex,
-                            })
-                            .then(() => {
-                                console.log('Success!')
-                            })
-                            .catch((err: any) => {
-                                console.log('error', err)
-                                toast.error(err.data?.message, {
-                                    id: 'error10',
-                                    style: {
-                                        fontSize: '12px',
-                                    },
-                                })
-                                setIsLoading(false)
-                            })
-                    }
-                } catch (e: any) {
-                    toast.dismiss('minting')
-                    toast(
-                        'An error occured! Share error code: ' +
-                            e.code +
-                            ' with the team for reference.'
+                    const provider = new ethers.providers.Web3Provider(
+                        wallet.type === 'wc'
+                            ? window.w3.currentProvider
+                            : window.ethereum
+                    )
+                    const biconomy = new Biconomy(provider, {
+                        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
+                        debug: true,
+                    })
+                    setIsLoading(true)
+                    let ethersProvider = new ethers.providers.Web3Provider(
+                        biconomy
                     )
 
-                    toast.error(e?.message as string, {
-                        id: 'error10',
-                        style: {
-                            fontSize: '12px',
-                        },
+                    const signer = ethersProvider.getSigner()
+                    let metapass = new ethers.Contract(
+                        event.childAddress,
+                        abi.abi,
+                        signer
+                    )
+                    console.log(metapass)
+                    toast.loading('Generating your unique ticket', {
+                        duration: 5000,
                     })
-                    setIsLoading(false)
-                }
+                    let { img, fastimg } = await ticketToIPFS(
+                        event.title,
+                        event.tickets_sold + 1,
+                        event.image.image,
+                        event.date.split('T')[0],
+                        wallet?.ens ||
+                            wallet?.address?.substring(0, 4) +
+                                '...' +
+                                wallet?.address?.substring(
+                                    wallet?.address?.length - 4
+                                )
+                    )
+                    setMintedImage(fastimg)
+                    let metadata = {
+                        name: event.title,
+                        description: `NFT Ticket for ${event.title}`,
+                        image: img,
+                        properties: {
+                            'Ticket Number': event.tickets_sold + 1,
+                        },
+                    }
 
-                metapass.on('Transfer', (res) => {
-                    setIsLoading(false)
-                    setHasBought(true)
-                    event.category.event_type == 'In-Person' &&
-                        generateAndSendUUID(
-                            event.childAddress,
-                            wallet.address,
-                            event.tickets_sold + 1
-                        ).then((uuid) => {
-                            setQrId(String(uuid))
+                    try {
+                        if (event.fee === 0) {
+                            metapass
+                                .getTix(JSON.stringify(metadata), {
+                                    value: ethers.utils.parseEther(
+                                        event.fee.toString()
+                                    )._hex,
+                                    gasPrice: 50,
+                                    gasLimit: 900000,
+                                })
+                                .then(() => {
+                                    console.log('Success!')
+                                })
+                                .catch((err: any) => {
+                                    console.log('error', err)
+                                    toast.error(err.data?.message, {
+                                        id: 'error10',
+                                        style: {
+                                            fontSize: '12px',
+                                        },
+                                    })
+                                    setIsLoading(false)
+                                })
+                        } else {
+                            metapass
+                                .getTix(JSON.stringify(metadata), {
+                                    value: ethers.utils.parseEther(
+                                        event.fee.toString()
+                                    )._hex,
+                                })
+                                .then(() => {
+                                    console.log('Success!')
+                                })
+                                .catch((err: any) => {
+                                    console.log('error', err)
+                                    toast.error(err.data?.message, {
+                                        id: 'error10',
+                                        style: {
+                                            fontSize: '12px',
+                                        },
+                                    })
+                                    setIsLoading(false)
+                                })
+                        }
+                    } catch (e: any) {
+                        toast.dismiss('minting')
+                        toast(
+                            'An error occured! Share error code: ' +
+                                e.code +
+                                ' with the team for reference.'
+                        )
+
+                        toast.error(e?.message as string, {
+                            id: 'error10',
+                            style: {
+                                fontSize: '12px',
+                            },
                         })
-                    let link =
-                        opensea +
-                        '/' +
-                        event.childAddress +
-                        '/' +
-                        ethers.BigNumber.from(res).toNumber()
+                        setIsLoading(false)
+                    }
 
-                    setOpenseaLink(link)
-                })
+                    metapass.on('Transfer', (res) => {
+                        setIsLoading(false)
+                        setHasBought(true)
+                        event.category.event_type == 'In-Person' &&
+                            generateAndSendUUID(
+                                event.childAddress,
+                                wallet.address,
+                                event.tickets_sold + 1
+                            ).then((uuid) => {
+                                setQrId(String(uuid))
+                            })
+                        let link =
+                            opensea +
+                            '/' +
+                            event.childAddress +
+                            '/' +
+                            ethers.BigNumber.from(res).toNumber()
+
+                        setOpenseaLink(link)
+                    })
+                } else {
+                    console.log("Couldn't find ethereum enviornment")
+                }
             } else {
-                console.log("Couldn't find ethereum enviornment")
+                toast('Please connect your wallet')
             }
-        } else {
-            toast('Please connect your wallet')
         }
     }
     useEffect(() => {
@@ -325,13 +332,13 @@ export default function EventLayout({ event }: { event: Event }) {
 
     return (
         <>
-            {/* {notAuthed && (
+            {toOpen && (
                 <SignUpModal
                     isOpen={isOpen}
                     onOpen={onOpen}
                     onClose={onClose}
                 />
-            )} */}
+            )}
             {hasBought && <Confetti />}
             {user === null && (
                 <SignUpModal
