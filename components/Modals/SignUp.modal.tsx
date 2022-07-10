@@ -1,6 +1,5 @@
 import type { NextComponentType, NextPageContext } from 'next'
 import type { ModalProps } from '../../types/AuthModal.types'
-import { useState } from 'react'
 import {
     Modal,
     ModalOverlay,
@@ -9,20 +8,15 @@ import {
     ModalBody,
     ModalCloseButton,
     Button,
-    Box,
-    Input,
     Text,
-    InputGroup,
-    InputLeftElement,
-    useToast,
+    Image,
 } from '@chakra-ui/react'
 import { FcGoogle } from 'react-icons/fc'
-import { MdMail } from 'react-icons/md'
 import { auth } from '../../utils/firebaseUtils'
 import {
     signInWithPopup,
     GoogleAuthProvider,
-    sendSignInLinkToEmail,
+    TwitterAuthProvider,
 } from 'firebase/auth'
 import type { AuthProvider } from 'firebase/auth'
 
@@ -31,42 +25,14 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     onOpen,
     onClose,
 }) => {
-    const toast = useToast()
-    const [email, setEmail] = useState<string>('')
     const googleProvider = new GoogleAuthProvider()
+    const twitterProvider = new TwitterAuthProvider()
 
     const signUp = (provider: AuthProvider) => {
         signInWithPopup(auth, provider).then((user) => {
             onClose()
         })
     }
-
-    const actionCodeSettings = {
-        url: 'https://app.metapasshq.xyz/',
-        handleCodeInApp: true,
-    }
-
-    const sendEmailLink = () => {
-        sendSignInLinkToEmail(auth, email, actionCodeSettings)
-            .then(() => {
-                window.localStorage.setItem('emailForSignIn', email)
-
-                toast({
-                    title: 'SignIn Link Sent.',
-                    description:
-                        'Please check your email for the link to sign in.',
-                    status: 'success',
-                    duration: 3000,
-                    isClosable: true,
-                })
-
-                onClose()
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-    }
-
     return (
         <>
             <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -82,45 +48,21 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                         gap="3"
                         pb="8"
                     >
-                        <Box
-                            display="flex"
-                            flexDir="column"
-                            justifyContent="center"
-                            alignItems="center"
-                            gap="3"
+                        <Button
+                            w="72"
+                            variant="outline"
+                            gap="2"
+                            _focus={{}}
+                            onClick={() => signUp(twitterProvider)}
                         >
-                            <InputGroup>
-                                <InputLeftElement pointerEvents="none">
-                                    <MdMail size="22" color="gray.700" />
-                                </InputLeftElement>
-                                <Input
-                                    type="email"
-                                    placeholder="enter your email"
-                                    w="xs"
-                                    fontWeight="500"
-                                    textColor="gray.700"
-                                    focusBorderColor="purple.500"
-                                    _placeholder={{
-                                        color: 'gray.600',
-                                        fontWeight: '500',
-                                    }}
-                                    value={email}
-                                    onChange={(e) =>
-                                        setEmail(e.target.value as string)
-                                    }
-                                />
-                            </InputGroup>
-
-                            <Button
-                                colorScheme="purple"
-                                _focus={{}}
-                                onClick={sendEmailLink}
-                                isDisabled={email === '' && true}
-                            >
-                                continue
-                            </Button>
-                        </Box>
-
+                            <Image
+                                src="/assets/twitter.svg"
+                                alt="twtr icon"
+                                height="20"
+                                width="20"
+                            />
+                            sign up with twitter
+                        </Button>
                         <Text
                             fontFamily="heading"
                             fontWeight="500"
