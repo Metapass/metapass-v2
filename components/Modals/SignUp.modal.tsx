@@ -58,8 +58,8 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                             <Image
                                 src="/assets/twitter.svg"
                                 alt="twtr icon"
-                                height="20"
-                                width="20"
+                                height="5"
+                                width="5"
                             />
                             sign up with twitter
                         </Button>
