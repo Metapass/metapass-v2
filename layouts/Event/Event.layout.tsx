@@ -113,7 +113,7 @@ export default function EventLayout({ event }: { event: Event }) {
     useEffect(() => {
         const addUser = async () => {
             if (typeof user !== null) {
-                const docRef = doc(db, 'users', wallet)
+                const docRef = doc(db, 'users', wallet.address)
 
                 await setDoc(docRef, {
                     email: user?.email,
@@ -318,7 +318,7 @@ export default function EventLayout({ event }: { event: Event }) {
                       setEventLink(declink)
                   }
         }
-    }, [])
+    }, [event])
 
     const [isDisplayed, setIsDisplayed] = useState(false)
 

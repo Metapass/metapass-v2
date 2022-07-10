@@ -24,27 +24,6 @@ const Event: NextPage = () => {
     const router = useRouter()
     const { address } = router.query
     const [wallet] = useContext(walletContext)
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    const [user, setUser] = useState<User>()
-
-    onAuthStateChanged(auth, (user) => {
-        setUser(user as User)
-    })
-
-    useEffect(() => {
-        const addData = async () => {
-            const docRef = doc(db, 'users', wallet.address)
-            await setDoc(
-                docRef,
-                {
-                    email: user?.email,
-                },
-                { merge: true }
-            )
-        }
-
-        addData()
-    }, [user, wallet])
 
     const [featEvent, setFeatEvent] = useState<Event>({
         id: '',
@@ -169,17 +148,10 @@ const Event: NextPage = () => {
                 console.log(err)
             })
         // console.log(featEvents)
-    }, [address])
+    }, [address, getFeaturedEvents, parseFeaturedEvents])
 
     return (
         <>
-            {!user && (
-                <SignUpModal
-                    isOpen={isOpen}
-                    onOpen={onOpen}
-                    onClose={onClose}
-                />
-            )}
             <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
                 <NavigationBar mode="white" />
                 <Box p="4" />
