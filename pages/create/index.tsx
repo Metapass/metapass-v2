@@ -292,7 +292,7 @@ const Create: NextPage = () => {
                     } else {
                         let roomLink = await axios.post(
                             process.env.NEXT_PUBLIC_HUDDLE_API as string,
-                            {
+                    {
                                 title: event.title,
                                 host: event.owner,
                                 contractAddress: child,
