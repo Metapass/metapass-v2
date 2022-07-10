@@ -52,6 +52,7 @@ import { getAllowedList } from '../../utils/sendToAirtable'
 import { auth } from '../../utils/firebaseUtils'
 import { BiUserCircle } from 'react-icons/bi'
 import { useRouter } from 'next/router'
+import { ethers } from 'ethers'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const router = useRouter()
@@ -121,7 +122,7 @@ export default function NavigationBar({ mode = 'dark' }) {
 
             setWallet({
                 balance: ethBal,
-                address: accounts[0],
+                address: ethers.utils.getAddress(accounts[0]),
                 type: 'mm',
             })
         } catch (error) {
