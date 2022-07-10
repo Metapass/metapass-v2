@@ -36,12 +36,7 @@ import { Event } from '../../types/Event.type'
 import { ethers } from 'ethers'
 import abi from '../../utils/MetapassFactory.json'
 import MetapassABI from '../../utils/Metapass.json'
-import { send } from '@metapasshq/msngr'
 import axios from 'axios'
-import { SignUpModal } from '../../components'
-import { setDoc, doc } from 'firebase/firestore'
-import { auth, db } from '../../utils/firebaseUtils'
-import { onAuthStateChanged, User } from 'firebase/auth'
 
 declare const window: any
 
@@ -79,24 +74,6 @@ const Create: NextPage = () => {
     })
 
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const [user, setUser] = useState<User | null>()
-
-    onAuthStateChanged(auth, (user) => {
-        setUser(user)
-    })
-
-    useEffect(() => {
-        const addData = async () => {
-            if (user) {
-                const docRef = doc(db, 'users', wallet.address)
-                await setDoc(docRef, {
-                    email: user?.email,
-                })
-            }
-        }
-
-        addData()
-    }, [user, wallet])
 
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
@@ -315,13 +292,6 @@ const Create: NextPage = () => {
 
     return (
         <>
-            {!user && (
-                <SignUpModal
-                    isOpen={isOpen}
-                    onOpen={onOpen}
-                    onClose={onClose}
-                />
-            )}
             <Head>
                 <title>MetaPass | Create Event</title>
             </Head>
