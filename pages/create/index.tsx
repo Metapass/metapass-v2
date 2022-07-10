@@ -79,24 +79,19 @@ const Create: NextPage = () => {
     })
 
     const { isOpen, onOpen, onClose } = useDisclosure()
-
-    const [user, setUser] = useState<User>()
+    const [user, setUser] = useState<User | null>()
 
     onAuthStateChanged(auth, (user) => {
-        setUser(user as User)
+        setUser(user)
     })
 
     useEffect(() => {
         const addData = async () => {
-            if (user && wallet) {
+            if (user) {
                 const docRef = doc(db, 'users', wallet.address)
-                await setDoc(
-                    docRef,
-                    {
-                        email: user?.email,
-                    },
-                    { merge: true }
-                )
+                await setDoc(docRef, {
+                    email: user?.email,
+                })
             }
         }
 
@@ -108,7 +103,7 @@ const Create: NextPage = () => {
             ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
             : process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
 
-    let contract: any
+    const [contract, setContract] = useState<any>()
 
     const [eventLink, setEventLink] = useState<any>(undefined)
     const [isPublished, setIsPublished] = useState(false)
@@ -128,13 +123,11 @@ const Create: NextPage = () => {
             const provider = new ethers.providers.Web3Provider(window.ethereum)
             const signer = provider.getSigner()
 
-            contract = new ethers.Contract(
-                contractAddress as string,
-                abi.abi,
-                signer
+            setContract(
+                new ethers.Contract(contractAddress as string, abi.abi, signer)
             )
         }
-    })
+    }, [contractAddress])
 
     const onSubmit = async () => {
         setInTxn(true)
@@ -292,7 +285,7 @@ const Create: NextPage = () => {
                     } else {
                         let roomLink = await axios.post(
                             process.env.NEXT_PUBLIC_HUDDLE_API as string,
-                    {
+                            {
                                 title: event.title,
                                 host: event.owner,
                                 contractAddress: child,
