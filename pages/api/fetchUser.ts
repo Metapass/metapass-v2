@@ -1,6 +1,7 @@
 import { db } from '../../utils/firebaseUtils'
 import { doc, getDoc } from 'firebase/firestore'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { ethers } from 'ethers'
 import Cors from 'cors'
 import { utils } from 'ethers'
 
@@ -33,13 +34,13 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 const docSnap = await getDoc(docRef)
                 docSnap.exists()
                     ? res.status(200).json({
-                          email: docSnap.data().email,
-                          address: utils.getAddress(address),
-                      })
+                        email: docSnap.data().email,
+                        address: utils.getAddress(address),
+                    })
                     : res.status(404).json({
-                          message: 'Failed to load user data',
-                          address: utils.getAddress(address),
-                      })
+                        message: 'Failed to load user data',
+                        address: utils.getAddress(address),
+                    })
             } else {
                 res.status(400).send('Please add in address')
             }
