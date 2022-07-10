@@ -43,7 +43,7 @@ declare const window: any
 import eventOrgs from '../../utils/orgs.json'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
-import WaitlistModal from '../Misc/WaitlistModal'
+import { utils } from 'ethers'
 import LogRocket from 'logrocket'
 
 import { FaBars } from 'react-icons/fa'
@@ -125,7 +125,7 @@ export default function NavigationBar({ mode = 'dark' }) {
 
             setWallet({
                 balance: ethBal,
-                address: accounts[0].toLowerCase(),
+                address: utils.getAddress(accounts[0]),
                 type: 'mm',
             })
         } catch (error) {
@@ -146,7 +146,7 @@ export default function NavigationBar({ mode = 'dark' }) {
             setBalance(ethBal)
             setWallet({
                 balance: ethBal,
-                address: accounts[0],
+                address: utils.getAddress(accounts[0]),
                 type: 'mm',
             })
             localStorage.setItem('Autoconnect', 'true')
@@ -214,7 +214,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                 console.log('bal', ethBal)
                 setWallet({
                     balance: ethBal,
-                    address: accounts[0],
+                    address: utils.getAddress(accounts[0]),
                     type: 'wc',
                 })
                 console.log('wallet', wallet)
@@ -345,7 +345,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                     setEnsName(ens_name)
                     setWallet({
                         balance: balance,
-                        address: address,
+                        address: utils.getAddress(address),
                         type: walletType,
                         ens: ens_name,
                     })
