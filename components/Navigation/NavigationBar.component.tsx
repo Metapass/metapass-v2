@@ -134,28 +134,21 @@ export default function NavigationBar({ mode = 'dark' }) {
     }
 
     async function loadAccounts() {
-        console.log('enter')
         let windowType = window
-        // console.log(windowType, 'windowType')
         let accounts = await windowType.ethereum.request({
             method: 'eth_requestAccounts',
         })
 
-        // console.log(windowType.ethereum.chainId, 'chainId')
-
         if (windowType.ethereum.chainId == chainid) {
             setAddress(accounts[0])
-            // console.log('got accounts', accounts)
             let bal = await web3.eth.getBalance(accounts[0])
             let ethBal: any = await web3.utils.fromWei(bal, 'ether')
             setBalance(ethBal)
-            // console.log('got balance', ethBal)
             setWallet({
                 balance: ethBal,
                 address: accounts[0],
                 type: 'mm',
             })
-            // console.log('got wallet', wallet)
             localStorage.setItem('Autoconnect', 'true')
             setWalletType('mm')
         } else {
@@ -168,7 +161,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                         },
                     ],
                 })
-                console.log('switched')
                 toast.success('Switched to Polygon Mainnet', {
                     id: 'switched1',
                     position: 'top-center',
@@ -178,7 +170,6 @@ export default function NavigationBar({ mode = 'dark' }) {
             } catch (switchError: any) {
                 if (switchError.code === 4902) {
                     try {
-                        console.log('trying to add chain')
                         await windowType.ethereum.request({
                             method: 'wallet_addEthereumChain',
                             params: [polygon.addData],
@@ -348,13 +339,6 @@ export default function NavigationBar({ mode = 'dark' }) {
         getAllEnsLinked(wallet.address || address || 'address')
             .then((data) => {
                 if (data?.data?.domains && data && data?.data) {
-                    console.log(data?.data?.domains)
-                    console.log(
-                        data?.data.domains?.length,
-                        data.data.domains?.length > 0 &&
-                            data?.data?.domains[data?.data?.domains.length - 1]
-                                ?.name
-                    )
                     const ens_name =
                         data?.data?.domains?.length > 0 &&
                         data?.data?.domains[data?.data?.domains.length - 1].name

@@ -32,7 +32,6 @@ import { walletContext } from '../../utils/walletContext'
 import TicketLayout from './Ticket.layout'
 export default function MyEvents({ isOpen, onClose }: any) {
     const [tab, setTab] = useState('upcoming')
-    // const [ticketsBought, setTicketsBought] = useState<Array<any>>([])
     const [wallet] = useContext<[{ address: ''; balance: '' }]>(walletContext)
     const [myTickets, setMyTickets] = useState<TicketType[]>([
         {
@@ -68,6 +67,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 tickets_available: 0,
                 tickets_sold: 0,
                 buyers: [],
+                isHuddle: false,
             },
         },
     ])
@@ -123,6 +123,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                     tickets_available: event.seats - event.ticketsBought.length,
                     tickets_sold: event.ticketsBought.length,
                     buyers: event.buyers,
+                    isHuddle: event.link.includes('huddle01') ? true : false,
                 } as Event,
             } as TicketType
         })

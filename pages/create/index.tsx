@@ -93,7 +93,7 @@ const Create: NextPage = () => {
             ...event,
             owner: wallet.address,
         })
-    }, [wallet, event])
+    }, [wallet])
 
     useEffect(() => {
         if (window.ethereum !== undefined && contractAddress) {

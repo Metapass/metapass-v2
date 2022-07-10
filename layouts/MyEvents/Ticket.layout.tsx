@@ -89,15 +89,6 @@ export default function TicketLayout({
                                 timestamp: string
                             }
                         ] = data[key]
-                        // console.log(tickets, 'tickets')
-                        // console.log(ticket, 'key')
-                        // console.log(
-                        //     tickets.find((tick) =>
-                        //         // console.log(tick.user_address, wallet.address)
-                        //         console.log(tick?.ticketID, ticket?.ticketID)
-                        //     ),
-                        //     'key'
-                        // )
                         const qrdata = tickets.find(
                             (tick) =>
                                 tick?.user_address?.toLowerCase() ===
@@ -116,8 +107,6 @@ export default function TicketLayout({
                                 ticket.event.title
                             )
                         }
-
-                        // console.log(qr, 'qr inside fetch')
                     }
                 } catch (error) {
                     console.log(error, ' Failed to get QR code UUID')
@@ -128,7 +117,6 @@ export default function TicketLayout({
     }, [contractAddress, wallet.address, ticket])
 
     return (
-        // <Skeleton isLoaded={ticketimg && ticket.event.title ? true : false}>
         <Box
             backgroundColor="white"
             rounded="lg"
