@@ -36,12 +36,7 @@ import { Event } from '../../types/Event.type'
 import { ethers } from 'ethers'
 import abi from '../../utils/MetapassFactory.json'
 import MetapassABI from '../../utils/Metapass.json'
-import { send } from '@metapasshq/msngr'
 import axios from 'axios'
-import { SignUpModal } from '../../components'
-import { setDoc, doc } from 'firebase/firestore'
-import { auth, db } from '../../utils/firebaseUtils'
-import { onAuthStateChanged, User } from 'firebase/auth'
 
 declare const window: any
 
@@ -80,35 +75,12 @@ const Create: NextPage = () => {
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
-    const [user, setUser] = useState<User>()
-
-    onAuthStateChanged(auth, (user) => {
-        setUser(user as User)
-    })
-
-    useEffect(() => {
-        const addData = async () => {
-            if (user && wallet) {
-                const docRef = doc(db, 'users', wallet.address)
-                await setDoc(
-                    docRef,
-                    {
-                        email: user?.email,
-                    },
-                    { merge: true }
-                )
-            }
-        }
-
-        addData()
-    }, [user, wallet])
-
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
             : process.env.NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET
 
-    let contract: any
+    const [contract, setContract] = useState<any>()
 
     const [eventLink, setEventLink] = useState<any>(undefined)
     const [isPublished, setIsPublished] = useState(false)
@@ -128,13 +100,11 @@ const Create: NextPage = () => {
             const provider = new ethers.providers.Web3Provider(window.ethereum)
             const signer = provider.getSigner()
 
-            contract = new ethers.Contract(
-                contractAddress as string,
-                abi.abi,
-                signer
+            setContract(
+                new ethers.Contract(contractAddress as string, abi.abi, signer)
             )
         }
-    })
+    }, [contractAddress])
 
     const onSubmit = async () => {
         setInTxn(true)
@@ -292,7 +262,7 @@ const Create: NextPage = () => {
                     } else {
                         let roomLink = await axios.post(
                             process.env.NEXT_PUBLIC_HUDDLE_API as string,
-                    {
+                            {
                                 title: event.title,
                                 host: event.owner,
                                 contractAddress: child,
@@ -322,13 +292,6 @@ const Create: NextPage = () => {
 
     return (
         <>
-            {!user && (
-                <SignUpModal
-                    isOpen={isOpen}
-                    onOpen={onOpen}
-                    onClose={onClose}
-                />
-            )}
             <Head>
                 <title>MetaPass | Create Event</title>
             </Head>

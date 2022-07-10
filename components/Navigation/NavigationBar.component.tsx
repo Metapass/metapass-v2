@@ -60,6 +60,9 @@ export default function NavigationBar({ mode = 'dark' }) {
 
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
+
+    console.log(wallet)
+
     const [allowedList, setAllowedList] = useState<any>(undefined)
     const [_, setWeb3] = useContext(web3Context)
     const [walletType, setWalletType] = useState<string>('')
@@ -122,7 +125,7 @@ export default function NavigationBar({ mode = 'dark' }) {
 
             setWallet({
                 balance: ethBal,
-                address: ethers.utils.getAddress(accounts[0]),
+                address: accounts[0].toLowerCase(),
                 type: 'mm',
             })
         } catch (error) {
