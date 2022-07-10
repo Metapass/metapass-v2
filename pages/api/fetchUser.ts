@@ -27,7 +27,7 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (auth === `Bearer ${process.env.API_KEY}`) {
             if (address !== undefined) {
-                const docRef = doc(db, 'users', address as string)
+                const docRef = doc(db, 'users', (address as string).toLowerCase())
                 const docSnap = await getDoc(docRef)
                 docSnap.exists()
                     ? res.status(200).json({
