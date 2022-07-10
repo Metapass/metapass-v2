@@ -36,7 +36,9 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     const googleProvider = new GoogleAuthProvider()
 
     const signUp = (provider: AuthProvider) => {
-        signInWithPopup(auth, provider)
+        signInWithPopup(auth, provider).then((user) => {
+            onClose()
+        })
     }
 
     const actionCodeSettings = {
@@ -57,6 +59,8 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                     duration: 3000,
                     isClosable: true,
                 })
+
+                onClose()
             })
             .catch((error) => {
                 console.log(error)
@@ -65,7 +69,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
 
     return (
         <>
-            <Modal isOpen onClose={onClose} isCentered>
+            <Modal isOpen={isOpen} onClose={onClose} isCentered>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader textAlign="center">Get Started</ModalHeader>

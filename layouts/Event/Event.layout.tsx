@@ -126,9 +126,9 @@ export default function EventLayout({ event }: { event: Event }) {
 
     const buyTicket = async () => {
         if (!user) {
-            setOpen(true)
+            onOpen()
         } else {
-            setOpen(false)
+            onClose()
             if (wallet.address) {
                 if (typeof window.ethereum != undefined) {
                     console.log(wallet.type)
@@ -332,13 +332,7 @@ export default function EventLayout({ event }: { event: Event }) {
 
     return (
         <>
-            {toOpen && (
-                <SignUpModal
-                    isOpen={isOpen}
-                    onOpen={onOpen}
-                    onClose={onClose}
-                />
-            )}
+            <SignUpModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
             {hasBought && <Confetti />}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />
