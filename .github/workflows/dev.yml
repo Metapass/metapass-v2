@@ -2,7 +2,7 @@ name: deploy all apps to prod
 
 on:
     push:
-        branches-ignore: [solana]
+        branches-ignore: [prod,main]
 
 jobs:
     pre-job:
