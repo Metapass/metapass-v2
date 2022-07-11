@@ -2,7 +2,7 @@ name: deploy all apps to prod
 
 on:
     push:
-        branches-ignore: [main]
+        branches-ignore: [solana]
 
 jobs:
     pre-job:
@@ -27,7 +27,7 @@ jobs:
               run: npm i vercel -g
 
             - name: Deploy landing page
-              run: ls && vercel --prod --token $VERCEL_TOKEN && cat > deployment-url.txt
+              run: ls && vercel --token $VERCEL_TOKEN && cat > deployment-url.txt
               env:
                   VERCEL_TOKEN: ${{ secrets.VERCEL_CLI_TOKEN }}
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_LANDING_ORG }}
