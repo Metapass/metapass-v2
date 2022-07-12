@@ -385,31 +385,34 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                             gap={6}
                                         >
                                             {myTickets.length > 0 ? (
-                                                myTickets.map((data, key) => (
-                                                    <Box key={key}>
-                                                        <TicketLayout
-                                                            image={
-                                                                data.event.image
-                                                                    .image
-                                                            }
-                                                            wallet={wallet}
-                                                            ticket={data}
-                                                            contractAddress={
-                                                                data.event
-                                                                    .childAddress
-                                                            }
-                                                            eventLink={
-                                                                data.event
-                                                                    .link as string
-                                                            }
-                                                            eventType={
-                                                                data.event
-                                                                    .category
-                                                                    .event_type
-                                                            }
-                                                        />
-                                                    </Box>
-                                                ))
+                                                myTickets
+                                                    .reverse()
+                                                    .map((data, key) => (
+                                                        <Box key={key}>
+                                                            <TicketLayout
+                                                                image={
+                                                                    data.event
+                                                                        .image
+                                                                        .image
+                                                                }
+                                                                wallet={wallet}
+                                                                ticket={data}
+                                                                contractAddress={
+                                                                    data.event
+                                                                        .childAddress
+                                                                }
+                                                                eventLink={
+                                                                    data.event
+                                                                        .link as string
+                                                                }
+                                                                eventType={
+                                                                    data.event
+                                                                        .category
+                                                                        .event_type
+                                                                }
+                                                            />
+                                                        </Box>
+                                                    ))
                                             ) : (
                                                 <Box
                                                     maxW={{ xl: '390px' }}
