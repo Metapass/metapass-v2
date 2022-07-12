@@ -53,6 +53,7 @@ const Event: NextPage = () => {
         tickets_sold: 0,
         buyers: [],
         // slides: [],
+        isHuddle: false,
     } as Event)
 
     async function getFeaturedEvents() {
@@ -131,6 +132,7 @@ const Event: NextPage = () => {
             tickets_sold: event.ticketsBought?.length,
             buyers: event.buyers,
             slides: image.gallery,
+            isHuddle: event.link.includes('huddle01') ? true : false,
         } as Event
     }
 
@@ -166,10 +168,7 @@ const Event: NextPage = () => {
                 >
                     <Box maxW="1000px" w="full">
                         <Skeleton isLoaded={featEvent.id !== ''}>
-                            <EventLayout
-                                event={featEvent}
-                                address={address as string}
-                            />
+                            <EventLayout event={featEvent} />
                         </Skeleton>
                     </Box>
                 </Flex>
