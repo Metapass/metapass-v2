@@ -38,7 +38,8 @@ export const ConnectWallet = ({
     const [clicked, setClicked] = useState(false)
     const [fire, setFire] = useState(false)
     // console.log('p', publicKey.toBase58())
-    const [domain] = useDomain('SOL', publicKey?.toString() || null)
+    // const [domain] = useDomain('SOL', publicKey?.toString() || null)
+    let domain: any = null
     console.log(domain)
     const router = useRouter()
     // const test = useWa

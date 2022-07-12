@@ -23,7 +23,7 @@ import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import { useContext, useEffect, useState } from 'react'
-import { walletContext } from '../../utils/walletContext'
+import { walletContext, WalletType } from '../../utils/walletContext'
 import { encryptLink } from '../../utils/linkResolvers'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
@@ -36,11 +36,14 @@ export default function Step4({
     event: any
     onSubmit: Function
 }) {
-    const [wallet, setWallet] = useContext(walletContext)
+    const [wallet] = useContext<WalletType[]>(walletContext)
     const [_link, setLink] = useState<string>('')
     const [ensName, setEnsName] = useState<string>('')
     const [huddle, setHuddle] = useState(true)
-    const [domain] = useDomain('POLYGON', event.owner)
+    const [domain] = useDomain(
+        wallet.chain === 'SOL' ? 'SOL' : 'POLYGON',
+        event.owner
+    )
     useEffect(() => {
         domain && setEnsName(domain)
     }, [event.owner])
