@@ -29,8 +29,7 @@ jobs:
             - name: Deploy landing page
               run: |
                 export TEST=$(vercel --token $VERCEL_TOKEN) && echo "$TEST"
-                export DISCORD_WEBHOOK=https://discord.com/api/webhooks/996044031127724116/5KXFIVDVDhwgAxEF5ECU1B9yPKcamEJe8WG7Yp61vDF4dvXxdRwK7fS-O1oYAOXhIT5B
-                curl -H "Content-Type: application/json" -d '{"username": "Deployment", "content": "$VERCEL_LINK"}' $WEBHOOK_URL
+                curl -H "Content-Type: application/json" -d '{"username": "Vercel", "content": "$VERCEL_LINK"}' https://discord.com/api/webhooks/996044031127724116/5KXFIVDVDhwgAxEF5ECU1B9yPKcamEJe8WG7Yp61vDF4dvXxdRwK7fS-O1oYAOXhIT5B
               env:
                   VERCEL_TOKEN: ${{ secrets.VERCEL_CLI_TOKEN }}
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_LANDING_ORG }}
