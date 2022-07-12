@@ -312,11 +312,11 @@ export default function EventLayout({ event }: { event: Event }) {
         if (event.link) {
             event.link.includes('huddle01')
                 ? setEventLink(event.link)
-                : () => {
+                : (function () {
                       const declink = decryptLink(event.link as string)
                       console.log(declink, 'decrypted link')
                       setEventLink(declink)
-                  }
+                  })()
         }
     }, [event])
 
