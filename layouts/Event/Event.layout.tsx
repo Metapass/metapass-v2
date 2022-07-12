@@ -312,11 +312,11 @@ export default function EventLayout({ event }: { event: Event }) {
         if (event.link) {
             event.link.includes('huddle01')
                 ? setEventLink(event.link)
-                : (() => {
+                : () => {
                       const declink = decryptLink(event.link as string)
                       console.log(declink, 'decrypted link')
                       setEventLink(declink)
-                  })()
+                  }
         }
     }, [event])
 
@@ -406,7 +406,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                         alt="twitter"
                                         onClick={() => {
                                             window.open(
-                                                `http://twitter.com/share?text=I bought my NFT Ticket for ${event.title} on metapass. Get yours now!&url=https://metapasshq.xyz/event/${event.childAddress}`,
+                                                `http://twitter.com/share?text=I bought my NFT Ticket for ${event.title} on metapass. Get yours now!&url=https://app.metapasshq.xyz/event/${event.childAddress}`,
                                                 '_blank'
                                             )
                                         }}
@@ -422,7 +422,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     rounded="full"
                                     onClick={() => {
                                         window.open(
-                                            `https://api.whatsapp.com/send?text=I just bought NFT Ticket to ${event.title} on Metapass. Get yours at https://metapasshq.xyz/event/${event.childAddress}`
+                                            `https://api.whatsapp.com/send?text=I just bought NFT Ticket to ${event.title} on Metapass. Get yours at https://app.metapasshq.xyz/event/${event.childAddress}`
                                         )
                                     }}
                                     _hover={{ shadow: 'md' }}
@@ -442,7 +442,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                     rounded="full"
                                     onClick={() => {
                                         window.open(
-                                            `https://telegram.me/share/url?url=https://metapasshq.xyz/event/${event.childAddress}&text=I just bought my NFT Ticket to ${event.title} on Metapass. Get yours now`,
+                                            `https://telegram.me/share/url?url=https://app.metapasshq.xyz/event/${event.childAddress}&text=I just bought my NFT Ticket to ${event.title} on Metapass. Get yours now`,
                                             '_blank'
                                         )
                                     }}
