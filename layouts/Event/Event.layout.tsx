@@ -314,7 +314,7 @@ export default function EventLayout({ event }: { event: Event }) {
                 ? setEventLink(event.link)
                 : (function () {
                       const declink = decryptLink(event.link as string)
-                      console.log(declink, 'decrypted link')
+                      //   console.log(declink, 'decrypted link')
                       setEventLink(declink)
                   })()
         }
