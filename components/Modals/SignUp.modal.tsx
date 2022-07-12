@@ -14,9 +14,9 @@ import {
 import { FcGoogle } from 'react-icons/fc'
 import { auth } from '../../utils/firebaseUtils'
 import {
-    signInWithPopup,
     GoogleAuthProvider,
     TwitterAuthProvider,
+    signInWithRedirect,
 } from 'firebase/auth'
 import type { AuthProvider } from 'firebase/auth'
 
@@ -29,7 +29,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     const twitterProvider = new TwitterAuthProvider()
 
     const signUp = (provider: AuthProvider) => {
-        signInWithPopup(auth, provider).then((user) => {
+        signInWithRedirect(auth, provider).then((user) => {
             onClose()
         })
     }
