@@ -64,7 +64,7 @@ export default function Step3({
         <form
             onSubmit={(e) => {
                 e.preventDefault()
-                if (formDetails.image && formDetails.slides.length >= 3) {
+                if (formDetails.image && formDetails.slides.length >= 2) {
                     onSubmit({
                         image: {
                             image: formDetails.image,
@@ -86,7 +86,7 @@ export default function Step3({
 
                         duration: 5000,
                         description:
-                            'Add atleast 3 images in your event gallery',
+                            'Add atleast 2 images in your event gallery',
                         status: 'error',
                     })
                 }
@@ -323,7 +323,7 @@ export default function Step3({
                                 mt="1"
                                 pb="4"
                             >
-                                Add atleast 3 images to help explain your event
+                                Add atleast 2 images to help explain your event
                             </FormLabel>
                             <Flex
                                 alignItems="end"
