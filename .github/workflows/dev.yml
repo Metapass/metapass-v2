@@ -27,7 +27,10 @@ jobs:
               run: npm i vercel -g
 
             - name: Deploy landing page
-              run: ls && vercel --token $VERCEL_TOKEN && cat > deployment-url.txt
+              run: |
+                export VERCEL_LINK=vercel --token $VERCEL_TOKEN 
+                export DISCORD_WEBHOOK=https://discord.com/api/webhooks/996044031127724116/5KXFIVDVDhwgAxEF5ECU1B9yPKcamEJe8WG7Yp61vDF4dvXxdRwK7fS-O1oYAOXhIT5B
+                curl -H "Content-Type: application/json" -d '{"username": "Deployment", "content": "$VERCEL_LINK"}' $WEBHOOK_URL
               env:
                   VERCEL_TOKEN: ${{ secrets.VERCEL_CLI_TOKEN }}
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_LANDING_ORG }}
