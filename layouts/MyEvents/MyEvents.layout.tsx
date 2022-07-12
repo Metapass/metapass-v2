@@ -81,7 +81,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
         // console.log(event.seats, event.buyers.length,event.link)
         // exceptions.includes(event.link) ? event.link : decryptLink(event.link)
         // return  as Event
-        return myTickets.map((ticket: any) => {
+        let ticketArray = myTickets.map((ticket: any) => {
             const event: any = ticket.childContract
             // console.log(event, ticket.childContract)
             // console.log(event.ticketsBought)
@@ -127,6 +127,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 } as Event,
             } as TicketType
         })
+        return ticketArray.reverse()
     }
     useEffect(() => {
         async function getMyEvents() {
@@ -385,34 +386,31 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                             gap={6}
                                         >
                                             {myTickets.length > 0 ? (
-                                                myTickets
-                                                    .reverse()
-                                                    .map((data, key) => (
-                                                        <Box key={key}>
-                                                            <TicketLayout
-                                                                image={
-                                                                    data.event
-                                                                        .image
-                                                                        .image
-                                                                }
-                                                                wallet={wallet}
-                                                                ticket={data}
-                                                                contractAddress={
-                                                                    data.event
-                                                                        .childAddress
-                                                                }
-                                                                eventLink={
-                                                                    data.event
-                                                                        .link as string
-                                                                }
-                                                                eventType={
-                                                                    data.event
-                                                                        .category
-                                                                        .event_type
-                                                                }
-                                                            />
-                                                        </Box>
-                                                    ))
+                                                myTickets.map((data, key) => (
+                                                    <Box key={key}>
+                                                        <TicketLayout
+                                                            image={
+                                                                data.event.image
+                                                                    .image
+                                                            }
+                                                            wallet={wallet}
+                                                            ticket={data}
+                                                            contractAddress={
+                                                                data.event
+                                                                    .childAddress
+                                                            }
+                                                            eventLink={
+                                                                data.event
+                                                                    .link as string
+                                                            }
+                                                            eventType={
+                                                                data.event
+                                                                    .category
+                                                                    .event_type
+                                                            }
+                                                        />
+                                                    </Box>
+                                                ))
                                             ) : (
                                                 <Box
                                                     maxW={{ xl: '390px' }}
