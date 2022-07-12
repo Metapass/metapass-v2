@@ -18,7 +18,6 @@ import {
 } from '@chakra-ui/react'
 import axios from 'axios'
 import { useEffect, useState, useContext } from 'react'
-import EventCard from '../../components/Card/EventCard.component'
 import {
     Event,
     CategoryType,
@@ -26,7 +25,6 @@ import {
     ImageType,
 } from '../../types/Event.type'
 import { TicketType } from '../../types/Ticket.type'
-import { decryptLink } from '../../utils/linkResolvers'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import { walletContext } from '../../utils/walletContext'
 import TicketLayout from './Ticket.layout'
@@ -71,22 +69,12 @@ export default function MyEvents({ isOpen, onClose }: any) {
             },
         },
     ])
-    // const [theEvent, setTheEvent] = useState<Event>()
     function UnicodeDecodeB64(str: any) {
         return decodeURIComponent(atob(str))
     }
     const parseMyEvents = (myTickets: Array<any>): TicketType[] => {
-        // myTickets.map((event: any) => {
-
-        // console.log(event.seats, event.buyers.length,event.link)
-        // exceptions.includes(event.link) ? event.link : decryptLink(event.link)
-        // return  as Event
         let ticketArray = myTickets.map((ticket: any) => {
             const event: any = ticket.childContract
-            // console.log(event, ticket.childContract)
-            // console.log(event.ticketsBought)
-            // setTicketsBought(event.ticketsBought);
-            // let type = JSON.parse(UnicodeDecodeB64(event.category)).event_type
             let type = event.type
             let category: CategoryType = JSON.parse(
                 UnicodeDecodeB64(event.category)
@@ -95,11 +83,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
             let desc: DescriptionType = JSON.parse(
                 UnicodeDecodeB64(event.description)
             )
-            // const exceptions = [
-            //     'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            //     'https://thememe.club',
-            //     'https://in.bookmyshow.com/events/are-you-kidding-me-ft-karunesh-talwar/ET00322058',
-            // ]
+
             return {
                 id: ticket.id,
                 ticketID: ticket.ticketID,
@@ -180,7 +164,6 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 if (!!res.data?.errors?.length) {
                     throw new Error('Error fetching featured events')
                 }
-                // console.log(res.data.data.childCreatedEntities)
                 return res.data
             } catch (error) {
                 console.log('error', error)
@@ -227,11 +210,9 @@ export default function MyEvents({ isOpen, onClose }: any) {
                         'content-type': 'application/json',
                     },
                 })
-                // console.log(res, 'hello')
                 if (!!res.data?.errors?.length) {
                     throw new Error('Error fetching featured events')
                 }
-                // console.log(res, 'hello')
                 return res.data
             } catch (error) {
                 console.log('error', error)
@@ -243,15 +224,12 @@ export default function MyEvents({ isOpen, onClose }: any) {
                     const data: TicketType[] = parseMyEvents(
                         res.data.ticketBoughtEntities
                     )
-                    // console.log(data)
                     setMyTickets(data)
-                    // console.log(data)
                 })
                 .catch((err) => {
                     console.log(err)
                 })
         }
-        // console.log(myEvents)
     }, [wallet.address])
     return (
         <Modal size="6xl" isOpen={isOpen} onClose={onClose}>

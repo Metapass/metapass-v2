@@ -406,7 +406,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                         alt="twitter"
                                         onClick={() => {
                                             window.open(
-                                                `http://twitter.com/share?text=I bought my NFT Ticket for ${event.title} on metapass. Get yours now!&url=https://app.metapasshq.xyz/event/${event.childAddress}`,
+                                                `http://twitter.com/share?text=I bought my NFT Ticket for ${event.title} on @metapassHQ. Get yours now!&url=https://app.metapasshq.xyz/event/${event.childAddress}`,
                                                 '_blank'
                                             )
                                         }}
