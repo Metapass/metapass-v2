@@ -77,7 +77,7 @@ export default function EventLayout({ event }: { event: Event }) {
     const [hasBought, setHasBought] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [ensName, setEnsName] = useState<string>('')
-    const [openseaLink, setOpenseaLink] = useState<string>('')
+    const [openseaLink, setToOpenseaLink] = useState<string>('')
     const [qrId, setQrId] = useState<string>('')
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -102,8 +102,8 @@ export default function EventLayout({ event }: { event: Event }) {
     ]
 
     const [user, setUser] = useState<any>()
-    const [toOpen, setOpen] = useState<boolean>(false)
-
+    const [toOpen, setToOpen] = useState<boolean>(false)
+    
     onAuthStateChanged(auth, (user) => {
         user ? setUser(user) : setUser(null)
     })
@@ -124,11 +124,17 @@ export default function EventLayout({ event }: { event: Event }) {
         addUser()
     }, [user, wallet])
 
+    useEffect(() => {
+        if (user) {
+            setToOpen(false)
+        }
+    }, [user])
+
     const buyTicket = async () => {
         if (!user) {
-            onOpen()
+            setToOpen(true)
         } else {
-            onClose()
+            setToOpen(false)
             if (wallet.address) {
                 if (typeof window.ethereum != undefined) {
                     console.log(wallet.type)
@@ -224,19 +230,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                 })
                         }
                     } catch (e: any) {
-                        toast.dismiss('minting')
-                        toast(
-                            'An error occured! Share error code: ' +
-                                e.code +
-                                ' with the team for reference.'
-                        )
-
-                        toast.error(e?.message as string, {
-                            id: 'error10',
-                            style: {
-                                fontSize: '12px',
-                            },
-                        })
+                        toast.error('Ooops! Failed to mint the ticket.')
                         setIsLoading(false)
                     }
 
@@ -258,7 +252,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             '/' +
                             ethers.BigNumber.from(res).toNumber()
 
-                        setOpenseaLink(link)
+                        setToOpenseaLink(link)
                     })
                 } else {
                     console.log("Couldn't find ethereum enviornment")
@@ -268,24 +262,7 @@ export default function EventLayout({ event }: { event: Event }) {
             }
         }
     }
-    useEffect(() => {
-        if (typeof window !== undefined) {
-            if (isSignInWithEmailLink(auth, window.location.href!)) {
-                let email = window.localStorage.getItem('emailForSignIn')
-                if (!email) {
-                    toast.error('Could not get email', {
-                        id: 'error10',
-                        duration: 5000,
-                    })
-                }
-                signInWithEmailLink(auth, email as string, window.location.href)
-                    .then((result) => {
-                        window?.localStorage.removeItem('emailForSignIn')
-                    })
-                    .catch((error) => {})
-            }
-        }
-    }, [])
+
     useEffect(() => {
         getAllEnsLinked(event.owner)
             .then((data) => {
@@ -332,7 +309,13 @@ export default function EventLayout({ event }: { event: Event }) {
 
     return (
         <>
-            <SignUpModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
+            {toOpen && (
+                <SignUpModal
+                    isOpen={isOpen}
+                    onOpen={onOpen}
+                    onClose={onClose}
+                />
+            )}
             {hasBought && <Confetti />}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />
@@ -793,7 +776,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                                         setImage(data)
                                                         setMediaType('image')
                                                     }}
-                                                    ratio={16 / 9}
+                                                    ratio={2.24}
                                                     w="full"
                                                     mx={{ base: '1', md: '0' }}
                                                     ringColor="brand.peach"
