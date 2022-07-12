@@ -753,10 +753,16 @@ const Create: NextPage = () => {
                     </ModalBody>
                 </ModalContent>
             </Modal>
-            <Box minH="100vh" h="full" overflowX="hidden">
+            <Box
+                position="absolute"
+                minH="100vh"
+                w="full"
+                h="full"
+                overflow="scroll"
+            >
                 <CreateEventCTA step={step} setStep={setStep} />
                 {wallet.address != null ? (
-                    <Box mt="4">
+                    <Box mt="6">
                         <Box display={step === 0 ? 'block' : 'none'}>
                             {/* STEP1🔺 */}
                             <Step1
