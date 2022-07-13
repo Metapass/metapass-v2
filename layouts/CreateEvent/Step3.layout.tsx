@@ -141,7 +141,6 @@ export default function Step3({
                                             image: '',
                                         })
                                         setLoading(true)
-                                        console.log(getBlob(acceptedFiles[0]))
                                         let data = await getBuffer(
                                             acceptedFiles[0]
                                         )
@@ -149,7 +148,6 @@ export default function Step3({
                                             await uploadToCloudinary(
                                                 acceptedFiles[0]
                                             )
-                                        console.log(res)
                                         setFormDetails({
                                             ...formDetails,
                                             image: res,
@@ -359,7 +357,6 @@ export default function Step3({
                                                             await uploadToCloudinary(
                                                                 data
                                                             )
-                                                        console.log(res)
                                                         setFormDetails({
                                                             ...formDetails,
                                                             image: formDetails.image
@@ -433,7 +430,6 @@ export default function Step3({
                                                             await uploadToCloudinary(
                                                                 data
                                                             )
-                                                        console.log(res)
                                                         setFormDetails({
                                                             ...formDetails,
                                                             image: formDetails.image
@@ -655,9 +651,7 @@ export default function Step3({
                                                                         await uploadToCloudinary(
                                                                             data
                                                                         )
-                                                                    console.log(
-                                                                        res
-                                                                    )
+
                                                                     setFormDetails(
                                                                         {
                                                                             ...formDetails,

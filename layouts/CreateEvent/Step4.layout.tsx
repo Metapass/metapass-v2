@@ -44,12 +44,6 @@ export default function Step4({
         getAllEnsLinked(event.owner)
             .then((data) => {
                 if (data?.data?.domains && data && data?.data) {
-                    console.log(
-                        data?.data?.domains?.length,
-                        data?.data?.domains?.length > 0 &&
-                            data?.data?.domains[data?.data?.domains.length - 1]
-                                .name
-                    )
                     const ens_name =
                         data?.data?.domains?.length > 0 &&
                         data?.data?.domains[data?.data?.domains.length - 1].name
@@ -59,7 +53,6 @@ export default function Step4({
             .catch((err) => {
                 console.log(err)
             })
-        // console.log(wallet)
     }, [event.owner])
 
     return (
