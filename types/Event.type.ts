@@ -20,7 +20,7 @@ export type Event = {
 
 export type ImageType = {
     image: string
-    gallery: []
+    gallery: Array<string>
     video?: string
 }
 export type DescriptionType = {

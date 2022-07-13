@@ -46,7 +46,7 @@ import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 import { decryptLink } from '../../utils/linkResolvers'
-import { doc, updateDoc, arrayUnion } from '../../utils/firebaseUtils'
+import { doc } from '../../utils/firebaseUtils'
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import useCheckMobileScreen from '../../utils/useMobileDetect'
@@ -60,14 +60,12 @@ import {
 } from 'firebase/auth'
 import { auth } from '../../utils/firebaseUtils'
 
-import { useRouter } from 'next/router'
-
 import SignUpModal from '../../components/Modals/SignUp.modal'
 
 declare const window: any
 
 export default function EventLayout({ event }: { event: Event }) {
-    const [image, setImage] = useState(event.image.image)
+    const [image, setImage] = useState(event.image.gallery[1]!)
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
     )
@@ -103,7 +101,7 @@ export default function EventLayout({ event }: { event: Event }) {
 
     const [user, setUser] = useState<any>()
     const [toOpen, setToOpen] = useState<boolean>(false)
-    
+
     onAuthStateChanged(auth, (user) => {
         user ? setUser(user) : setUser(null)
     })
@@ -112,7 +110,7 @@ export default function EventLayout({ event }: { event: Event }) {
 
     useEffect(() => {
         const addUser = async () => {
-            if (typeof user !== null) {
+            if (user) {
                 const docRef = doc(db, 'users', wallet.address)
 
                 await setDoc(docRef, {
