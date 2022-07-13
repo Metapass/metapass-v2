@@ -85,6 +85,7 @@ export default function Step5({
                                 </Box>
                             </Box>
                         </Flex>
+                        {/* @ts-ignore */}
                         <Box align="center" mt="10" mb="20">
                             <Button
                                 size="lg"

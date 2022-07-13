@@ -37,6 +37,7 @@ import { ethers } from 'ethers'
 import abi from '../../utils/MetapassFactory.json'
 import MetapassABI from '../../utils/Metapass.json'
 import axios from 'axios'
+import { db, doc, setDoc } from '../../utils/firebaseUtils'
 
 declare const window: any
 
@@ -114,8 +115,6 @@ const Create: NextPage = () => {
         }
         if (!event.isHuddle) {
             try {
-                console.log('starting txn')
-                console.log(contract)
                 let txn = await contract?.createEvent(
                     String(event.title),
                     ethers.utils.parseEther(event.fee.toString()),
@@ -169,6 +168,8 @@ const Create: NextPage = () => {
                             },
                         })
                     }
+                    const ref = doc(db, 'events', child)
+                    await setDoc(ref, {})
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
                     setInTxn(false)
@@ -180,8 +181,6 @@ const Create: NextPage = () => {
             }
         } else {
             try {
-                console.log('starting txn')
-                console.log(contract)
                 let txn = await contract?.createEvent(
                     String(event.title),
                     ethers.utils.parseEther(event.fee.toString()),
@@ -199,7 +198,6 @@ const Create: NextPage = () => {
                         (e: any) => e.event === 'childEvent'
                     )[0].args[0]
                     if (event.fee == 0) {
-                        console.log('adding contract')
                         let c = await axios({
                             method: 'post',
                             url: 'https://api.biconomy.io/api/v1/smart-contract/public-api/addContract',
@@ -218,7 +216,6 @@ const Create: NextPage = () => {
                                     .NEXT_PUBLIC_BICONOMY_API as string,
                             },
                         })
-                        console.log('adding API')
                         let a = await axios({
                             method: 'post',
                             url: 'https://api.biconomy.io/api/v1/meta-api/public-api/addMethod',
@@ -236,12 +233,6 @@ const Create: NextPage = () => {
                                     .NEXT_PUBLIC_BICONOMY_API as string,
                             },
                         })
-                        console.log('generating huddle')
-                        console.log({
-                            title: event.title,
-                            host: event.owner,
-                            childAddress: child,
-                        })
                         let roomLink = await axios.post(
                             process.env.NEXT_PUBLIC_HUDDLE_API as string,
                             {
@@ -251,7 +242,6 @@ const Create: NextPage = () => {
                             }
                         )
                         try {
-                            console.log(roomLink.data)
                             await contract.updateLink(
                                 child,
                                 roomLink.data.meetingLink
@@ -269,7 +259,6 @@ const Create: NextPage = () => {
                             }
                         )
                         try {
-                            console.log(roomLink.data)
                             await contract.updateLink(
                                 child,
                                 roomLink.data.meetingLink
@@ -278,6 +267,8 @@ const Create: NextPage = () => {
                             console.log('error making huddle room ', e)
                         }
                     }
+                    const ref = doc(db, 'events', child)
+                    await setDoc(ref, {})
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
                     setInTxn(false)
