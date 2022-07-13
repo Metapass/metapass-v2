@@ -6,7 +6,6 @@ import {
     Image,
     Button,
     Divider,
-    Avatar,
     AvatarGroup,
     Modal,
     ModalBody,
@@ -49,15 +48,9 @@ import { decryptLink } from '../../utils/linkResolvers'
 import { doc } from '../../utils/firebaseUtils'
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
-import useCheckMobileScreen from '../../utils/useMobileDetect'
-import useMobileDetect from '../../utils/useMobileDetect'
 import { Biconomy } from '@biconomy/mexa'
 import { db, setDoc } from '../../utils/firebaseUtils'
-import {
-    onAuthStateChanged,
-    isSignInWithEmailLink,
-    signInWithEmailLink,
-} from 'firebase/auth'
+import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../../utils/firebaseUtils'
 
 import SignUpModal from '../../components/Modals/SignUp.modal'
@@ -878,9 +871,6 @@ export default function EventLayout({ event }: { event: Event }) {
                                 {event.tickets_available === 0
                                     ? 'Sold Out'
                                     : 'Buy Ticket'}
-                                {/* {
-                                console.log(event.tickets_available, event.tickets_sold,"here here")
-                            } */}
                             </Button>
                         </Flex>
                     </Box>
