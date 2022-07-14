@@ -54,7 +54,6 @@ import { auth } from '../../utils/firebaseUtils'
 import { BiUserCircle } from 'react-icons/bi'
 import { useRouter } from 'next/router'
 import { ethers } from 'ethers'
-import UserMenu from '../Misc/User.menu'
 import { onAuthStateChanged, User } from 'firebase/auth'
 
 export default function NavigationBar({ mode = 'dark' }) {
@@ -756,7 +755,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                         >
                             Create Event
                         </Button>
-                        {user && <UserMenu />}
                         {wallet.address ? (
                             <Menu>
                                 <MenuButton>
@@ -870,29 +868,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     >
                                         Logout
                                     </MenuItem>
-                                    {/* <MenuDivider color="blackAlpha.200" /> */}
-
-                                    {/* <MenuItem
-                                        onClick={() => router.push('/account')}
-                                        icon={<BiUserCircle size="20px" />}
-                                        color="blackAlpha.700"
-                                    >
-                                        <Text
-                                            color="blackAlpha.700"
-                                            fontWeight="medium"
-                                        >
-                                            Account
-                                        </Text>
-                                    </MenuItem> */}
-                                    {/* <MenuDivider color="blackAlpha.200" /> */}
-                                    {/* <MenuItem
-                                        onClick={() => auth.signOut()}
-                                        fontSize="sm"
-                                        icon={<IoIosLogOut size="20px" />}
-                                        color="red.500"
-                                    >
-                                        Logout
-                                    </MenuItem> */}
                                 </MenuList>
                             </Menu>
                         ) : (
