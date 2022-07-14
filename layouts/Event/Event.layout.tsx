@@ -50,7 +50,7 @@ import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import { Biconomy } from '@biconomy/mexa'
 import { db, setDoc } from '../../utils/firebaseUtils'
-import { onAuthStateChanged } from 'firebase/auth'
+import { onAuthStateChanged, User } from 'firebase/auth'
 import { auth } from '../../utils/firebaseUtils'
 
 import SignUpModal from '../../components/Modals/SignUp.modal'
@@ -92,13 +92,11 @@ export default function EventLayout({ event }: { event: Event }) {
         'DEC',
     ]
 
-    const [user, setUser] = useState<any>()
+    const [user, setUser] = useState<User | null | undefined>(undefined)
     const [toOpen, setToOpen] = useState<boolean>(false)
 
-    useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            user ? setUser(user) : setUser(null)
-        })
+    onAuthStateChanged(auth, (user) => {
+        user ? setUser(user) : setUser(null)
     })
 
     const [wallet] = useContext(walletContext)
@@ -118,7 +116,7 @@ export default function EventLayout({ event }: { event: Event }) {
 
     const buyTicket = async () => {
         if (wallet.address) {
-            if (!user) {
+            if (user === null) {
                 setToOpen(true)
             } else {
                 if (typeof window.ethereum != undefined) {
@@ -607,7 +605,9 @@ export default function EventLayout({ event }: { event: Event }) {
                         }}
                         _hover={{}}
                         onClick={buyTicket}
-                        disabled={event.tickets_available === 0}
+                        disabled={
+                            event.tickets_available === 0 || user === undefined
+                        }
                         _focus={{}}
                         _active={{}}
                         w={{ base: '70%', md: 'auto' }}
