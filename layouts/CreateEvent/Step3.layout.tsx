@@ -73,7 +73,7 @@ export default function Step3({
                     onSubmit({
                         image: {
                             image: formDetails.image,
-                            gallery: formDetails.slides,
+                            gallery: [...formDetails.slides, ticket],
                             video: formDetails.video,
                         },
                     })
@@ -177,7 +177,7 @@ export default function Step3({
                                             1,
                                             res,
                                             event.date,
-                                            "[Buyer's address]"
+                                            '[your wallet here]'
                                         )
                                         setTicket(fastimg)
                                         onOpen()
