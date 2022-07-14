@@ -38,8 +38,12 @@ import { useContext, useState } from 'react'
 import { FaTrash, FaYoutube } from 'react-icons/fa'
 import Dropzone from 'react-dropzone'
 import { HiOutlineChevronRight, HiUpload } from 'react-icons/hi'
-import { getBuffer, getBlob, uploadToCloudinary } from '../../utils/imageHelper'
-import { walletContext } from '../../utils/walletContext'
+import {
+    getBuffer,
+    getBlob,
+    uploadToCloudinary,
+    genTicket,
+} from '../../utils/imageHelper'
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
@@ -57,8 +61,9 @@ export default function Step3({
     })
     const [image, setImage] = useState<any>(undefined)
     const [loading, setLoading] = useState(false)
+    const [ticket, setTicket] = useState<string>()
     const toast = useToast()
-    const [wallet, setWallet] = useContext(walletContext)
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
     return (
         <form
@@ -92,6 +97,19 @@ export default function Step3({
                 }
             }}
         >
+            <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+
+                <ModalContent>
+                    <ModalCloseButton></ModalCloseButton>
+                    <ModalBody>
+                        <Text align={'center'} mt={4} fontWeight={'bold'}>
+                            This is how your NFT Ticket will look like:
+                        </Text>
+                        <Image src={ticket} alt="Ticket Image" />
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
             {loading && (
                 <Box position="fixed" top="5" left="5" zIndex={9}>
                     <Spinner w="6" h="6" />
@@ -122,7 +140,7 @@ export default function Step3({
                                 color="blackAlpha.700"
                                 my="0"
                             >
-                                Cover Image
+                                Ticket Image
                             </FormLabel>
                             <FormLabel
                                 fontSize={{ base: 'xs', xl: 'sm' }}
@@ -131,7 +149,8 @@ export default function Step3({
                                 mt="1"
                                 pb="4"
                             >
-                                Add an image for the cover of your event’s card
+                                Add a logo/image for the ticket of your event’s
+                                NFT.
                             </FormLabel>
                             <AspectRatio ratio={16 / 8} maxW="440px">
                                 <Dropzone
@@ -151,11 +170,17 @@ export default function Step3({
                                         setFormDetails({
                                             ...formDetails,
                                             image: res,
-                                            slides: [
-                                                res,
-                                                ...formDetails.slides,
-                                            ],
+                                            slides: [...formDetails.slides],
                                         })
+                                        let { fastimg } = await genTicket(
+                                            event.title,
+                                            1,
+                                            res,
+                                            event.date,
+                                            "[Buyer's address]"
+                                        )
+                                        setTicket(fastimg)
+                                        onOpen()
                                         setLoading(false)
                                     }}
                                 >

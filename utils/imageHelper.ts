@@ -88,3 +88,24 @@ export const ticketToIPFS = async (
         fastimg: res.data[0],
     }
 }
+
+export const genTicket = async (
+    title: string,
+    ticketNumber: Number,
+    url: string,
+    date: string,
+    person: string
+) => {
+
+    let parsedDate = date.split('T')[0]
+    const BASE_ENDPOINT = 'https://ticket-img-production-f075.up.railway.app'
+    const res = await axios.get(
+        `${BASE_ENDPOINT}/api/v2/2d/edit/hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${months[new Date(parsedDate).getMonth()] +
+        ' ' +
+        new Date(parsedDate).getDate()
+        }?url=${url}`
+    )
+    return {
+        fastimg: res.data[0],
+    }
+}
