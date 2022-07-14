@@ -67,7 +67,7 @@ export default function EventLayout({ event }: { event: Event }) {
     const { hasCopied, value, onCopy } = useClipboard(eventLink as string)
     const [hasBought, setHasBought] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [ensName, setEnsName] = useState<string>('')
+    const [ensName, setEnsName] = useState<string>('wjdwijwnfwjkfjwsnfjwkjf')
     const [openseaLink, setToOpenseaLink] = useState<string>('')
     const [qrId, setQrId] = useState<string>('')
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -254,7 +254,7 @@ export default function EventLayout({ event }: { event: Event }) {
                     const ens_name =
                         data?.data?.domains?.length > 0 &&
                         data?.data?.domains[data?.data?.domains.length - 1].name
-                    setEnsName(ens_name)
+                    setEnsName(ens_name as string)
                 }
             })
             .catch((err) => {
@@ -954,13 +954,15 @@ export default function EventLayout({ event }: { event: Event }) {
                                 >
                                     <BoringAva address={event.owner} />
                                     <Box>
-                                        <Text fontSize="14px">
+                                        <Text
+                                            fontSize="14px"
+                                            w="32"
+                                            isTruncated
+                                        >
                                             {ensName ||
-                                                event.owner.substring(0, 6) +
+                                                event.owner.slice(0, 6) +
                                                     '...' +
-                                                    event?.owner.substring(
-                                                        event?.owner?.length - 6
-                                                    )}
+                                                    event?.owner.slice(-6)}
                                         </Text>
                                     </Box>
                                 </Flex>

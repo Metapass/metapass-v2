@@ -14,6 +14,9 @@ const nextConfig = removeImports({
         // your project has ESLint errors.
         ignoreDuringBuilds: true,
     },
+    images: {
+        domanins: ["googleusercontent.com"],
+    },
 })
 
 module.exports = nextConfig

@@ -19,6 +19,7 @@ import {
     MenuItem,
     MenuDivider,
     Heading,
+    AvatarBadge,
 } from '@chakra-ui/react'
 import { MdAccountBalanceWallet, MdClose } from 'react-icons/md'
 import { IoIosAdd, IoIosLogOut } from 'react-icons/io'
@@ -771,9 +772,16 @@ export default function NavigationBar({ mode = 'dark' }) {
 
                                         fontWeight="normal"
                                         leftIcon={
-                                            <BoringAva
-                                                address={wallet.address}
-                                            />
+                                            user ? (
+                                                <Avatar
+                                                    size="sm"
+                                                    src={user?.photoURL!}
+                                                />
+                                            ) : (
+                                                <BoringAva
+                                                    address={wallet.address}
+                                                />
+                                            )
                                         }
                                         rightIcon={<HiOutlineChevronDown />}
                                     >

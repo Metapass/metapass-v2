@@ -6,6 +6,7 @@ import { IoIosLogOut } from 'react-icons/io'
 
 const UserMenu: FC = () => {
     const [user, setUser] = useState<User>()
+    console.log(user)
 
     onAuthStateChanged(auth, (user) => {
         setUser(user as User)
