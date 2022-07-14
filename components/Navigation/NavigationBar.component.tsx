@@ -53,13 +53,19 @@ import { auth } from '../../utils/firebaseUtils'
 import { BiUserCircle } from 'react-icons/bi'
 import { useRouter } from 'next/router'
 import { ethers } from 'ethers'
+import UserMenu from '../Misc/User.menu'
+import { onAuthStateChanged, User } from 'firebase/auth'
 
 export default function NavigationBar({ mode = 'dark' }) {
-    const router = useRouter()
     const [address, setAddress] = useState<string>('')
 
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
+
+    const [user, setUser] = useState<User>()
+    onAuthStateChanged(auth, (user) => {
+        setUser(user as User)
+    })
 
     const [allowedList, setAllowedList] = useState<any>(undefined)
     const [_, setWeb3] = useContext(web3Context)
@@ -749,7 +755,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                         >
                             Create Event
                         </Button>
-
+                        {user && <UserMenu />}
                         {wallet.address ? (
                             <Menu>
                                 <MenuButton>
