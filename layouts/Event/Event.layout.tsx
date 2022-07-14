@@ -103,9 +103,8 @@ export default function EventLayout({ event }: { event: Event }) {
 
     useEffect(() => {
         const addUser = async () => {
-            if (user) {
+            if (user && wallet.address) {
                 const docRef = doc(db, 'users', wallet.address)
-
                 await setDoc(docRef, {
                     email: user?.email,
                 })
@@ -114,12 +113,6 @@ export default function EventLayout({ event }: { event: Event }) {
 
         addUser()
     }, [user, wallet])
-
-    useEffect(() => {
-        if (user) {
-            setToOpen(false)
-        }
-    }, [user])
 
     const buyTicket = async () => {
         if (!user) {

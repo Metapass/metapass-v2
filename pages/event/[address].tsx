@@ -14,11 +14,7 @@ import { Skeleton } from '@chakra-ui/react'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { SignUpModal } from '../../components'
-import { setDoc, doc } from 'firebase/firestore'
-import { auth, db } from '../../utils/firebaseUtils'
 import { walletContext } from '../../utils/walletContext'
-import { onAuthStateChanged, User } from 'firebase/auth'
 
 const Event: NextPage = () => {
     const router = useRouter()

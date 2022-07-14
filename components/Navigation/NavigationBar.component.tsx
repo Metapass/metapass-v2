@@ -115,7 +115,6 @@ export default function NavigationBar({ mode = 'dark' }) {
             accounts = await windowType.ethereum.request({
                 method: 'eth_requestAccounts',
             })
-            console.log('got accounts', accounts)
             setAddress(accounts[0])
             let bal = await web3.eth.getBalance(accounts[0])
             let ethBal: any = await web3.utils.fromWei(bal, 'ether')
@@ -201,21 +200,16 @@ export default function NavigationBar({ mode = 'dark' }) {
                 await web3.eth.getChainId()
             ).toString()
 
-            console.log(connectionChainId, chainid)
-
             if (connectionChainId == chainid) {
                 setAddress(accounts[0])
-                console.log('accounts', accounts[0])
                 let bal = await web3.eth.getBalance(accounts[0])
                 let ethBal: any = await web3.utils.fromWei(bal, 'ether')
                 setBalance(ethBal)
-                console.log('bal', ethBal)
                 setWallet({
                     balance: ethBal,
                     address: utils.getAddress(accounts[0]),
                     type: 'wc',
                 })
-                console.log('wallet', wallet)
             } else {
                 toast.error('Please switch to Polygon Mainnet here', {
                     position: 'bottom-center',
@@ -314,7 +308,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                     String(chainId) !== web3.utils.toHex(chainid as string) &&
                     walletType === 'mm'
                 ) {
-                    console.log(chainId, 'chainId')
                     toast.error('Please switch to Polygon Mainnet', {
                         id: 'switched1',
                         position: 'top-center',
@@ -334,26 +327,27 @@ export default function NavigationBar({ mode = 'dark' }) {
         }
     }, [walletType])
     useEffect(() => {
-        getAllEnsLinked(wallet.address || address || 'address')
-            .then((data) => {
-                if (data?.data?.domains && data && data?.data) {
-                    const ens_name =
-                        data?.data?.domains?.length > 0 &&
-                        data?.data?.domains[data?.data?.domains.length - 1].name
-                    setEnsName(ens_name)
-                    setWallet({
-                        balance: balance,
-                        address: utils.getAddress(address),
-                        type: walletType,
-                        ens: ens_name,
-                    })
-                    // console.log(wallet,ens_name)
-                }
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-        console.log(wallet)
+        if (address) {
+            getAllEnsLinked(wallet.address || address)
+                .then((data) => {
+                    if (data?.data?.domains && data && data?.data) {
+                        const ens_name =
+                            data?.data?.domains?.length > 0 &&
+                            data?.data?.domains[data?.data?.domains.length - 1]
+                                .name
+                        setEnsName(ens_name)
+                        setWallet({
+                            balance: balance,
+                            address: utils.getAddress(address),
+                            type: walletType,
+                            ens: ens_name,
+                        })
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
     }, [address, wallet.address])
     useEffect(() => {
         LogRocket.identify(wallet.address || address, {
@@ -698,8 +692,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                                 }
                                 onClick={() => {
                                     onOpen1()
-
-                                    console.log(isOpen1)
                                 }}
                             >
                                 Connect Wallet
@@ -906,8 +898,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     }
                                     onClick={() => {
                                         onOpen1()
-
-                                        console.log(isOpen1)
                                     }}
                                 >
                                     Connect Wallet
