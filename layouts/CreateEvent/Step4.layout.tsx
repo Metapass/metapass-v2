@@ -160,7 +160,7 @@ export default function Step4({
                                                     }}
                                                     value={
                                                         huddle
-                                                            ? 'Huddle'
+                                                            ? 'Huddle01'
                                                             : 'Self Hosted'
                                                     }
                                                     placeholder="Is this event using huddle01/self hosted?"
@@ -186,7 +186,7 @@ export default function Step4({
                                             <MenuItem
                                                 onClick={() => setHuddle(true)}
                                             >
-                                                Huddle
+                                                Huddle01
                                             </MenuItem>
                                             <MenuItem
                                                 onClick={() => setHuddle(false)}
