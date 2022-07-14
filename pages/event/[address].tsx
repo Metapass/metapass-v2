@@ -133,20 +133,19 @@ const Event: NextPage = () => {
     }
 
     useEffect(() => {
-        getFeaturedEvents()
-            .then((res) => {
-                // console.log(res.data.childCreatedEntities[0],"res")
-                const data: Event = parseFeaturedEvents(
-                    res.data.childCreatedEntities[0]
-                )
-                // console.log(data, 'data')
-                setFeatEvent(data)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-        // console.log(featEvents)
-    }, [address, getFeaturedEvents, parseFeaturedEvents])
+        if (address) {
+            getFeaturedEvents()
+                .then((res) => {
+                    const data: Event = parseFeaturedEvents(
+                        res.data.childCreatedEntities[0]
+                    )
+                    setFeatEvent(data)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
+    }, [address, getFeaturedEvents])
 
     return (
         <>

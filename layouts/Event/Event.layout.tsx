@@ -95,8 +95,10 @@ export default function EventLayout({ event }: { event: Event }) {
     const [user, setUser] = useState<any>()
     const [toOpen, setToOpen] = useState<boolean>(false)
 
-    onAuthStateChanged(auth, (user) => {
-        user ? setUser(user) : setUser(null)
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            user ? setUser(user) : setUser(null)
+        })
     })
 
     const [wallet] = useContext(walletContext)
@@ -115,11 +117,10 @@ export default function EventLayout({ event }: { event: Event }) {
     }, [user, wallet])
 
     const buyTicket = async () => {
-        if (!user) {
-            setToOpen(true)
-        } else {
-            setToOpen(false)
-            if (wallet.address) {
+        if (wallet.address) {
+            if (!user) {
+                setToOpen(true)
+            } else {
                 if (typeof window.ethereum != undefined) {
                     console.log(wallet.type)
 
@@ -143,7 +144,6 @@ export default function EventLayout({ event }: { event: Event }) {
                         abi.abi,
                         signer
                     )
-                    console.log(metapass)
                     toast.loading('Generating your unique ticket', {
                         duration: 5000,
                     })
@@ -241,9 +241,9 @@ export default function EventLayout({ event }: { event: Event }) {
                 } else {
                     console.log("Couldn't find ethereum enviornment")
                 }
-            } else {
-                toast('Please connect your wallet')
             }
+        } else {
+            toast('Please connect your wallet')
         }
     }
 
@@ -251,12 +251,6 @@ export default function EventLayout({ event }: { event: Event }) {
         getAllEnsLinked(event.owner)
             .then((data) => {
                 if (data?.data?.domains && data && data?.data) {
-                    console.log(
-                        data?.data?.domains?.length,
-                        data?.data?.domains?.length > 0 &&
-                            data?.data?.domains[data?.data?.domains.length - 1]
-                                .name
-                    )
                     const ens_name =
                         data?.data?.domains?.length > 0 &&
                         data?.data?.domains[data?.data?.domains.length - 1].name
@@ -266,7 +260,6 @@ export default function EventLayout({ event }: { event: Event }) {
             .catch((err) => {
                 console.log(err)
             })
-        // console.log(wallet)
     }, [event.owner])
 
     useEffect(() => {
@@ -297,7 +290,9 @@ export default function EventLayout({ event }: { event: Event }) {
                 <SignUpModal
                     isOpen={isOpen}
                     onOpen={onOpen}
-                    onClose={onClose}
+                    onClose={() => {
+                        setToOpen(false)
+                    }}
                 />
             )}
             {hasBought && <Confetti />}

@@ -61,7 +61,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                                 height="5"
                                 width="5"
                             />
-                            sign up with twitter
+                            Sign up with twitter
                         </Button>
                         <Text
                             fontFamily="heading"
@@ -78,7 +78,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                             onClick={() => signUp(googleProvider)}
                         >
                             <FcGoogle size={25} />
-                            sign up with google
+                            Sign up with google
                         </Button>
                     </ModalBody>
                 </ModalContent>
