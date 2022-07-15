@@ -1,3 +1,5 @@
+declare let document: any
+
 import { initializeApp } from 'firebase/app'
 import {
     getDoc,
