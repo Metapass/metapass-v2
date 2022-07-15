@@ -1,5 +1,3 @@
-declare let document: any
-
 import { initializeApp } from 'firebase/app'
 import {
     getDoc,
@@ -29,15 +27,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
 const auth = getAuth(app)
-
-if (typeof document !== undefined) {
-    const appCheck = initializeAppCheck(app!, {
-        provider: new ReCaptchaV3Provider(
-            '6LdebfAgAAAAALGeUOCjC8k6TjPnzlIcz1KuJQ6B'
-        ),
-        isTokenAutoRefreshEnabled: true,
-    })
-}
 
 export {
     app,
