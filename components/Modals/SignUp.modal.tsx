@@ -29,7 +29,9 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     const twitterProvider = new TwitterAuthProvider()
 
     const signUp = (provider: AuthProvider) => {
-        signInWithRedirect(auth, provider)
+        signInWithRedirect(auth, provider).then((user) => {
+            onClose()
+        })
     }
     return (
         <>
