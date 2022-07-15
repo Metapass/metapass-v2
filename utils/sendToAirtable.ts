@@ -14,7 +14,6 @@ async function sendToAirtable(
             Email: email,
         },
     }
-    console.log(data)
 
     base('Waitlist').create([data], function (err: any, records: any[]) {
         if (err) {
@@ -24,7 +23,6 @@ async function sendToAirtable(
         records.forEach(function (record) {
             setIsSubmitting(false)
             onClose()
-            console.log(record.fields)
         })
     } as any)
 }

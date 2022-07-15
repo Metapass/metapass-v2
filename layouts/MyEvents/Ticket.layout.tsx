@@ -34,11 +34,7 @@ export default function TicketLayout({
             const img = JSON.parse(metadata).image
             if (img) {
                 setTicketimg(img)
-                console.log(
-                    `Successfully set Ticketimg: ${img} for tokenuri: ${tokenuri}`
-                )
             } else {
-                console.log(`Failed to set Ticketimg for tokenuri: ${tokenuri}`)
             }
         }
         if ((window.ethereum || window.w3.currentProvider) && contractAddress) {
@@ -64,12 +60,6 @@ export default function TicketLayout({
                 getMeta(contract, ticket.ticketID)
             }
         } else {
-            console.log(
-                'window.ethereum or window.w3 or contractAddress is undefined:',
-                window.ethereum,
-                window.w3.currentProvider,
-                contractAddress
-            )
         }
     }, [contractAddress, ticket])
 
@@ -98,19 +88,9 @@ export default function TicketLayout({
                         )?.uuid as string
                         if (qrdata) {
                             setQr(qrdata)
-                            console.log(
-                                'Successfully fetched and assigned QR: ',
-                                qrdata,
-                                'for ticket Number: ',
-                                Number(ticket?.ticketID) + 1,
-                                ' and title: ',
-                                ticket.event.title
-                            )
                         }
                     }
-                } catch (error) {
-                    console.log(error, ' Failed to get QR code UUID')
-                }
+                } catch (error) {}
             }
         }
         fetchDetails()

@@ -120,8 +120,6 @@ export default function EventLayout({ event }: { event: Event }) {
                 setToOpen(true)
             } else {
                 if (typeof window.ethereum != undefined) {
-                    console.log(wallet.type)
-
                     const provider = new ethers.providers.Web3Provider(
                         wallet.type === 'wc'
                             ? window.w3.currentProvider
@@ -177,11 +175,8 @@ export default function EventLayout({ event }: { event: Event }) {
                                     gasPrice: 50,
                                     gasLimit: 900000,
                                 })
-                                .then(() => {
-                                    console.log('Success!')
-                                })
+                                .then(() => {})
                                 .catch((err: any) => {
-                                    console.log('error', err)
                                     toast.error(err.data?.message, {
                                         id: 'error10',
                                         style: {
@@ -197,11 +192,8 @@ export default function EventLayout({ event }: { event: Event }) {
                                         event.fee.toString()
                                     )._hex,
                                 })
-                                .then(() => {
-                                    console.log('Success!')
-                                })
+                                .then(() => {})
                                 .catch((err: any) => {
-                                    console.log('error', err)
                                     toast.error(err.data?.message, {
                                         id: 'error10',
                                         style: {
@@ -237,7 +229,6 @@ export default function EventLayout({ event }: { event: Event }) {
                         setToOpenseaLink(link)
                     })
                 } else {
-                    console.log("Couldn't find ethereum enviornment")
                 }
             }
         } else {
@@ -255,9 +246,7 @@ export default function EventLayout({ event }: { event: Event }) {
                     setEnsName(ens_name as string)
                 }
             })
-            .catch((err) => {
-                console.log(err)
-            })
+            .catch((err) => {})
     }, [event.owner])
 
     useEffect(() => {
@@ -628,9 +617,6 @@ export default function EventLayout({ event }: { event: Event }) {
                         {event.tickets_available === 0
                             ? 'Sold Out'
                             : 'Buy Ticket'}
-                        {/* {
-                                console.log(event.tickets_available, event.tickets_sold,"here here")
-                            } */}
                     </Button>
                 </Flex>
                 <Flex
@@ -1132,39 +1118,28 @@ export default function EventLayout({ event }: { event: Event }) {
                                         // "02/16/2022--17:10:00-18:00:00"
                                         let eventdate = event.date
                                         let date = eventdate.split('T')[0]
-                                        console.log(date)
                                         let startDate = eventdate
                                             .split('T')[1]
                                             .split('-')[0]
-                                        console.log(startDate)
                                         let endDate = eventdate
                                             .split('T')[1]
                                             .split('-')[1]
-                                        console.log(endDate)
                                         let finalStartDate = moment(
                                             date + ' ' + startDate
                                         ).format()
 
                                         // console.log(new Date(date+" "+startDate))
-                                        console.log(
-                                            finalStartDate,
-                                            'finalStartDate'
-                                        )
+
                                         let finalEndDate = moment(
                                             date + ' ' + endDate
                                         ).format()
-                                        console.log(
-                                            finalEndDate,
-                                            'finalEndDate'
-                                        )
+
                                         let googleStartDate = toGoogleCalDate(
                                             new Date(finalStartDate)
                                         )
-                                        console.log(googleStartDate)
                                         let googleEndDate = toGoogleCalDate(
                                             new Date(finalEndDate)
                                         )
-                                        console.log(googleEndDate)
                                         //open a window and redirect to google calendar to add an event with a set date and time in the local time zone format mm/dd/yyyy--hh:mm:ss-hh:mm:ss
                                         window.open(
                                             `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${

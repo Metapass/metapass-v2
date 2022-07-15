@@ -115,11 +115,8 @@ export default function FeaturedEvents() {
             if (!!res.data?.errors?.length) {
                 throw new Error('Error fetching featured events')
             }
-            console.log(res.data.data.featuredEntities)
             return res.data
-        } catch (error) {
-            console.log('error', error)
-        }
+        } catch (error) {}
     }
     function UnicodeDecodeB64(str: any) {
         return decodeURIComponent(atob(str))
@@ -168,11 +165,9 @@ export default function FeaturedEvents() {
                 )
                 setFeatEvents(data)
             })
-            .catch((err) => {
-                console.log(err)
-            })
+            .catch((err) => {})
         // console.log(featEvents)
-    }, [])
+    }, [parseFeaturedEvents])
 
     return (
         <Flex w="full" justify="center" mb={{ md: '-48' }}>

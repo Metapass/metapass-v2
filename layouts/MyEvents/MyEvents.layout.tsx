@@ -165,9 +165,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                     throw new Error('Error fetching featured events')
                 }
                 return res.data
-            } catch (error) {
-                console.log('error', error)
-            }
+            } catch (error) {}
         }
 
         async function getMyTickets() {
@@ -214,9 +212,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                     throw new Error('Error fetching featured events')
                 }
                 return res.data
-            } catch (error) {
-                console.log('error', error)
-            }
+            } catch (error) {}
         }
         if (wallet?.address) {
             getMyTickets()
@@ -226,11 +222,9 @@ export default function MyEvents({ isOpen, onClose }: any) {
                     )
                     setMyTickets(data)
                 })
-                .catch((err) => {
-                    console.log(err)
-                })
+                .catch((err) => {})
         }
-    }, [wallet.address])
+    }, [wallet.address, parseMyEvents])
     return (
         <Modal size="6xl" isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />

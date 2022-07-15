@@ -18,6 +18,5 @@ export default async function generateAndSendUUID(
         })
         return String(uuid)
     } catch (error) {
-        console.log(error, 'error in generateAndSend')
     }
 }

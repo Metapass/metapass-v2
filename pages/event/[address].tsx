@@ -92,9 +92,7 @@ const Event: NextPage = () => {
                 throw new Error('Error fetching featured events')
             }
             return res.data
-        } catch (error) {
-            console.log('error', error)
-        }
+        } catch (error) {}
     }
     function UnicodeDecodeB64(str: any) {
         return decodeURIComponent(atob(str))
@@ -141,11 +139,9 @@ const Event: NextPage = () => {
                     )
                     setFeatEvent(data)
                 })
-                .catch((err) => {
-                    console.log(err)
-                })
+                .catch((err) => {})
         }
-    }, [address, getFeaturedEvents])
+    }, [address, getFeaturedEvents, parseFeaturedEvents])
 
     return (
         <>

@@ -176,7 +176,6 @@ const Create: NextPage = () => {
                     setChild(child)
                 })
             } catch (err: any) {
-                console.log('error while txn', err)
                 setInTxn(false)
             }
         } else {
@@ -247,7 +246,6 @@ const Create: NextPage = () => {
                                 roomLink.data.meetingLink
                             )
                         } catch (e) {
-                            console.log('error making huddle room ', e)
                         }
                     } else {
                         let roomLink = await axios.post(
@@ -264,7 +262,6 @@ const Create: NextPage = () => {
                                 roomLink.data.meetingLink
                             )
                         } catch (e) {
-                            console.log('error making huddle room ', e)
                         }
                     }
                     const ref = doc(db, 'events', child)
@@ -275,7 +272,6 @@ const Create: NextPage = () => {
                     setChild(child)
                 })
             } catch (err: any) {
-                console.log('error while txn', err)
                 setInTxn(false)
             }
         }

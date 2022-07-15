@@ -132,7 +132,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                 type: 'mm',
             })
         } catch (error) {
-            console.log(error, 'error')
         }
     }
 
@@ -179,10 +178,8 @@ export default function NavigationBar({ mode = 'dark' }) {
                         })
                         getAccountData({ accounts, windowType })
                     } catch (addError) {
-                        console.log('Error Adding chain: ', addError)
                     }
                 } else {
-                    console.log('Error Switching Chains: ', switchError)
                 }
             }
         }
@@ -223,7 +220,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                 })
             }
         } catch (e) {
-            console.log('User closed modal')
         }
     }
     const disconnectMetaMask = async () => {
@@ -262,7 +258,6 @@ export default function NavigationBar({ mode = 'dark' }) {
             await wcProvider.disconnect()
             wcProvider.on('disconnect', (code: number, reason: string) => {
                 onClose1()
-                console.log(code, reason)
             })
         }
     }
@@ -351,7 +346,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                     }
                 })
                 .catch((err) => {
-                    console.log(err)
                 })
         }
     }, [address, wallet.address])

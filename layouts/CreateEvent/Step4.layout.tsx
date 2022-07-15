@@ -51,7 +51,6 @@ export default function Step4({
                 }
             })
             .catch((err) => {
-                console.log(err)
             })
     }, [event.owner])
 
