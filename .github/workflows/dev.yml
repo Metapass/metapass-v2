@@ -34,7 +34,8 @@ jobs:
             - name: Deploy landing page
               run: |
                 export TEST=$(vercel --token $VERCEL_TOKEN) && echo "$TEST"
-                curl -H "Content-Type: application/json" -d "{\"username\": \"Vercel\", \"content\": \"$TEST\"+\"$BRANCH\"}" $WEBHOOK
+                export FINAL_TEXT=$("$TEST" + "$BRANCH")
+                curl -H "Content-Type: application/json" -d "{\"username\": \"Vercel\", \"content\": \"$FINAL_TEXT\"}" $WEBHOOK
               env:
                   VERCEL_TOKEN: ${{ secrets.VERCEL_CLI_TOKEN }}
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_LANDING_ORG }}
