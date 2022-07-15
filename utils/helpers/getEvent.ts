@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { gqlEndpoint } from '../subgraphApi'
 
-const getFeaturedEvents = async (address: string) => {
-    const featuredQuery = {
+const getEvents = async (address: string) => {
+    const query = {
         operationName: 'fetchFeaturedEvents',
         query: `query fetchFeaturedEvents {
           childCreatedEntities(where:{id:"${String(address).toLowerCase()}"}) {
@@ -31,7 +31,7 @@ const getFeaturedEvents = async (address: string) => {
         const res = await axios({
             method: 'POST',
             url: gqlEndpoint,
-            data: featuredQuery,
+            data: query,
             headers: {
                 'content-type': 'application/json',
             },
@@ -46,4 +46,4 @@ const getFeaturedEvents = async (address: string) => {
     }
 }
 
-export { getFeaturedEvents }
+export { getEvents }

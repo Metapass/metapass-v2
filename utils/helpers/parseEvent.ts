@@ -9,7 +9,7 @@ function UnicodeDecodeB64(str: any) {
     return decodeURIComponent(atob(str))
 }
 
-const parseFeaturedEvents = (event: any): Event => {
+const parseEvent = (event: any): Event => {
     let type: string = JSON.parse(UnicodeDecodeB64(event.category)).event_type
     let category: CategoryType = JSON.parse(UnicodeDecodeB64(event.category))
     let image: ImageType = JSON.parse(UnicodeDecodeB64(event.image))
@@ -36,4 +36,4 @@ const parseFeaturedEvents = (event: any): Event => {
     } as Event
 }
 
-export { parseFeaturedEvents }
+export { parseEvent }

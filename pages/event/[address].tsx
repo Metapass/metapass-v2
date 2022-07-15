@@ -7,8 +7,8 @@ import NavigationBar from '../../components/Navigation/NavigationBar.component'
 import EventLayout from '../../layouts/Event/Event.layout'
 import { Skeleton } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import { getFeaturedEvents } from '../../utils/helpers/getfeaturedEvent'
-import { parseFeaturedEvents } from '../../utils/helpers/parseFeaturedEvents'
+import { getEvents } from '../../utils/helpers/getEvent'
+import { parseEvent } from '../../utils/helpers/parseEvent'
 
 const Event: NextPage = () => {
     const router = useRouter()
@@ -47,9 +47,9 @@ const Event: NextPage = () => {
 
     useEffect(() => {
         if (address) {
-            getFeaturedEvents(address as string)
+            getEvents(address as string)
                 .then((res) => {
-                    const data: Event = parseFeaturedEvents(
+                    const data: Event = parseEvent(
                         res.data.childCreatedEntities[0]
                     )
                     setFeatEvent(data)
