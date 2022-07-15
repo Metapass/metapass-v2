@@ -127,7 +127,7 @@ export default function EventLayout({ event }: { event: Event }) {
                     )
                     const biconomy = new Biconomy(provider, {
                         apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
-                        debug: true,
+                        debug: process.env.NEXT_PUBLIC_ENV == 'dev',
                     })
                     setIsLoading(true)
                     let ethersProvider = new ethers.providers.Web3Provider(
@@ -940,15 +940,15 @@ export default function EventLayout({ event }: { event: Event }) {
                                 >
                                     <BoringAva address={event.owner} />
                                     <Box>
-                                        <Text
-                                            fontSize="14px"
-                                            w="32"
-                                            isTruncated
-                                        >
-                                            {ensName ||
-                                                event.owner.slice(0, 6) +
-                                                    '...' +
-                                                    event?.owner.slice(-6)}
+                                        <Text fontSize="14px" w="32">
+                                            {ensName.length > 15
+                                                ? ensName.slice(0, 6) +
+                                                  '...' +
+                                                  ensName.slice(-6)
+                                                : ensName ||
+                                                  event.owner.slice(0, 6) +
+                                                      '...' +
+                                                      event?.owner.slice(-6)}
                                         </Text>
                                     </Box>
                                 </Flex>
