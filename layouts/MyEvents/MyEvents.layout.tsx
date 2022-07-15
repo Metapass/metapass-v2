@@ -31,6 +31,7 @@ import TicketLayout from './Ticket.layout'
 export default function MyEvents({ isOpen, onClose }: any) {
     const [tab, setTab] = useState('upcoming')
     const [wallet] = useContext<[{ address: ''; balance: '' }]>(walletContext)
+    const [store, setStore] = useState<TicketType[]>()
     const [myTickets, setMyTickets] = useState<TicketType[]>([
         {
             id: '',
@@ -114,60 +115,6 @@ export default function MyEvents({ isOpen, onClose }: any) {
         return ticketArray.reverse()
     }
     useEffect(() => {
-        async function getMyEvents() {
-            const myEventsQuery = {
-                operationName: 'fetchMyEvents',
-                query: `query fetchMyEvents {
-                    childCreatedEntities(where:{
-                        buyers_contains:["${wallet.address.toLowerCase()}"]
-                      }) {
-                         id
-                     title
-                                        childAddress
-                                        category
-                                        image
-                                        
-                                        ticketsBought{
-                                            id
-                                            ticketID
-                                            buyer{
-                                              id
-                                            }
-                                            childContract{
-                                              id
-                                            }
-                                          }
-                                        buyers{
-                                            id
-                                            
-                                        }
-                                        eventHost
-                                        fee
-                                        seats
-                                        link
-                                        description
-                                        date
-                      }
-                  
-            }`,
-            }
-            try {
-                const res = await axios({
-                    method: 'POST',
-                    url: gqlEndpoint,
-                    data: myEventsQuery,
-                    headers: {
-                        'content-type': 'application/json',
-                    },
-                })
-
-                if (!!res.data?.errors?.length) {
-                    throw new Error('Error fetching featured events')
-                }
-                return res.data
-            } catch (error) {}
-        }
-
         async function getMyTickets() {
             const myTicketsQuery = {
                 operationName: 'fetchMyTickets',
@@ -220,11 +167,13 @@ export default function MyEvents({ isOpen, onClose }: any) {
                     const data: TicketType[] = parseMyEvents(
                         res.data.ticketBoughtEntities
                     )
+                    setStore(data)
                     setMyTickets(data)
                 })
                 .catch((err) => {})
         }
-    }, [wallet.address, parseMyEvents])
+    }, [wallet.address])
+
     return (
         <Modal size="6xl" isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
@@ -278,10 +227,27 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                         _focus={{}}
                                         onFocus={() => {
                                             setTab('upcoming')
-                                        }}
-                                        onClick={() => {
-                                            myTickets.reverse()
-                                            setMyTickets(myTickets)
+                                            if (store) {
+                                                let filter = store.filter(
+                                                    (tix: any) => {
+                                                        const date =
+                                                            tix.event.date
+                                                        let parsedDate =
+                                                            date.split('T')[0]
+                                                        let time = date
+                                                            .split('T')[1]
+                                                            .split('-')[0]
+                                                        return (
+                                                            new Date(
+                                                                parsedDate +
+                                                                    ' ' +
+                                                                    time
+                                                            ) > new Date()
+                                                        )
+                                                    }
+                                                )
+                                                setMyTickets(filter)
+                                            }
                                         }}
                                         _hover={{
                                             color:
@@ -317,10 +283,27 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                         _active={{}}
                                         onFocus={() => {
                                             setTab('past')
-                                        }}
-                                        onClick={() => {
-                                            myTickets.reverse()
-                                            setMyTickets(myTickets)
+                                            if (store) {
+                                                let filter = store.filter(
+                                                    (tix: any) => {
+                                                        const date =
+                                                            tix.event.date
+                                                        let parsedDate =
+                                                            date.split('T')[0]
+                                                        let time = date
+                                                            .split('T')[1]
+                                                            .split('-')[0]
+                                                        return (
+                                                            new Date(
+                                                                parsedDate +
+                                                                    ' ' +
+                                                                    time
+                                                            ) < new Date()
+                                                        )
+                                                    }
+                                                )
+                                                setMyTickets(filter)
+                                            }
                                         }}
                                         fontWeight={
                                             tab === 'past' ? 'medium' : 'normal'
@@ -400,7 +383,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                                             xl: '28',
                                                         }}
                                                     >
-                                                        No upcoming events :(
+                                                        No events here :(
                                                     </Heading>
                                                 </Box>
                                             )}
@@ -459,7 +442,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                                             xl: '28',
                                                         }}
                                                     >
-                                                        No upcoming events :(
+                                                        No events here :(
                                                     </Heading>
                                                 </Box>
                                             )}
