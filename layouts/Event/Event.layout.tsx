@@ -177,12 +177,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                 })
                                 .then(() => {})
                                 .catch((err: any) => {
-                                    toast.error(err.data?.message, {
-                                        id: 'error10',
-                                        style: {
-                                            fontSize: '12px',
-                                        },
-                                    })
+                                    toast.error("Oops! Failed to mint the ticket")
                                     setIsLoading(false)
                                 })
                         } else {
