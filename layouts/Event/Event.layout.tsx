@@ -176,7 +176,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         event.tickets_sold + 1,
                         event.image.image,
                         event.date.split('T')[0],
-                        wallet?.ens ||
+                        wallet?.domain ||
                             wallet?.address?.substring(0, 4) +
                                 '...' +
                                 wallet?.address?.substring(
@@ -239,7 +239,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         event.category.event_type == 'In-Person' &&
                             generateAndSendUUID(
                                 event.childAddress,
-                                wallet.address,
+                                wallet.address as string,
                                 event.tickets_sold + 1
                             ).then((uuid) => {
                                 setQrId(String(uuid))

@@ -10,7 +10,11 @@ import {
     arrayRemove,
     updateDoc,
 } from 'firebase/firestore'
-import { getAuth } from 'firebase/auth'
+import {
+    getAuth,
+    isSignInWithEmailLink,
+    signInWithEmailLink,
+} from 'firebase/auth'
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check'
 
 const firebaseConfig = {
@@ -40,4 +44,6 @@ export {
     arrayRemove,
     updateDoc,
     auth,
+    signInWithEmailLink,
+    isSignInWithEmailLink,
 }

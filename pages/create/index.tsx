@@ -31,7 +31,7 @@ import Step2 from '../../layouts/CreateEvent/Step2.layout'
 import Step3 from '../../layouts/CreateEvent/Step3.layout'
 import Step4 from '../../layouts/CreateEvent/Step4.layout'
 import Step5 from '../../layouts/CreateEvent/Step5.layout'
-import { walletContext } from '../../utils/walletContext'
+import { walletContext, WalletType } from '../../utils/walletContext'
 
 import { Event } from '../../types/Event.type'
 import { ethers } from 'ethers'
