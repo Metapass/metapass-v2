@@ -50,11 +50,7 @@ import LogRocket from 'logrocket'
 import { FaBars } from 'react-icons/fa'
 import { getAllowedList } from '../../utils/sendToAirtable'
 
-import { auth } from '../../utils/firebaseUtils'
-import { BiUserCircle } from 'react-icons/bi'
-import { useRouter } from 'next/router'
-import { ethers } from 'ethers'
-import { onAuthStateChanged, User } from 'firebase/auth'
+import { supabase } from '../../lib/config/supabaseConfig'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
@@ -62,10 +58,8 @@ export default function NavigationBar({ mode = 'dark' }) {
     const [balance, setBalance] = useState<string>('')
     const [wallet, setWallet] = useContext(walletContext)
 
-    const [user, setUser] = useState<User>()
-    onAuthStateChanged(auth, (user) => {
-        setUser(user as User)
-    })
+    const user = supabase.auth.user()
+    console.log(user)
 
     const [allowedList, setAllowedList] = useState<any>(undefined)
     const [_, setWeb3] = useContext(web3Context)
@@ -131,8 +125,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                 address: utils.getAddress(accounts[0]),
                 type: 'mm',
             })
-        } catch (error) {
-        }
+        } catch (error) {}
     }
 
     async function loadAccounts() {
@@ -177,8 +170,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                             params: [polygon.addData],
                         })
                         getAccountData({ accounts, windowType })
-                    } catch (addError) {
-                    }
+                    } catch (addError) {}
                 } else {
                 }
             }
@@ -219,8 +211,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                     id: 'switch9',
                 })
             }
-        } catch (e) {
-        }
+        } catch (e) {}
     }
     const disconnectMetaMask = async () => {
         let windowType = window
@@ -345,8 +336,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                         })
                     }
                 })
-                .catch((err) => {
-                })
+                .catch((err) => {})
         }
     }, [address, wallet.address])
     useEffect(() => {
@@ -767,7 +757,10 @@ export default function NavigationBar({ mode = 'dark' }) {
                                             user ? (
                                                 <Avatar
                                                     size="sm"
-                                                    src={user?.photoURL!}
+                                                    src={
+                                                        user?.user_metadata
+                                                            ?.avatar_url
+                                                    }
                                                 />
                                             ) : (
                                                 <BoringAva
