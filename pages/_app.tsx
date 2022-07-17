@@ -9,6 +9,7 @@ import { Toaster } from 'react-hot-toast'
 import Contract from '../utils/contractContext'
 import Script from 'next/script'
 import ChatwootWidget from '../components/Elements/Chatwoot.component'
+import { ContextProvider } from '../contexts/ContextProvider'
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (
@@ -63,13 +64,15 @@ function MyApp({ Component, pageProps }: AppProps) {
 
             <Wallet>
                 <Web3Wrapper>
-                    <Contract>
-                        <Toaster />
-                        <ChakraProvider theme={theme}>
-                            <ChatwootWidget />
-                            <Component {...pageProps} />
-                        </ChakraProvider>
-                    </Contract>
+                    <ContextProvider>
+                        <Contract>
+                            <Toaster />
+                            <ChakraProvider theme={theme}>
+                                <ChatwootWidget />
+                                <Component {...pageProps} />
+                            </ChakraProvider>
+                        </Contract>
+                    </ContextProvider>
                 </Web3Wrapper>
             </Wallet>
         </>

@@ -1,4 +1,5 @@
 import {
+    Avatar,
     Box,
     Button,
     Divider,
@@ -33,9 +34,15 @@ import { useContext, useState } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import EventCard from '../../components/Card/EventCard.component'
 import DateModal from './DateModal.layout'
-import { walletContext } from '../../utils/walletContext'
-
-export default function Step1({ onSubmit }: { onSubmit: Function }) {
+import { walletContext, WalletType } from '../../utils/walletContext'
+import { Chain } from '../../types/blockchain.types'
+export default function Step1({
+    onSubmit,
+    systemWallet,
+}: {
+    onSubmit: Function
+    systemWallet: WalletType
+}) {
     const [isPaid, setIsPaid] = useState(true)
     const [formDetails, setFormDetails] = useState({
         title: '',
@@ -45,12 +52,16 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
         date: '',
         seats: 0,
         tickets_sold: 0,
+        profileImage: '',
+        displayName: '',
+        customSPLToken: '',
+        chain: '',
     })
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [submitting, setSubmitting] = useState(false)
-    const [wallet, setWallet] = useContext(walletContext)
-
+    const [wallet] = useContext<WalletType[]>(walletContext)
+    // In the future we should prompt either solana or eth wallet to connect base on the chain user selects in form
     if (wallet.address) {
         return (
             <form
@@ -317,6 +328,79 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                         </MenuList>
                                     </Menu>
                                 </FormControl>
+                                <FormControl
+                                    borderBottom="2px"
+                                    borderBottomColor="gray.200"
+                                    _focusWithin={{
+                                        borderBottomColor: 'gray.300',
+                                    }}
+                                >
+                                    <FormLabel
+                                        fontSize={{ lg: 'md', xl: 'lg' }}
+                                        color="blackAlpha.700"
+                                        my="0"
+                                    >
+                                        Chain
+                                    </FormLabel>
+                                    <Menu>
+                                        <MenuButton type="button" w="full">
+                                            <InputGroup>
+                                                <Input
+                                                    fontSize="sm"
+                                                    value={
+                                                        formDetails.chain ===
+                                                        'SOL'
+                                                            ? 'Solana'
+                                                            : 'Polygon'
+                                                    }
+                                                    required
+                                                    px="0"
+                                                    _placeholder={{
+                                                        color: 'gray.300',
+                                                    }}
+                                                    placeholder="Choose a chain"
+                                                    bg="transparent"
+                                                    border="none"
+                                                    rounded="none"
+                                                    _hover={{}}
+                                                    _focus={{}}
+                                                    _active={{}}
+                                                />
+                                                <InputRightElement color="gray.400">
+                                                    <FaChevronDown />
+                                                </InputRightElement>
+                                            </InputGroup>
+                                        </MenuButton>
+                                        <MenuList
+                                            rounded="lg"
+                                            shadow="sm"
+                                            fontSize="sm"
+                                            mt="1"
+                                            zIndex={9}
+                                        >
+                                            <MenuItem
+                                                onClick={(e) => {
+                                                    setFormDetails({
+                                                        ...formDetails,
+                                                        chain: 'SOL',
+                                                    })
+                                                }}
+                                            >
+                                                Solana
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={(e) => {
+                                                    setFormDetails({
+                                                        ...formDetails,
+                                                        chain: 'POLYGON',
+                                                    })
+                                                }}
+                                            >
+                                                Polygon
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Menu>
+                                </FormControl>
                             </Flex>
                             <Flex experimental_spaceX="8" mt="6">
                                 <FormControl
@@ -371,8 +455,16 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                                 pl="2"
                                             >
                                                 <Image
-                                                    src="/assets/matic_circle.svg"
-                                                    alt="matic"
+                                                    src={
+                                                        wallet.chain === 'SOL'
+                                                            ? '/assets/solana-logo.png'
+                                                            : '/assets/matic_circle.svg'
+                                                    }
+                                                    alt={
+                                                        wallet.chain === 'SOL'
+                                                            ? 'Solana'
+                                                            : 'Matic'
+                                                    }
                                                     w="4"
                                                     h="4"
                                                 />
@@ -383,7 +475,9 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                                     fontWeight="medium"
                                                     fontFamily="heading"
                                                 >
-                                                    MATIC
+                                                    {wallet.chain === 'SOL'
+                                                        ? 'SOL'
+                                                        : 'MATIC'}
                                                 </Text>
                                             </Flex>
                                         </InputRightElement>
@@ -430,47 +524,206 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                     </InputGroup>
                                 </FormControl>
                             </Flex>
-                            <FormControl
-                                mt="6"
-                                w="50%"
-                                borderBottom="2px"
-                                borderBottomColor="gray.200"
-                                _focusWithin={{
-                                    borderBottomColor: 'gray.300',
-                                }}
-                            >
-                                <FormLabel
-                                    fontSize={{ lg: 'md', xl: 'lg' }}
-                                    color="blackAlpha.700"
-                                    my="0"
+                            <Flex experimental_spaceX="8" mt="6">
+                                <FormControl
+                                    mt="6"
+                                    w="50%"
+                                    borderBottom="2px"
+                                    borderBottomColor="gray.200"
+                                    _focusWithin={{
+                                        borderBottomColor: 'gray.300',
+                                    }}
                                 >
-                                    Total Tickets
-                                </FormLabel>
-                                <InputGroup>
-                                    <Input
-                                        onChange={(e) => {
-                                            setFormDetails({
-                                                ...formDetails,
-                                                seats: Number(e.target.value),
-                                            })
+                                    <FormLabel
+                                        fontSize={{ lg: 'md', xl: 'lg' }}
+                                        color="blackAlpha.700"
+                                        my="0"
+                                    >
+                                        Total Tickets
+                                    </FormLabel>
+                                    <InputGroup>
+                                        <Input
+                                            onChange={(e) => {
+                                                setFormDetails({
+                                                    ...formDetails,
+                                                    seats: Number(
+                                                        e.target.value
+                                                    ),
+                                                })
+                                            }}
+                                            _placeholder={{ color: 'gray.300' }}
+                                            fontSize="sm"
+                                            required
+                                            min="1"
+                                            type="number"
+                                            step="1"
+                                            px="0"
+                                            placeholder="Total seats for the event"
+                                            bg="transparent"
+                                            border="none"
+                                            rounded="none"
+                                            _hover={{}}
+                                            _focus={{}}
+                                            _active={{}}
+                                        />
+                                    </InputGroup>
+                                </FormControl>
+                                {wallet.chain == 'SOL' && (
+                                    <FormControl
+                                        mt="6"
+                                        w="50%"
+                                        borderBottom="2px"
+                                        borderBottomColor="gray.200"
+                                        _focusWithin={{
+                                            borderBottomColor: 'gray.300',
                                         }}
-                                        _placeholder={{ color: 'gray.300' }}
-                                        fontSize="sm"
-                                        required
-                                        min="1"
-                                        type="number"
-                                        step="1"
-                                        px="0"
-                                        placeholder="Total seats for the event"
-                                        bg="transparent"
-                                        border="none"
-                                        rounded="none"
-                                        _hover={{}}
-                                        _focus={{}}
-                                        _active={{}}
-                                    />
-                                </InputGroup>
-                            </FormControl>
+                                    >
+                                        <FormLabel
+                                            fontSize={{
+                                                lg: 'md',
+                                                xl: 'lg',
+                                            }}
+                                            color="blackAlpha.700"
+                                            my="0"
+                                        >
+                                            Host Name
+                                        </FormLabel>
+                                        <InputGroup>
+                                            <Input
+                                                onChange={(e) => {
+                                                    setFormDetails({
+                                                        ...formDetails,
+                                                        displayName:
+                                                            e.target.value,
+                                                    })
+                                                }}
+                                                _placeholder={{
+                                                    color: 'gray.300',
+                                                }}
+                                                fontSize="sm"
+                                                required
+                                                min="1"
+                                                type="text"
+                                                step="1"
+                                                px="0"
+                                                placeholder="Add your name"
+                                                bg="transparent"
+                                                border="none"
+                                                rounded="none"
+                                                _hover={{}}
+                                                _focus={{}}
+                                                _active={{}}
+                                            />
+                                        </InputGroup>
+                                    </FormControl>
+                                )}
+                            </Flex>
+                            {wallet.chain == 'SOL' && (
+                                <Flex experimental_spaceX="8" mt="6">
+                                    <FormControl
+                                        mt="6"
+                                        w="50%"
+                                        borderBottom="2px"
+                                        borderBottomColor="gray.200"
+                                        _focusWithin={{
+                                            borderBottomColor: 'gray.300',
+                                        }}
+                                    >
+                                        <FormLabel
+                                            fontSize={{
+                                                lg: 'md',
+                                                xl: 'lg',
+                                            }}
+                                            color="blackAlpha.700"
+                                            my="0"
+                                        >
+                                            Host Avatar
+                                        </FormLabel>
+                                        <InputGroup>
+                                            <Input
+                                                onChange={(e) => {
+                                                    setFormDetails({
+                                                        ...formDetails,
+                                                        profileImage:
+                                                            e.target.value,
+                                                    })
+                                                }}
+                                                _placeholder={{
+                                                    color: 'gray.300',
+                                                }}
+                                                fontSize="sm"
+                                                required
+                                                min="1"
+                                                type="url"
+                                                step="1"
+                                                px="0"
+                                                placeholder="host avatar url"
+                                                bg="transparent"
+                                                border="none"
+                                                rounded="none"
+                                                _hover={{}}
+                                                _focus={{}}
+                                                _active={{}}
+                                            />
+                                            <InputRightElement>
+                                                <Avatar
+                                                    src={
+                                                        formDetails.profileImage
+                                                    }
+                                                    maxW="6"
+                                                    maxH="6"
+                                                />
+                                            </InputRightElement>
+                                        </InputGroup>
+                                    </FormControl>
+                                    <FormControl
+                                        mt="6"
+                                        w="50%"
+                                        borderBottom="2px"
+                                        borderBottomColor="gray.200"
+                                        _focusWithin={{
+                                            borderBottomColor: 'gray.300',
+                                        }}
+                                    >
+                                        <FormLabel
+                                            fontSize={{
+                                                lg: 'md',
+                                                xl: 'lg',
+                                            }}
+                                            color="blackAlpha.700"
+                                            my="0"
+                                        >
+                                            Custom Spl Token
+                                        </FormLabel>
+                                        <InputGroup>
+                                            <Input
+                                                onChange={(e) => {
+                                                    setFormDetails({
+                                                        ...formDetails,
+                                                        customSPLToken:
+                                                            e.target.value,
+                                                    })
+                                                }}
+                                                _placeholder={{
+                                                    color: 'gray.300',
+                                                }}
+                                                fontSize="sm"
+                                                min="1"
+                                                type="text"
+                                                step="1"
+                                                px="0"
+                                                placeholder="Add your name"
+                                                bg="transparent"
+                                                border="none"
+                                                rounded="none"
+                                                _hover={{}}
+                                                _focus={{}}
+                                                _active={{}}
+                                            />
+                                        </InputGroup>
+                                    </FormControl>
+                                </Flex>
+                            )}
                         </Box>
                         <Box h="auto" w="2px" my="20" bg="gray.100" />
                         <Box>
@@ -535,6 +788,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                         tickets_available:
                                             formDetails.seats || 20,
                                         tickets_sold: 0,
+                                        isSolana: wallet.chain === 'SOL',
                                     }}
                                 />
                             </Box>

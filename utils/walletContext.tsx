@@ -1,13 +1,20 @@
 import React, { useState, createContext } from 'react'
-
+import { Chain } from '../types/blockchain.types'
 export const walletContext: any = createContext([])
-
+export type WalletType = {
+    balance: string | null
+    address: string | null
+    domain: string | null
+    type: 'mm' | 'wc' | 'sol' | null
+    chain: Chain | null
+}
 function Wallet({ children }: any) {
-    const [wallet, setWallet] = useState({
+    const [wallet, setWallet] = useState<WalletType>({
         balance: null,
         address: null,
-        ens: null,
+        domain: null,
         type: null,
+        chain: null,
     })
 
     return (

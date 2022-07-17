@@ -112,7 +112,7 @@ export default function Step5({
                                 role="group"
                                 fontWeight="medium"
                                 px="8"
-                                isLoading={inTxn}
+                                isLoading={false}
                             >
                                 Publish Event
                             </Button>
