@@ -45,15 +45,11 @@ import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
 import { decryptLink } from '../../utils/linkResolvers'
-import { doc } from '../../utils/firebaseUtils'
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import { Biconomy } from '@biconomy/mexa'
-import { db, setDoc } from '../../utils/firebaseUtils'
-import { onAuthStateChanged, User } from 'firebase/auth'
-import { auth } from '../../utils/firebaseUtils'
-
 import SignUpModal from '../../components/Modals/SignUp.modal'
+import { supabase } from '../../lib/config/supabaseConfig'
 
 declare const window: any
 
@@ -92,22 +88,18 @@ export default function EventLayout({ event }: { event: Event }) {
         'DEC',
     ]
 
-    const [user, setUser] = useState<User | null | undefined>(undefined)
     const [toOpen, setToOpen] = useState<boolean>(false)
 
-    onAuthStateChanged(auth, (user) => {
-        user ? setUser(user) : setUser(null)
-    })
+    const user = supabase.auth.user()
 
     const [wallet] = useContext(walletContext)
 
     useEffect(() => {
         const addUser = async () => {
             if (user && wallet.address) {
-                const docRef = doc(db, 'users', wallet.address)
-                await setDoc(docRef, {
-                    email: user?.email,
-                })
+                const { data, error } = await supabase
+                    .from('users')
+                    .insert([{ address: wallet.address, email: user.email }])
             }
         }
 
@@ -177,7 +169,9 @@ export default function EventLayout({ event }: { event: Event }) {
                                 })
                                 .then(() => {})
                                 .catch((err: any) => {
-                                    toast.error("Oops! Failed to mint the ticket")
+                                    toast.error(
+                                        'Oops! Failed to mint the ticket'
+                                    )
                                     setIsLoading(false)
                                 })
                         } else {

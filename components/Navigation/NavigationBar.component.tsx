@@ -843,11 +843,10 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     <MenuDivider color="blackAlpha.200" />
                                     <MenuItem
                                         onClick={() => {
-                                            walletType === 'wc'
-                                                ? disconnectWc()
-                                                : disconnectMetaMask()
-
-                                            // auth.signOut()
+                                            // walletType === 'wc'
+                                            //     ? disconnectWc()
+                                            //     : disconnectMetaMask()
+                                            supabase.auth.signOut()
                                         }}
                                         fontSize="sm"
                                         icon={<IoIosLogOut size="20px" />}

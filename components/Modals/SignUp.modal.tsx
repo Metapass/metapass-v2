@@ -1,3 +1,5 @@
+declare let window: any
+
 import type { NextComponentType, NextPageContext } from 'next'
 import type { ModalProps } from '../../types/AuthModal.types'
 import {
@@ -21,13 +23,28 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     onOpen,
     onClose,
 }) => {
-    const user = supabase.auth.user()
-    console.log(user)
+    const signInWithTwitter = async () => {
+        const { user, session, error } = await supabase.auth.signIn(
+            {
+                provider: 'twitter',
+            },
+            {
+                redirectTo: window?.location.href,
+            }
+        )
 
-    const signIn = async (provider: 'google' | 'twitter') => {
-        const { user, session, error } = await supabase.auth.signIn({
-            provider: provider,
-        })
+        console.log(error!)
+    }
+
+    const signInWithGoogle = async () => {
+        const { user, session, error } = await supabase.auth.signIn(
+            {
+                provider: 'google',
+            },
+            {
+                redirectTo: window?.location.href,
+            }
+        )
     }
 
     return (
@@ -74,7 +91,7 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                             variant="outline"
                             gap="2"
                             _focus={{}}
-                            onClick={() => signIn('google')}
+                            onClick={signInWithGoogle}
                         >
                             <FcGoogle size={25} />
                             Continue with google
@@ -86,13 +103,18 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                         >
                             or
                         </Text>
-                        <Button w="72" variant="outline" gap="2" _focus={{}}>
+                        <Button
+                            w="72"
+                            variant="outline"
+                            gap="2"
+                            _focus={{}}
+                            onClick={signInWithTwitter}
+                        >
                             <Image
                                 src="/assets/twitter.svg"
                                 alt="twtr icon"
                                 height="5"
                                 width="5"
-                                onClick={() => signIn('twitter')}
                             />
                             Continue with Twitter
                         </Button>
