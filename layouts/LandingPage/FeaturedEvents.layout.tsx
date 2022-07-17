@@ -222,7 +222,7 @@ export default function FeaturedEvents() {
                     />
                 </Flex>
                 <Flex
-                    _active={{ cursor: 'grabbing' }}
+                    _active={{ cursor: 'pointer' }}
                     my="8"
                     display={{ base: 'none', md: 'flex' }}
                 >
@@ -237,24 +237,83 @@ export default function FeaturedEvents() {
                         <Flex
                             experimental_spaceX="8"
                             mx={{ base: '10', xl: '20' }}
+                            flexWrap="wrap"
                         >
-                            {featEvents.map((data, key) => (
-                                <Box
-                                    maxW={{ base: '330px', xl: '390px' }}
-                                    key={key}
-                                    h="full"
-                                    minW={{ base: '330px', xl: '390px' }}
-                                >
-                                    <Skeleton
-                                        maxW={{ base: '330px', xl: '390px' }}
-                                        key={key}
-                                        minW={{ base: '330px', xl: '390px' }}
-                                        isLoaded={data.id !== ''}
-                                    >
-                                        <EventCard event={data} />
-                                    </Skeleton>
-                                </Box>
-                            ))}
+                            {featEvents.length > 0
+                                ? featEvents.map((data, key) => (
+                                      <Box
+                                          my="5px"
+                                          maxW={{ base: '330px', xl: '390px' }}
+                                          key={key}
+                                          h="full"
+                                          flex="1"
+                                          marginLeft="30px"
+                                          minW={{ base: '330px', xl: '390px' }}
+                                      >
+                                          <Skeleton
+                                              maxW={{
+                                                  base: '330px',
+                                                  xl: '390px',
+                                              }}
+                                              key={key}
+                                              minW={{
+                                                  base: '330px',
+                                                  xl: '390px',
+                                              }}
+                                              isLoaded={data.id !== ''}
+                                          >
+                                              <EventCard event={data} />
+                                          </Skeleton>
+                                      </Box>
+                                  ))
+                                : [1, 2, 3, 4, 5, 6].map((data, key) => (
+                                      <Box
+                                          my="5px"
+                                          maxW={{ base: '330px', xl: '390px' }}
+                                          key={key}
+                                          h="full"
+                                          flex="1"
+                                          marginLeft="30px"
+                                          minW={{ base: '330px', xl: '390px' }}
+                                          borderRadius="xl"
+                                      >
+                                          <Skeleton
+                                              maxW={{
+                                                  base: '330px',
+                                                  xl: '390px',
+                                              }}
+                                              key={key}
+                                              minW={{
+                                                  base: '330px',
+                                                  xl: '390px',
+                                              }}
+                                              isLoaded={false}
+                                              borderRadius="md"
+                                          >
+                                              <Flex
+                                                  direction="column"
+                                                  rounded="lg"
+                                                  overflow="hidden"
+                                                  bg="white"
+                                                  _hover={{
+                                                      transform: 'scale(1.01)',
+                                                  }}
+                                                  _active={{
+                                                      transform: 'scale(1.03)',
+                                                  }}
+                                                  transitionDuration="200ms"
+                                                  cursor="pointer"
+                                                  boxShadow="0px -4px 52px rgba(0, 0, 0, 0.11)"
+                                                  w="full"
+                                                  border="1px"
+                                                  position="relative"
+                                                  h="15rem"
+                                                  borderRadius="30px"
+                                                  borderColor="blackAlpha.200"
+                                              ></Flex>
+                                          </Skeleton>
+                                      </Box>
+                                  ))}
                             <Box p="10" />
                         </Flex>
                     </ScrollContainer>

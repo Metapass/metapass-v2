@@ -144,7 +144,21 @@ export default function EventCard({
                     color="blackAlpha.700"
                 >
                     {event.fee === 0 ? (
-                        <>FREE</>
+                        <>
+                            FREE
+                            <Image
+                                ml={2}
+                                src={
+                                    event.isSolana
+                                        ? '/assets/solana-logo.png'
+                                        : '/assets/matic_logo.svg'
+                                }
+                                w="3"
+                                filter="brightness(100%)"
+                                alt="matic"
+                            />
+                            {/* <Text> {event.fee}</Text> */}
+                        </>
                     ) : (
                         <>
                             <Image
