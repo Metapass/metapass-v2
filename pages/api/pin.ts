@@ -11,7 +11,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             .pinByHash(req.body.hash)
             .then((result: any) => {
                 res.status(200).json({
-                    msg: 'pinned to ipfs',
+                    msg: 'Pinned to ipfs',
                 })
             })
             .catch((error: any) => {
