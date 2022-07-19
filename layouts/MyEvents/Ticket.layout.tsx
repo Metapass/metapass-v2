@@ -1,5 +1,4 @@
-import { walletContext } from '../../utils/walletContext'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Image, Flex, Text, Button, Box, Skeleton } from '@chakra-ui/react'
 import { ethers } from 'ethers'
 declare const window: any
@@ -8,7 +7,6 @@ import { TicketType } from '../../types/Ticket.type'
 import GenerateQR from '../../utils/generateQR'
 import { db, doc, getDoc } from '../../utils/firebaseUtils'
 import { DocumentData } from 'firebase/firestore'
-declare let contract: any
 export default function TicketLayout({
     image,
     eventType,
@@ -48,14 +46,6 @@ export default function TicketLayout({
                 abi.abi,
                 provider || signer
             )
-
-            // console.log("here",)
-            //         console.log(ticketsBought)
-            //        const ticket:{ticketID:string} = ticketsBought.find((ticket:any) => ticket.buyer.id === String(wallet.address).toLowerCase() && ticket.childContract.id === contractAddress.toLowerCase()) as any
-            //        ticketsBought.map((ticket:any) => {
-            //         console.log(ticket.childContract.id)
-            //         console.log(contractAddress.toLowerCase(),ticket.ticketID)
-            //    })
             if (ticket) {
                 getMeta(contract, ticket.ticketID)
             }
@@ -203,53 +193,6 @@ export default function TicketLayout({
                             >
                                 <GenerateQR data={qr} />
                             </Box>
-                            {/* <Box
-                                p="1.5px"
-                                mx="auto"
-                                mt="6"
-                                transitionDuration="200ms"
-                                rounded="full"
-                                w="fit-content"
-                                boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
-                                bg="brand.gradient"
-                                _hover={{ transform: 'scale(1.05)' }}
-                                _focus={{}}
-                                _active={{ transform: 'scale(0.95)' }}
-                            > */}
-
-                            {/* </Flex> */}
-                            {/* <Button
-                                type="submit"
-                                rounded="full"
-                                bg="white"
-                                size="sm"
-                                color="blackAlpha.700"
-                                fontWeight="medium"
-                                _hover={{}}
-                                leftIcon={
-                                    <Box
-                                        _groupHover={{
-                                            transform: 'scale(1.1)',
-                                        }}
-                                        transitionDuration="200ms"
-                                    >
-                                        <Image
-                                            src="/assets/elements/event_ticket_gradient.svg"
-                                            w="4"
-                                            alt="ticket"
-                                        />
-                                    </Box>
-                                }
-                                _focus={{}}
-                                _active={{}}
-                                onClick={() => {
-                                    // window.open(eventLink, '_blank')
-                                }}
-                                role="group"
-                            >
-                                Get QR Code
-                            </Button> */}
-                            {/* </Box> */}
                         </Skeleton>
                         // </Flex>
                     )}
