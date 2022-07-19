@@ -97,7 +97,7 @@ export default function NavigationBar({ mode = 'dark' }) {
     const { chain, chains } = useNetwork()
     const { switchNetwork } = useSwitchNetwork()
     const { address: addy, isConnected } = useAccount()
-    const { data, isError, isLoading } = useBalance({
+    const { data } = useBalance({
         addressOrName: addy,
     })
     const { disconnect } = useDisconnect()
@@ -139,32 +139,11 @@ export default function NavigationBar({ mode = 'dark' }) {
         },
     ]
 
-    async function getAccountData({ accounts, windowType }: any) {
-        try {
-            accounts = await windowType.ethereum.request({
-                method: 'eth_requestAccounts',
-            })
-            setAddress(accounts[0])
-            const [domain] = useDomain('POLYGON', accounts[0])
-            let bal = await web3.eth.getBalance(accounts[0])
-            let ethBal: any = await web3.utils.fromWei(bal, 'ether')
-            setBalance(ethBal)
-
-            setWallet({
-                balance: ethBal,
-                address: utils.getAddress(accounts[0]),
-                type: 'mm',
-                domain: domain ?? null,
-                chain: 'POLYGON',
-            })
-        } catch (error) {}
-    }
-
     async function loadAccounts() {
         if (isConnected && addy) {
             if (chain != env ? evmChain.polygon : evmChain.polygonMumbai) {
                 if (switchNetwork) {
-                    switchNetwork(env ? 137 : 80001)
+                    switchNetwork(chainid)
                 }
             }
             setBalance(data?.formatted as string)
@@ -178,59 +157,48 @@ export default function NavigationBar({ mode = 'dark' }) {
             })
         } else {
             connectMM()
-            setBalance(data?.formatted as string)
-            setAddress(addy as string)
-            setWallet({
-                balance: data?.formatted as string,
-                address: addy as string,
-                type: 'mm',
-                chain: 'POLYGON',
-                domain: null,
-            })
         }
     }
 
     const handleWalletConnect = async () => {
-        wcProvider = new WalletConnectProvider({
-            rpc: {
-                [chainid]: endpoint as string,
-            },
-        })
-        try {
-            await wcProvider.enable()
-            setWalletType('wc')
-            //  Create Web3 instance
-            const web3 = new Web3(wcProvider as any)
-            window.w3 = web3
-            setWeb3(web3)
-            let accounts = await web3.eth.getAccounts()
-            const connectionChainId = await (
-                await web3.eth.getChainId()
-            ).toString()
-
-            if (connectionChainId == chainid) {
-                setAddress(accounts[0])
-                console.log('accounts', accounts[0])
-                const [domain] = useDomain('POLYGON', accounts[0])
-                let bal = await web3.eth.getBalance(accounts[0])
-                let ethBal: any = await web3.utils.fromWei(bal, 'ether')
-                setBalance(ethBal)
+        if (!isConnected) {
+            connectWC()
+            if (chain == env ? evmChain.polygon : evmChain.polygonMumbai) {
+                setAddress(addy as string)
+                setBalance(data?.formatted as string)
                 setWallet({
-                    balance: ethBal,
-                    address: utils.getAddress(accounts[0]),
+                    balance: data?.formatted as string,
+                    address: addy as string,
                     type: 'wc',
-                    domain: domain ?? null,
+                    domain: null,
                     chain: 'POLYGON',
                 })
-            } else {
-                toast.error('Please switch to Polygon Mainnet here', {
+            } else if (chain?.id != chainid) {
+                switchNetwork && switchNetwork(chainid)
+            }
+        } else {
+            onClose1()
+            setWalletType('wc')
+            if (chain?.id != chainid) {
+                switchNetwork && switchNetwork(chainid)
+                toast.error('Please switch to Polygon Mainnet in your Wallet', {
                     position: 'bottom-center',
                     id: 'switch9',
                 })
+            } else {
+                setAddress(addy as string)
+                setBalance(data?.formatted as string)
+                setWallet({
+                    balance: data?.formatted as string,
+                    address: addy as string,
+                    type: 'wc',
+                    domain: null,
+                    chain: 'POLYGON',
+                })
             }
-        } catch (e) {}
+        }
     }
-    const disconnectMetaMask = async () => {
+    const disconnectEVM = async () => {
         if (isConnected) {
             disconnect()
             setBalance('')
@@ -246,30 +214,6 @@ export default function NavigationBar({ mode = 'dark' }) {
         }
     }
 
-    const disconnectWc = async () => {
-        // Close provider session
-        const wcProvider = new WalletConnectProvider({
-            rpc: {
-                [chainid]: endpoint as string,
-            },
-        })
-        setBalance('')
-        setAddress('')
-        setWallet({
-            balance: '',
-            address: '',
-            type: null,
-            domain: '',
-            chain: null,
-        })
-        const isconnected = wcProvider.isWalletConnect
-        if (isconnected) {
-            await wcProvider.disconnect()
-            wcProvider.on('disconnect', (code: number, reason: string) => {
-                onClose1()
-            })
-        }
-    }
     const disconnectSolana = async () => {
         await window.solana.disconnect()
         setBalance('')
@@ -719,9 +663,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     onClick={
                                         wallet.chain === 'SOL'
                                             ? disconnectSolana
-                                            : walletType === 'wc'
-                                            ? disconnectWc
-                                            : disconnectMetaMask
+                                            : disconnectEVM
                                     }
                                     fontSize="sm"
                                     icon={<IoIosLogOut size="20px" />}
@@ -835,7 +777,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                                         }
                                         rightIcon={<HiOutlineChevronDown />}
                                     >
-                                        {console.log(wallet.domain)}
                                         {wallet.domain ||
                                             wallet.address.substring(0, 4) +
                                                 '...' +
@@ -913,11 +854,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     <MenuDivider color="blackAlpha.200" />
                                     <MenuItem
                                         onClick={() => {
-                                            walletType === 'wc'
-                                                ? disconnectWc()
-                                                : disconnectMetaMask()
-
-                                            // auth.signOut()
+                                            disconnectEVM()
                                         }}
                                         fontSize="sm"
                                         icon={<IoIosLogOut size="20px" />}
