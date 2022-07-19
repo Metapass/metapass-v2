@@ -69,14 +69,12 @@ import {
     getAssociatedTokenAddress,
     TOKEN_PROGRAM_ID,
 } from '@solana/spl-token'
-// import updateEventData from '../../utils/updateEventData'
 import { Connection, clusterApiUrl } from '@solana/web3.js'
-import { useRouter } from 'next/router'
-
 import SignUpModal from '../../components/Modals/SignUp.modal'
 import { useDomain } from '../../hooks/useDomain'
 import axios from 'axios'
 import { generateMetadata } from '../../utils/generateMetadata'
+import { useAccount, useSigner } from 'wagmi'
 
 declare const window: any
 
@@ -142,17 +140,16 @@ export default function EventLayout({ event }: { event: Event }) {
         addUser()
     }, [user, wallet])
 
+    const { data: WalletSigner } = useSigner()
+    const { isConnected } = useAccount()
+
     const buyPolygonTicket = async () => {
-        if (wallet.address) {
+        if (isConnected) {
             if (user === null) {
                 setToOpen(true)
             } else {
                 if (typeof window.ethereum != undefined) {
-                    const provider = new ethers.providers.Web3Provider(
-                        wallet.type === 'wc'
-                            ? window.w3.currentProvider
-                            : window.ethereum
-                    )
+                    const provider = WalletSigner?.provider
                     const biconomy = new Biconomy(provider, {
                         apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
                         debug: process.env.NEXT_PUBLIC_ENV == 'dev',

@@ -12,8 +12,6 @@ import NavigationBar from '../../components/Navigation/NavigationBar.component'
 import EventLayout from '../../layouts/Event/Event.layout'
 import { Skeleton } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import { getEvents } from '../../utils/helpers/getEvent'
-import { parseEvent } from '../../utils/helpers/parseEvent'
 import axios from 'axios'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 
