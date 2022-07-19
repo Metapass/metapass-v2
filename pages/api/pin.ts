@@ -1,8 +1,8 @@
 import pinataSDK from '@pinata/sdk'
 import { NextApiRequest, NextApiResponse } from 'next'
 const pinata = pinataSDK(
-    'cb7410f63fae89c24983',
-    '43c7dd30459fc03197ed37237abbf6bb63adeaf665b7a6459f711625082141bc'
+    process.env.PINATA_API as string,
+    process.env.PINATA_SECRET as string
 )
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
