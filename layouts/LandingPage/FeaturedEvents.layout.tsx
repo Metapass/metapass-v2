@@ -156,7 +156,7 @@ export default function FeaturedEvents() {
                     event.event.seats - event.event.ticketsBought.length,
                 tickets_sold: event.event.ticketsBought.length,
                 buyers: event.event.buyers,
-                isHuddle: event.event.link.includes('huddle'),
+                isHuddle: event.event.link.includes('huddle01'),
                 isSolana: false,
             } as Event
         })
@@ -198,7 +198,6 @@ export default function FeaturedEvents() {
         setFeatEvents(allEvents)
     }
     useEffect(() => {
-        setFeatEvents([])
         getFeaturedEvents()
     }, [])
 

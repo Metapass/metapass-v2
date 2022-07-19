@@ -47,20 +47,25 @@ const polygon = require(env
 
 declare const window: any
 import BoringAva from '../../utils/BoringAva'
-import { getAllEnsLinked } from '../../utils/resolveEns'
 import { utils } from 'ethers'
-
-import { getAllowedList } from '../../utils/sendToAirtable'
-
 import { auth } from '../../utils/firebaseUtils'
-import { BiUserCircle } from 'react-icons/bi'
-import { useRouter } from 'next/router'
-import { ethers } from 'ethers'
 import { onAuthStateChanged, User } from 'firebase/auth'
-
 import { FaBars } from 'react-icons/fa'
 import { useDomain } from '../../hooks/useDomain'
 import { ConnectWallet } from './ConnectWallet'
+import {
+    useAccount,
+    useBalance,
+    useConnect,
+    useDisconnect,
+    useEnsName,
+    useNetwork,
+    useSwitchNetwork,
+} from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
+import { chain as evmChain } from 'wagmi'
+
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
 
@@ -75,12 +80,29 @@ export default function NavigationBar({ mode = 'dark' }) {
             walletContext
         )
 
-    const [allowedList, setAllowedList] = useState<any>(undefined)
     const [_, setWeb3] = useContext(web3Context)
     const [walletType, setWalletType] = useState<string>('')
+    const { connect: connectMM } = useConnect({
+        connector: new InjectedConnector(),
+    })
+    const { connect: connectWC } = useConnect({
+        connector: new WalletConnectConnector({
+            chains: [evmChain.polygon, evmChain.polygonMumbai],
+            options: {
+                qrcode: true,
+            },
+        }),
+    })
+
+    const { chain, chains } = useNetwork()
+    const { switchNetwork } = useSwitchNetwork()
+    const { address: addy, isConnected } = useAccount()
+    const { data, isError, isLoading } = useBalance({
+        addressOrName: addy,
+    })
+    const { disconnect } = useDisconnect()
 
     const [showMyEvents, setMyEvents] = useState(false)
-    // const [ensName, setEnsName] = useState<string>('')
     const {
         isOpen: isOpen1,
         onOpen: onOpen1,
@@ -139,57 +161,32 @@ export default function NavigationBar({ mode = 'dark' }) {
     }
 
     async function loadAccounts() {
-        let windowType = window
-
-        // console.log(windowType, 'windowType')
-        let accounts = await windowType.ethereum.request({
-            method: 'eth_requestAccounts',
-        })
-
-        if (windowType.ethereum.chainId == chainid) {
-            setAddress(accounts[0])
-            const [domain] = useDomain('POLYGON', accounts[0])
-            // console.log('got accounts', accounts)
-            let bal = await web3.eth.getBalance(accounts[0])
-            let ethBal: any = await web3.utils.fromWei(bal, 'ether')
-            setBalance(ethBal)
-            setWallet({
-                balance: ethBal,
-                address: utils.getAddress(accounts[0]),
-                type: 'mm',
-                domain: domain ?? null,
-                chain: 'POLYGON',
-            })
-            localStorage.setItem('Autoconnect', 'true')
-            setWalletType('mm')
-        } else {
-            try {
-                await windowType.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [
-                        {
-                            chainId: web3.utils.toHex(chainid as string),
-                        },
-                    ],
-                })
-                toast.success('Switched to Polygon Mainnet', {
-                    id: 'switched1',
-                    position: 'top-center',
-                    duration: 3000,
-                })
-                getAccountData({ accounts, windowType })
-            } catch (switchError: any) {
-                if (switchError.code === 4902) {
-                    try {
-                        await windowType.ethereum.request({
-                            method: 'wallet_addEthereumChain',
-                            params: [polygon.addData],
-                        })
-                        getAccountData({ accounts, windowType })
-                    } catch (addError) {}
-                } else {
+        if (isConnected && addy) {
+            if (chain != env ? evmChain.polygon : evmChain.polygonMumbai) {
+                if (switchNetwork) {
+                    switchNetwork(env ? 137 : 80001)
                 }
             }
+            setBalance(data?.formatted as string)
+            setAddress(addy as string)
+            setWallet({
+                balance: data?.formatted as string,
+                address: addy as string,
+                type: 'mm',
+                chain: 'POLYGON',
+                domain: null,
+            })
+        } else {
+            connectMM()
+            setBalance(data?.formatted as string)
+            setAddress(addy as string)
+            setWallet({
+                balance: data?.formatted as string,
+                address: addy as string,
+                type: 'mm',
+                chain: 'POLYGON',
+                domain: null,
+            })
         }
     }
 
@@ -234,9 +231,8 @@ export default function NavigationBar({ mode = 'dark' }) {
         } catch (e) {}
     }
     const disconnectMetaMask = async () => {
-        let windowType = window
-        const isconnected = await web3.eth.net.isListening()
-        if (isconnected && web3) {
+        if (isConnected) {
+            disconnect()
             setBalance('')
             setAddress('')
             setWallet({
@@ -246,9 +242,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                 domain: '',
                 chain: null,
             })
-            windowType.ethereum.on('accountsChanged', async () => {
-                onClose1()
-            })
+            onClose1()
         }
     }
 
