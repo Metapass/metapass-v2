@@ -5,8 +5,8 @@ declare const window: any
 import abi from '../../utils/Metapass.json'
 import { TicketType } from '../../types/Ticket.type'
 import GenerateQR from '../../utils/generateQR'
-import { db, doc, getDoc } from '../../utils/firebaseUtils'
 import { DocumentData } from 'firebase/firestore'
+import { supabase } from '../../lib/config/supabaseConfig'
 export default function TicketLayout({
     image,
     eventType,
@@ -57,29 +57,13 @@ export default function TicketLayout({
         const fetchDetails = async () => {
             if (wallet.address && contractAddress) {
                 try {
-                    const docRef = doc(db, 'events', contractAddress || 'none')
-                    const docSnap = await getDoc(docRef)
-                    const data: DocumentData = docSnap.data() as DocumentData
-                    for (const [key, value] of Object.entries(data)) {
-                        const tickets: [
-                            {
-                                ticketID: string
-                                uuid: string
-                                user_address: string
-                                timestamp: string
-                            }
-                        ] = data[key]
-                        const qrdata = tickets.find(
-                            (tick) =>
-                                tick?.user_address?.toLowerCase() ===
-                                    String(wallet.address)?.toLowerCase() &&
-                                tick?.ticketID ==
-                                    (Number(ticket?.ticketID) + 1)?.toString()
-                        )?.uuid as string
-                        if (qrdata) {
-                            setQr(qrdata)
-                        }
-                    }
+                    const { data, error } = await supabase
+                        .from('tickets')
+                        .select('uuid')
+                        .eq('buyer', wallet.address)
+                        .filter('event', 'in', `("${contractAddress}")`)
+
+                    setQr(data?.[0]?.uuid)
                 } catch (error) {}
             }
         }

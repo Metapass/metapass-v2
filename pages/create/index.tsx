@@ -37,6 +37,7 @@ import { ethers } from 'ethers'
 import abi from '../../utils/MetapassFactory.json'
 import MetapassABI from '../../utils/Metapass.json'
 import axios from 'axios'
+import { supabase } from '../../lib/config/supabaseConfig'
 
 declare const window: any
 
@@ -167,6 +168,12 @@ const Create: NextPage = () => {
                             },
                         })
                     }
+                    const { data, error } = await supabase
+                        .from('events')
+                        .insert({
+                            contractAddress: child,
+                            inviteOnly: false,
+                        })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
                     setInTxn(false)
@@ -242,8 +249,7 @@ const Create: NextPage = () => {
                                 child,
                                 roomLink.data.meetingLink
                             )
-                        } catch (e) {
-                        }
+                        } catch (e) {}
                     } else {
                         let roomLink = await axios.post(
                             process.env.NEXT_PUBLIC_HUDDLE_API as string,
@@ -258,9 +264,14 @@ const Create: NextPage = () => {
                                 child,
                                 roomLink.data.meetingLink
                             )
-                        } catch (e) {
-                        }
+                        } catch (e) {}
                     }
+                    const { data, error } = await supabase
+                        .from('events')
+                        .insert({
+                            contractAddress: child,
+                            inviteOnly: false,
+                        })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
                     setInTxn(false)
