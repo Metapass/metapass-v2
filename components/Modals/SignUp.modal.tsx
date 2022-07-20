@@ -13,38 +13,49 @@ import {
     Text,
     Flex,
     Image,
+    Input,
 } from '@chakra-ui/react'
 import { FcGoogle } from 'react-icons/fc'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
+import toast from 'react-hot-toast'
 
 const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     isOpen,
     onOpen,
     onClose,
 }) => {
-    const signInWithTwitter = async () => {
+    const [email, setEmail] = useState<string>('')
+    const [isLoading, setLoading] = useState<boolean>(false)
+
+    const signIn = async (provider: 'google' | 'twitter') => {
         const { user, session, error } = await supabase.auth.signIn(
             {
-                provider: 'twitter',
+                provider: provider,
             },
             {
                 redirectTo: window?.location.href,
             }
         )
-
-        console.log(error!)
     }
 
-    const signInWithGoogle = async () => {
-        const { user, session, error } = await supabase.auth.signIn(
-            {
-                provider: 'google',
-            },
-            {
-                redirectTo: window?.location.href,
-            }
-        )
+    const sendEmailLink = async () => {
+        setLoading(true)
+        if (email !== '' || undefined) {
+            const { user, session, error } = await supabase.auth.signIn(
+                {
+                    email: email,
+                },
+                { redirectTo: window?.location.href }
+            )
+
+            toast.success('Success! Sent email link to sign in')
+            setLoading(false)
+        } else {
+            toast.error('Enter some value first')
+        }
+        setLoading(false)
     }
 
     return (
@@ -86,15 +97,25 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                         gap="3"
                         pb="8"
                     >
-                        <Button
+                        <Input
+                            placeholder="Enter email..."
                             w="72"
-                            variant="outline"
-                            gap="2"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            rounded="lg"
+                        />
+                        <Button
+                            bg="brand.gradient"
+                            w="32"
+                            rounded="full"
+                            _hover={{}}
                             _focus={{}}
-                            onClick={signInWithGoogle}
+                            _active={{}}
+                            textColor="white"
+                            onClick={sendEmailLink}
+                            isLoading={isLoading}
                         >
-                            <FcGoogle size={25} />
-                            Continue with google
+                            Continue
                         </Button>
                         <Text
                             fontFamily="heading"
@@ -108,7 +129,22 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                             variant="outline"
                             gap="2"
                             _focus={{}}
-                            onClick={signInWithTwitter}
+                            onClick={() => signIn('google')}
+                            rounded="lg"
+                            shadow="sm"
+                        >
+                            <FcGoogle size={25} />
+                            Continue with google
+                        </Button>
+
+                        <Button
+                            w="72"
+                            variant="outline"
+                            gap="2"
+                            _focus={{}}
+                            onClick={() => signIn('twitter')}
+                            rounded="lg"
+                            shadow="sm"
                         >
                             <Image
                                 src="/assets/twitter.svg"

@@ -754,7 +754,7 @@ export default function NavigationBar({ mode = 'dark' }) {
 
                                         fontWeight="normal"
                                         leftIcon={
-                                            user ? (
+                                            user?.user_metadata?.avatar_url ? (
                                                 <Avatar
                                                     size="sm"
                                                     src={
@@ -843,10 +843,9 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     <MenuDivider color="blackAlpha.200" />
                                     <MenuItem
                                         onClick={() => {
-                                            // walletType === 'wc'
-                                            //     ? disconnectWc()
-                                            //     : disconnectMetaMask()
-                                            supabase.auth.signOut()
+                                            walletType === 'wc'
+                                                ? disconnectWc()
+                                                : disconnectMetaMask()
                                         }}
                                         fontSize="sm"
                                         icon={<IoIosLogOut size="20px" />}
