@@ -51,6 +51,7 @@ const Create: NextPage = () => {
         category: {
             event_type: '',
             category: [''],
+            inviteOnly: false,
         },
         image: {
             image: '',
@@ -108,11 +109,13 @@ const Create: NextPage = () => {
     }, [contractAddress])
 
     const onSubmit = async () => {
+        console.log('enter')
         setInTxn(true)
 
         function b64EncodeUnicode(str: any) {
             return btoa(encodeURIComponent(str))
         }
+        // console.log(event.isHuddle)
         if (!event.isHuddle) {
             try {
                 let txn = await contract?.createEvent(
@@ -168,8 +171,19 @@ const Create: NextPage = () => {
                             },
                         })
                     }
-                    const ref = doc(db, 'events', child)
-                    await setDoc(ref, {})
+
+                    await axios('/api/addEventToDB', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json',
+                        },
+                        data: {
+                            child: child,
+                            event_type: event.category.event_type,
+                            inviteOnly: event.category.inviteOnly,
+                        },
+                    })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
                     setInTxn(false)
@@ -245,8 +259,7 @@ const Create: NextPage = () => {
                                 child,
                                 roomLink.data.meetingLink
                             )
-                        } catch (e) {
-                        }
+                        } catch (e) {}
                     } else {
                         let roomLink = await axios.post(
                             process.env.NEXT_PUBLIC_HUDDLE_API as string,
@@ -261,11 +274,20 @@ const Create: NextPage = () => {
                                 child,
                                 roomLink.data.meetingLink
                             )
-                        } catch (e) {
-                        }
+                        } catch (e) {}
                     }
-                    const ref = doc(db, 'events', child)
-                    await setDoc(ref, {})
+                    await axios('/api/addEventToDB', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json',
+                        },
+                        data: {
+                            child: child,
+                            event_type: event.category.event_type,
+                            inviteOnly: event.category.inviteOnly,
+                        },
+                    })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
                     setInTxn(false)

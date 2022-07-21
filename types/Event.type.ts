@@ -28,6 +28,10 @@ export type DescriptionType = {
     long_desc?: string
 }
 export type CategoryType = {
-    event_type: string
-    category: [string]
+    event_type: EventCategoryType
+    category: Categories[]
+    inviteOnly: boolean
 }
+
+export type EventCategoryType = 'In-Person' | 'Online' | 'Type' | ''
+export type Categories = 'Meetup' | 'Party' | 'Category' | 'Invite Only' | ''

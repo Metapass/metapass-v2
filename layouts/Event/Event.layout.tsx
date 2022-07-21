@@ -52,9 +52,10 @@ import { Biconomy } from '@biconomy/mexa'
 import { db, setDoc } from '../../utils/firebaseUtils'
 import { onAuthStateChanged, User } from 'firebase/auth'
 import { auth } from '../../utils/firebaseUtils'
-
+import { FiCheckCircle } from 'react-icons/fi'
 import SignUpModal from '../../components/Modals/SignUp.modal'
-
+import axios from 'axios'
+import RegisterModal from '../../components/Modals/Register.modal'
 declare const window: any
 
 export default function EventLayout({ event }: { event: Event }) {
@@ -71,6 +72,11 @@ export default function EventLayout({ event }: { event: Event }) {
     const [openseaLink, setToOpenseaLink] = useState<string>('')
     const [qrId, setQrId] = useState<string>('')
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const {
+        isOpen: RegisterIsOpen,
+        onOpen: RegisterOnOpen,
+        onClose: RegisterOnClose,
+    } = useDisclosure()
 
     let opensea =
         process.env.NEXT_PUBLIC_ENV === 'dev'
@@ -177,7 +183,9 @@ export default function EventLayout({ event }: { event: Event }) {
                                 })
                                 .then(() => {})
                                 .catch((err: any) => {
-                                    toast.error("Oops! Failed to mint the ticket")
+                                    toast.error(
+                                        'Oops! Failed to mint the ticket'
+                                    )
                                     setIsLoading(false)
                                 })
                         } else {
@@ -243,7 +251,13 @@ export default function EventLayout({ event }: { event: Event }) {
             })
             .catch((err) => {})
     }, [event.owner])
-
+    const registerForEvent = async (address: string) => {
+        await axios(`/api/register?address=${address}`, {
+            method: 'POST',
+            data: {},
+            headers: {},
+        })
+    }
     useEffect(() => {
         if (event.link) {
             event.link.includes('huddle01')
@@ -568,7 +582,14 @@ export default function EventLayout({ event }: { event: Event }) {
                                 py="0.5"
                                 bg="white"
                             >
-                                {Array(event.category.category).join(' & ')}
+                                {event.category.inviteOnly
+                                    ? [
+                                          ...event.category.category,
+                                          'Invite Only',
+                                      ].join(' & ')
+                                    : Array(event.category.category).join(
+                                          ' & '
+                                      )}
                             </Box>
                         </Flex>
                     </Box>
@@ -588,7 +609,11 @@ export default function EventLayout({ event }: { event: Event }) {
                             cursor: 'not-allowed',
                         }}
                         _hover={{}}
-                        onClick={buyTicket}
+                        onClick={
+                            event.category.inviteOnly
+                                ? RegisterOnOpen
+                                : buyTicket
+                        }
                         disabled={
                             event.tickets_available === 0 || user === undefined
                         }
@@ -597,19 +622,27 @@ export default function EventLayout({ event }: { event: Event }) {
                         w={{ base: '70%', md: 'auto' }}
                         mr="3"
                         leftIcon={
-                            <Box
-                                _groupHover={{ transform: 'scale(1.1)' }}
-                                transitionDuration="200ms"
-                            >
-                                <Image
-                                    src="/assets/elements/event_ticket.svg"
-                                    w={{ base: '6', md: '5' }}
-                                    alt="ticket"
-                                />
-                            </Box>
+                            event.category.inviteOnly ? (
+                                <FiCheckCircle size="20" />
+                            ) : (
+                                <Box
+                                    _groupHover={{ transform: 'scale(1.1)' }}
+                                    transitionDuration="200ms"
+                                >
+                                    <Image
+                                        src="/assets/elements/event_ticket.svg"
+                                        w={{ base: '6', md: '5' }}
+                                        alt="ticket"
+                                    />
+                                </Box>
+                            )
                         }
                     >
-                        {event.tickets_available === 0
+                        {event.category.inviteOnly
+                            ? event.tickets_available === 0
+                                ? 'Sold Out'
+                                : 'Register'
+                            : event.tickets_available === 0
                             ? 'Sold Out'
                             : 'Buy Ticket'}
                     </Button>
@@ -823,21 +856,29 @@ export default function EventLayout({ event }: { event: Event }) {
                                 w={{ base: '90%', md: 'auto' }}
                                 my="4"
                                 leftIcon={
-                                    <Box
-                                        _groupHover={{
-                                            transform: 'scale(1.1)',
-                                        }}
-                                        transitionDuration="200ms"
-                                    >
-                                        <Image
-                                            src="/assets/elements/event_ticket.svg"
-                                            w={{ base: '6', md: '5' }}
-                                            alt="ticket"
-                                        />
-                                    </Box>
+                                    event.category.inviteOnly ? (
+                                        <FiCheckCircle size="20" />
+                                    ) : (
+                                        <Box
+                                            _groupHover={{
+                                                transform: 'scale(1.1)',
+                                            }}
+                                            transitionDuration="200ms"
+                                        >
+                                            <Image
+                                                src="/assets/elements/event_ticket.svg"
+                                                w={{ base: '6', md: '5' }}
+                                                alt="ticket"
+                                            />
+                                        </Box>
+                                    )
                                 }
                             >
-                                {event.tickets_available === 0
+                                {event.category.inviteOnly
+                                    ? event.tickets_available === 0
+                                        ? 'Sold Out'
+                                        : 'Register'
+                                    : event.tickets_available === 0
                                     ? 'Sold Out'
                                     : 'Buy Ticket'}
                             </Button>
@@ -1154,6 +1195,11 @@ export default function EventLayout({ event }: { event: Event }) {
                     </Flex>
                 </Flex>
             </Box>
+            <RegisterModal
+                isOpen={RegisterIsOpen}
+                onOpen={RegisterOnOpen}
+                onClose={RegisterOnClose}
+            />
         </>
     )
 }

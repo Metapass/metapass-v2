@@ -164,10 +164,11 @@ export default function Step2({
                                     category: {
                                         category: [
                                             event.category?.category[0] ||
-                                                'category',
+                                                'Category',
                                         ],
                                         event_type:
-                                            event.category.event_type || 'type',
+                                            event.category.event_type || 'Type',
+                                        inviteOnly: false,
                                     },
                                     buyers: [],
 

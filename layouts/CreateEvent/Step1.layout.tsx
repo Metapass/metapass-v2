@@ -34,13 +34,14 @@ import { FaChevronDown } from 'react-icons/fa'
 import EventCard from '../../components/Card/EventCard.component'
 import DateModal from './DateModal.layout'
 import { walletContext } from '../../utils/walletContext'
+import { Categories, EventCategoryType } from '../../types/Event.type'
 
 export default function Step1({ onSubmit }: { onSubmit: Function }) {
     const [isPaid, setIsPaid] = useState(true)
     const [formDetails, setFormDetails] = useState({
         title: '',
         type: '',
-        category: { category: [''], event_type: '' },
+        category: { category: [''], event_type: '', inviteOnly: false },
         fee: 0,
         date: '',
         seats: 0,
@@ -109,6 +110,40 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                 })
                             }}
                             isChecked={isPaid}
+                            id="price"
+                            colorScheme="linkedin"
+                        />
+                    </FormControl>
+                    <FormControl
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        fontFamily="body"
+                        mt="2"
+                        fontWeight="normal"
+                    >
+                        <FormLabel
+                            fontFamily="body"
+                            color="blackAlpha.700"
+                            fontWeight="normal"
+                            mb="0"
+                            htmlFor="price"
+                        >
+                            Is it invite only?
+                        </FormLabel>
+                        {/* {console.log(formDetails.category.inviteOnly)} */}
+                        <Switch
+                            onChange={(e) => {
+                                // console.log(e.target.checked)
+                                setFormDetails({
+                                    ...formDetails,
+                                    category: {
+                                        ...formDetails.category,
+                                        inviteOnly: e.target.checked,
+                                    },
+                                })
+                            }}
+                            isChecked={formDetails.category.inviteOnly}
                             id="price"
                             colorScheme="linkedin"
                         />
@@ -521,12 +556,17 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                             'type',
                                         category: {
                                             category: [
-                                                formDetails.category
-                                                    .category[0] || 'category',
+                                                (formDetails.category
+                                                    .category[0] as Categories) ||
+                                                    'Meetup',
                                             ],
                                             event_type:
+                                                (formDetails.category
+                                                    .event_type as EventCategoryType) ||
+                                                'Online',
+                                            inviteOnly:
                                                 formDetails.category
-                                                    .event_type || 'type',
+                                                    .inviteOnly || false,
                                         },
                                         buyers: [],
 
@@ -535,6 +575,7 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                         tickets_available:
                                             formDetails.seats || 20,
                                         tickets_sold: 0,
+                                        isHuddle: false,
                                     }}
                                 />
                             </Box>

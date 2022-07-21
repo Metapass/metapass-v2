@@ -48,6 +48,7 @@ export default function FeaturedEvents() {
             category: {
                 event_type: '',
                 category: [''],
+                inviteOnly: false,
             },
             image: {
                 image: '',
@@ -68,6 +69,7 @@ export default function FeaturedEvents() {
             tickets_available: 0,
             tickets_sold: 0,
             buyers: [],
+            isHuddle: false,
         },
     ])
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -154,6 +156,7 @@ export default function FeaturedEvents() {
                     event.event.seats - event.event.ticketsBought.length,
                 tickets_sold: event.event.ticketsBought.length,
                 buyers: event.event.buyers,
+                isHuddle: event.event.isHuddle,
             } as Event
         })
     }

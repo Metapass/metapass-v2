@@ -142,6 +142,8 @@ export default function EventCard({
                     py="0.5"
                     bg="white"
                     color="blackAlpha.700"
+                    mr="5px"
+                    shadow="base"
                 >
                     {event.fee === 0 ? (
                         <>FREE</>
@@ -157,6 +159,20 @@ export default function EventCard({
                         </>
                     )}
                 </Flex>
+                {/* {!event.category.inviteOnly && (
+                    <Box
+                        rounded="full"
+                        fontSize="10px"
+                        fontWeight="semibold"
+                        px="2"
+                        shadow="base"
+                        py="0.5"
+                        bg="white"
+                        color="blackAlpha.600"
+                    >
+                        {'Invite Only'}
+                    </Box>
+                )} */}
             </Flex>
             <Flex
                 zIndex={2}
@@ -172,6 +188,7 @@ export default function EventCard({
                     fontWeight="semibold"
                     px="2"
                     py="0.5"
+                    shadow="base"
                     bg="white"
                 >
                     {event.category.event_type}
@@ -179,12 +196,17 @@ export default function EventCard({
                 <Box
                     rounded="full"
                     fontSize="10px"
+                    shadow="base"
                     fontWeight="semibold"
                     px="2"
                     py="0.5"
                     bg="white"
                 >
-                    {Array(event.category.category).join(' & ')}
+                    {event.category.inviteOnly
+                        ? [...event.category.category, 'Invite Only'].join(
+                              ' & '
+                          )
+                        : Array(event.category.category).join(' & ')}
                 </Box>
             </Flex>
             <AspectRatio ratio={428.42 / 180.98} w="full" bg="gray.100">

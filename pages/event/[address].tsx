@@ -21,6 +21,7 @@ const Event: NextPage = () => {
         category: {
             event_type: '',
             category: [''],
+            inviteOnly: false,
         },
         image: {
             image: '',
