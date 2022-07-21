@@ -358,7 +358,6 @@ export default function EventLayout({ event }: { event: Event }) {
                     wallet?.address?.substring(wallet?.address?.length - 4)
         )
         const uri = await generateMetadata(event, img)
-        console.log(uri)
 
         const transactionInstruction = createMintTicketInstruction(accounts, {
             uri:
@@ -455,7 +454,6 @@ export default function EventLayout({ event }: { event: Event }) {
                 console.log(event.link)
             } else {
                 const declink = decryptLink(event.link as string)
-                console.log(declink, 'decrypted link')
                 setEventLink(declink)
             }
         }

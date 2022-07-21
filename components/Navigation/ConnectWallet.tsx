@@ -10,7 +10,6 @@ import { WalletType } from '../../utils/walletContext'
 
 export const ConnectWallet = ({
     children,
-    noFullSize,
     redirectToWelcome,
     noToast,
     setWallet,
@@ -18,8 +17,6 @@ export const ConnectWallet = ({
     setBalance,
     setWalletType,
     onClose,
-    isOpen,
-    onOpen,
 }: {
     children: React.ReactNode
     noFullSize?: boolean
@@ -37,16 +34,12 @@ export const ConnectWallet = ({
     const { visible, setVisible } = useWalletModal()
     const [clicked, setClicked] = useState(false)
     const [fire, setFire] = useState(false)
-    // console.log('p', publicKey.toBase58())
-    // const [domain] = useDomain('SOL', publicKey?.toString() || null)
     let domain: any = null
     console.log(domain)
     const router = useRouter()
-    // const test = useWa
     const balance = useUserSOLBalanceStore((s) => s.balance)
 
     useEffect(() => {
-        console.log(domain)
         const req =
             !publicKey &&
             SolanaWallet &&

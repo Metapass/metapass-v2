@@ -81,7 +81,9 @@ export default function NavigationBar({ mode = 'dark' }) {
         )
 
     const [_, setWeb3] = useContext(web3Context)
-    const [walletType, setWalletType] = useState<string>('')
+    const [walletType, setWalletType] = useState<'mm' | 'wc' | 'sol' | null>(
+        null
+    )
     const { connect: connectMM } = useConnect({
         connector: new InjectedConnector(),
     })
@@ -141,20 +143,9 @@ export default function NavigationBar({ mode = 'dark' }) {
 
     async function loadAccounts() {
         if (isConnected && addy) {
-            if (chain != env ? evmChain.polygon : evmChain.polygonMumbai) {
-                if (switchNetwork) {
-                    switchNetwork(chainid)
-                }
+            if (chain?.id == chainid) {
+                setWalletType('mm')
             }
-            setBalance(data?.formatted as string)
-            setAddress(addy as string)
-            setWallet({
-                balance: data?.formatted as string,
-                address: addy as string,
-                type: 'mm',
-                chain: 'POLYGON',
-                domain: null,
-            })
         } else {
             connectMM()
         }
@@ -163,41 +154,55 @@ export default function NavigationBar({ mode = 'dark' }) {
     const handleWalletConnect = async () => {
         if (!isConnected) {
             connectWC()
-            if (chain == env ? evmChain.polygon : evmChain.polygonMumbai) {
-                setAddress(addy as string)
-                setBalance(data?.formatted as string)
-                setWallet({
-                    balance: data?.formatted as string,
-                    address: addy as string,
-                    type: 'wc',
-                    domain: null,
-                    chain: 'POLYGON',
-                })
-            } else if (chain?.id != chainid) {
-                switchNetwork && switchNetwork(chainid)
-            }
         } else {
-            onClose1()
-            setWalletType('wc')
             if (chain?.id != chainid) {
-                switchNetwork && switchNetwork(chainid)
                 toast.error('Please switch to Polygon Mainnet in your Wallet', {
                     position: 'bottom-center',
                     id: 'switch9',
                 })
+            } else {
+                onClose1()
+                setWalletType('wc')
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (isConnected) {
+            if (chain?.id != chainid) {
+                switchNetwork && switchNetwork(chainid)
             } else {
                 setAddress(addy as string)
                 setBalance(data?.formatted as string)
                 setWallet({
                     balance: data?.formatted as string,
                     address: addy as string,
-                    type: 'wc',
                     domain: null,
+                    type: walletType,
                     chain: 'POLYGON',
                 })
             }
         }
-    }
+    }, [isConnected])
+
+    useEffect(() => {
+        if (isConnected) {
+            if (chainid == chain?.id) {
+                setAddress(addy as string)
+                setBalance(data?.formatted as string)
+                setWallet({
+                    balance: data?.formatted as string,
+                    address: addy as string,
+                    domain: null,
+                    type: 'wc',
+                    chain: 'POLYGON',
+                })
+            } else {
+                wallet.chain == 'POLYGON' ? disconnectEVM() : null
+            }
+        }
+    }, [chain])
+
     const disconnectEVM = async () => {
         if (isConnected) {
             disconnect()
@@ -257,44 +262,6 @@ export default function NavigationBar({ mode = 'dark' }) {
             onClose1()
         }
     }, [address, onClose1, isOpen1])
-
-    useEffect(() => {
-        if (wcProvider) {
-            wcProvider.on('chainChanged', (chainId: number) => {
-                if (
-                    String(chainId) !== web3.utils.toHex(chainid as string) &&
-                    walletType === 'wc'
-                ) {
-                    toast.error('Please switch to Polygon Mainnet', {
-                        id: 'switched6',
-                    })
-                }
-            })
-        }
-        let windowType = window
-        if (walletType === 'mm') {
-            windowType.ethereum.on('chainChanged', async (chainId: number) => {
-                if (
-                    String(chainId) !== web3.utils.toHex(chainid as string) &&
-                    walletType === 'mm'
-                ) {
-                    toast.error('Please switch to Polygon Mainnet', {
-                        id: 'switched1',
-                        position: 'top-center',
-                        duration: Infinity,
-                    })
-                }
-                loadAccounts()
-            })
-        }
-    }, [walletType, wcProvider, chainid, web3.utils])
-
-    // useEffect(() => {
-    //     let confirmation = localStorage.getItem('Autoconnect')
-    //     if (confirmation === 'true') {
-    //         loadAccounts()
-    //     }
-    // }, [walletType])
 
     return (
         <>
