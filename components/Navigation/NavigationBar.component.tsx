@@ -750,7 +750,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                                         pl="1.5"
                                         _hover={{ bg: 'blackAlpha.600' }}
                                         _focus={{}}
-                                        // _active={{ bg: "blackAlpha.700" }}
 
                                         fontWeight="normal"
                                         leftIcon={
@@ -843,9 +842,10 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     <MenuDivider color="blackAlpha.200" />
                                     <MenuItem
                                         onClick={() => {
-                                            walletType === 'wc'
-                                                ? disconnectWc()
-                                                : disconnectMetaMask()
+                                            // walletType === 'wc'
+                                            //     ? disconnectWc()
+                                            //     : disconnectMetaMask()
+                                            supabase.auth.signOut()
                                         }}
                                         fontSize="sm"
                                         icon={<IoIosLogOut size="20px" />}

@@ -20,6 +20,7 @@ import { supabase } from '../../lib/config/supabaseConfig'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
+import { MdEmail } from 'react-icons/md'
 
 const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
     isOpen,
@@ -106,15 +107,22 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                         />
                         <Button
                             bg="brand.gradient"
-                            w="32"
-                            rounded="full"
+                            w="64"
+                            rounded="md"
                             _hover={{}}
                             _focus={{}}
                             _active={{}}
                             textColor="white"
                             onClick={sendEmailLink}
                             isLoading={isLoading}
+                            gap="2"
+                            alignItems="center"
+                            as={motion.button}
+                            whileHover={{ scale: 0.99 }}
+                            whileTap={{ scale: 1.01 }}
+                            transitionDuration="25ms"
                         >
+                            <MdEmail size={22} />
                             Continue
                         </Button>
                         <Text
