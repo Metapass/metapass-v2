@@ -131,8 +131,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                 address: utils.getAddress(accounts[0]),
                 type: 'mm',
             })
-        } catch (error) {
-        }
+        } catch (error) {}
     }
 
     async function loadAccounts() {
@@ -151,7 +150,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                 address: utils.getAddress(accounts[0]),
                 type: 'mm',
             })
-            localStorage.setItem('Autoconnect', 'true')
             setWalletType('mm')
         } else {
             try {
@@ -177,8 +175,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                             params: [polygon.addData],
                         })
                         getAccountData({ accounts, windowType })
-                    } catch (addError) {
-                    }
+                    } catch (addError) {}
                 } else {
                 }
             }
@@ -194,7 +191,6 @@ export default function NavigationBar({ mode = 'dark' }) {
         try {
             await wcProvider.enable()
             setWalletType('wc')
-            //  Create Web3 instance
             const web3 = new Web3(wcProvider as any)
             window.w3 = web3
             setWeb3(web3)
@@ -219,8 +215,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                     id: 'switch9',
                 })
             }
-        } catch (e) {
-        }
+        } catch (e) {}
     }
     const disconnectMetaMask = async () => {
         let windowType = window
@@ -322,12 +317,6 @@ export default function NavigationBar({ mode = 'dark' }) {
     }, [walletType, wcProvider, chainid, web3.utils])
 
     useEffect(() => {
-        let confirmation = localStorage.getItem('Autoconnect')
-        if (confirmation === 'true') {
-            loadAccounts()
-        }
-    }, [walletType])
-    useEffect(() => {
         if (address) {
             getAllEnsLinked(wallet.address || address)
                 .then((data) => {
@@ -345,8 +334,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                         })
                     }
                 })
-                .catch((err) => {
-                })
+                .catch((err) => {})
         }
     }, [address, wallet.address])
     useEffect(() => {
