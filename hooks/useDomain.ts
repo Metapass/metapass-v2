@@ -50,16 +50,20 @@ const resolveDomains = async (chain: Chain, address: string | null) => {
                 if (!window.solana || !address) return
 
                 const { data } = await axios(
-                    `https://api.helius.xyz/v0/addresses/DZFbytJWS5BMgaaJQ3LFvqMcm6mqaKqorgT7ZbhDHGY8/names?api-key=${process.env.NEXT_PUBLIC_HELIUS_KEY}`,
+                    `https://api.shyft.to/sol/v1/wallet/get_domains?network=mainnet-beta&wallet=${address}`,
                     {
                         method: 'GET',
+                        headers: {
+                            'x-api-key': process.env
+                                .NEXT_PUBLIC_SHYFT_KEY as string,
+                        },
                     }
                 )
 
-                const accounts = data?.domainNames as Array<string>
+                const accounts = data?.result
                 console.log(accounts)
                 if (accounts.length > 0) {
-                    return { domain: accounts[0], loading: false }
+                    return { domain: accounts[0].name, loading: false }
                 } else {
                     return { domain: null, loading: false }
                 }

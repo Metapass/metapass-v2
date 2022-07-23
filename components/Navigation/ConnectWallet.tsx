@@ -72,7 +72,7 @@ export const ConnectWallet = ({
                         address: publicKey.toString(),
                         balance: b?.toString()!,
                         type: 'sol',
-                        domain: d?.domain + '.sol' ?? null,
+                        domain: d?.domain ?? null,
                         chain: 'SOL',
                     })
 

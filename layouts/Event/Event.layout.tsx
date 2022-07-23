@@ -71,7 +71,7 @@ import {
 } from '@solana/spl-token'
 import { Connection, clusterApiUrl } from '@solana/web3.js'
 import SignUpModal from '../../components/Modals/SignUp.modal'
-import { useDomain } from '../../hooks/useDomain'
+import resolveDomains from '../../hooks/useDomain'
 import axios from 'axios'
 import { generateMetadata } from '../../utils/generateMetadata'
 import { useAccount, useSigner } from 'wagmi'
@@ -98,7 +98,6 @@ export default function EventLayout({ event }: { event: Event }) {
     const solanaWallet = useWallet()
     const connection = new Connection(clusterApiUrl(network ?? 'devnet'))
 
-    const [domain] = useDomain(event.isSolana ? 'SOL' : 'POLYGON', event.owner)
     const [explorerLink, setExplorerLink] = useState<string>('')
     let opensea =
         process.env.NEXT_PUBLIC_ENV === 'dev'
@@ -444,8 +443,15 @@ export default function EventLayout({ event }: { event: Event }) {
         }
     }, [])
     useEffect(() => {
-        domain && setEnsName(domain as string)
-    }, [domain, event.owner])
+        const resolve = async () => {
+            const domain = await resolveDomains(
+                wallet.chain === 'SOL' ? 'SOL' : 'POLYGON',
+                event.owner
+            )
+            domain && setEnsName(domain?.domain as string)
+        }
+        resolve()
+    }, [event.owner])
 
     useEffect(() => {
         if (event.link) {

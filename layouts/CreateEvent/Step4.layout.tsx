@@ -27,7 +27,7 @@ import { walletContext, WalletType } from '../../utils/walletContext'
 import { encryptLink } from '../../utils/linkResolvers'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
-import { useDomain } from '../../hooks/useDomain'
+import resolveDomains from '../../hooks/useDomain'
 
 export default function Step4({
     event,
@@ -40,12 +40,16 @@ export default function Step4({
     const [_link, setLink] = useState<string>('')
     const [ensName, setEnsName] = useState<string>('')
     const [huddle, setHuddle] = useState(true)
-    const [domain] = useDomain(
-        wallet.chain === 'SOL' ? 'SOL' : 'POLYGON',
-        event.owner
-    )
+
     useEffect(() => {
-        domain && setEnsName(domain)
+        const resolve = async () => {
+            const domain = await resolveDomains(
+                wallet.chain === 'SOL' ? 'SOL' : 'POLYGON',
+                event.owner
+            )
+            domain && setEnsName(domain?.domain as string)
+        }
+        resolve()
     }, [event.owner])
 
     return (
