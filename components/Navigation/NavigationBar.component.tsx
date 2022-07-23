@@ -51,7 +51,7 @@ import { utils } from 'ethers'
 import { auth } from '../../utils/firebaseUtils'
 import { onAuthStateChanged, User } from 'firebase/auth'
 import { FaBars } from 'react-icons/fa'
-import { useDomain } from '../../hooks/useDomain'
+// import { useDomain } from '../../hooks/useDomain'
 import { ConnectWallet } from './ConnectWallet'
 import {
     useAccount,
@@ -65,6 +65,7 @@ import {
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { chain as evmChain } from 'wagmi'
+import useMultichainDisconnect from '../../hooks/useMultichainDisconnect'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
@@ -102,7 +103,7 @@ export default function NavigationBar({ mode = 'dark' }) {
     const { data } = useBalance({
         addressOrName: addy,
     })
-    const { disconnect } = useDisconnect()
+    const { multichainDisconnector } = useMultichainDisconnect(wallet.chain)
 
     const [showMyEvents, setMyEvents] = useState(false)
     const {
@@ -198,14 +199,19 @@ export default function NavigationBar({ mode = 'dark' }) {
                     chain: 'POLYGON',
                 })
             } else {
-                wallet.chain == 'POLYGON' ? disconnectEVM() : null
+                wallet.chain == 'POLYGON' ? disconnectWallet() : null
             }
         }
     }, [chain])
 
-    const disconnectEVM = async () => {
-        if (isConnected) {
-            disconnect()
+    const disconnectWallet = async () => {
+        console.log('Disconnecting wallet')
+        if (
+            isConnected ||
+            window?.solana?.isConnected ||
+            window?.solana?.isPhantom
+        ) {
+            multichainDisconnector()
             setBalance('')
             setAddress('')
             setWallet({
@@ -219,18 +225,18 @@ export default function NavigationBar({ mode = 'dark' }) {
         }
     }
 
-    const disconnectSolana = async () => {
-        await window.solana.disconnect()
-        setBalance('')
-        setAddress('')
-        setWallet({
-            balance: '',
-            address: '',
-            type: null,
-            domain: '',
-            chain: null,
-        })
-    }
+    // const disconnectSolana = async () => {
+    //     await window.solana.disconnect()
+    //     setBalance('')
+    //     setAddress('')
+    //     setWallet({
+    //         balance: '',
+    //         address: '',
+    //         type: null,
+    //         domain: '',
+    //         chain: null,
+    //     })
+    // }
     useEffect(() => {
         if (isOpen1 && wallet.type) {
             const slug =
@@ -627,11 +633,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                 </MenuItem>
                                 <MenuDivider color="blackAlpha.200" />
                                 <MenuItem
-                                    onClick={
-                                        wallet.chain === 'SOL'
-                                            ? disconnectSolana
-                                            : disconnectEVM
-                                    }
+                                    onClick={disconnectWallet}
                                     fontSize="sm"
                                     icon={<IoIosLogOut size="20px" />}
                                     color="red.500"
@@ -820,9 +822,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     </MenuItem>
                                     <MenuDivider color="blackAlpha.200" />
                                     <MenuItem
-                                        onClick={() => {
-                                            disconnectEVM()
-                                        }}
+                                        onClick={disconnectWallet}
                                         fontSize="sm"
                                         icon={<IoIosLogOut size="20px" />}
                                         color="red.500"

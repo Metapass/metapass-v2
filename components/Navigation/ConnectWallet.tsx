@@ -4,8 +4,9 @@ import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { useRouter } from 'next/router'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useDomain } from '../../hooks/useDomain'
-import useUserSOLBalanceStore from '../../utils/useUserSOLBalanceStore'
+import resolveDomains from '../../hooks/useDomain'
+import resolveBalance from '../../hooks/useSolBalance'
+
 import { WalletType } from '../../utils/walletContext'
 
 export const ConnectWallet = ({
@@ -34,61 +35,57 @@ export const ConnectWallet = ({
     const { visible, setVisible } = useWalletModal()
     const [clicked, setClicked] = useState(false)
     const [fire, setFire] = useState(false)
-    let domain: any = null
-    console.log(domain)
+    // const [domain] = useDomain('SOL', publicKey?.toBase58()!)
     const router = useRouter()
-    const balance = useUserSOLBalanceStore((s) => s.balance)
+    // const [balanceState, setBalanceState] = useState(0)
 
     useEffect(() => {
-        const req =
-            !publicKey &&
-            SolanaWallet &&
-            SolanaWallet.readyState === 'Installed' &&
-            clicked
-        if (req) {
-            try {
-                connect()
-            } catch (e) {
-                console.error(e)
+        async function fetchValues() {
+            const req =
+                !publicKey &&
+                SolanaWallet &&
+                SolanaWallet.readyState === 'Installed' &&
+                clicked
+            if (req) {
+                try {
+                    connect()
+                } catch (e) {
+                    console.error(e)
+                }
+                return
             }
-            return
+            if (publicKey) {
+                onClose()
+
+                const b = await resolveBalance(publicKey?.toBase58())
+                const d = await resolveDomains('SOL', publicKey?.toBase58()!)
+                console.log(`User Balance: ${b}`)
+                if (!noToast) toast.success('Connected to Solana wallet')
+                if (redirectToWelcome) router.push(`/welcome/${publicKey}`)
+
+                if (setAddress) setAddress(publicKey.toString())
+
+                if (setBalance) setBalance(b?.toString())
+
+                if (setWallet)
+                    setWallet({
+                        address: publicKey.toString(),
+                        balance: b?.toString()!,
+                        type: 'sol',
+                        domain: d?.domain + '.sol' ?? null,
+                        chain: 'SOL',
+                    })
+
+                if (setWalletType) setWalletType('sol')
+            }
         }
-        if (publicKey) {
-            console.log(`User Public Key: ${publicKey}`, domain)
-
-            if (!noToast) toast.success('Connected to Solana wallet')
-            if (redirectToWelcome) router.push(`/welcome/${publicKey}`)
-
-            if (setAddress) setAddress(publicKey.toString())
-
-            if (setBalance) setBalance(balance.toString())
-
-            if (setWallet)
-                setWallet({
-                    address: publicKey.toString(),
-                    balance: balance.toString(),
-                    type: 'sol',
-                    domain: domain ?? null,
-                    chain: 'SOL',
-                })
-
-            if (setWalletType) setWalletType('sol')
-            onClose()
-        }
-    }, [
-        SolanaWallet,
-        visible,
-        publicKey,
-        redirectToWelcome,
-        clicked,
-        fire,
-        domain,
-    ])
+        fetchValues()
+    }, [SolanaWallet, visible, publicKey, redirectToWelcome, clicked, fire])
 
     const handleConnect = () => {
         setClicked(true)
         if (SolanaWallet) return
-        console.log('Solana Wallet retrieved', SolanaWallet, domain)
+        console.log('Solana Wallet retrieved', SolanaWallet)
         setVisible(true)
     }
 
