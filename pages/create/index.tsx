@@ -447,9 +447,8 @@ const Create: NextPage = () => {
                             date: event.date,
                             venue: event.type,
                             isCutPayedByCreator: true,
-                            isCustomSplToken: event.customSPLToken
-                                ? true
-                                : false,
+                            isCustomSplToken:
+                                event.customSPLToken !== '' ? true : false,
                             customSplToken: CST,
                         },
                     }
@@ -535,9 +534,8 @@ const Create: NextPage = () => {
                             date: event.date,
                             venue: event.type,
                             isCutPayedByCreator: true,
-                            isCustomSplToken: event.customSPLToken
-                                ? true
-                                : false,
+                            isCustomSplToken:
+                                event.customSPLToken !== '' ? true : false,
                             customSplToken: CST,
                         },
                     }
