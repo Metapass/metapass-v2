@@ -62,6 +62,7 @@ import {
 } from 'metapass-sdk'
 import toast from 'react-hot-toast'
 import { MetapassProgram } from '../../types/MetapassProgram.types'
+import { useAccount } from 'wagmi'
 declare const window: any
 
 const Create: NextPage = () => {
@@ -113,7 +114,7 @@ const Create: NextPage = () => {
     const [contract, setContract] = useState<any>()
 
     // let contract: any
-    let program: anchor.Program<MetapassProgram>
+    const [program, setProgram] = useState<anchor.Program<MetapassProgram>>()
     const [eventLink, setEventLink] = useState<any>(undefined)
     const [txnId, setTxnId] = useState<string | null>(null)
     const [isPublished, setIsPublished] = useState(false)
@@ -131,13 +132,11 @@ const Create: NextPage = () => {
         })
     }, [wallet])
 
+    const { isConnected } = useAccount()
+
     useEffect(() => {
         try {
-            if (
-                window.ethereum !== undefined &&
-                contractAddress &&
-                wallet.chain === 'POLYGON'
-            ) {
+            if (isConnected) {
                 const provider =
                     multichainProvider as ethers.providers.Web3Provider
                 const signer = provider?.getSigner()
@@ -156,12 +155,12 @@ const Create: NextPage = () => {
                     PROGRAM_ID,
                     provider
                 ) as unknown
-                program = prog as anchor.Program<MetapassProgram>
+                setProgram(prog as any)
             }
         } catch (error) {
             console.log(error)
         }
-    }, [contractAddress])
+    }, [wallet])
 
     const onPolygonSubmit = async () => {
         setInTxn(true)
@@ -356,6 +355,7 @@ const Create: NextPage = () => {
 
     const onSolanaSubmit = async () => {
         const wallet = solanaWallet
+        console.log(wallet.publicKey, program)
         const connection = new Connection(
             clusterApiUrl(
                 process.env.NEXT_PUBLIC_ENV == 'prod'
