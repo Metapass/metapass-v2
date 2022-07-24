@@ -68,6 +68,7 @@ const Create: NextPage = () => {
     const [wallet] = useContext<WalletType[]>(walletContext)
     const solanaWallet = useWallet()
     const [step, setStep] = useState(0)
+    const [isSolHost, setIsSolHost] = useState<Boolean>(true)
     const [event, setEvent] = useState<Event>({
         id: '',
         title: '',
@@ -330,6 +331,29 @@ const Create: NextPage = () => {
         }
     }
 
+    useEffect(() => {
+        ;(async function () {
+            const connection = new Connection(
+                clusterApiUrl(
+                    process.env.NEXT_PUBLIC_ENV == 'prod'
+                        ? 'mainnet-beta'
+                        : 'mainnet-beta'
+                )
+            )
+            if (solanaWallet.publicKey) {
+                const [hostPDA, hostBump] = await PublicKey.findProgramAddress(
+                    [
+                        anchor.utils.bytes.utf8.encode('event-host-key'),
+                        solanaWallet.publicKey.toBuffer(),
+                    ],
+                    PROGRAM_ID
+                )
+                let hostExist = await connection.getAccountInfo(hostPDA)
+                setIsSolHost(!(hostExist == null))
+            }
+        })()
+    }, [solanaWallet.publicKey])
+
     const onSolanaSubmit = async () => {
         const wallet = solanaWallet
         const connection = new Connection(
@@ -351,9 +375,7 @@ const Create: NextPage = () => {
                 ],
                 PROGRAM_ID
             )
-            console.log('host', hostPDA.toString(), program)
             let hostExist = await connection.getAccountInfo(hostPDA)
-            console.log(hostExist, 'hoste')
             if (hostExist == null) {
                 try {
                     const accounts1: InitializeHostInstructionAccounts = {
@@ -765,10 +787,9 @@ const Create: NextPage = () => {
                                         ...formDetails,
                                         isSolana: wallet.chain === 'SOL',
                                     })
-
                                     setStep(1)
                                 }}
-                                systemWallet={wallet}
+                                isSolHost={isSolHost}
                             />
                         </Box>
                         <Box display={step === 1 ? 'block' : 'none'}>
