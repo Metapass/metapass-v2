@@ -45,16 +45,10 @@ import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
 
 import { decryptLink } from '../../utils/linkResolvers'
-import {
-    doc,
-    isSignInWithEmailLink,
-    signInWithEmailLink,
-} from '../../utils/firebaseUtils'
+
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import { Biconomy } from '@biconomy/mexa'
-import { db, setDoc } from '../../utils/firebaseUtils'
-import { onAuthStateChanged, User } from 'firebase/auth'
 import { auth } from '../../utils/firebaseUtils'
 import { useWallet } from '@solana/wallet-adapter-react'
 import * as web3 from '@solana/web3.js'
@@ -75,6 +69,7 @@ import resolveDomains from '../../hooks/useDomain'
 import axios from 'axios'
 import { generateMetadata } from '../../utils/generateMetadata'
 import { useAccount, useSigner } from 'wagmi'
+import { supabase } from '../../lib/config/supabaseConfig'
 
 declare const window: any
 
@@ -119,20 +114,16 @@ export default function EventLayout({ event }: { event: Event }) {
         'DEC',
     ]
 
-    const [user, setUser] = useState<User | null | undefined>(undefined)
     const [toOpen, setToOpen] = useState<boolean>(false)
 
-    onAuthStateChanged(auth, (user) => {
-        user ? setUser(user) : setUser(null)
-    })
+    const user = supabase.auth.user()
 
     useEffect(() => {
         const addUser = async () => {
             if (user && wallet.address) {
-                const docRef = doc(db, 'users', wallet.address)
-                await setDoc(docRef, {
-                    email: user?.email,
-                })
+                const { data, error } = await supabase
+                    .from('users')
+                    .insert([{ address: wallet.address, email: user.email }])
             }
         }
 
@@ -424,24 +415,7 @@ export default function EventLayout({ event }: { event: Event }) {
             )
         }
     }
-    useEffect(() => {
-        if (typeof window !== undefined) {
-            if (isSignInWithEmailLink(auth, window.location.href!)) {
-                let email = window.localStorage.getItem('emailForSignIn')
-                if (!email) {
-                    toast.error('Could not get email', {
-                        id: 'error10',
-                        duration: 5000,
-                    })
-                }
-                signInWithEmailLink(auth, email as string, window.location.href)
-                    .then((result) => {
-                        window?.localStorage.removeItem('emailForSignIn')
-                    })
-                    .catch((error) => {})
-            }
-        }
-    }, [])
+
     useEffect(() => {
         const resolve = async () => {
             const domain = await resolveDomains(

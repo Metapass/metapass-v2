@@ -49,8 +49,6 @@ declare const window: any
 import BoringAva from '../../utils/BoringAva'
 import { utils } from 'ethers'
 import { auth } from '../../utils/firebaseUtils'
-import { onAuthStateChanged, User } from 'firebase/auth'
-import { FaBars } from 'react-icons/fa'
 // import { useDomain } from '../../hooks/useDomain'
 import { ConnectWallet } from './ConnectWallet'
 import {
@@ -66,16 +64,20 @@ import { InjectedConnector } from 'wagmi/connectors/injected'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { chain as evmChain } from 'wagmi'
 import useMultichainDisconnect from '../../hooks/useMultichainDisconnect'
+import LogRocket from 'logrocket'
+
+import { FaBars } from 'react-icons/fa'
+import { getAllowedList } from '../../utils/sendToAirtable'
+
+import { supabase } from '../../lib/config/supabaseConfig'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
 
     const [balance, setBalance] = useState<string>('')
 
-    const [user, setUser] = useState<User>()
-    onAuthStateChanged(auth, (user) => {
-        setUser(user as User)
-    })
+       const user = supabase.auth.user()
+       
     const [wallet, setWallet] =
         useContext<[WalletType, Dispatch<SetStateAction<WalletType>>]>(
             walletContext
@@ -142,14 +144,84 @@ export default function NavigationBar({ mode = 'dark' }) {
         },
     ]
 
+    async function _allowedList() {
+        const res = await getAllowedList()
+        let data: any = []
+        res.forEach((record: any) => {
+            data.push(record.fields.Address)
+        })
+        setAllowedList(data)
+    }
+
+    useEffect(() => {
+        _allowedList()
+    }, [])
+
+    async function getAccountData({ accounts, windowType }: any) {
+        try {
+            accounts = await windowType.ethereum.request({
+                method: 'eth_requestAccounts',
+            })
+            setAddress(accounts[0])
+            let bal = await web3.eth.getBalance(accounts[0])
+            let ethBal: any = await web3.utils.fromWei(bal, 'ether')
+            setBalance(ethBal)
+
+            setWallet({
+                balance: ethBal,
+                address: utils.getAddress(accounts[0]),
+                type: 'mm',
+            })
+        } catch (error) {}
+    }
+
     async function loadAccounts() {
-        if (isConnected && addy) {
-            if (chain?.id == chainid) {
-                setWalletType('mm')
-            }
+        let windowType = window
+        let accounts = await windowType.ethereum.request({
+            method: 'eth_requestAccounts',
+        })
+
+        if (windowType.ethereum.chainId == chainid) {
+            setAddress(accounts[0])
+            let bal = await web3.eth.getBalance(accounts[0])
+            let ethBal: any = await web3.utils.fromWei(bal, 'ether')
+            setBalance(ethBal)
+            setWallet({
+                balance: ethBal,
+                address: utils.getAddress(accounts[0]),
+                type: 'mm',
+            })
+            localStorage.setItem('Autoconnect', 'true')
+            setWalletType('mm')
         } else {
-            connectMM()
-        }
+            try {
+                await windowType.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [
+                        {
+                            chainId: web3.utils.toHex(chainid as string),
+                        },
+                    ],
+                })
+                toast.success('Switched to Polygon Mainnet', {
+                    id: 'switched1',
+                    position: 'top-center',
+                    duration: 3000,
+                })
+                getAccountData({ accounts, windowType })
+            } catch (switchError: any) {
+                if (switchError.code === 4902) {
+                    try {
+                        await windowType.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [polygon.addData],
+                        })
+                        getAccountData({ accounts, windowType })
+                    } catch (addError) {}
+                } else {
+                }
+            }
+        } 
     }
 
     const handleWalletConnect = async () => {
@@ -729,14 +801,16 @@ export default function NavigationBar({ mode = 'dark' }) {
                                         pl="1.5"
                                         _hover={{ bg: 'blackAlpha.600' }}
                                         _focus={{}}
-                                        // _active={{ bg: "blackAlpha.700" }}
 
                                         fontWeight="normal"
                                         leftIcon={
-                                            user ? (
+                                            user?.user_metadata?.avatar_url ? (
                                                 <Avatar
                                                     size="sm"
-                                                    src={user?.photoURL!}
+                                                    src={
+                                                        user?.user_metadata
+                                                            ?.avatar_url
+                                                    }
                                                 />
                                             ) : (
                                                 <BoringAva
@@ -822,7 +896,16 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     </MenuItem>
                                     <MenuDivider color="blackAlpha.200" />
                                     <MenuItem
+<<<<<<< HEAD
                                         onClick={disconnectWallet}
+=======
+                                        onClick={() => {
+                                            // walletType === 'wc'
+                                            //     ? disconnectWc()
+                                            //     : disconnectMetaMask()
+                                            supabase.auth.signOut()
+                                        }}
+>>>>>>> origin/@supabase
                                         fontSize="sm"
                                         icon={<IoIosLogOut size="20px" />}
                                         color="red.500"

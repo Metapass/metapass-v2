@@ -38,7 +38,7 @@ import { ethers } from 'ethers'
 import abi from '../../utils/MetapassFactory.json'
 import MetapassABI from '../../utils/Metapass.json'
 import axios from 'axios'
-import { db, doc, setDoc } from '../../utils/firebaseUtils'
+import { supabase } from '../../lib/config/supabaseConfig'
 
 import { useMultichainProvider } from '../../hooks/useMultichainProvider'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
@@ -223,8 +223,12 @@ const Create: NextPage = () => {
                             },
                         })
                     }
-                    const ref = doc(db, 'events', child)
-                    await setDoc(ref, {})
+                    const { data, error } = await supabase
+                        .from('events')
+                        .insert({
+                            contractAddress: child,
+                            inviteOnly: false,
+                        })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
                     setInTxn(false)
@@ -317,8 +321,12 @@ const Create: NextPage = () => {
                             )
                         } catch (e) {}
                     }
-                    const ref = doc(db, 'events', child)
-                    await setDoc(ref, {})
+                    const { data, error } = await supabase
+                        .from('events')
+                        .insert({
+                            contractAddress: child,
+                            inviteOnly: false,
+                        })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
                     setInTxn(false)
