@@ -529,6 +529,7 @@ const Create: NextPage = () => {
                         event.customSPLToken ||
                             'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
                     )
+
                     const transactionData = {
                         createEventInfo: {
                             title: event.title,
