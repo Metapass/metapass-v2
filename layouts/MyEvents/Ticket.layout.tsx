@@ -5,7 +5,7 @@ declare const window: any
 import abi from '../../utils/Metapass.json'
 import { TicketType } from '../../types/Ticket.type'
 import GenerateQR from '../../utils/generateQR'
-import { DocumentData } from 'firebase/firestore'
+
 import { supabase } from '../../lib/config/supabaseConfig'
 export default function TicketLayout({
     image,
@@ -108,7 +108,6 @@ export default function TicketLayout({
                         textAlign="center"
                         p={2}
                         noOfLines={2}
-                        isTruncated
                     >
                         {ticket.event.title}
                     </Text>

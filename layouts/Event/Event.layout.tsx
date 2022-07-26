@@ -49,7 +49,7 @@ import { decryptLink } from '../../utils/linkResolvers'
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import { Biconomy } from '@biconomy/mexa'
-import { auth } from '../../utils/firebaseUtils'
+
 import { useWallet } from '@solana/wallet-adapter-react'
 import * as web3 from '@solana/web3.js'
 import {
@@ -85,7 +85,7 @@ export default function EventLayout({ event }: { event: Event }) {
     const { hasCopied, value, onCopy } = useClipboard(eventLink as string)
     const [hasBought, setHasBought] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [ensName, setEnsName] = useState<string>('wjdwijwnfwjkfjwsnfjwkjf')
+    const [ensName, setEnsName] = useState<string | null>(null)
     const [openseaLink, setToOpenseaLink] = useState<string>('')
     const [qrId, setQrId] = useState<string>('')
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -244,184 +244,210 @@ export default function EventLayout({ event }: { event: Event }) {
                 }
             }
         } else {
-            toast('Please connect your wallet')
+            toast.error('Please connect your Polygon wallet', {
+                id: 'con-polygon',
+            })
         }
     }
     const buySolanaTicket = async () => {
-        const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey(
-            'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
-        )
-        const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID = new web3.PublicKey(
-            'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-        )
-        const customSPL = new web3.PublicKey(
-            event.customSPLToken ||
-                'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-        )
-        const getMetadata = async (
-            mint: web3.PublicKey
-        ): Promise<web3.PublicKey> => {
-            return (
-                await web3.PublicKey.findProgramAddress(
-                    [
-                        Buffer.from('metadata'),
-                        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-                        mint.toBuffer(),
-                    ],
-                    TOKEN_METADATA_PROGRAM_ID
-                )
-            )[0]
-        }
-
-        const getMasterEdition = async (
-            mint: web3.PublicKey
-        ): Promise<web3.PublicKey> => {
-            return (
-                await web3.PublicKey.findProgramAddress(
-                    [
-                        Buffer.from('metadata'),
-                        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-                        mint.toBuffer(),
-                        Buffer.from('edition'),
-                    ],
-                    TOKEN_METADATA_PROGRAM_ID
-                )
-            )[0]
-        }
-
-        const mint = web3.Keypair.generate()
-        const metadataAddress = await getMetadata(mint.publicKey)
-        const masterEdition = await getMasterEdition(mint.publicKey)
-        const NftTokenAccount: web3.PublicKey = await getAssociatedTokenAddress(
-            mint.publicKey,
-            solanaWallet.publicKey as web3.PublicKey
-        )
-        const hostPDA: web3.PublicKey = await getHostPDA(
-            new web3.PublicKey(event.eventHost)
-        )
-        const adminPDA: web3.PublicKey = await getAdminPDA()
-
-        const hostCustomSplTokenAta = await getAssociatedTokenAddress(
-            customSPL,
-            new web3.PublicKey(event.eventHost) // the receiver
-        )
-        const adminCustomSplTokenATA = await getAssociatedTokenAddress(
-            customSPL,
-            new web3.PublicKey('B641ooUCSG8ToLRki3YuxWMiNj6BS5c4eSM1rWcSazeV')
-        )
-        const senderCustomTokenATA: web3.PublicKey =
-            await getAssociatedTokenAddress(
-                customSPL,
-                solanaWallet.publicKey as web3.PublicKey
-            )
-        const accounts: MintTicketInstructionAccounts = {
-            mintAuthority: solanaWallet.publicKey as web3.PublicKey,
-            eventAccount: new web3.PublicKey(event.childAddress),
-            mint: mint.publicKey,
-            metadata: metadataAddress,
-            tokenAccount: NftTokenAccount,
-            tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-            payer: solanaWallet.publicKey as web3.PublicKey,
-            masterEdition: masterEdition,
-            eventHost: hostPDA,
-
-            eventHostKey: new web3.PublicKey(event.eventHost),
-            adminAccount: adminPDA,
-            adminKey: new web3.PublicKey(
-                'B641ooUCSG8ToLRki3YuxWMiNj6BS5c4eSM1rWcSazeV'
-            ),
-            customSplToken: customSPL,
-            customSplTokenProgram: TOKEN_PROGRAM_ID,
-            senderCustomSplTokenAta: senderCustomTokenATA,
-            hostCustomSplTokenAta: hostCustomSplTokenAta,
-            adminCustomTokenAta: adminCustomSplTokenATA,
-            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        }
-        const { img, fastimg } = await ticketToIPFS(
-            event.title,
-            event.tickets_sold + 1,
-            event.image.image,
-            event.date.split('T')[0],
-            wallet?.domain ||
-                wallet?.address?.substring(0, 4) +
-                    '...' +
-                    wallet?.address?.substring(wallet?.address?.length - 4)
-        )
-        const uri = await generateMetadata(event, img)
-
-        const transactionInstruction = createMintTicketInstruction(accounts, {
-            uri:
-                uri ||
-                'https://cdukzux2wfzaaxbnissg6emgojrtdxzw5klsqnpmqhcusvi.arweave.net/EOis0vqxcg_BcLUSkbxGG-c_mMx3zbq-lyg17IHFSVU',
-        })
-
-        const transaction = new web3.Transaction().add(transactionInstruction)
-        setIsLoading(true)
-        const { blockhash } = await connection.getLatestBlockhash()
-        transaction.recentBlockhash = blockhash
-        transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
-
-        if (solanaWallet.signTransaction) {
-            try {
-                transaction.sign(mint)
-                const signedTx = await solanaWallet.signTransaction(transaction)
-                const txid = await connection.sendRawTransaction(
-                    signedTx.serialize(),
-                    {
-                        preflightCommitment: 'recent',
-                    }
-                )
-                await axios.post(
-                    `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/buyTicket`,
-                    {
-                        eventPDA: event.childAddress,
-                        publicKey: solanaWallet.publicKey?.toString(),
-                    }
-                )
-
-                setExplorerLink(
-                    `https://solscan.io/tx/${txid}?cluster=${network}`
-                )
-
-                setMintedImage(fastimg)
-                setHasBought(true)
-                setIsLoading(false)
-                // await updateEventData(
-                //     event.childAddress,
-                //     wallet.publicKey?.toString() as string,
-                //     event.tickets_sold + 1
-                // )
-                // event.category.event_type == 'In-Person' &&
-                //     generateAndSendUUID(
-                //         event.childAddress,
-                //         wallet.publicKey?.toString() as string,
-                //         event.tickets_sold + 1,
-                //         chain
-                //     ).then((uuid) => {
-                //         setQrId(String(uuid))
-                //     })
-            } catch (error) {
-                const e = error as Error
-                toast.error(e.message)
-                console.log(
-                    'Error in sending txn, line 323, Event.layout.tsx',
-                    error
-                )
-                setIsLoading(false)
-            }
+        if (user === null) {
+            setToOpen(true)
         } else {
-            throw Error(
-                'signTransaction is undefined, line 205 create/index.tsx'
-            )
+            if (solanaWallet.publicKey && wallet.address) {
+                const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey(
+                    'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
+                )
+                const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID =
+                    new web3.PublicKey(
+                        'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+                    )
+                const customSPL = new web3.PublicKey(
+                    event.customSPLToken ||
+                        'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+                )
+                const getMetadata = async (
+                    mint: web3.PublicKey
+                ): Promise<web3.PublicKey> => {
+                    return (
+                        await web3.PublicKey.findProgramAddress(
+                            [
+                                Buffer.from('metadata'),
+                                TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                                mint.toBuffer(),
+                            ],
+                            TOKEN_METADATA_PROGRAM_ID
+                        )
+                    )[0]
+                }
+
+                const getMasterEdition = async (
+                    mint: web3.PublicKey
+                ): Promise<web3.PublicKey> => {
+                    return (
+                        await web3.PublicKey.findProgramAddress(
+                            [
+                                Buffer.from('metadata'),
+                                TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                                mint.toBuffer(),
+                                Buffer.from('edition'),
+                            ],
+                            TOKEN_METADATA_PROGRAM_ID
+                        )
+                    )[0]
+                }
+
+                const mint = web3.Keypair.generate()
+                const metadataAddress = await getMetadata(mint.publicKey)
+                const masterEdition = await getMasterEdition(mint.publicKey)
+                const NftTokenAccount: web3.PublicKey =
+                    await getAssociatedTokenAddress(
+                        mint.publicKey,
+                        solanaWallet.publicKey as web3.PublicKey
+                    )
+                const hostPDA: web3.PublicKey = await getHostPDA(
+                    new web3.PublicKey(event.eventHost)
+                )
+                const adminPDA: web3.PublicKey = await getAdminPDA()
+
+                const hostCustomSplTokenAta = await getAssociatedTokenAddress(
+                    customSPL,
+                    new web3.PublicKey(event.eventHost) // the receiver
+                )
+                const adminCustomSplTokenATA = await getAssociatedTokenAddress(
+                    customSPL,
+                    new web3.PublicKey(
+                        'B641ooUCSG8ToLRki3YuxWMiNj6BS5c4eSM1rWcSazeV'
+                    )
+                )
+                const senderCustomTokenATA: web3.PublicKey =
+                    await getAssociatedTokenAddress(
+                        customSPL,
+                        solanaWallet.publicKey as web3.PublicKey
+                    )
+                const accounts: MintTicketInstructionAccounts = {
+                    mintAuthority: solanaWallet.publicKey as web3.PublicKey,
+                    eventAccount: new web3.PublicKey(event.childAddress),
+                    mint: mint.publicKey,
+                    metadata: metadataAddress,
+                    tokenAccount: NftTokenAccount,
+                    tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+                    payer: solanaWallet.publicKey as web3.PublicKey,
+                    masterEdition: masterEdition,
+                    eventHost: hostPDA,
+
+                    eventHostKey: new web3.PublicKey(event.eventHost),
+                    adminAccount: adminPDA,
+                    adminKey: new web3.PublicKey(
+                        'B641ooUCSG8ToLRki3YuxWMiNj6BS5c4eSM1rWcSazeV'
+                    ),
+                    customSplToken: customSPL,
+                    customSplTokenProgram: TOKEN_PROGRAM_ID,
+                    senderCustomSplTokenAta: senderCustomTokenATA,
+                    hostCustomSplTokenAta: hostCustomSplTokenAta,
+                    adminCustomTokenAta: adminCustomSplTokenATA,
+                    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+                }
+                const { img, fastimg } = await ticketToIPFS(
+                    event.title,
+                    event.tickets_sold + 1,
+                    event.image.image,
+                    event.date.split('T')[0],
+                    wallet?.domain ||
+                        wallet?.address?.substring(0, 4) +
+                            '...' +
+                            wallet?.address?.substring(
+                                wallet?.address?.length - 4
+                            )
+                )
+                const uri = await generateMetadata(event, img)
+
+                const transactionInstruction = createMintTicketInstruction(
+                    accounts,
+                    {
+                        uri:
+                            uri ||
+                            'https://cdukzux2wfzaaxbnissg6emgojrtdxzw5klsqnpmqhcusvi.arweave.net/EOis0vqxcg_BcLUSkbxGG-c_mMx3zbq-lyg17IHFSVU',
+                    }
+                )
+
+                const transaction = new web3.Transaction().add(
+                    transactionInstruction
+                )
+                setIsLoading(true)
+                const { blockhash } = await connection.getLatestBlockhash()
+                transaction.recentBlockhash = blockhash
+                transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
+
+                if (solanaWallet.signTransaction) {
+                    try {
+                        transaction.sign(mint)
+                        const signedTx = await solanaWallet.signTransaction(
+                            transaction
+                        )
+                        const txid = await connection.sendRawTransaction(
+                            signedTx.serialize(),
+                            {
+                                preflightCommitment: 'recent',
+                            }
+                        )
+                        await axios.post(
+                            `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/buyTicket`,
+                            {
+                                eventPDA: event.childAddress,
+                                publicKey: solanaWallet.publicKey?.toString(),
+                            }
+                        )
+
+                        setExplorerLink(
+                            `https://solscan.io/tx/${txid}?cluster=${network}`
+                        )
+
+                        setMintedImage(fastimg)
+                        setHasBought(true)
+                        setIsLoading(false)
+                        // await updateEventData(
+                        //     event.childAddress,
+                        //     wallet.publicKey?.toString() as string,
+                        //     event.tickets_sold + 1
+                        // )
+                        // event.category.event_type == 'In-Person' &&
+                        //     generateAndSendUUID(
+                        //         event.childAddress,
+                        //         wallet.publicKey?.toString() as string,
+                        //         event.tickets_sold + 1,
+                        //         chain
+                        //     ).then((uuid) => {
+                        //         setQrId(String(uuid))
+                        //     })
+                    } catch (error) {
+                        const e = error as Error
+                        toast.error(e.message)
+                        console.log(
+                            'Error in sending txn, line 323, Event.layout.tsx',
+                            error
+                        )
+                        setIsLoading(false)
+                    }
+                } else {
+                    throw Error(
+                        'signTransaction is undefined, line 205 create/index.tsx'
+                    )
+                }
+            } else {
+                toast.error('Please connect your Solana Wallet', {
+                    id: 'connect-sol-wal',
+                })
+            }
         }
     }
 
     useEffect(() => {
         const resolve = async () => {
             const domain = await resolveDomains(
-                wallet.chain === 'SOL' ? 'SOL' : 'POLYGON',
+                event.isSolana ? 'SOL' : 'POLYGON',
                 event.owner
             )
+            // console.log('domain', domain)
             domain && setEnsName(domain?.domain as string)
         }
         resolve()
@@ -1132,14 +1158,18 @@ export default function EventLayout({ event }: { event: Event }) {
                                     <BoringAva address={event.owner} />
                                     <Box>
                                         <Text fontSize="14px" w="32">
-                                            {ensName.length > 15
-                                                ? ensName.slice(0, 6) +
-                                                  '...' +
-                                                  ensName.slice(-6)
-                                                : ensName ||
-                                                  event.owner.slice(0, 6) +
+                                            {ensName
+                                                ? ensName?.length > 15
+                                                    ? ensName?.slice(0, 6) +
                                                       '...' +
-                                                      event?.owner.slice(-6)}
+                                                      ensName?.slice(-6)
+                                                    : ensName ||
+                                                      event.owner.slice(0, 6) +
+                                                          '...' +
+                                                          event?.owner.slice(-6)
+                                                : event.owner.slice(0, 6) +
+                                                  '...' +
+                                                  event?.owner.slice(-6)}
                                         </Text>
                                     </Box>
                                 </Flex>

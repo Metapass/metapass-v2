@@ -327,6 +327,7 @@ export default function FeaturedEvents() {
                 >
                     {featEvents.map((data, key) => (
                         <Skeleton
+                            key={key}
                             maxW={{ base: '330px', xl: '390px' }}
                             minW={{ base: '330px', xl: '390px' }}
                             isLoaded={data !== undefined && data !== null}

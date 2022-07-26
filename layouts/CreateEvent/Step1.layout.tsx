@@ -473,40 +473,50 @@ export default function Step1({
                                                                 'SOL',
                                                                 'USDC',
                                                                 'USDT',
-                                                            ].map((token) => (
-                                                                <MenuItem
-                                                                    onClick={() =>
-                                                                        setPaymentToken(
-                                                                            token as PaymentToken
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    {console.log(
-                                                                        token,
-                                                                        'token'
-                                                                    )}
-                                                                    <Image
-                                                                        src={`/assets/tokens/${token}.svg`}
-                                                                        alt={
-                                                                            token
+                                                            ].map(
+                                                                (
+                                                                    token,
+                                                                    key
+                                                                ) => (
+                                                                    <MenuItem
+                                                                        key={
+                                                                            key
                                                                         }
-                                                                        w="4"
-                                                                        h="4"
-                                                                        mr="1"
-                                                                    />
-                                                                    <Text
-                                                                        color="blackAlpha.700"
-                                                                        fontSize="sm"
-                                                                        letterSpacing={
-                                                                            1
+                                                                        onClick={() =>
+                                                                            setPaymentToken(
+                                                                                token as PaymentToken
+                                                                            )
                                                                         }
-                                                                        fontWeight="medium"
-                                                                        fontFamily="heading"
                                                                     >
-                                                                        {token}
-                                                                    </Text>
-                                                                </MenuItem>
-                                                            ))}
+                                                                        {console.log(
+                                                                            token,
+                                                                            'token'
+                                                                        )}
+                                                                        <Image
+                                                                            src={`/assets/tokens/${token}.svg`}
+                                                                            alt={
+                                                                                token
+                                                                            }
+                                                                            w="4"
+                                                                            h="4"
+                                                                            mr="1"
+                                                                        />
+                                                                        <Text
+                                                                            color="blackAlpha.700"
+                                                                            fontSize="sm"
+                                                                            letterSpacing={
+                                                                                1
+                                                                            }
+                                                                            fontWeight="medium"
+                                                                            fontFamily="heading"
+                                                                        >
+                                                                            {
+                                                                                token
+                                                                            }
+                                                                        </Text>
+                                                                    </MenuItem>
+                                                                )
+                                                            )}
                                                         </MenuList>
                                                     </Menu>
                                                 )}

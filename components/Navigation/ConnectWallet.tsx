@@ -18,6 +18,7 @@ export const ConnectWallet = ({
     setBalance,
     setWalletType,
     onClose,
+    isOpen,
 }: {
     children: React.ReactNode
     noFullSize?: boolean
@@ -56,11 +57,13 @@ export const ConnectWallet = ({
             }
             if (publicKey) {
                 onClose()
-
                 const b = await resolveBalance(publicKey?.toBase58())
-                const d = await resolveDomains('SOL', publicKey?.toBase58()!)
+                // const d = await resolveDomains('SOL', publicKey?.toBase58()!)
                 console.log(`User Balance: ${b}`)
-                if (!noToast) toast.success('Connected to Solana wallet')
+                if (!noToast)
+                    toast.success('Connected to Solana wallet', {
+                        id: 'connect-sol-wal',
+                    })
                 if (redirectToWelcome) router.push(`/welcome/${publicKey}`)
 
                 if (setAddress) setAddress(publicKey.toString())
@@ -72,7 +75,7 @@ export const ConnectWallet = ({
                         address: publicKey.toString(),
                         balance: b?.toString()!,
                         type: 'sol',
-                        domain: d?.domain ?? null,
+                        domain: null,
                         chain: 'SOL',
                     })
 
