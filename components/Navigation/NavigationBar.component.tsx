@@ -61,6 +61,7 @@ import { FaBars } from 'react-icons/fa'
 
 import { supabase } from '../../lib/config/supabaseConfig'
 import resolveDomains from '../../hooks/useDomain'
+import { useRouter } from 'next/router'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
@@ -99,6 +100,7 @@ export default function NavigationBar({ mode = 'dark' }) {
     const { multichainDisconnector } = useMultichainDisconnect(wallet.chain)
     const [domain, setDomain] = useState<string | null>(null)
     const [showMyEvents, setMyEvents] = useState(false)
+    const router = useRouter()
     const {
         isOpen: isOpen1,
         onOpen: onOpen1,
@@ -659,7 +661,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                     >
                         <Button
                             onClick={() => {
-                                window.location.href = '/create'
+                                router.push('/create')
                             }}
                             pl="1"
                             rounded="full"

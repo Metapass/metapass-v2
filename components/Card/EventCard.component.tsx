@@ -11,6 +11,7 @@ import {
     ModalOverlay,
     Text,
 } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import twoDigit from 'two-digit'
@@ -32,6 +33,7 @@ export default function EventCard({
 }) {
     const [showEventModal, setEventModal] = useState(false)
     const currentDevice = useMobileDetect()
+    const router = useRouter()
     const months = [
         'JAN',
         'FEB',
@@ -51,11 +53,7 @@ export default function EventCard({
         <Flex
             direction="column"
             onClick={() => {
-                if (!currentDevice.isMobile) {
-                    setEventModal(true)
-                } else {
-                    window.location.href = `/event/${event.childAddress}`
-                }
+                router.push(`/event/${event.childAddress}`)
             }}
             rounded="lg"
             overflow="hidden"

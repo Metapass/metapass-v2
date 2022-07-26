@@ -21,7 +21,7 @@ import {
     Fade,
     useDisclosure,
 } from '@chakra-ui/react'
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext, useEffect, Component } from 'react'
 import ReactPlayer from 'react-player'
 import { Event } from '../../types/Event.type'
 import '@uiw/react-md-editor/markdown-editor.css'
@@ -117,18 +117,36 @@ export default function EventLayout({ event }: { event: Event }) {
     const [toOpen, setToOpen] = useState<boolean>(false)
 
     const user = supabase.auth.user()
-
-    useEffect(() => {
-        const addUser = async () => {
+    const addUser = async () => {
+        try {
             if (user && wallet.address) {
                 const { data, error } = await supabase
                     .from('users')
-                    .insert([{ address: wallet.address, email: user.email }])
-            }
-        }
+                    .select('*')
+                    .eq('address', wallet.address)
+                //  console.log('d', data, wallet.address)
+                if (data && data?.length > 0) {
+                    console.log('user already exists', data)
+                } else {
+                    const { data, error } = await supabase.from('users').upsert(
+                        {
+                            address: wallet.address,
+                            email: user.email,
+                            Name: user.user_metadata.name,
+                            avatar_url: user.user_metadata.avatar_url,
+                        },
 
+                        { returning: 'minimal' }
+                    )
+                }
+            }
+        } catch (error) {
+            console.log('e', error)
+        }
+    }
+    useEffect(() => {
         addUser()
-    }, [user, wallet])
+    }, [user, wallet.address])
 
     const { data: WalletSigner } = useSigner()
     const { isConnected } = useAccount()
@@ -254,6 +272,7 @@ export default function EventLayout({ event }: { event: Event }) {
             setToOpen(true)
         } else {
             if (solanaWallet.publicKey && wallet.address) {
+                setIsLoading(true)
                 const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey(
                     'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
                 )
@@ -347,6 +366,9 @@ export default function EventLayout({ event }: { event: Event }) {
                     adminCustomTokenAta: adminCustomSplTokenATA,
                     associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
                 }
+                toast.loading('Generating your unique ticket', {
+                    duration: 5000,
+                })
                 const { img, fastimg } = await ticketToIPFS(
                     event.title,
                     event.tickets_sold + 1,
@@ -373,7 +395,7 @@ export default function EventLayout({ event }: { event: Event }) {
                 const transaction = new web3.Transaction().add(
                     transactionInstruction
                 )
-                setIsLoading(true)
+
                 const { blockhash } = await connection.getLatestBlockhash()
                 transaction.recentBlockhash = blockhash
                 transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
