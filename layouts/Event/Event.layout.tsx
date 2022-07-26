@@ -91,6 +91,7 @@ export default function EventLayout({ event }: { event: Event }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [wallet] = useContext<WalletType[]>(walletContext)
     const solanaWallet = useWallet()
+
     const connection = new Connection(clusterApiUrl(network ?? 'devnet'))
 
     const [explorerLink, setExplorerLink] = useState<string>('')
