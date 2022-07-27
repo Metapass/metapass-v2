@@ -425,7 +425,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         )
 
                         setExplorerLink(
-                            `https://solscan.io/token/${mint.publicKey.toBase58()}?cluster=${network}`
+                            `https://solscan.io/tx/${txid}?cluster=${network}`
                         )
 
                         setMintedImage(fastimg)
