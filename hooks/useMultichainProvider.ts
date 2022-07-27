@@ -28,7 +28,11 @@ export function useMultichainProvider(
             if (!window.solana) return
             const wallet = useWallet()
             const anchorProvider = new AnchorProvider(
-                new Connection(clusterApiUrl('mainnet-beta')),
+                new Connection(
+                    process.env.NEXT_PUBLIC_ENV == 'prod'
+                        ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+                        : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+                ),
                 wallet as AnchorWallet,
                 {
                     preflightCommitment: 'recent',

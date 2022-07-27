@@ -37,19 +37,15 @@ import EventCard from '../../components/Card/EventCard.component'
 import DateModal from './DateModal.layout'
 import { walletContext, WalletType } from '../../utils/walletContext'
 import { Chain } from '../../types/blockchain.types'
-export type PaymentToken = 'SOL' | 'USDC' | 'USDT' | 'POLYGON'
+export type PaymentToken = 'USDC' | 'USDT'
 export const CustomTokens = {
     SOL: {
         USDC: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         USDT: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-        SOL: '',
-        POLYGON: '',
     },
     POLYGON: {
         USDC: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         USDT: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-        POLYGON: '',
-        SOL: '',
     },
 }
 export default function Step1({
@@ -77,7 +73,7 @@ export default function Step1({
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [submitting, setSubmitting] = useState(false)
     const [wallet] = useContext<WalletType[]>(walletContext)
-    const [paymentToken, setPaymentToken] = useState<PaymentToken>('SOL')
+    const [paymentToken, setPaymentToken] = useState<PaymentToken>('USDC')
 
     useEffect(() => {
         if (wallet.chain === 'SOL') {
@@ -470,7 +466,6 @@ export default function Step1({
 
                                                         <MenuList>
                                                             {[
-                                                                'SOL',
                                                                 'USDC',
                                                                 'USDT',
                                                             ].map(
@@ -488,10 +483,6 @@ export default function Step1({
                                                                             )
                                                                         }
                                                                     >
-                                                                        {console.log(
-                                                                            token,
-                                                                            'token'
-                                                                        )}
                                                                         <Image
                                                                             src={`/assets/tokens/${token}.svg`}
                                                                             alt={

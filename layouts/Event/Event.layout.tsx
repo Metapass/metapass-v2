@@ -75,7 +75,10 @@ declare const window: any
 
 export default function EventLayout({ event }: { event: Event }) {
     const network =
-        process.env.NEXT_PUBLIC_ENV === 'prod' ? 'mainnet-beta' : 'mainnet-beta'
+        process.env.NEXT_PUBLIC_ENV === 'prod'
+            ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+            : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+    const connection = new Connection(network ?? clusterApiUrl('devnet'))
     const [image, setImage] = useState(event.image.image)
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
@@ -92,7 +95,7 @@ export default function EventLayout({ event }: { event: Event }) {
     const [wallet] = useContext<WalletType[]>(walletContext)
     const solanaWallet = useWallet()
 
-    const connection = new Connection(clusterApiUrl(network ?? 'devnet'))
+    // const connection = new Connection(clusterApiUrl(network ?? 'devnet'))
 
     const [explorerLink, setExplorerLink] = useState<string>('')
     let opensea =
@@ -422,7 +425,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         )
 
                         setExplorerLink(
-                            `https://solscan.io/tx/${txid}?cluster=${network}`
+                            `https://solscan.io/token/${mint.publicKey.toBase58()}?cluster=${network}`
                         )
 
                         setMintedImage(fastimg)

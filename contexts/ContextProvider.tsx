@@ -31,17 +31,17 @@ export const WalletContextProvider: FC = ({ children }) => {
     // If window exists and is on localhost, choose devnet, else choose mainnet
     const network =
         typeof window !== 'undefined' && process.env.NEXT_PUBLIC_ENV === 'dev'
-            ? WalletAdapterNetwork.Mainnet
-            : WalletAdapterNetwork.Mainnet
-    const endpoint = useMemo(() => clusterApiUrl(network), [network])
+            ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+            : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+    const endpoint = useMemo(() => network, [network])
     const wallets = useMemo(
         () => [
             new PhantomWalletAdapter(),
             new SlopeWalletAdapter(),
-            new SolflareWalletAdapter({ network }),
+            new SolflareWalletAdapter(),
             new LedgerWalletAdapter(),
-            new SolletWalletAdapter({ network }),
-            new SolletExtensionWalletAdapter({ network }),
+            new SolletWalletAdapter(),
+            new SolletExtensionWalletAdapter(),
             new GlowWalletAdapter(),
         ],
         [network]

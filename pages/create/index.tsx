@@ -341,11 +341,9 @@ const Create: NextPage = () => {
     useEffect(() => {
         ;(async function () {
             const connection = new Connection(
-                clusterApiUrl(
-                    process.env.NEXT_PUBLIC_ENV == 'prod'
-                        ? 'mainnet-beta'
-                        : 'mainnet-beta'
-                )
+                process.env.NEXT_PUBLIC_ENV == 'prod'
+                    ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+                    : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
             )
             if (solanaWallet.publicKey) {
                 const [hostPDA, hostBump] = await PublicKey.findProgramAddress(
@@ -455,8 +453,9 @@ const Create: NextPage = () => {
                             date: event.date,
                             venue: event.type,
                             isCutPayedByCreator: true,
-                            isCustomSplToken:
-                                event.customSPLToken !== '' ? true : false,
+                            isCustomSplToken: event.customSPLToken
+                                ? true
+                                : false,
                             customSplToken: CST,
                         },
                     }
@@ -543,8 +542,9 @@ const Create: NextPage = () => {
                             date: event.date,
                             venue: event.type,
                             isCutPayedByCreator: true,
-                            isCustomSplToken:
-                                event.customSPLToken !== '' ? true : false,
+                            isCustomSplToken: event.customSPLToken
+                                ? true
+                                : false,
                             customSplToken: CST,
                         },
                     }
@@ -553,36 +553,56 @@ const Create: NextPage = () => {
                         transactionData
                     )
                     const transaction = new Transaction().add(txnInstruction)
-                    const signature = await wallet.sendTransaction(
-                        transaction,
-                        connection
-                    )
-                    console.log('tx sign', signature)
-                    setEventLink(
-                        window.location.origin + '/event/' + eventPDA.toString()
-                    )
-                    setTxnId(signature)
+                    // const signature = await wallet.sendTransaction(
+                    //     transaction,
+                    //     connection
+                    // )
+                    const { blockhash } = await connection.getLatestBlockhash()
+                    transaction.recentBlockhash = blockhash
+                    transaction.feePayer = wallet.publicKey
+                    if (wallet.signTransaction) {
+                        const signedTx = await wallet.signTransaction(
+                            transaction
+                        )
+                        const txid = await connection.sendRawTransaction(
+                            signedTx.serialize()
+                        )
+                        console.log(
+                            'Event created',
+                            `https://solscan.io/tx/${txid}`
+                        )
+                        setEventLink(
+                            window.location.origin +
+                                '/event/' +
+                                eventPDA.toString()
+                        )
+                        setTxnId(txid)
 
-                    await axios.post(
-                        `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/create`,
-                        {
-                            id: nonce,
-                            title: event.title,
-                            category: JSON.stringify(event.category),
-                            image: JSON.stringify(event.image),
-                            eventPDA: eventPDA.toString(),
-                            eventHost: wallet.publicKey.toString(),
-                            date: event.date,
-                            description: JSON.stringify(event.description),
-                            seats: event.seats,
-                            type: event.category.event_type,
-                            link: event.link,
-                            fee: event.fee,
-                        }
-                    )
+                        await axios.post(
+                            `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/create`,
+                            {
+                                id: nonce,
+                                title: event.title,
+                                category: JSON.stringify(event.category),
+                                image: JSON.stringify(event.image),
+                                eventPDA: eventPDA.toString(),
+                                eventHost: wallet.publicKey.toString(),
+                                date: event.date,
+                                description: JSON.stringify(event.description),
+                                seats: event.seats,
+                                type: event.category.event_type,
+                                link: event.link,
+                                fee: event.fee,
+                            }
+                        )
 
-                    setIsPublished(true)
-                    setInTxn(false)
+                        setIsPublished(true)
+                        setInTxn(false)
+                    } else {
+                        throw Error(
+                            'signTransaction is undefined, line 205 create/index.tsx'
+                        )
+                    }
                 } catch (error) {
                     console.log('error', error)
                 }

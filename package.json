@@ -54,6 +54,7 @@
         "react-player": "^2.9.0",
         "react-qrcode-logo": "^2.6.0",
         "react-use": "^17.3.2",
+        "solana-relayer": "^0.1.0",
         "two-digit": "^1.0.8",
         "uuid": "^8.3.2",
         "wagmi": "^0.5.10",
