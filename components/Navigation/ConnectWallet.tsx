@@ -54,7 +54,6 @@ export const ConnectWallet = ({
                 return
             }
             if (publicKey) {
-                onClose()
                 const b = await resolveBalance(publicKey?.toBase58())
                 if (!noToast)
                     toast.success('Connected to Solana wallet', {
@@ -76,6 +75,7 @@ export const ConnectWallet = ({
                     })
 
                 if (setWalletType) setWalletType('sol')
+                onClose()
             }
         }
         fetchValues()
