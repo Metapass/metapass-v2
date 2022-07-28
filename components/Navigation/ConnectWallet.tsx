@@ -45,13 +45,15 @@ export const ConnectWallet = ({
                 SolanaWallet &&
                 SolanaWallet.readyState === 'Installed' &&
                 clicked
+            // console.log('tees', !publicKey, clicked)
+
             if (req) {
                 try {
                     connect()
                 } catch (e) {
-                    console.error(e)
+                    console.log(e)
                 }
-                return
+                return 0
             }
             if (publicKey) {
                 onClose()
@@ -79,7 +81,15 @@ export const ConnectWallet = ({
             }
         }
         fetchValues()
-    }, [SolanaWallet, visible, publicKey, redirectToWelcome, clicked, fire])
+    }, [
+        SolanaWallet,
+        visible,
+        publicKey,
+        redirectToWelcome,
+        clicked,
+        fire,
+        connect,
+    ])
 
     const handleConnect = () => {
         setClicked(true)
