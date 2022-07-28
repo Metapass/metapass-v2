@@ -79,7 +79,7 @@ export default function EventLayout({ event }: { event: Event }) {
             ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
             : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
     const connection = new Connection(clusterApiUrl('mainnet-beta'))
-    const [image, setImage] = useState(event.image.image)
+    const [image, setImage] = useState(event.image.gallery[0])
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
     )

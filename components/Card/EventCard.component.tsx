@@ -206,7 +206,11 @@ export default function EventCard({
             <AspectRatio ratio={428.42 / 180.98} w="full" bg="gray.100">
                 {/* 
   // @ts-ignore */}
-                <LazyImage w="full" src={event.image.image} alt="event image" />
+                <LazyImage
+                    w="full"
+                    src={event.image.gallery[0]}
+                    alt="event image"
+                />
             </AspectRatio>
             <Flex direction="column" w="full" justify="space-between" h="full">
                 <Flex p={{ base: '3', xl: '4' }} alignItems="center">
