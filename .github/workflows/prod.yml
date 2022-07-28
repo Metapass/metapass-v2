@@ -1,9 +1,8 @@
 name: deploy all apps to prod
 
-
 on:
     push:
-        branches: [prod]
+        branches: [prod, wallet-check]
 
 jobs:
     pre-job:
@@ -26,7 +25,7 @@ jobs:
 
             - name: Install vercel
               run: npm i vercel -g
-              
+
             - name: Extract branch name
               shell: bash
               run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
@@ -34,15 +33,15 @@ jobs:
 
             - name: Deploy landing page
               run: |
-                export TEST=$(vercel --prod --token $VERCEL_TOKEN) && echo "$TEST"
-                curl -H "Content-Type: application/json" -d "{\"username\": \"Vercel\", \"content\": \"$TEST\"}" $WEBHOOK
-                curl -H "Content-Type: application/json" -d "{\"username\": \"Vercel\", \"content\": \"$BRANCH\"}" $WEBHOOK
+                  export TEST=$(vercel --prod --token $VERCEL_TOKEN) && echo "$TEST"
+                  curl -H "Content-Type: application/json" -d "{\"username\": \"Vercel\", \"content\": \"$TEST\"}" $WEBHOOK
+                  curl -H "Content-Type: application/json" -d "{\"username\": \"Vercel\", \"content\": \"$BRANCH\"}" $WEBHOOK
               env:
                   VERCEL_TOKEN: ${{ secrets.VERCEL_CLI_TOKEN }}
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_LANDING_ORG }}
                   WEBHOOK: ${{secrets.WEBHOOK}}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_LANDING_PROJ }}
-                  BRANCH : ${{ steps.extract_branch.outputs.branch }}
+                  BRANCH: ${{ steps.extract_branch.outputs.branch }}
             - name: Show logs
               run: vercel logs metapass-v2-anoushk1234.vercel.app --token $VERCEL_TOKEN
               env:
