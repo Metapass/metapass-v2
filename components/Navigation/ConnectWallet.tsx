@@ -36,9 +36,7 @@ export const ConnectWallet = ({
     const { visible, setVisible } = useWalletModal()
     const [clicked, setClicked] = useState(false)
     const [fire, setFire] = useState(false)
-    // const [domain] = useDomain('SOL', publicKey?.toBase58()!)
     const router = useRouter()
-    // const [balanceState, setBalanceState] = useState(0)
 
     useEffect(() => {
         async function fetchValues() {
@@ -58,8 +56,6 @@ export const ConnectWallet = ({
             if (publicKey) {
                 onClose()
                 const b = await resolveBalance(publicKey?.toBase58())
-                // const d = await resolveDomains('SOL', publicKey?.toBase58()!)
-                console.log(`User Balance: ${b}`)
                 if (!noToast)
                     toast.success('Connected to Solana wallet', {
                         id: 'connect-sol-wal',
