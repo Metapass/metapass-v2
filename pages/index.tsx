@@ -5,7 +5,7 @@ import HeroCTA from '../layouts/LandingPage/HeroCTA.layout'
 
 const Home: NextPage = () => {
     return (
-        <Box minH="100vh" h="full" overflow="hidden">
+        <Box h="100vh" overflow="scroll">
             <HeroCTA />
             <Box p={{ md: '2' }} />
             <FeaturedEvents />

@@ -13,6 +13,8 @@ export default function CreateEventCTA({ step = 0, setStep }: any) {
                 backgroundRepeat="no-repeat"
                 position="relative"
                 overflow="hidden"
+                overflowX="hidden"
+                h="60"
             >
                 <video
                     autoPlay
@@ -56,7 +58,7 @@ export default function CreateEventCTA({ step = 0, setStep }: any) {
                     </Flex>
                 </Box>
             </Box>
-            <Flex justify="center" w="full" position="relative" zIndex={99}>
+            <Flex justify="center" w="full" position="absolute" zIndex={0}>
                 <Box
                     w="fit-content"
                     bg="white"

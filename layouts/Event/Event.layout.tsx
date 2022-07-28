@@ -21,7 +21,7 @@ import {
     Fade,
     useDisclosure,
 } from '@chakra-ui/react'
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext, useEffect, Component } from 'react'
 import ReactPlayer from 'react-player'
 import { Event } from '../../types/Event.type'
 import '@uiw/react-md-editor/markdown-editor.css'
@@ -29,7 +29,7 @@ import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
 import moment from 'moment'
 import { motion } from 'framer-motion'
-import { walletContext } from '../../utils/walletContext'
+import { walletContext, WalletType } from '../../utils/walletContext'
 import { ethers } from 'ethers'
 import { BsCalendarPlus } from 'react-icons/bs'
 import abi from '../../utils/Metapass.json'
@@ -43,22 +43,43 @@ import Confetti from '../../components/Misc/Confetti.component'
 import { ticketToIPFS } from '../../utils/imageHelper'
 import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
-import { getAllEnsLinked } from '../../utils/resolveEns'
+
 import { decryptLink } from '../../utils/linkResolvers'
-import { doc } from '../../utils/firebaseUtils'
+
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import { Biconomy } from '@biconomy/mexa'
-import { db, setDoc } from '../../utils/firebaseUtils'
-import { onAuthStateChanged, User } from 'firebase/auth'
-import { auth } from '../../utils/firebaseUtils'
 
+import { useWallet } from '@solana/wallet-adapter-react'
+import * as web3 from '@solana/web3.js'
+import {
+    getHostPDA,
+    getAdminPDA,
+    createMintTicketInstruction,
+    MintTicketInstructionAccounts,
+} from 'metapass-sdk'
+import {
+    ASSOCIATED_TOKEN_PROGRAM_ID,
+    getAssociatedTokenAddress,
+    TOKEN_PROGRAM_ID,
+} from '@solana/spl-token'
+import { Connection, clusterApiUrl } from '@solana/web3.js'
 import SignUpModal from '../../components/Modals/SignUp.modal'
+import resolveDomains from '../../hooks/useDomain'
+import axios from 'axios'
+import { generateMetadata } from '../../utils/generateMetadata'
+import { useAccount, useSigner } from 'wagmi'
+import { supabase } from '../../lib/config/supabaseConfig'
 
 declare const window: any
 
 export default function EventLayout({ event }: { event: Event }) {
-    const [image, setImage] = useState(event.image.gallery[1]!)
+    const network =
+        process.env.NEXT_PUBLIC_ENV === 'prod'
+            ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+            : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+    const connection = new Connection(clusterApiUrl('mainnet-beta'))
+    const [image, setImage] = useState(event.image.image)
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
     )
@@ -67,11 +88,16 @@ export default function EventLayout({ event }: { event: Event }) {
     const { hasCopied, value, onCopy } = useClipboard(eventLink as string)
     const [hasBought, setHasBought] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [ensName, setEnsName] = useState<string>('wjdwijwnfwjkfjwsnfjwkjf')
+    const [ensName, setEnsName] = useState<string | null>(null)
     const [openseaLink, setToOpenseaLink] = useState<string>('')
     const [qrId, setQrId] = useState<string>('')
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const [wallet] = useContext<WalletType[]>(walletContext)
+    const solanaWallet = useWallet()
 
+    // const connection = new Connection(clusterApiUrl(network ?? 'devnet'))
+
+    const [explorerLink, setExplorerLink] = useState<string>('')
     let opensea =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? 'https://testnets.opensea.io/assets/mumbai'
@@ -92,39 +118,50 @@ export default function EventLayout({ event }: { event: Event }) {
         'DEC',
     ]
 
-    const [user, setUser] = useState<User | null | undefined>(undefined)
     const [toOpen, setToOpen] = useState<boolean>(false)
 
-    onAuthStateChanged(auth, (user) => {
-        user ? setUser(user) : setUser(null)
-    })
-
-    const [wallet] = useContext(walletContext)
-
-    useEffect(() => {
-        const addUser = async () => {
+    const user = supabase.auth.user()
+    const addUser = async () => {
+        try {
             if (user && wallet.address) {
-                const docRef = doc(db, 'users', wallet.address)
-                await setDoc(docRef, {
-                    email: user?.email,
-                })
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('address', wallet.address)
+                //  console.log('d', data, wallet.address)
+                if (data && data?.length > 0) {
+                    console.log('user already exists', data)
+                } else {
+                    const { data, error } = await supabase.from('users').upsert(
+                        {
+                            address: wallet.address,
+                            email: user.email,
+                            Name: user.user_metadata.name,
+                            avatar_url: user.user_metadata.avatar_url,
+                        },
+
+                        { returning: 'minimal' }
+                    )
+                }
             }
+        } catch (error) {
+            console.log('e', error)
         }
-
+    }
+    useEffect(() => {
         addUser()
-    }, [user, wallet])
+    }, [user, wallet.address])
 
-    const buyTicket = async () => {
-        if (wallet.address) {
+    const { data: WalletSigner } = useSigner()
+    const { isConnected } = useAccount()
+
+    const buyPolygonTicket = async () => {
+        if (isConnected) {
             if (user === null) {
                 setToOpen(true)
             } else {
                 if (typeof window.ethereum != undefined) {
-                    const provider = new ethers.providers.Web3Provider(
-                        wallet.type === 'wc'
-                            ? window.w3.currentProvider
-                            : window.ethereum
-                    )
+                    const provider = WalletSigner?.provider
                     const biconomy = new Biconomy(provider, {
                         apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
                         debug: process.env.NEXT_PUBLIC_ENV == 'dev',
@@ -148,7 +185,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         event.tickets_sold + 1,
                         event.image.image,
                         event.date.split('T')[0],
-                        wallet?.ens ||
+                        wallet?.domain ||
                             wallet?.address?.substring(0, 4) +
                                 '...' +
                                 wallet?.address?.substring(
@@ -177,7 +214,9 @@ export default function EventLayout({ event }: { event: Event }) {
                                 })
                                 .then(() => {})
                                 .catch((err: any) => {
-                                    toast.error("Oops! Failed to mint the ticket")
+                                    toast.error(
+                                        'Oops! Failed to mint the ticket'
+                                    )
                                     setIsLoading(false)
                                 })
                         } else {
@@ -209,7 +248,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         event.category.event_type == 'In-Person' &&
                             generateAndSendUUID(
                                 event.childAddress,
-                                wallet.address,
+                                wallet.address as string,
                                 event.tickets_sold + 1
                             ).then((uuid) => {
                                 setQrId(String(uuid))
@@ -227,34 +266,232 @@ export default function EventLayout({ event }: { event: Event }) {
                 }
             }
         } else {
-            toast('Please connect your wallet')
+            toast.error('Please connect your Polygon wallet', {
+                id: 'con-polygon',
+            })
+        }
+    }
+    const buySolanaTicket = async () => {
+        if (user === null) {
+            setToOpen(true)
+        } else {
+            if (solanaWallet.publicKey && wallet.address) {
+                setIsLoading(true)
+                const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey(
+                    'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
+                )
+                const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID =
+                    new web3.PublicKey(
+                        'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+                    )
+                // event.customSPLToken =
+                //     'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+                const customSPL = new web3.PublicKey(
+                    'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+                )
+                const getMetadata = async (
+                    mint: web3.PublicKey
+                ): Promise<web3.PublicKey> => {
+                    return (
+                        await web3.PublicKey.findProgramAddress(
+                            [
+                                Buffer.from('metadata'),
+                                TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                                mint.toBuffer(),
+                            ],
+                            TOKEN_METADATA_PROGRAM_ID
+                        )
+                    )[0]
+                }
+
+                const getMasterEdition = async (
+                    mint: web3.PublicKey
+                ): Promise<web3.PublicKey> => {
+                    return (
+                        await web3.PublicKey.findProgramAddress(
+                            [
+                                Buffer.from('metadata'),
+                                TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                                mint.toBuffer(),
+                                Buffer.from('edition'),
+                            ],
+                            TOKEN_METADATA_PROGRAM_ID
+                        )
+                    )[0]
+                }
+
+                const mint = web3.Keypair.generate()
+                const metadataAddress = await getMetadata(mint.publicKey)
+                const masterEdition = await getMasterEdition(mint.publicKey)
+                const NftTokenAccount: web3.PublicKey =
+                    await getAssociatedTokenAddress(
+                        mint.publicKey,
+                        solanaWallet.publicKey as web3.PublicKey
+                    )
+                const hostPDA: web3.PublicKey = await getHostPDA(
+                    new web3.PublicKey(event.eventHost)
+                )
+                const adminPDA: web3.PublicKey = await getAdminPDA()
+
+                const hostCustomSplTokenAta = await getAssociatedTokenAddress(
+                    customSPL,
+                    new web3.PublicKey(event.eventHost) // the receiver
+                )
+                const adminCustomSplTokenATA = await getAssociatedTokenAddress(
+                    customSPL,
+                    new web3.PublicKey(
+                        '4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw'
+                    )
+                )
+                const senderCustomTokenATA: web3.PublicKey =
+                    await getAssociatedTokenAddress(
+                        customSPL,
+                        solanaWallet.publicKey as web3.PublicKey
+                    )
+                const accounts: MintTicketInstructionAccounts = {
+                    mintAuthority: solanaWallet.publicKey as web3.PublicKey,
+                    eventAccount: new web3.PublicKey(event.childAddress),
+                    mint: mint.publicKey,
+                    metadata: metadataAddress,
+                    tokenAccount: NftTokenAccount,
+                    tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+                    payer: solanaWallet.publicKey as web3.PublicKey,
+                    masterEdition: masterEdition,
+                    eventHost: hostPDA,
+
+                    eventHostKey: new web3.PublicKey(event.eventHost),
+                    adminAccount: adminPDA,
+                    adminKey: new web3.PublicKey(
+                        '4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw'
+                    ),
+                    customSplToken: customSPL,
+                    customSplTokenProgram: TOKEN_PROGRAM_ID,
+                    senderCustomSplTokenAta: senderCustomTokenATA,
+                    hostCustomSplTokenAta: hostCustomSplTokenAta,
+                    adminCustomTokenAta: adminCustomSplTokenATA,
+                    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+                }
+                toast.loading('Generating your unique ticket', {
+                    duration: 5000,
+                })
+                const { img, fastimg } = await ticketToIPFS(
+                    event.title,
+                    event.tickets_sold + 1,
+                    event.image.image,
+                    event.date.split('T')[0],
+                    wallet?.domain ||
+                        wallet?.address?.substring(0, 4) +
+                            '...' +
+                            wallet?.address?.substring(
+                                wallet?.address?.length - 4
+                            )
+                )
+                const uri = await generateMetadata(event, img)
+
+                const transactionInstruction = createMintTicketInstruction(
+                    accounts,
+                    {
+                        uri:
+                            uri ||
+                            'https://cdukzux2wfzaaxbnissg6emgojrtdxzw5klsqnpmqhcusvi.arweave.net/EOis0vqxcg_BcLUSkbxGG-c_mMx3zbq-lyg17IHFSVU',
+                    }
+                )
+
+                const transaction = new web3.Transaction().add(
+                    transactionInstruction
+                )
+
+                const { blockhash } = await connection.getLatestBlockhash()
+                transaction.recentBlockhash = blockhash
+                transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
+
+                if (solanaWallet.signTransaction) {
+                    try {
+                        transaction.sign(mint)
+                        const signedTx = await solanaWallet.signTransaction(
+                            transaction
+                        )
+                        const txid = await connection.sendRawTransaction(
+                            signedTx.serialize(),
+                            {
+                                preflightCommitment: 'recent',
+                                skipPreflight: true,
+                            }
+                        )
+                        await axios.post(
+                            `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/buyTicket`,
+                            {
+                                eventPDA: event.childAddress,
+                                publicKey: solanaWallet.publicKey?.toString(),
+                            }
+                        )
+
+                        setExplorerLink(
+                            `https://solscan.io/tx/${txid}?cluster=${network}`
+                        )
+
+                        setMintedImage(fastimg)
+                        setHasBought(true)
+                        setIsLoading(false)
+                        // await updateEventData(
+                        //     event.childAddress,
+                        //     wallet.publicKey?.toString() as string,
+                        //     event.tickets_sold + 1
+                        // )
+                        // event.category.event_type == 'In-Person' &&
+                        //     generateAndSendUUID(
+                        //         event.childAddress,
+                        //         wallet.publicKey?.toString() as string,
+                        //         event.tickets_sold + 1,
+                        //         chain
+                        //     ).then((uuid) => {
+                        //         setQrId(String(uuid))
+                        //     })
+                    } catch (error) {
+                        const e = error as Error
+                        toast.error(e.message)
+                        console.log(
+                            'Error in sending txn, line 323, Event.layout.tsx',
+                            error
+                        )
+                        setIsLoading(false)
+                    }
+                } else {
+                    throw Error(
+                        'signTransaction is undefined, line 205 create/index.tsx'
+                    )
+                }
+            } else {
+                toast.error('Please connect your Solana Wallet', {
+                    id: 'connect-sol-wal',
+                })
+            }
         }
     }
 
     useEffect(() => {
-        getAllEnsLinked(event.owner)
-            .then((data) => {
-                if (data?.data?.domains && data && data?.data) {
-                    const ens_name =
-                        data?.data?.domains?.length > 0 &&
-                        data?.data?.domains[data?.data?.domains.length - 1].name
-                    setEnsName(ens_name as string)
-                }
-            })
-            .catch((err) => {})
+        const resolve = async () => {
+            const domain = await resolveDomains(
+                event.isSolana ? 'SOL' : 'POLYGON',
+                event.owner
+            )
+            // console.log('domain', domain)
+            domain && setEnsName(domain?.domain as string)
+        }
+        resolve()
     }, [event.owner])
 
     useEffect(() => {
         if (event.link) {
-            event.link.includes('huddle01')
-                ? setEventLink(event.link)
-                : (function () {
-                      const declink = decryptLink(event.link as string)
-                      //   console.log(declink, 'decrypted link')
-                      setEventLink(declink)
-                  })()
+            if (event.link.includes('huddle')) {
+                setEventLink(event.link)
+                console.log(event.link)
+            } else {
+                const declink = decryptLink(event.link as string)
+                setEventLink(declink)
+            }
         }
-    }, [event])
+    }, [event.link])
 
     const [isDisplayed, setIsDisplayed] = useState(false)
 
@@ -407,11 +644,20 @@ export default function EventLayout({ event }: { event: Event }) {
                                     rounded="full"
                                     _hover={{ shadow: 'md' }}
                                     onClick={() => {
-                                        window.open(openseaLink, '_blank')
+                                        window.open(
+                                            event.isSolana
+                                                ? explorerLink
+                                                : openseaLink,
+                                            '_blank'
+                                        )
                                     }}
                                 >
                                     <Image
-                                        src="/assets/opensea.png"
+                                        src={
+                                            event.isSolana
+                                                ? '/assets/solscan.png'
+                                                : '/assets/opensea.png'
+                                        }
                                         w="5"
                                         alt="opensea"
                                         borderRadius="full"
@@ -588,10 +834,10 @@ export default function EventLayout({ event }: { event: Event }) {
                             cursor: 'not-allowed',
                         }}
                         _hover={{}}
-                        onClick={buyTicket}
-                        disabled={
-                            event.tickets_available === 0 || user === undefined
+                        onClick={
+                            event.isSolana ? buySolanaTicket : buyPolygonTicket
                         }
+                        disabled={event.tickets_available === 0}
                         _focus={{}}
                         _active={{}}
                         w={{ base: '70%', md: 'auto' }}
@@ -816,7 +1062,11 @@ export default function EventLayout({ event }: { event: Event }) {
                                     cursor: 'not-allowed',
                                 }}
                                 _hover={{}}
-                                onClick={buyTicket}
+                                onClick={
+                                    event.isSolana
+                                        ? buySolanaTicket
+                                        : buyPolygonTicket
+                                }
                                 disabled={event.tickets_available === 0}
                                 _focus={{}}
                                 _active={{}}
@@ -864,7 +1114,17 @@ export default function EventLayout({ event }: { event: Event }) {
                                 <Divider my="2" />
                                 <Box w="fit-content" mx="auto">
                                     <Image
-                                        src="/assets/matic.png"
+                                        src={
+                                            event.isSolana
+                                                ? event.customSPLToken
+                                                    ? event.customSPLToken.startsWith(
+                                                          'EPjFWdd5Auf'
+                                                      )
+                                                        ? '/assets/tokens/USDC.svg'
+                                                        : '/assets/tokens/USDT.svg'
+                                                    : '/assets/tokens/SOL.svg'
+                                                : '/assets/matic.png'
+                                        }
                                         alt="matic"
                                         w="6"
                                         h="6"
@@ -936,14 +1196,18 @@ export default function EventLayout({ event }: { event: Event }) {
                                     <BoringAva address={event.owner} />
                                     <Box>
                                         <Text fontSize="14px" w="32">
-                                            {ensName.length > 15
-                                                ? ensName.slice(0, 6) +
-                                                  '...' +
-                                                  ensName.slice(-6)
-                                                : ensName ||
-                                                  event.owner.slice(0, 6) +
+                                            {ensName
+                                                ? ensName?.length > 15
+                                                    ? ensName?.slice(0, 6) +
                                                       '...' +
-                                                      event?.owner.slice(-6)}
+                                                      ensName?.slice(-6)
+                                                    : ensName ||
+                                                      event.owner.slice(0, 6) +
+                                                          '...' +
+                                                          event?.owner.slice(-6)
+                                                : event.owner.slice(0, 6) +
+                                                  '...' +
+                                                  event?.owner.slice(-6)}
                                         </Text>
                                     </Box>
                                 </Flex>
@@ -972,8 +1236,11 @@ export default function EventLayout({ event }: { event: Event }) {
                                     {event.buyers
                                         ?.reverse()
                                         .map((data, key) => {
-                                            const { id }: any = data
-                                            // console.log(data)
+                                            let id = key.toString()
+                                            event.isSolana === true
+                                                ? (id = data) // @ts-ignore
+                                                : (id = data.id)
+
                                             return (
                                                 <Box
                                                     _hover={{ zIndex: 10 }}

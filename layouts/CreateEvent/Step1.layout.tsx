@@ -1,4 +1,5 @@
 import {
+    Avatar,
     Box,
     Button,
     Divider,
@@ -8,6 +9,7 @@ import {
     Image,
     Input,
     InputGroup,
+    InputLeftElement,
     InputRightElement,
     Menu,
     MenuButton,
@@ -29,13 +31,30 @@ import {
 
 import { MdCalendarToday as CalendarToday } from 'react-icons/md'
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import EventCard from '../../components/Card/EventCard.component'
 import DateModal from './DateModal.layout'
-import { walletContext } from '../../utils/walletContext'
-
-export default function Step1({ onSubmit }: { onSubmit: Function }) {
+import { walletContext, WalletType } from '../../utils/walletContext'
+import { Chain } from '../../types/blockchain.types'
+export type PaymentToken = 'USDC' | 'USDT'
+export const CustomTokens = {
+    SOL: {
+        USDC: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+        USDT: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+    },
+    POLYGON: {
+        USDC: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        USDT: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+    },
+}
+export default function Step1({
+    onSubmit,
+    isSolHost,
+}: {
+    onSubmit: Function
+    isSolHost: Boolean
+}) {
     const [isPaid, setIsPaid] = useState(true)
     const [formDetails, setFormDetails] = useState({
         title: '',
@@ -45,12 +64,26 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
         date: '',
         seats: 0,
         tickets_sold: 0,
+        profileImage: '',
+        displayName: '',
+        customSPLToken: '',
+        chain: '',
     })
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [submitting, setSubmitting] = useState(false)
-    const [wallet, setWallet] = useContext(walletContext)
+    const [wallet] = useContext<WalletType[]>(walletContext)
+    const [paymentToken, setPaymentToken] = useState<PaymentToken>('USDC')
 
+    useEffect(() => {
+        if (wallet.chain === 'SOL') {
+            formDetails.customSPLToken = CustomTokens.SOL[paymentToken]
+            console.log(formDetails.customSPLToken)
+        } else if (wallet.chain === 'POLYGON') {
+            formDetails.customSPLToken = CustomTokens.POLYGON[paymentToken]
+        }
+    }, [paymentToken])
+    // In the future we should prompt either solana or eth wallet to connect base on the chain user selects in form
     if (wallet.address) {
         return (
             <form
@@ -370,21 +403,115 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                                 bg="white"
                                                 pl="2"
                                             >
-                                                <Image
-                                                    src="/assets/matic_circle.svg"
-                                                    alt="matic"
-                                                    w="4"
-                                                    h="4"
-                                                />
-                                                <Text
-                                                    color="blackAlpha.700"
-                                                    fontSize="sm"
-                                                    letterSpacing={1}
-                                                    fontWeight="medium"
-                                                    fontFamily="heading"
-                                                >
-                                                    MATIC
-                                                </Text>
+                                                {wallet.chain === 'POLYGON' ? (
+                                                    <>
+                                                        <Image
+                                                            src={
+                                                                '/assets/matic_circle.svg'
+                                                            }
+                                                            alt={'Matic'}
+                                                            w="4"
+                                                            h="4"
+                                                        />
+                                                        <Text
+                                                            color="blackAlpha.700"
+                                                            fontSize="sm"
+                                                            letterSpacing={1}
+                                                            fontWeight="medium"
+                                                            fontFamily="heading"
+                                                        >
+                                                            {'MATIC'}
+                                                        </Text>
+                                                    </>
+                                                ) : (
+                                                    <Menu>
+                                                        <MenuButton
+                                                            type="button"
+                                                            w="100px"
+                                                        >
+                                                            <InputGroup>
+                                                                <Input
+                                                                    fontSize="sm"
+                                                                    required
+                                                                    px="0"
+                                                                    _placeholder={{
+                                                                        color: 'gray.300',
+                                                                    }}
+                                                                    value={
+                                                                        paymentToken
+                                                                    }
+                                                                    placeholder="Token"
+                                                                    bg="transparent"
+                                                                    border="none"
+                                                                    rounded="none"
+                                                                    _hover={{}}
+                                                                    _focus={{}}
+                                                                    _active={{}}
+                                                                />
+
+                                                                <Image
+                                                                    mt="3"
+                                                                    src={`/assets/tokens/${paymentToken}.svg`}
+                                                                    alt={
+                                                                        paymentToken
+                                                                    }
+                                                                    w="4"
+                                                                    h="4"
+                                                                />
+
+                                                                <InputLeftElement color="gray.400">
+                                                                    <FaChevronDown />
+                                                                </InputLeftElement>
+                                                            </InputGroup>
+                                                        </MenuButton>
+
+                                                        <MenuList>
+                                                            {[
+                                                                'USDC',
+                                                                'USDT',
+                                                            ].map(
+                                                                (
+                                                                    token,
+                                                                    key
+                                                                ) => (
+                                                                    <MenuItem
+                                                                        key={
+                                                                            key
+                                                                        }
+                                                                        onClick={() =>
+                                                                            setPaymentToken(
+                                                                                token as PaymentToken
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <Image
+                                                                            src={`/assets/tokens/${token}.svg`}
+                                                                            alt={
+                                                                                token
+                                                                            }
+                                                                            w="4"
+                                                                            h="4"
+                                                                            mr="1"
+                                                                        />
+                                                                        <Text
+                                                                            color="blackAlpha.700"
+                                                                            fontSize="sm"
+                                                                            letterSpacing={
+                                                                                1
+                                                                            }
+                                                                            fontWeight="medium"
+                                                                            fontFamily="heading"
+                                                                        >
+                                                                            {
+                                                                                token
+                                                                            }
+                                                                        </Text>
+                                                                    </MenuItem>
+                                                                )
+                                                            )}
+                                                        </MenuList>
+                                                    </Menu>
+                                                )}
                                             </Flex>
                                         </InputRightElement>
                                     </InputGroup>
@@ -430,47 +557,210 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                     </InputGroup>
                                 </FormControl>
                             </Flex>
-                            <FormControl
-                                mt="6"
-                                w="50%"
-                                borderBottom="2px"
-                                borderBottomColor="gray.200"
-                                _focusWithin={{
-                                    borderBottomColor: 'gray.300',
-                                }}
-                            >
-                                <FormLabel
-                                    fontSize={{ lg: 'md', xl: 'lg' }}
-                                    color="blackAlpha.700"
-                                    my="0"
+                            <Flex experimental_spaceX="8" mt="6">
+                                <FormControl
+                                    mt="6"
+                                    w="50%"
+                                    borderBottom="2px"
+                                    borderBottomColor="gray.200"
+                                    _focusWithin={{
+                                        borderBottomColor: 'gray.300',
+                                    }}
                                 >
-                                    Total Tickets
-                                </FormLabel>
-                                <InputGroup>
-                                    <Input
-                                        onChange={(e) => {
-                                            setFormDetails({
-                                                ...formDetails,
-                                                seats: Number(e.target.value),
-                                            })
+                                    <FormLabel
+                                        fontSize={{ lg: 'md', xl: 'lg' }}
+                                        color="blackAlpha.700"
+                                        my="0"
+                                    >
+                                        Total Tickets
+                                    </FormLabel>
+                                    <InputGroup>
+                                        <Input
+                                            onChange={(e) => {
+                                                setFormDetails({
+                                                    ...formDetails,
+                                                    seats: Number(
+                                                        e.target.value
+                                                    ),
+                                                })
+                                            }}
+                                            _placeholder={{ color: 'gray.300' }}
+                                            fontSize="sm"
+                                            required
+                                            min="1"
+                                            type="number"
+                                            step="1"
+                                            px="0"
+                                            placeholder="Total seats for the event"
+                                            bg="transparent"
+                                            border="none"
+                                            rounded="none"
+                                            _hover={{}}
+                                            _focus={{}}
+                                            _active={{}}
+                                        />
+                                    </InputGroup>
+                                </FormControl>
+                                {wallet.chain == 'SOL' && !isSolHost && (
+                                    <FormControl
+                                        mt="6"
+                                        w="50%"
+                                        borderBottom="2px"
+                                        borderBottomColor="gray.200"
+                                        _focusWithin={{
+                                            borderBottomColor: 'gray.300',
                                         }}
-                                        _placeholder={{ color: 'gray.300' }}
-                                        fontSize="sm"
-                                        required
-                                        min="1"
-                                        type="number"
-                                        step="1"
-                                        px="0"
-                                        placeholder="Total seats for the event"
-                                        bg="transparent"
-                                        border="none"
-                                        rounded="none"
-                                        _hover={{}}
-                                        _focus={{}}
-                                        _active={{}}
-                                    />
-                                </InputGroup>
-                            </FormControl>
+                                    >
+                                        <FormLabel
+                                            fontSize={{
+                                                lg: 'md',
+                                                xl: 'lg',
+                                            }}
+                                            color="blackAlpha.700"
+                                            my="0"
+                                        >
+                                            Host Name
+                                        </FormLabel>
+                                        <InputGroup>
+                                            <Input
+                                                onChange={(e) => {
+                                                    setFormDetails({
+                                                        ...formDetails,
+                                                        displayName:
+                                                            e.target.value,
+                                                    })
+                                                }}
+                                                _placeholder={{
+                                                    color: 'gray.300',
+                                                }}
+                                                fontSize="sm"
+                                                required
+                                                min="1"
+                                                type="text"
+                                                step="1"
+                                                px="0"
+                                                placeholder="Add your name"
+                                                bg="transparent"
+                                                border="none"
+                                                rounded="none"
+                                                _hover={{}}
+                                                _focus={{}}
+                                                _active={{}}
+                                            />
+                                        </InputGroup>
+                                    </FormControl>
+                                )}
+                            </Flex>
+                            <Flex experimental_spaceX="8" mt="6">
+                                {wallet.chain == 'SOL' && !isSolHost && (
+                                    <>
+                                        <FormControl
+                                            mt="6"
+                                            w="50%"
+                                            borderBottom="2px"
+                                            borderBottomColor="gray.200"
+                                            _focusWithin={{
+                                                borderBottomColor: 'gray.300',
+                                            }}
+                                        >
+                                            <FormLabel
+                                                fontSize={{
+                                                    lg: 'md',
+                                                    xl: 'lg',
+                                                }}
+                                                color="blackAlpha.700"
+                                                my="0"
+                                            >
+                                                Host Avatar
+                                            </FormLabel>
+                                            <InputGroup>
+                                                <Input
+                                                    onChange={(e) => {
+                                                        setFormDetails({
+                                                            ...formDetails,
+                                                            profileImage:
+                                                                e.target.value,
+                                                        })
+                                                    }}
+                                                    _placeholder={{
+                                                        color: 'gray.300',
+                                                    }}
+                                                    fontSize="sm"
+                                                    required
+                                                    min="1"
+                                                    type="url"
+                                                    step="1"
+                                                    px="0"
+                                                    placeholder="host avatar url"
+                                                    bg="transparent"
+                                                    border="none"
+                                                    rounded="none"
+                                                    _hover={{}}
+                                                    _focus={{}}
+                                                    _active={{}}
+                                                />
+                                                <InputRightElement>
+                                                    <Avatar
+                                                        src={
+                                                            formDetails.profileImage
+                                                        }
+                                                        maxW="6"
+                                                        maxH="6"
+                                                    />
+                                                </InputRightElement>
+                                            </InputGroup>
+                                        </FormControl>
+                                    </>
+                                )}
+                                {/* <FormControl
+                                    mt="6"
+                                    w="50%"
+                                    borderBottom="2px"
+                                    borderBottomColor="gray.200"
+                                    _focusWithin={{
+                                        borderBottomColor: 'gray.300',
+                                    }}
+                                    isDisabled={!isPaid}
+                                >
+                                    <FormLabel
+                                        fontSize={{
+                                            lg: 'md',
+                                            xl: 'lg',
+                                        }}
+                                        color="blackAlpha.700"
+                                        my="0"
+                                    >
+                                        Payment Token
+                                    </FormLabel>
+                                    <InputGroup>
+                                        <Input
+                                            onChange={(e) => {
+                                                setFormDetails({
+                                                    ...formDetails,
+                                                    customSPLToken:
+                                                        e.target.value,
+                                                })
+                                            }}
+                                            _placeholder={{
+                                                color: 'gray.300',
+                                            }}
+                                            fontSize="sm"
+                                            min="1"
+                                            type="text"
+                                            step="1"
+                                            px="0"
+                                            placeholder="Add your name"
+                                            bg="transparent"
+                                            border="none"
+                                            rounded="none"
+                                            _hover={{}}
+                                            _focus={{}}
+                                            _active={{}}
+                                        />
+                                    </InputGroup>
+                                    
+                                </FormControl> */}
+                            </Flex>
                         </Box>
                         <Box h="auto" w="2px" my="20" bg="gray.100" />
                         <Box>
@@ -535,6 +825,8 @@ export default function Step1({ onSubmit }: { onSubmit: Function }) {
                                         tickets_available:
                                             formDetails.seats || 20,
                                         tickets_sold: 0,
+                                        isSolana: wallet.chain === 'SOL',
+                                        isHuddle: true,
                                     }}
                                 />
                             </Box>

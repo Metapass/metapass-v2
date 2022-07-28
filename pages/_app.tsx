@@ -9,6 +9,20 @@ import { Toaster } from 'react-hot-toast'
 import Contract from '../utils/contractContext'
 import Script from 'next/script'
 import ChatwootWidget from '../components/Elements/Chatwoot.component'
+import { ContextProvider } from '../contexts/ContextProvider'
+import { configureChains, chain, createClient, WagmiConfig } from 'wagmi'
+import { publicProvider } from 'wagmi/providers/public'
+
+const { chains, provider, webSocketProvider } = configureChains(
+    [chain.polygon, chain.polygonMumbai],
+    [publicProvider()]
+)
+
+const client = createClient({
+    autoConnect: true,
+    provider,
+    webSocketProvider,
+})
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (
@@ -62,15 +76,19 @@ function MyApp({ Component, pageProps }: AppProps) {
             </Head>
 
             <Wallet>
-                <Web3Wrapper>
-                    <Contract>
-                        <Toaster />
-                        <ChakraProvider theme={theme}>
-                            <ChatwootWidget />
-                            <Component {...pageProps} />
-                        </ChakraProvider>
-                    </Contract>
-                </Web3Wrapper>
+                <WagmiConfig client={client}>
+                    <Web3Wrapper>
+                        <ContextProvider>
+                            <Contract>
+                                <Toaster />
+                                <ChakraProvider theme={theme}>
+                                    <ChatwootWidget />
+                                    <Component {...pageProps} />
+                                </ChakraProvider>
+                            </Contract>
+                        </ContextProvider>
+                    </Web3Wrapper>
+                </WagmiConfig>
             </Wallet>
         </>
     )

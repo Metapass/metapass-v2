@@ -82,6 +82,12 @@ export default function SearchBar({ noEffects = false }) {
                                 value={searchQuery.type}
                                 rounded="none"
                                 placeholder="Event type"
+                                onChange={(e) => {
+                                    setSearchQuery({
+                                        ...searchQuery,
+                                        type: e.target.value,
+                                    })
+                                }}
                             />
                         </InputGroup>
                     </MenuButton>
@@ -133,6 +139,12 @@ export default function SearchBar({ noEffects = false }) {
                                 rounded="none"
                                 placeholder="Price"
                                 value={searchQuery.price}
+                                onChange={(e) => {
+                                    setSearchQuery({
+                                        ...searchQuery,
+                                        type: e.target.value,
+                                    })
+                                }}
                             />
                         </InputGroup>
                     </MenuButton>
@@ -184,6 +196,12 @@ export default function SearchBar({ noEffects = false }) {
                                 rounded="none"
                                 placeholder="Category"
                                 value={searchQuery.category}
+                                onChange={(e) => {
+                                    setSearchQuery({
+                                        ...searchQuery,
+                                        type: e.target.value,
+                                    })
+                                }}
                             />
                         </InputGroup>
                     </MenuButton>

@@ -12,6 +12,8 @@ export default function FeaturedEvents() {
                 alignItems="center"
                 wrap="wrap"
                 mr="6"
+                overflowX="scroll"
+                overflow="scroll"
                 display={{ base: 'none', md: 'flex', lg: 'none', xl: 'flex' }}
             >
                 {events.slice(0, 2).map((data, key) => (
@@ -26,6 +28,8 @@ export default function FeaturedEvents() {
                 alignItems="center"
                 wrap="wrap"
                 mr="6"
+                overflowX="scroll"
+                overflow="scroll"
                 display={{ base: 'flex', md: 'none', lg: 'flex', xl: 'none' }}
             >
                 {events.slice(0, 2).map((data, key) => (

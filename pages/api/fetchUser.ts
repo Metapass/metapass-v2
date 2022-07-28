@@ -1,9 +1,7 @@
-import { db } from '../../utils/firebaseUtils'
-import { doc, getDoc } from 'firebase/firestore'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { ethers } from 'ethers'
 import Cors from 'cors'
 import { utils } from 'ethers'
+import { supabase } from '../../lib/config/supabaseConfig'
 
 const cors = Cors({
     methods: ['GET', 'POST'],
@@ -30,17 +28,14 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (auth === `Bearer ${process.env.API_KEY}`) {
             if (address !== undefined) {
-                const docRef = doc(db, 'users', utils.getAddress(address))
-                const docSnap = await getDoc(docRef)
-                docSnap.exists()
-                    ? res.status(200).json({
-                        email: docSnap.data().email,
-                        address: utils.getAddress(address),
-                    })
-                    : res.status(404).json({
-                        message: 'Failed to load user data',
-                        address: utils.getAddress(address),
-                    })
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('email')
+                    .eq('address', utils.getAddress(address))
+
+                data?.length === 0
+                    ? res.status(404).send('User not found')
+                    : res.status(200).json({ email: data?.[0]?.email })
             } else {
                 res.status(400).send('Please add in address')
             }

@@ -11,6 +11,7 @@ import {
     ModalOverlay,
     Text,
 } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import twoDigit from 'two-digit'
@@ -32,6 +33,7 @@ export default function EventCard({
 }) {
     const [showEventModal, setEventModal] = useState(false)
     const currentDevice = useMobileDetect()
+    const router = useRouter()
     const months = [
         'JAN',
         'FEB',
@@ -51,15 +53,10 @@ export default function EventCard({
         <Flex
             direction="column"
             onClick={() => {
-                if (!currentDevice.isMobile) {
-                    setEventModal(true)
-                } else {
-                    window.location.href = `/event/${event.childAddress}`
-                }
+                router.push(`/event/${event.childAddress}`)
             }}
             rounded="lg"
             overflow="hidden"
-            h="full"
             bg="white"
             _hover={{ transform: 'scale(1.01)' }}
             _active={{ transform: 'scale(1.03)' }}
@@ -69,6 +66,7 @@ export default function EventCard({
             w="full"
             border="1px"
             position="relative"
+            h="20rem"
             borderColor="blackAlpha.200"
         >
             {!previewOnly && showEventModal && (
@@ -144,13 +142,31 @@ export default function EventCard({
                     color="blackAlpha.700"
                 >
                     {event.fee === 0 ? (
-                        <>FREE</>
+                        <>
+                            FREE
+                            <Image
+                                ml={2}
+                                src={
+                                    event.isSolana
+                                        ? '/assets/solana-logo.png'
+                                        : '/assets/matic_logo.svg'
+                                }
+                                w="3"
+                                filter="brightness(100%)"
+                                alt="matic"
+                            />
+                            {/* <Text> {event.fee}</Text> */}
+                        </>
                     ) : (
                         <>
                             <Image
-                                src="/assets/matic_logo.svg"
+                                src={
+                                    event.isSolana
+                                        ? '/assets/solana-logo.png'
+                                        : '/assets/matic_logo.svg'
+                                }
                                 w="3"
-                                filter="brightness(0%)"
+                                filter="brightness(100%)"
                                 alt="matic"
                             />
                             <Text> {event.fee}</Text>

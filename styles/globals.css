@@ -45,7 +45,9 @@ html {
 body {
     overflow: overlay;
 }
-
+.wallet-adapter-modal{
+    z-index: 20000!important;
+}
 /* Track */
 ::-webkit-scrollbar-track {
     background: transparent;

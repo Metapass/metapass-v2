@@ -23,10 +23,11 @@ import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import { useContext, useEffect, useState } from 'react'
-import { walletContext } from '../../utils/walletContext'
+import { walletContext, WalletType } from '../../utils/walletContext'
 import { encryptLink } from '../../utils/linkResolvers'
 import BoringAva from '../../utils/BoringAva'
 import { getAllEnsLinked } from '../../utils/resolveEns'
+import resolveDomains from '../../hooks/useDomain'
 
 export default function Step4({
     event,
@@ -35,23 +36,20 @@ export default function Step4({
     event: any
     onSubmit: Function
 }) {
-    const [wallet, setWallet] = useContext(walletContext)
+    const [wallet] = useContext<WalletType[]>(walletContext)
     const [_link, setLink] = useState<string>('')
     const [ensName, setEnsName] = useState<string>('')
     const [huddle, setHuddle] = useState(true)
 
     useEffect(() => {
-        getAllEnsLinked(event.owner)
-            .then((data) => {
-                if (data?.data?.domains && data && data?.data) {
-                    const ens_name =
-                        data?.data?.domains?.length > 0 &&
-                        data?.data?.domains[data?.data?.domains.length - 1].name
-                    setEnsName(ens_name)
-                }
-            })
-            .catch((err) => {
-            })
+        const resolve = async () => {
+            const domain = await resolveDomains(
+                wallet.chain === 'SOL' ? 'SOL' : 'POLYGON',
+                event.owner
+            )
+            domain && setEnsName(domain?.domain as string)
+        }
+        resolve()
     }, [event.owner])
 
     return (

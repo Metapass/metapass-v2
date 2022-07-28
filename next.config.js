@@ -15,7 +15,7 @@ const nextConfig = removeImports({
         ignoreDuringBuilds: true,
     },
     images: {
-        domanins: ["googleusercontent.com"],
+        domains: ['lh3.googleusercontent.com'],
     },
 })
 

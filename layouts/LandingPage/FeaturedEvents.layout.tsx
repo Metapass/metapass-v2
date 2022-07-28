@@ -32,7 +32,7 @@ import { gqlEndpoint } from '../../utils/subgraphApi'
 // import { MdCalendarToday as CalendarToday } from "react-icons/md";
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import axios from 'axios'
-import { getAllEnsLinked } from '../../utils/resolveEns'
+
 import { MdTag } from 'react-icons/md'
 import { AiOutlineSend } from 'react-icons/ai'
 import { SetStateAction } from 'react'
@@ -68,10 +68,12 @@ export default function FeaturedEvents() {
             tickets_available: 0,
             tickets_sold: 0,
             buyers: [],
+            isHuddle: false,
+            isSolana: false,
         },
     ])
     const { isOpen, onOpen, onClose } = useDisclosure()
-    async function getFeaturedEvents() {
+    async function getPolygonFeaturedEvents() {
         const featuredQuery = {
             operationName: 'fetchFeaturedEvents',
             query: `query fetchFeaturedEvents {
@@ -154,20 +156,50 @@ export default function FeaturedEvents() {
                     event.event.seats - event.event.ticketsBought.length,
                 tickets_sold: event.event.ticketsBought.length,
                 buyers: event.event.buyers,
+                isHuddle: event.event.link.includes('huddle01'),
+                isSolana: false,
             } as Event
         })
     }
+    const getSolanaFetauredEvents = async (): Promise<Event[]> => {
+        let data: Event[] = []
+        const event = await axios.get(
+            `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/featuredEvents`
+        )
+        if (event.data) {
+            console.log(event.data)
+            let events = event.data
+
+            events.forEach((event: any) => {
+                data.push({
+                    ...event,
+                    category: JSON.parse(event.category),
+                    image: JSON.parse(event.image),
+                    description: JSON.parse(event.description),
+                    owner: event.eventHost,
+                    childAddress: event.eventPDA,
+                    isSolana: true,
+                })
+            })
+            return data
+        } else {
+            console.log('No such document! solana events')
+            return []
+        }
+    }
+    const getFeaturedEvents = async () => {
+        let allEvents: Event[] = []
+        const polygonEvents = await getPolygonFeaturedEvents()
+        const polygonData: Event[] = parseFeaturedEvents(
+            polygonEvents.data.featuredEntities
+        )
+        const solanaEvents: Event[] = await getSolanaFetauredEvents()
+        allEvents = [...polygonData, ...solanaEvents]
+        setFeatEvents(allEvents)
+    }
     useEffect(() => {
         getFeaturedEvents()
-            .then((res) => {
-                const data: Event[] = parseFeaturedEvents(
-                    res.data.featuredEntities
-                )
-                setFeatEvents(data)
-            })
-            .catch((err) => {})
-        // console.log(featEvents)
-    }, [parseFeaturedEvents])
+    }, [])
 
     return (
         <Flex w="full" justify="center" mb={{ md: '-48' }}>
@@ -189,7 +221,7 @@ export default function FeaturedEvents() {
                     />
                 </Flex>
                 <Flex
-                    _active={{ cursor: 'grabbing' }}
+                    _active={{ cursor: 'pointer' }}
                     my="8"
                     display={{ base: 'none', md: 'flex' }}
                 >
@@ -197,31 +229,90 @@ export default function FeaturedEvents() {
                         style={{
                             paddingTop: '100px',
                             paddingBottom: '100px',
-
+                            overflow: 'scroll',
                             transform: 'translateY(-100px)',
                         }}
                     >
                         <Flex
                             experimental_spaceX="8"
                             mx={{ base: '10', xl: '20' }}
+                            flexWrap="wrap"
                         >
-                            {featEvents.map((data, key) => (
-                                <Box
-                                    maxW={{ base: '330px', xl: '390px' }}
-                                    key={key}
-                                    h="full"
-                                    minW={{ base: '330px', xl: '390px' }}
-                                >
-                                    <Skeleton
-                                        maxW={{ base: '330px', xl: '390px' }}
-                                        key={key}
-                                        minW={{ base: '330px', xl: '390px' }}
-                                        isLoaded={data.id !== ''}
-                                    >
-                                        <EventCard event={data} />
-                                    </Skeleton>
-                                </Box>
-                            ))}
+                            {featEvents.length > 0
+                                ? featEvents.map((data, key) => (
+                                      <Box
+                                          my="5px"
+                                          maxW={{ base: '330px', xl: '390px' }}
+                                          key={key}
+                                          h="full"
+                                          flex="1"
+                                          marginLeft="30px"
+                                          minW={{ base: '330px', xl: '390px' }}
+                                      >
+                                          <Skeleton
+                                              maxW={{
+                                                  base: '330px',
+                                                  xl: '390px',
+                                              }}
+                                              key={key}
+                                              minW={{
+                                                  base: '330px',
+                                                  xl: '390px',
+                                              }}
+                                              isLoaded={data.id !== ''}
+                                          >
+                                              <EventCard event={data} />
+                                          </Skeleton>
+                                      </Box>
+                                  ))
+                                : [1, 2, 3, 4, 5, 6].map((data, key) => (
+                                      <Box
+                                          my="5px"
+                                          maxW={{ base: '330px', xl: '390px' }}
+                                          key={key}
+                                          h="full"
+                                          flex="1"
+                                          marginLeft="30px"
+                                          minW={{ base: '330px', xl: '390px' }}
+                                          borderRadius="xl"
+                                      >
+                                          <Skeleton
+                                              maxW={{
+                                                  base: '330px',
+                                                  xl: '390px',
+                                              }}
+                                              key={key}
+                                              minW={{
+                                                  base: '330px',
+                                                  xl: '390px',
+                                              }}
+                                              isLoaded={false}
+                                              borderRadius="md"
+                                          >
+                                              <Flex
+                                                  direction="column"
+                                                  rounded="lg"
+                                                  overflow="hidden"
+                                                  bg="white"
+                                                  _hover={{
+                                                      transform: 'scale(1.01)',
+                                                  }}
+                                                  _active={{
+                                                      transform: 'scale(1.03)',
+                                                  }}
+                                                  transitionDuration="200ms"
+                                                  cursor="pointer"
+                                                  boxShadow="0px -4px 52px rgba(0, 0, 0, 0.11)"
+                                                  w="full"
+                                                  border="1px"
+                                                  position="relative"
+                                                  h="15rem"
+                                                  borderRadius="30px"
+                                                  borderColor="blackAlpha.200"
+                                              ></Flex>
+                                          </Skeleton>
+                                      </Box>
+                                  ))}
                             <Box p="10" />
                         </Flex>
                     </ScrollContainer>
@@ -236,12 +327,12 @@ export default function FeaturedEvents() {
                 >
                     {featEvents.map((data, key) => (
                         <Skeleton
-                            maxW={{ base: '330px', xl: '390px' }}
                             key={key}
+                            maxW={{ base: '330px', xl: '390px' }}
                             minW={{ base: '330px', xl: '390px' }}
-                            isLoaded={data.id !== ''}
+                            isLoaded={data !== undefined && data !== null}
                         >
-                            <EventCard event={data} />
+                            <EventCard key={key} event={data} />
                         </Skeleton>
                     ))}
                 </Flex>
