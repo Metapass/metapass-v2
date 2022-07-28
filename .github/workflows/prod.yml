@@ -3,7 +3,7 @@ name: deploy all apps to prod
 
 on:
     push:
-        branches-ignore: [prod,main]
+        branches: [prod]
 
 jobs:
     pre-job:
