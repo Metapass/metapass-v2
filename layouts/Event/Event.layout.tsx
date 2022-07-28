@@ -1114,7 +1114,17 @@ export default function EventLayout({ event }: { event: Event }) {
                                 <Divider my="2" />
                                 <Box w="fit-content" mx="auto">
                                     <Image
-                                        src="/assets/matic.png"
+                                        src={
+                                            event.isSolana
+                                                ? event.customSPLToken
+                                                    ? event.customSPLToken.startsWith(
+                                                          'EPjFWdd5Auf'
+                                                      )
+                                                        ? '/assets/tokens/USDC.svg'
+                                                        : '/assets/tokens/USDT.svg'
+                                                    : '/assets/tokens/SOL.svg'
+                                                : '/assets/matic.png'
+                                        }
                                         alt="matic"
                                         w="6"
                                         h="6"
