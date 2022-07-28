@@ -78,6 +78,7 @@ export default function Step1({
     useEffect(() => {
         if (wallet.chain === 'SOL') {
             formDetails.customSPLToken = CustomTokens.SOL[paymentToken]
+            console.log(formDetails.customSPLToken)
         } else if (wallet.chain === 'POLYGON') {
             formDetails.customSPLToken = CustomTokens.POLYGON[paymentToken]
         }

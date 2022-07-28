@@ -342,8 +342,8 @@ const Create: NextPage = () => {
         ;(async function () {
             const connection = new Connection(
                 process.env.NEXT_PUBLIC_ENV == 'prod'
-                    ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
-                    : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+                    ? clusterApiUrl('mainnet-beta')
+                    : clusterApiUrl('mainnet-beta')
             )
             if (solanaWallet.publicKey) {
                 const [hostPDA, hostBump] = await PublicKey.findProgramAddress(
@@ -363,11 +363,9 @@ const Create: NextPage = () => {
         const wallet = solanaWallet
         console.log(wallet.publicKey, program)
         const connection = new Connection(
-            clusterApiUrl(
-                process.env.NEXT_PUBLIC_ENV == 'prod'
-                    ? 'mainnet-beta'
-                    : 'mainnet-beta'
-            )
+            process.env.NEXT_PUBLIC_ENV == 'prod'
+                ? clusterApiUrl('mainnet-beta')
+                : clusterApiUrl('mainnet-beta')
         )
         setInTxn(true)
 
@@ -459,6 +457,7 @@ const Create: NextPage = () => {
                             customSplToken: CST,
                         },
                     }
+                    console.log(transactionData)
                     const txnInstruction = createInitializeEventInstruction(
                         accounts,
                         transactionData
@@ -536,7 +535,7 @@ const Create: NextPage = () => {
                             uri: 'https://arweave.net/AhzTMchxDglQbfLWzQHOOGV9BA-CeEy36C-DJwFfqUc', //@deprecated
                             link: event.link as string,
                             fee: new anchor.BN(
-                                (event.fee as number) * LAMPORTS_PER_SOL // have to change this for custom where decimals are not same
+                                (event.fee as number) * 10 ** 6 // have to change this for custom where decimals are not same
                             ),
                             seats: new anchor.BN(event.seats as number),
                             date: event.date,
@@ -548,6 +547,7 @@ const Create: NextPage = () => {
                             customSplToken: CST,
                         },
                     }
+                    console.log(transactionData)
                     const txnInstruction = createInitializeEventInstruction(
                         accounts,
                         transactionData
@@ -819,6 +819,7 @@ const Create: NextPage = () => {
                                 isSolHost={isSolHost}
                             />
                         </Box>
+                        {console.log(event)}
                         <Box display={step === 1 ? 'block' : 'none'}>
                             {/* STEP2🔺 */}
                             <Step2

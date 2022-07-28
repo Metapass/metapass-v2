@@ -78,7 +78,7 @@ export default function EventLayout({ event }: { event: Event }) {
         process.env.NEXT_PUBLIC_ENV === 'prod'
             ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
             : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
-    const connection = new Connection(network ?? clusterApiUrl('devnet'))
+    const connection = new Connection(clusterApiUrl('mainnet-beta'))
     const [image, setImage] = useState(event.image.image)
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
@@ -284,9 +284,10 @@ export default function EventLayout({ event }: { event: Event }) {
                     new web3.PublicKey(
                         'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
                     )
+                // event.customSPLToken =
+                //     'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
                 const customSPL = new web3.PublicKey(
-                    event.customSPLToken ||
-                        'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+                    'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
                 )
                 const getMetadata = async (
                     mint: web3.PublicKey
@@ -339,7 +340,7 @@ export default function EventLayout({ event }: { event: Event }) {
                 const adminCustomSplTokenATA = await getAssociatedTokenAddress(
                     customSPL,
                     new web3.PublicKey(
-                        'B641ooUCSG8ToLRki3YuxWMiNj6BS5c4eSM1rWcSazeV'
+                        '4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw'
                     )
                 )
                 const senderCustomTokenATA: web3.PublicKey =
@@ -361,7 +362,7 @@ export default function EventLayout({ event }: { event: Event }) {
                     eventHostKey: new web3.PublicKey(event.eventHost),
                     adminAccount: adminPDA,
                     adminKey: new web3.PublicKey(
-                        'B641ooUCSG8ToLRki3YuxWMiNj6BS5c4eSM1rWcSazeV'
+                        '4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw'
                     ),
                     customSplToken: customSPL,
                     customSplTokenProgram: TOKEN_PROGRAM_ID,
@@ -414,6 +415,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             signedTx.serialize(),
                             {
                                 preflightCommitment: 'recent',
+                                skipPreflight: true,
                             }
                         )
                         await axios.post(
