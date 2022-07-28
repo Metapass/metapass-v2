@@ -1287,8 +1287,12 @@ export default function EventLayout({ event }: { event: Event }) {
                                     >
                                         {event.tickets_sold}
                                     </Text>
-                                    <Text fontSize="xx-small">/</Text>
-                                    <Text> {event.seats}</Text>
+                                    {event.seats > 10000000000 ? null : (
+                                        <>
+                                            <Text fontSize="xx-small">/</Text>
+                                            <Text> {event.seats}</Text>
+                                        </>
+                                    )}
                                 </Flex>
                             </Flex>
                             <Flex

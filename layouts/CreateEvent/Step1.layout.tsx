@@ -56,6 +56,7 @@ export default function Step1({
     isSolHost: Boolean
 }) {
     const [isPaid, setIsPaid] = useState(true)
+    const [isLimited, setIsLimited] = useState(true)
     const [formDetails, setFormDetails] = useState({
         title: '',
         type: '',
@@ -123,28 +124,54 @@ export default function Step1({
                         mt="2"
                         fontWeight="normal"
                     >
-                        <FormLabel
-                            fontFamily="body"
-                            color="blackAlpha.700"
-                            fontWeight="normal"
-                            mb="0"
-                            htmlFor="price"
-                        >
-                            Is it a paid event?
-                        </FormLabel>
+                        <Flex mx={4}>
+                            <FormLabel
+                                fontFamily="body"
+                                color="blackAlpha.700"
+                                fontWeight="normal"
+                                mb="0"
+                                htmlFor="price"
+                            >
+                                Is it a paid event?
+                            </FormLabel>
 
-                        <Switch
-                            onChange={(e) => {
-                                setIsPaid(e.target.checked)
-                                setFormDetails({
-                                    ...formDetails,
-                                    fee: 0,
-                                })
-                            }}
-                            isChecked={isPaid}
-                            id="price"
-                            colorScheme="linkedin"
-                        />
+                            <Switch
+                                onChange={(e) => {
+                                    setIsPaid(e.target.checked)
+                                    setFormDetails({
+                                        ...formDetails,
+                                        fee: 0,
+                                    })
+                                }}
+                                isChecked={isPaid}
+                                id="price"
+                                colorScheme="linkedin"
+                            />
+                        </Flex>
+                        <Flex mx={4}>
+                            <FormLabel
+                                fontFamily="body"
+                                color="blackAlpha.700"
+                                fontWeight="normal"
+                                mb="0"
+                                htmlFor="Seats"
+                            >
+                                Unlimited Tickets?
+                            </FormLabel>
+
+                            <Switch
+                                onChange={(e) => {
+                                    setIsLimited(!e.target.checked)
+                                    setFormDetails({
+                                        ...formDetails,
+                                        seats: 10000000000,
+                                    })
+                                }}
+                                isChecked={!isLimited}
+                                id="price"
+                                colorScheme="linkedin"
+                            />
+                        </Flex>
                     </FormControl>
                     <Flex
                         justify="space-between"
@@ -558,49 +585,53 @@ export default function Step1({
                                 </FormControl>
                             </Flex>
                             <Flex experimental_spaceX="8" mt="6">
-                                <FormControl
-                                    mt="6"
-                                    w="50%"
-                                    borderBottom="2px"
-                                    borderBottomColor="gray.200"
-                                    _focusWithin={{
-                                        borderBottomColor: 'gray.300',
-                                    }}
-                                >
-                                    <FormLabel
-                                        fontSize={{ lg: 'md', xl: 'lg' }}
-                                        color="blackAlpha.700"
-                                        my="0"
+                                {isLimited ? (
+                                    <FormControl
+                                        mt="6"
+                                        w="50%"
+                                        borderBottom="2px"
+                                        borderBottomColor="gray.200"
+                                        _focusWithin={{
+                                            borderBottomColor: 'gray.300',
+                                        }}
                                     >
-                                        Total Tickets
-                                    </FormLabel>
-                                    <InputGroup>
-                                        <Input
-                                            onChange={(e) => {
-                                                setFormDetails({
-                                                    ...formDetails,
-                                                    seats: Number(
-                                                        e.target.value
-                                                    ),
-                                                })
-                                            }}
-                                            _placeholder={{ color: 'gray.300' }}
-                                            fontSize="sm"
-                                            required
-                                            min="1"
-                                            type="number"
-                                            step="1"
-                                            px="0"
-                                            placeholder="Total seats for the event"
-                                            bg="transparent"
-                                            border="none"
-                                            rounded="none"
-                                            _hover={{}}
-                                            _focus={{}}
-                                            _active={{}}
-                                        />
-                                    </InputGroup>
-                                </FormControl>
+                                        <FormLabel
+                                            fontSize={{ lg: 'md', xl: 'lg' }}
+                                            color="blackAlpha.700"
+                                            my="0"
+                                        >
+                                            Total Tickets
+                                        </FormLabel>
+                                        <InputGroup>
+                                            <Input
+                                                onChange={(e) => {
+                                                    setFormDetails({
+                                                        ...formDetails,
+                                                        seats: Number(
+                                                            e.target.value
+                                                        ),
+                                                    })
+                                                }}
+                                                _placeholder={{
+                                                    color: 'gray.300',
+                                                }}
+                                                fontSize="sm"
+                                                required
+                                                min="1"
+                                                type="number"
+                                                step="1"
+                                                px="0"
+                                                placeholder="Total seats for the event"
+                                                bg="transparent"
+                                                border="none"
+                                                rounded="none"
+                                                _hover={{}}
+                                                _focus={{}}
+                                                _active={{}}
+                                            />
+                                        </InputGroup>
+                                    </FormControl>
+                                ) : null}
                                 {wallet.chain == 'SOL' && !isSolHost && (
                                     <FormControl
                                         mt="6"
