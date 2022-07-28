@@ -80,9 +80,9 @@ export const ticketToIPFS = async (
     // @ts
     // @ts-ignore
     let { cid } = await ipfs.add(urlSource(res.data[0]))
-    await axios.post('/api/pin', {
-        hash: cid.toString(),
-    })
+//     await axios.post('/api/pin', {
+//         hash: cid.toString(),
+//     })
     return {
         img: `https://ipfs.io/ipfs/${cid.toString()}`,
         fastimg: res.data[0],
