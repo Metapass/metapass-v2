@@ -33,7 +33,7 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 try {
                     console.log('in1')
                     const isSol = !(address as string).startsWith('0x')
-                    console.log(isSol, 'isSol')
+                    console.log(isSol, 'isSol', address, 'address')
                     if (isSol) {
                         // console.log('in2')
                         const { data, error } = await supabase
@@ -42,7 +42,7 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                             .eq('address', address)
 
                         data?.length === 0
-                            ? res.status(404).send('User not found')
+                            ? res.status(404).json({ result: 'User not found' })
                             : res.status(200).json({ email: data?.[0]?.email })
                     } else {
                         // console.log('in')
