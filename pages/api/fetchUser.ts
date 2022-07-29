@@ -28,14 +28,18 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (auth === `Bearer ${process.env.API_KEY}`) {
             if (address !== undefined) {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('email')
-                    .eq('address', utils.getAddress(address))
+                try {
+                    const { data, error } = await supabase
+                        .from('users')
+                        .select('email')
+                        .eq('address', utils.getAddress(address))
 
-                data?.length === 0
-                    ? res.status(404).send('User not found')
-                    : res.status(200).json({ email: data?.[0]?.email })
+                    data?.length === 0
+                        ? res.status(404).send('User not found')
+                        : res.status(200).json({ email: data?.[0]?.email })
+                } catch (error) {
+                    res.status(404).send("Invalid address")
+                }
             } else {
                 res.status(400).send('Please add in address')
             }
