@@ -28,9 +28,14 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const { address } = req.body
 
         if (auth === `Bearer ${process.env.API_KEY}`) {
+            console.log(address !== undefined)
             if (address !== undefined) {
                 try {
-                    if (PublicKey.isOnCurve(address)) {
+                    console.log('in1')
+                    const isSol = !(address as string).startsWith('0x')
+                    console.log(isSol, 'isSol')
+                    if (isSol) {
+                        // console.log('in2')
                         const { data, error } = await supabase
                             .from('users')
                             .select('email')
@@ -40,6 +45,7 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                             ? res.status(404).send('User not found')
                             : res.status(200).json({ email: data?.[0]?.email })
                     } else {
+                        // console.log('in')
                         const { data, error } = await supabase
                             .from('users')
                             .select('email')
