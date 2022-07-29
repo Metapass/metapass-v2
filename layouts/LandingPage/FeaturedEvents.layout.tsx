@@ -37,6 +37,7 @@ import { MdTag } from 'react-icons/md'
 import { AiOutlineSend } from 'react-icons/ai'
 import { SetStateAction } from 'react'
 import FeaturedEventCard from '../../components/Card/FeaturedEventCard.component'
+import EventsLoading from '../../components/Misc/EventsLoading.component'
 
 export default function FeaturedEvents() {
     const [email, setEmail] = useState<string>('')
@@ -194,7 +195,7 @@ export default function FeaturedEvents() {
             polygonEvents.data.featuredEntities
         )
         const solanaEvents: Event[] = await getSolanaFetauredEvents()
-        allEvents = [...polygonData, ...solanaEvents]
+        allEvents = [...polygonData, ...solanaEvents].reverse()
         setFeatEvents(allEvents)
     }
     useEffect(() => {
@@ -238,18 +239,24 @@ export default function FeaturedEvents() {
                             mx={{ base: '10', xl: '20' }}
                             flexWrap="wrap"
                         >
-                            {featEvents.length > 0
+                            {featEvents.length > 1
                                 ? featEvents.map((data, key) => (
                                       <Box
                                           my="5px"
-                                          maxW={{ base: '330px', xl: '390px' }}
+                                          maxW={{
+                                              base: '330px',
+                                              xl: '390px',
+                                          }}
                                           key={key}
                                           h="full"
                                           flex="1"
                                           marginLeft="30px"
-                                          minW={{ base: '330px', xl: '390px' }}
+                                          minW={{
+                                              base: '330px',
+                                              xl: '390px',
+                                          }}
                                       >
-                                          <Skeleton
+                                          {/* <Skeleton
                                               maxW={{
                                                   base: '330px',
                                                   xl: '390px',
@@ -260,59 +267,15 @@ export default function FeaturedEvents() {
                                                   xl: '390px',
                                               }}
                                               isLoaded={data.id !== ''}
-                                          >
-                                              <EventCard event={data} />
-                                          </Skeleton>
+                                          > */}
+                                          <EventCard event={data} />
+                                          {/* </Skeleton> */}
                                       </Box>
                                   ))
                                 : [1, 2, 3, 4, 5, 6].map((data, key) => (
-                                      <Box
-                                          my="5px"
-                                          maxW={{ base: '330px', xl: '390px' }}
-                                          key={key}
-                                          h="full"
-                                          flex="1"
-                                          marginLeft="30px"
-                                          minW={{ base: '330px', xl: '390px' }}
-                                          borderRadius="xl"
-                                      >
-                                          <Skeleton
-                                              maxW={{
-                                                  base: '330px',
-                                                  xl: '390px',
-                                              }}
-                                              key={key}
-                                              minW={{
-                                                  base: '330px',
-                                                  xl: '390px',
-                                              }}
-                                              isLoaded={false}
-                                              borderRadius="md"
-                                          >
-                                              <Flex
-                                                  direction="column"
-                                                  rounded="lg"
-                                                  overflow="hidden"
-                                                  bg="white"
-                                                  _hover={{
-                                                      transform: 'scale(1.01)',
-                                                  }}
-                                                  _active={{
-                                                      transform: 'scale(1.03)',
-                                                  }}
-                                                  transitionDuration="200ms"
-                                                  cursor="pointer"
-                                                  boxShadow="0px -4px 52px rgba(0, 0, 0, 0.11)"
-                                                  w="full"
-                                                  border="1px"
-                                                  position="relative"
-                                                  h="15rem"
-                                                  borderRadius="30px"
-                                                  borderColor="blackAlpha.200"
-                                              ></Flex>
-                                          </Skeleton>
-                                      </Box>
+                                      <EventsLoading key={key} />
                                   ))}
+
                             <Box p="10" />
                         </Flex>
                     </ScrollContainer>
@@ -325,16 +288,20 @@ export default function FeaturedEvents() {
                     experimental_spaceY="4"
                     mt="4"
                 >
-                    {featEvents.map((data, key) => (
-                        <Skeleton
-                            key={key}
-                            maxW={{ base: '330px', xl: '390px' }}
-                            minW={{ base: '330px', xl: '390px' }}
-                            isLoaded={data !== undefined && data !== null}
-                        >
-                            <EventCard key={key} event={data} />
-                        </Skeleton>
-                    ))}
+                    {featEvents.length > 1
+                        ? featEvents.map((data, key) => (
+                              <Skeleton
+                                  key={key}
+                                  maxW={{ base: '330px', xl: '390px' }}
+                                  minW={{ base: '330px', xl: '390px' }}
+                                  isLoaded={data !== undefined && data !== null}
+                              >
+                                  <EventCard key={key} event={data} />
+                              </Skeleton>
+                          ))
+                        : [1, 2, 3, 4, 5, 6].map((data, key) => (
+                              <EventsLoading key={key} />
+                          ))}
                 </Flex>
                 <Flex
                     justify="center"
