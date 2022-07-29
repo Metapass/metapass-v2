@@ -42,7 +42,9 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                             .eq('address', address)
 
                         data?.length === 0
-                            ? res.status(404).json({ result: 'User not found' })
+                            ? res
+                                  .status(404)
+                                  .json({ result: 'User not found', address })
                             : res.status(200).json({ email: data?.[0]?.email })
                     } else {
                         // console.log('in')
