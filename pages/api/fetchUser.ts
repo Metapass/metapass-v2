@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import Cors from 'cors'
 import { utils } from 'ethers'
 import { supabase } from '../../lib/config/supabaseConfig'
+import { PublicKey } from '@solana/web3.js'
 
 const cors = Cors({
     methods: ['GET', 'POST'],
@@ -29,16 +30,27 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
         if (auth === `Bearer ${process.env.API_KEY}`) {
             if (address !== undefined) {
                 try {
-                    const { data, error } = await supabase
-                        .from('users')
-                        .select('email')
-                        .eq('address', utils.getAddress(address))
+                    if (PublicKey.isOnCurve(address)) {
+                        const { data, error } = await supabase
+                            .from('users')
+                            .select('email')
+                            .eq('address', address)
 
-                    data?.length === 0
-                        ? res.status(404).send('User not found')
-                        : res.status(200).json({ email: data?.[0]?.email })
+                        data?.length === 0
+                            ? res.status(404).send('User not found')
+                            : res.status(200).json({ email: data?.[0]?.email })
+                    } else {
+                        const { data, error } = await supabase
+                            .from('users')
+                            .select('email')
+                            .eq('address', utils.getAddress(address))
+
+                        data?.length === 0
+                            ? res.status(404).send('User not found')
+                            : res.status(200).json({ email: data?.[0]?.email })
+                    }
                 } catch (error) {
-                    res.status(404).send("Invalid address")
+                    res.status(404).send('Invalid address')
                 }
             } else {
                 res.status(400).send('Please add in address')

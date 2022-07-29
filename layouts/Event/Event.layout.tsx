@@ -415,6 +415,7 @@ export default function EventLayout({ event }: { event: Event }) {
                             signedTx.serialize(),
                             {
                                 preflightCommitment: 'recent',
+                                // skipPreflight: true,
                             }
                         )
                         await axios.post(
@@ -450,6 +451,10 @@ export default function EventLayout({ event }: { event: Event }) {
                         const e = error as Error
                         if (e.message.includes('0x1')) {
                             toast.error("You don't have enough funds")
+                        } else {
+                            toast.error(
+                                'Something went wrong, can you reach out to us in our discord(https://discord.gg/7QDkBT39r8)?'
+                            )
                         }
                         console.log(
                             'Error in sending txn, line 323, Event.layout.tsx',

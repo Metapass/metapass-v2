@@ -48,9 +48,9 @@ export const generateMetadata = async (event: Event, ticketImage: string) => {
             },
         }
         let { cid } = await ipfs.add(JSON.stringify(SAMPLE_METADATA))
-        await axios.post('/api/pin', {
-            hash: cid.toString(),
-        })
+        // await axios.post('/api/pin', {
+        //     hash: cid.toString(),
+        // })
         return `https://ipfs.io/ipfs/${cid.toString()}`
     } catch (error) {
         console.log('error in generateMetadata.ts', error)
