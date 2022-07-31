@@ -1,8 +1,6 @@
 import {
-    Avatar,
     Box,
     Button,
-    Divider,
     Flex,
     FormControl,
     FormLabel,
@@ -15,7 +13,6 @@ import {
     MenuItem,
     MenuList,
     Text,
-    useDisclosure,
 } from '@chakra-ui/react'
 
 import { FaChevronDown } from 'react-icons/fa'
@@ -50,7 +47,7 @@ export default function Step4({
             domain && setEnsName(domain?.domain as string)
         }
         resolve()
-    }, [event.owner])
+    }, [event.owner, wallet.chain])
 
     return (
         <>

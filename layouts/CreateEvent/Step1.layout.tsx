@@ -16,19 +16,11 @@ import {
     MenuDivider,
     MenuItem,
     MenuList,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    Select,
     Switch,
     Text,
     useDisclosure,
 } from '@chakra-ui/react'
-
+import { useRecoilState } from 'recoil'
 import { MdCalendarToday as CalendarToday } from 'react-icons/md'
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import { useContext, useEffect, useState } from 'react'
@@ -36,7 +28,7 @@ import { FaChevronDown } from 'react-icons/fa'
 import EventCard from '../../components/Card/EventCard.component'
 import DateModal from './DateModal.layout'
 import { walletContext, WalletType } from '../../utils/walletContext'
-import { Chain } from '../../types/blockchain.types'
+import { inviteOnlyAtom } from '../../lib/recoil/atoms'
 export type PaymentToken = 'USDC' | 'USDT'
 export const CustomTokens = {
     SOL: {
@@ -56,10 +48,11 @@ export default function Step1({
     isSolHost: Boolean
 }) {
     const [isPaid, setIsPaid] = useState(true)
+    const [isInviteOnly, setIsInviteOnly] = useRecoilState(inviteOnlyAtom)
     const [formDetails, setFormDetails] = useState({
         title: '',
         type: '',
-        category: { category: [''], event_type: '' },
+        category: { category: [''], event_type: '', inviteOnly: false },
         fee: 0,
         date: '',
         seats: 0,
@@ -78,11 +71,10 @@ export default function Step1({
     useEffect(() => {
         if (wallet.chain === 'SOL') {
             formDetails.customSPLToken = CustomTokens.SOL[paymentToken]
-            console.log(formDetails.customSPLToken)
         } else if (wallet.chain === 'POLYGON') {
             formDetails.customSPLToken = CustomTokens.POLYGON[paymentToken]
         }
-    }, [paymentToken])
+    }, [paymentToken, formDetails, wallet.chain])
     // In the future we should prompt either solana or eth wallet to connect base on the chain user selects in form
     if (wallet.address) {
         return (
@@ -142,6 +134,41 @@ export default function Step1({
                                 })
                             }}
                             isChecked={isPaid}
+                            id="price"
+                            colorScheme="linkedin"
+                        />
+                    </FormControl>
+
+                    <FormControl
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        fontFamily="body"
+                        mt="2"
+                        fontWeight="normal"
+                    >
+                        <FormLabel
+                            fontFamily="body"
+                            color="blackAlpha.700"
+                            fontWeight="normal"
+                            mb="0"
+                            htmlFor="price"
+                        >
+                            Invite only Event?
+                        </FormLabel>
+
+                        <Switch
+                            onChange={(e) => {
+                                setIsInviteOnly(e.target.checked)
+                                setFormDetails({
+                                    ...formDetails,
+                                    category: {
+                                        ...formDetails.category,
+                                        inviteOnly: e.target.checked,
+                                    },
+                                })
+                            }}
+                            isChecked={isInviteOnly}
                             id="price"
                             colorScheme="linkedin"
                         />

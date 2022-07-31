@@ -1,125 +1,63 @@
-import { Box, Button, Flex, Text } from '@chakra-ui/react'
+import { Box, Text } from '@chakra-ui/react'
+import { useState } from 'react'
+import RequiredQues from '../../components/Misc/RequiredQues.misc'
+import NextStep from '../../components/Buttons/NextStep.button'
+import CustomQues from '../../components/Misc/CustomQues.misc'
 
-import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
-import '@uiw/react-md-editor/markdown-editor.css'
-import '@uiw/react-markdown-preview/markdown.css'
-import { useContext } from 'react'
-import EventCard from '../../components/Card/EventCard.component'
-import { walletContext } from '../../utils/walletContext'
-import EventLayout from '../Event/Event.layout'
-
-export default function Step5({
+export default function Step2({
     event,
     onSubmit,
-    inTxn,
 }: {
-    event: any
     onSubmit: Function
-    inTxn: any
+    event: any
 }) {
-    const [wallet, setWallet] = useContext(walletContext)
-
     return (
-        <>
-            {wallet.address && event.date && event.image?.gallery.length > 0 && (
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault()
-                        onSubmit()
-                    }}
+        <form
+            onSubmit={(e) => {
+                e.preventDefault()
+            }}
+        >
+            <Box color="brand.black">
+                <Text
+                    align="center"
+                    color="brand.black400"
+                    fontSize="4xl"
+                    fontWeight="semibold"
+                    mt="4"
                 >
-                    <Box color="brand.black">
-                        <Text
-                            align="center"
-                            color="brand.black400"
-                            fontSize="4xl"
-                            fontWeight="semibold"
-                        >
-                            Review the details
-                        </Text>
+                    Customize Register Form
+                </Text>
 
-                        <Flex
-                            w="full"
-                            px="20"
-                            mt="4"
-                            wrap={{ lg: 'wrap', xl: 'nowrap' }}
-                            experimental_spaceY="4"
-                            justify="center"
-                            experimental_spaceX="14"
-                        >
-                            <Box w="full">
-                                <Text
-                                    textAlign="center"
-                                    fontFamily="body"
-                                    color="blackAlpha.600"
-                                    mb="3"
-                                >
-                                    Event page
-                                </Text>
-                                <Box
-                                    h="fit-content"
-                                    w="full"
-                                    bg="white"
-                                    px="4"
-                                    py="2"
-                                    boxShadow="0px -4.59297px 120.336px rgba(0, 0, 0, 0.06)"
-                                    rounded="xl"
-                                >
-                                    <EventLayout event={event} />
-                                </Box>
-                            </Box>
-                            <Box>
-                                <Text
-                                    textAlign="center"
-                                    fontFamily="body"
-                                    color="blackAlpha.600"
-                                    mb="3"
-                                >
-                                    Event card
-                                </Text>
-                                <Box
-                                    h="fit-content"
-                                    w={{ base: '320px', xl: '360px' }}
-                                >
-                                    <EventCard event={event} />
-                                </Box>
-                            </Box>
-                        </Flex>
-                        {/* @ts-ignore */}
-                        <Box align="center" mt="10" mb="20">
-                            <Button
-                                size="lg"
-                                rounded="full"
-                                type="submit"
-                                bg="brand.gradient"
-                                color="white"
-                                rightIcon={
-                                    <Flex
-                                        justify="center"
-                                        alignItems="center"
-                                        transitionDuration="200ms"
-                                        _groupHover={{
-                                            transform: 'translateX(4px)',
-                                        }}
-                                    >
-                                        <ChevronRight />
-                                    </Flex>
-                                }
-                                _hover={{}}
-                                _focus={{}}
-                                _active={{}}
-                                py="7"
-                                role="group"
-                                fontWeight="medium"
-                                px="8"
-                                isLoading={false}
-                            >
-                                Publish Event
-                            </Button>
-                        </Box>
+                <Text align="center" color="gray.500" fontSize="lg">
+                    These questions will be asked to guests when they register
+                    for the event.
+                </Text>
+
+                <Box
+                    w="full"
+                    px="64"
+                    display="flex"
+                    justifyContent="center"
+                    my="10"
+                >
+                    <Box
+                        py="6"
+                        w="full"
+                        border="dashed 1px"
+                        borderColor="gray.300"
+                        rounded="lg"
+                        px="8"
+                        gap="6"
+                        display="flex"
+                        flexDir="column"
+                    >
+                        <RequiredQues />
+                        <Box w="full" h="1px" bg="gray.300" m="auto" />
+                        <CustomQues />
                     </Box>
-                </form>
-            )}
-        </>
+                </Box>
+                <NextStep />
+            </Box>
+        </form>
     )
 }

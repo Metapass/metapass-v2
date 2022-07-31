@@ -121,34 +121,38 @@ export default function EventLayout({ event }: { event: Event }) {
     const [toOpen, setToOpen] = useState<boolean>(false)
 
     const user = supabase.auth.user()
-    const addUser = async () => {
-        try {
-            if (user && wallet.address) {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('address', wallet.address)
-                //  console.log('d', data, wallet.address)
-                if (data && data?.length > 0) {
-                    console.log('user already exists', data)
-                } else {
-                    const { data, error } = await supabase.from('users').upsert(
-                        {
-                            address: wallet.address,
-                            email: user.email,
-                            Name: user.user_metadata.name,
-                            avatar_url: user.user_metadata.avatar_url,
-                        },
 
-                        { returning: 'minimal' }
-                    )
-                }
-            }
-        } catch (error) {
-            console.log('e', error)
-        }
-    }
     useEffect(() => {
+        const addUser = async () => {
+            try {
+                if (user && wallet.address) {
+                    const { data, error } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('address', wallet.address)
+                    //  console.log('d', data, wallet.address)
+                    if (data && data?.length > 0) {
+                        console.log('user already exists', data)
+                    } else {
+                        const { data, error } = await supabase
+                            .from('users')
+                            .upsert(
+                                {
+                                    address: wallet.address,
+                                    email: user.email,
+                                    Name: user.user_metadata.name,
+                                    avatar_url: user.user_metadata.avatar_url,
+                                },
+
+                                { returning: 'minimal' }
+                            )
+                    }
+                }
+            } catch (error) {
+                console.log('e', error)
+            }
+        }
+
         addUser()
     }, [user, wallet.address])
 
