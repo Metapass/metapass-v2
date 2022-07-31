@@ -81,7 +81,6 @@ export default function Step1({
             <form
                 onSubmit={(e) => {
                     e.preventDefault()
-                    // console.log("form",submitting)
                     if (submitting) {
                         // console.log('submitting')
                         onSubmit(formDetails)

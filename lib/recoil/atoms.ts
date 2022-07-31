@@ -2,12 +2,12 @@ import { atom } from 'recoil'
 
 const stepAtom = atom<number>({
     key: 'stepAtom',
-    default: 0,
+    default: 4,
 })
 
 const inviteOnlyAtom = atom<boolean>({
     key: 'inviteOnlyAtom',
-    default: false,
+    default: true,
 })
 
 export { stepAtom, inviteOnlyAtom }

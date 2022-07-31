@@ -1,28 +1,37 @@
-import { Button, Flex, Input, Text } from '@chakra-ui/react'
+import { Button, Checkbox, Flex, Input, Text } from '@chakra-ui/react'
 import { useState } from 'react'
 import { TbEdit } from 'react-icons/tb'
 import { toast } from 'react-hot-toast'
-import { AiTwotoneDelete } from 'react-icons/ai'
 import { Reorder, useDragControls } from 'framer-motion'
-import { TbDragDrop } from 'react-icons/tb'
+import FormQuestion from '../Elements/FormQuestion.item'
+
+interface Question {
+    val: string
+    isRequired: boolean
+}
 
 const CustomQues = () => {
     const [questions, setQuestions] = useState<string[]>([])
-    const [val, setVal] = useState<string>()
+    const [vals, setVals] = useState<string>('')
 
     const controls = useDragControls()
 
     const addQues = (val: string) => {
-        if (val !== '' && val !== undefined) {
-            if (questions.indexOf(val) === -1) {
-                setQuestions([...questions, val])
-                setVal('')
-            } else {
-                toast.error('Value already added')
-            }
+        if (questions.indexOf(val) === -1) {
+            setQuestions([...questions, val])
+            setVals('')
         } else {
-            toast.error('Put in some value first')
+            toast.error('Question already exists with the same name')
         }
+    }
+
+    const delQues = (q: string) => {
+        let newArr = questions.filter((ques) => {
+            return ques !== q
+        })
+
+        setQuestions(newArr)
+        toast.success('Question Deleted')
     }
 
     return (
@@ -41,25 +50,15 @@ const CustomQues = () => {
                     px="6"
                     mx="3"
                     as={Reorder.Group}
+                    py="2"
                 >
-                    {questions.map((q) => (
-                        <Flex
-                            alignItems="center"
-                            gap="3"
-                            w="full"
-                            as={Reorder.Item}
-                            value={q}
+                    {questions.map((q: string) => (
+                        <FormQuestion
                             key={q}
-                            id={q}
-                        >
-                            <TbDragDrop
-                                onPointerDown={(event) => controls.start(event)}
-                                size={23}
-                            />
-                            <Input variant="filled" value={q} readOnly />
-
-                            <AiTwotoneDelete size={25} />
-                        </Flex>
+                            q={q}
+                            delQues={delQues}
+                            controls={controls}
+                        />
                     ))}
                 </Flex>
             ) : (
@@ -67,32 +66,40 @@ const CustomQues = () => {
                     No custom questions added.
                 </Text>
             )}
-            <Flex
-                px="6"
-                py="4"
-                rounded="lg"
-                mx="3"
-                my="1"
-                gap="3"
-                alignItems="center"
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault()
+                    addQues(vals)
+                }}
             >
-                <Input
-                    placeholder="Example Question"
-                    value={val}
-                    onChange={(e) => setVal(e.target.value)}
-                />
-
-                <Button
-                    h="8"
-                    rounded="full"
+                <Flex
                     px="6"
-                    colorScheme="green"
-                    fontWeight="500"
-                    onClick={() => addQues(val as string)}
+                    py="4"
+                    rounded="lg"
+                    mx="3"
+                    my="1"
+                    gap="3"
+                    alignItems="center"
                 >
-                    + Add
-                </Button>
-            </Flex>
+                    <Input
+                        placeholder="Example Question"
+                        value={vals}
+                        onChange={(e) => setVals(e.target.value)}
+                        isRequired
+                    />
+
+                    <Button
+                        h="8"
+                        rounded="full"
+                        px="6"
+                        colorScheme="green"
+                        fontWeight="500"
+                        type="submit"
+                    >
+                        + Add
+                    </Button>
+                </Flex>
+            </form>
         </Flex>
     )
 }
