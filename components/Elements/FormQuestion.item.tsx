@@ -15,11 +15,21 @@ const FormQuestion = ({ q, delQues, controls }: any) => {
         >
             <TbDragDrop
                 onPointerDown={(event) => controls.start(event)}
-                size={23}
+                size={q.isRequired ? '26' : '23'}
                 cursor="grab"
             />
-            <Input variant="filled" value={q} readOnly />
-
+            <Input variant="filled" value={q.val} readOnly />
+            {q.isRequired && (
+                <Badge
+                    display="grid"
+                    placeItems="center"
+                    px="3"
+                    rounded="full"
+                    colorScheme="purple"
+                >
+                    Required
+                </Badge>
+            )}
             <AiTwotoneDelete
                 size={25}
                 onClick={() => delQues(q)}

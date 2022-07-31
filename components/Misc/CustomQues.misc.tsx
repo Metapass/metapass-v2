@@ -1,35 +1,40 @@
 import { Button, Checkbox, Flex, Input, Text } from '@chakra-ui/react'
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { TbEdit } from 'react-icons/tb'
 import { toast } from 'react-hot-toast'
 import { Reorder, useDragControls } from 'framer-motion'
 import FormQuestion from '../Elements/FormQuestion.item'
+import { Question } from '../../types/registerForm.types'
 
-interface Question {
-    val: string
-    isRequired: boolean
-}
-
-const CustomQues = () => {
-    const [questions, setQuestions] = useState<string[]>([])
-    const [vals, setVals] = useState<string>('')
+const CustomQues = ({
+    questions,
+    setQuestions,
+}: {
+    questions: Question[]
+    setQuestions: Dispatch<SetStateAction<Question[]>>
+}) => {
+    const [vals, setVals] = useState<Question>({
+        val: '',
+        isRequired: false,
+        id: 0,
+    })
 
     const controls = useDragControls()
 
-    const addQues = (val: string) => {
-        if (questions.indexOf(val) === -1) {
-            setQuestions([...questions, val])
-            setVals('')
-        } else {
-            toast.error('Question already exists with the same name')
+    const addQues = (val: Question) => {
+        let data = {
+            ...val,
+            id: questions.length + 1,
         }
+
+        setQuestions([...questions, data])
+        setVals({ val: '', isRequired: false, id: 0 })
     }
 
-    const delQues = (q: string) => {
+    const delQues = (q: Question) => {
         let newArr = questions.filter((ques) => {
             return ques !== q
         })
-
         setQuestions(newArr)
         toast.success('Question Deleted')
     }
@@ -52,9 +57,9 @@ const CustomQues = () => {
                     as={Reorder.Group}
                     py="2"
                 >
-                    {questions.map((q: string) => (
+                    {questions.map((q) => (
                         <FormQuestion
-                            key={q}
+                            key={q.id}
                             q={q}
                             delQues={delQues}
                             controls={controls}
@@ -83,11 +88,20 @@ const CustomQues = () => {
                 >
                     <Input
                         placeholder="Example Question"
-                        value={vals}
-                        onChange={(e) => setVals(e.target.value)}
+                        value={vals.val}
+                        onChange={(e) =>
+                            setVals({ ...vals, val: e.target.value })
+                        }
                         isRequired
                     />
-
+                    <Checkbox
+                        isChecked={vals.isRequired}
+                        onChange={(e) =>
+                            setVals({ ...vals, isRequired: e.target.checked })
+                        }
+                    >
+                        Required
+                    </Checkbox>
                     <Button
                         h="8"
                         rounded="full"

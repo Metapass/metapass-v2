@@ -1,17 +1,17 @@
-import { Box, Text } from '@chakra-ui/react'
+import { Box, Text, Button, Flex } from '@chakra-ui/react'
 import RequiredQues from '../../components/Misc/RequiredQues.misc'
-import NextStep from '../../components/Buttons/NextStep.button'
 import CustomQues from '../../components/Misc/CustomQues.misc'
 import { useState } from 'react'
+import { Question } from '../../types/registerForm.types'
+import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 
-export default function Step2({
-    event,
+export default function Step5({
     onSubmit,
 }: {
-    onSubmit: Function
-    event: any
+    onSubmit: (data: Question[]) => void
 }) {
-    const [form, setForm] = useState<any>([])
+    const [questions, setQuestions] = useState<Question[]>([])
+
     return (
         <Box color="brand.black">
             <Text
@@ -49,10 +49,46 @@ export default function Step2({
                 >
                     <RequiredQues />
                     <Box w="full" h="1px" bg="gray.300" m="auto" />
-                    <CustomQues />
+                    <CustomQues
+                        questions={questions}
+                        setQuestions={setQuestions}
+                    />
                 </Box>
             </Box>
-            <NextStep />
+            <Flex
+                justifyContent="center"
+                alignItems="center"
+                alignContent="center"
+                mt="10"
+                mb="20"
+            >
+                <Button
+                    onClick={() => onSubmit(questions)}
+                    size="lg"
+                    rounded="full"
+                    bg="brand.gradient"
+                    color="white"
+                    rightIcon={
+                        <Flex
+                            justify="center"
+                            alignItems="center"
+                            transitionDuration="200ms"
+                            _groupHover={{ transform: 'translateX(4px)' }}
+                        >
+                            <ChevronRight />
+                        </Flex>
+                    }
+                    _hover={{}}
+                    _focus={{}}
+                    _active={{}}
+                    py="7"
+                    role="group"
+                    fontWeight="medium"
+                    px="8"
+                >
+                    Next Step
+                </Button>
+            </Flex>
         </Box>
     )
 }

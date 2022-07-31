@@ -42,9 +42,10 @@ import toast from 'react-hot-toast'
 import { MetapassProgram } from '../../types/MetapassProgram.types'
 import { useAccount } from 'wagmi'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { inviteOnlyAtom, stepAtom } from '../../lib/recoil/atoms'
+import { inviteOnlyAtom, stepAtom, formDetails } from '../../lib/recoil/atoms'
 import Step5 from '../../layouts/CreateEvent/Step5.layout'
 import EventCreatedModal from '../../components/Modals/EventCreated.modal'
+import { eventData } from '../../lib/constants'
 declare const window: any
 
 const Create: NextPage = () => {
@@ -53,39 +54,10 @@ const Create: NextPage = () => {
     const [step, setStep] = useRecoilState(stepAtom)
     const isInviteOnly = useRecoilValue(inviteOnlyAtom)
     const [isSolHost, setIsSolHost] = useState<Boolean>(true)
-    const [event, setEvent] = useState<Event>({
-        id: '',
-        title: '',
-        childAddress: '',
-        category: {
-            event_type: '',
-            category: [''],
-        },
-        image: {
-            image: '',
-            gallery: [],
-            video: '',
-        },
-        eventHost: '',
-        fee: 0,
-        date: '',
-        description: {
-            short_desc: '',
-            long_desc: '',
-        },
-        seats: 0,
-        owner: '',
-        type: '',
-        tickets_available: 0,
-        tickets_sold: 0,
-        buyers: [],
-        link: '',
-        isHuddle: false,
-        isSolana: false,
-        displayName: '',
-        profileImage: '',
-        customSPLToken: '',
-    })
+    const [event, setEvent] = useState<Event>(eventData)
+
+    const [formData, setFormData] = useRecoilState(formDetails)
+    console.log(formData)
 
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
@@ -100,7 +72,6 @@ const Create: NextPage = () => {
     const [txnId, setTxnId] = useState<string | null>(null)
     const [isPublished, setIsPublished] = useState(false)
     const [inTxn, setInTxn] = useState(false)
-    const { hasCopied, onCopy } = useClipboard(eventLink)
     const [child, setChild] = useState<any>('')
     const [multichainProvider] = useMultichainProvider(
         'POLYGON',
@@ -673,17 +644,22 @@ const Create: NextPage = () => {
                         </Box>
                         {isInviteOnly ? (
                             <>
-                                <Box display={step === 4 ? 'block' : 'none'}>
-                                    {/* STEP5🔺 */}
-                                    <Step5
-                                        event={event}
-                                        onSubmit={
-                                            wallet.chain === 'SOL'
-                                                ? onSolanaSubmit
-                                                : onPolygonSubmit
-                                        }
-                                    />
-                                </Box>
+                                {step === 4 ? (
+                                    <Box>
+                                        {/* STEP5🔺 */}
+                                        <Step5
+                                            onSubmit={(data) => {
+                                                setFormData({
+                                                    ...formData,
+                                                    customQues: data,
+                                                })
+
+                                                setStep(5)
+                                            }}
+                                        />
+                                    </Box>
+                                ) : null}
+
                                 <Box display={step === 5 ? 'block' : 'none'}>
                                     {/* STEP5🔺 */}
                                     <SubmitStep

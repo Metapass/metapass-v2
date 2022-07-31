@@ -8,7 +8,7 @@ import EventCard from '../../components/Card/EventCard.component'
 import { walletContext } from '../../utils/walletContext'
 import EventLayout from '../Event/Event.layout'
 
-export default function Step5({
+export default function SubmitStep({
     event,
     onSubmit,
     inTxn,
