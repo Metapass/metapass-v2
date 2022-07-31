@@ -14,7 +14,7 @@ import {
     MenuList,
     Text,
 } from '@chakra-ui/react'
-
+import { useRecoilValue } from 'recoil'
 import { FaChevronDown } from 'react-icons/fa'
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import '@uiw/react-md-editor/markdown-editor.css'
@@ -23,8 +23,8 @@ import { useContext, useEffect, useState } from 'react'
 import { walletContext, WalletType } from '../../utils/walletContext'
 import { encryptLink } from '../../utils/linkResolvers'
 import BoringAva from '../../utils/BoringAva'
-import { getAllEnsLinked } from '../../utils/resolveEns'
 import resolveDomains from '../../hooks/useDomain'
+import { inviteOnlyAtom } from '../../lib/recoil/atoms'
 
 export default function Step4({
     event,
@@ -33,6 +33,8 @@ export default function Step4({
     event: any
     onSubmit: Function
 }) {
+    const isInviteOnly = useRecoilValue(inviteOnlyAtom)
+
     const [wallet] = useContext<WalletType[]>(walletContext)
     const [_link, setLink] = useState<string>('')
     const [ensName, setEnsName] = useState<string>('')
@@ -338,7 +340,7 @@ export default function Step4({
                                 fontWeight="medium"
                                 px="8"
                             >
-                                Review Details
+                                {isInviteOnly ? 'Customize Register Form' : 'Review Details'}
                             </Button>
                         </Flex>
                     </Box>

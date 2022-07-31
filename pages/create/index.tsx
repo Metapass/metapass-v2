@@ -57,7 +57,6 @@ const Create: NextPage = () => {
     const [event, setEvent] = useState<Event>(eventData)
 
     const [formData, setFormData] = useRecoilState(formDetails)
-    console.log(formData)
 
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'

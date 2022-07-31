@@ -86,7 +86,7 @@ export default function Step5({
                     fontWeight="medium"
                     px="8"
                 >
-                    Next Step
+                    Review Details
                 </Button>
             </Flex>
         </Box>
