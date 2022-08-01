@@ -253,6 +253,7 @@ export default function Step1({
                                                     _hover={{}}
                                                     _focus={{}}
                                                     _active={{}}
+                                                    readOnly
                                                 />
                                                 <InputRightElement color="gray.400">
                                                     <FaChevronDown />
