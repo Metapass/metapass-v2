@@ -1,12 +1,16 @@
 import { Box, Flex, Text, Image } from '@chakra-ui/react'
 import { FaCheck } from 'react-icons/fa'
 import NavigationBar from '../../components/Navigation/NavigationBar.component'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { inviteOnlyAtom, stepAtom } from '../../lib/recoil/atoms'
 
-export default function CreateEventCTA() {
-    const [step, setStep] = useRecoilState(stepAtom)
-    const isInviteOnly = useRecoilValue(inviteOnlyAtom)
+export default function CreateEventCTA({
+    step,
+    setStep,
+    isInviteOnly,
+}: {
+    step: number
+    setStep: any
+    isInviteOnly: boolean
+}) {
     const steps = isInviteOnly ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5]
 
     return (

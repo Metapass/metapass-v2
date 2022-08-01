@@ -255,7 +255,7 @@ export default function Step1({
                                                     _hover={{}}
                                                     _focus={{}}
                                                     _active={{}}
-                                                    readOnly
+                                                    isReadOnly
                                                 />
                                                 <InputRightElement color="gray.400">
                                                     <FaChevronDown />
@@ -335,7 +335,7 @@ export default function Step1({
                                                     _hover={{}}
                                                     _focus={{}}
                                                     _active={{}}
-                                                    readOnly
+                                                    isReadOnly
                                                 />
                                                 <InputRightElement color="gray.400">
                                                     <FaChevronDown />
@@ -401,7 +401,7 @@ export default function Step1({
                                     </FormLabel>
                                     <InputGroup>
                                         <Input
-                                            required={isPaid}
+                                            isRequired={isPaid}
                                             onChange={(e) => {
                                                 setFormDetails({
                                                     ...formDetails,
@@ -422,6 +422,7 @@ export default function Step1({
                                             _hover={{}}
                                             _focus={{}}
                                             _active={{}}
+                                            value={formDetails.fee}
                                         />
                                         <InputRightElement>
                                             <Flex
@@ -462,7 +463,7 @@ export default function Step1({
                                                             <InputGroup>
                                                                 <Input
                                                                     fontSize="sm"
-                                                                    required
+                                                                    isRequired
                                                                     px="0"
                                                                     _placeholder={{
                                                                         color: 'gray.300',
@@ -477,6 +478,7 @@ export default function Step1({
                                                                     _hover={{}}
                                                                     _focus={{}}
                                                                     _active={{}}
+                                                                    isReadOnly
                                                                 />
 
                                                                 <Image
@@ -567,7 +569,7 @@ export default function Step1({
                                                 color: 'gray.300',
                                             }}
                                             fontSize="sm"
-                                            required
+                                            isRequired
                                             cursor="pointer"
                                             value={
                                                 formDetails.date.split('T')[0]
@@ -580,6 +582,7 @@ export default function Step1({
                                             _hover={{}}
                                             _focus={{}}
                                             _active={{}}
+                                            isReadOnly
                                         />
                                         <InputRightElement color="gray.400">
                                             <CalendarToday />
@@ -628,6 +631,7 @@ export default function Step1({
                                             _hover={{}}
                                             _focus={{}}
                                             _active={{}}
+                                            value={formDetails.seats}
                                         />
                                     </InputGroup>
                                 </FormControl>
@@ -676,6 +680,7 @@ export default function Step1({
                                                 _hover={{}}
                                                 _focus={{}}
                                                 _active={{}}
+                                                value={formDetails.displayName}
                                             />
                                         </InputGroup>
                                     </FormControl>
@@ -728,6 +733,7 @@ export default function Step1({
                                                     _hover={{}}
                                                     _focus={{}}
                                                     _active={{}}
+                                                    value={formDetails.profileImage}
                                                 />
                                                 <InputRightElement>
                                                     <Avatar

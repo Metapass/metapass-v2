@@ -599,7 +599,11 @@ const Create: NextPage = () => {
                 overflow="scroll"
                 overflowX="hidden"
             >
-                <CreateEventCTA />
+                <CreateEventCTA
+                    step={step}
+                    setStep={setStep}
+                    isInviteOnly={isInviteOnly}
+                />
                 {wallet.address != null ? (
                     <Box mt="6">
                         <Box display={step === 0 ? 'block' : 'none'}>

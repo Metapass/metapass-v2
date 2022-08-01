@@ -4,7 +4,7 @@ import { defaultFormData } from '../constants'
 
 const stepAtom = atom<number>({
     key: 'stepAtom',
-    default: 0,
+    default: 2,
 })
 
 const inviteOnlyAtom = atom<boolean>({

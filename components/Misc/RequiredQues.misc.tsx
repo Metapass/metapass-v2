@@ -1,10 +1,8 @@
 import { Flex, Badge, Box, Text } from '@chakra-ui/react'
 import { BsFillPersonFill } from 'react-icons/bs'
-import { useRecoilValue } from 'recoil'
-import { formDetails } from '../../lib/recoil/atoms'
+import { defaultFormData as formData } from '../../lib/constants'
 
 const RequiredQues = () => {
-    const formData = useRecoilValue(formDetails)
     return (
         <Flex direction="column" gap="2" fontWeight="medium">
             <Flex fontSize="xl" fontWeight="medium" alignItems="center" gap="1">
