@@ -15,7 +15,7 @@ export default function SubmitStep({
 }: {
     event: any
     onSubmit: Function
-    inTxn: any
+    inTxn: boolean
 }) {
     const [wallet, setWallet] = useContext(walletContext)
 
@@ -112,7 +112,7 @@ export default function SubmitStep({
                                 role="group"
                                 fontWeight="medium"
                                 px="8"
-                                isLoading={false}
+                                isLoading={inTxn}
                             >
                                 Publish Event
                             </Button>

@@ -46,6 +46,8 @@ import { inviteOnlyAtom, stepAtom, formDetails } from '../../lib/recoil/atoms'
 import Step5 from '../../layouts/CreateEvent/Step5.layout'
 import EventCreatedModal from '../../components/Modals/EventCreated.modal'
 import { eventData } from '../../lib/constants'
+import { polygonEventHandler } from '../../utils/helpers/onPolygonSubmit'
+import { formType } from '../../types/registerForm.types'
 declare const window: any
 
 const Create: NextPage = () => {
@@ -70,7 +72,7 @@ const Create: NextPage = () => {
     const [eventLink, setEventLink] = useState<any>(undefined)
     const [txnId, setTxnId] = useState<string | null>(null)
     const [isPublished, setIsPublished] = useState(false)
-    const [inTxn, setInTxn] = useState(false)
+    const [inTxn, setInTxn] = useState<boolean>(false)
     const [child, setChild] = useState<any>('')
     const [multichainProvider] = useMultichainProvider(
         'POLYGON',
@@ -112,6 +114,15 @@ const Create: NextPage = () => {
             console.log(error)
         }
     }, [wallet, contractAddress, isConnected, multichainProvider])
+
+    const uploadFormDetails = async (form: formType, child: string) => {
+        const { data, error } = await supabase.from('forms').insert({
+            event: child,
+            data: form,
+        })
+
+        error ? console.log(error) : console.log(data)
+    }
 
     const onPolygonSubmit = async () => {
         setInTxn(true)
@@ -178,15 +189,18 @@ const Create: NextPage = () => {
                         .from('events')
                         .insert({
                             contractAddress: child,
-                            inviteOnly: false,
+                            inviteOnly: isInviteOnly,
                         })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
                     setInTxn(false)
                     setChild(child)
+                    uploadFormDetails(formData, child)
                 })
             } catch (err: any) {
                 setInTxn(false)
+                setIsPublished(false)
+                toast.error('errorrrr')
             }
         } else {
             try {
@@ -276,15 +290,18 @@ const Create: NextPage = () => {
                         .from('events')
                         .insert({
                             contractAddress: child,
-                            inviteOnly: false,
+                            inviteOnly: isInviteOnly,
                         })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
                     setInTxn(false)
                     setChild(child)
+                    uploadFormDetails(formData, child)
                 })
             } catch (err: any) {
                 setInTxn(false)
+                setIsPublished(false)
+                toast.error('errorrrr2')
             }
         }
     }
@@ -658,19 +675,20 @@ const Create: NextPage = () => {
                                         />
                                     </Box>
                                 ) : null}
-
-                                <Box display={step === 5 ? 'block' : 'none'}>
-                                    {/* STEP5🔺 */}
-                                    <SubmitStep
-                                        event={event}
-                                        inTxn={inTxn}
-                                        onSubmit={
-                                            wallet.chain === 'SOL'
-                                                ? onSolanaSubmit
-                                                : onPolygonSubmit
-                                        }
-                                    />
-                                </Box>
+                                {step === 5 && (
+                                    <Box>
+                                        {/* STEP5🔺 */}
+                                        <SubmitStep
+                                            event={event}
+                                            inTxn={inTxn}
+                                            onSubmit={
+                                                wallet.chain === 'SOL'
+                                                    ? onSolanaSubmit
+                                                    : onPolygonSubmit
+                                            }
+                                        />
+                                    </Box>
+                                )}
                             </>
                         ) : (
                             <Box display={step === 4 ? 'block' : 'none'}>
