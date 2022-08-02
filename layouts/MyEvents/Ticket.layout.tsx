@@ -64,7 +64,7 @@ export default function TicketLayout({
                         .filter(
                             'event',
                             'in',
-                            `"${ethers.utils.getAddress(contractAddress)}"`
+                            `("${ethers.utils.getAddress(contractAddress)}")`
                         )
 
                     setQr(data?.[0]?.uuid)
