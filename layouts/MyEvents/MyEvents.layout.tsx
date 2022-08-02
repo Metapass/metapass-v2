@@ -17,6 +17,7 @@ import {
     Heading,
 } from '@chakra-ui/react'
 import axios from 'axios'
+import { ethers } from 'ethers'
 import { useEffect, useState, useContext } from 'react'
 import {
     Event,
@@ -350,10 +351,10 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                                             }
                                                             wallet={wallet}
                                                             ticket={data}
-                                                            contractAddress={
+                                                            contractAddress={ethers.utils.getAddress(
                                                                 data.event
                                                                     .childAddress
-                                                            }
+                                                            )}
                                                             eventLink={
                                                                 data.event
                                                                     .link as string
