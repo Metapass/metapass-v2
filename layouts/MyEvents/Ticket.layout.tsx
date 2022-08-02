@@ -66,7 +66,7 @@ export default function TicketLayout({
                             'in',
                             `("${ethers.utils.getAddress(contractAddress)}")`
                         )
-
+                    console.log(data)
                     setQr(data?.[0]?.uuid)
                 } catch (error) {}
             }
