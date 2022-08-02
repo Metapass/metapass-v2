@@ -27,7 +27,7 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const auth = req.headers.authorization
         const { address } = req.body
 
-        if (auth === `Bearer ${process.env.API_KEY}`) {
+        if (auth !== `Bearer ${process.env.API_KEY}`) {
             console.log(address !== undefined)
             if (address !== undefined) {
                 try {
