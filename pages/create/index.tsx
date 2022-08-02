@@ -45,7 +45,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { inviteOnlyAtom, stepAtom, formDetails } from '../../lib/recoil/atoms'
 import Step5 from '../../layouts/CreateEvent/Step5.layout'
 import EventCreatedModal from '../../components/Modals/EventCreated.modal'
-import { eventData } from '../../lib/constants'
+import { defaultFormData, eventData } from '../../lib/constants'
 import { polygonEventHandler } from '../../utils/helpers/onPolygonSubmit'
 import { formType } from '../../types/registerForm.types'
 declare const window: any
@@ -195,7 +195,10 @@ const Create: NextPage = () => {
                     setIsPublished(true)
                     setInTxn(false)
                     setChild(child)
-                    uploadFormDetails(formData, child)
+                    if (isInviteOnly) {
+                        uploadFormDetails(formData, child)
+                    }
+                    setFormData(defaultFormData)
                 })
             } catch (err: any) {
                 setInTxn(false)
@@ -296,7 +299,10 @@ const Create: NextPage = () => {
                     setIsPublished(true)
                     setInTxn(false)
                     setChild(child)
-                    uploadFormDetails(formData, child)
+                    if (isInviteOnly) {
+                        uploadFormDetails(formData, child)
+                    }
+                    setFormData(defaultFormData)
                 })
             } catch (err: any) {
                 setInTxn(false)

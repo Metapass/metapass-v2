@@ -422,7 +422,11 @@ export default function Step1({
                                             _hover={{}}
                                             _focus={{}}
                                             _active={{}}
-                                            value={formDetails.fee}
+                                            value={
+                                                formDetails.fee === 0
+                                                    ? ''
+                                                    : formDetails.fee
+                                            }
                                         />
                                         <InputRightElement>
                                             <Flex
@@ -631,7 +635,11 @@ export default function Step1({
                                             _hover={{}}
                                             _focus={{}}
                                             _active={{}}
-                                            value={formDetails.seats}
+                                            value={
+                                                formDetails.seats === 0
+                                                    ? ''
+                                                    : formDetails.seats
+                                            }
                                         />
                                     </InputGroup>
                                 </FormControl>
@@ -733,7 +741,9 @@ export default function Step1({
                                                     _hover={{}}
                                                     _focus={{}}
                                                     _active={{}}
-                                                    value={formDetails.profileImage}
+                                                    value={
+                                                        formDetails.profileImage
+                                                    }
                                                 />
                                                 <InputRightElement>
                                                     <Avatar

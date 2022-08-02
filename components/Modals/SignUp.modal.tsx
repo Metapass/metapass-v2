@@ -1,7 +1,7 @@
 declare let window: any
 
 import type { NextComponentType, NextPageContext } from 'next'
-import type { ModalProps } from '../../types/AuthModal.types'
+import type { ModalProps } from '../../types/ModalProps.types'
 import {
     Modal,
     ModalOverlay,

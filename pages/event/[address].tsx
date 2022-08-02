@@ -1,6 +1,5 @@
 import { Box, Flex } from '@chakra-ui/react'
-import type { NextPage } from 'next'
-
+import type { GetServerSideProps, NextPage } from 'next'
 import {
     CategoryType,
     DescriptionType,
@@ -14,41 +13,19 @@ import { Skeleton } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import { gqlEndpoint } from '../../utils/subgraphApi'
+import { eventData } from '../../lib/constants'
+import { supabase } from '../../lib/config/supabaseConfig'
 
-const Event: NextPage = () => {
+interface IPageProps {
+    isInviteOnly: boolean
+}
+
+const Event: NextPage<IPageProps> = ({ isInviteOnly }) => {
     const router = useRouter()
+
     const { address } = router.query
 
-    const [featEvent, setFeatEvent] = useState<Event>({
-        id: '',
-        title: '',
-        childAddress: '',
-        category: {
-            event_type: '',
-            category: [''],
-        },
-        image: {
-            image: '',
-            gallery: [],
-            video: '',
-        },
-        eventHost: '',
-        fee: 0,
-        date: '',
-        description: {
-            short_desc: '',
-            long_desc: '',
-        },
-        seats: 0,
-        owner: '',
-        // price: 0,
-        type: '',
-        tickets_available: 0,
-        tickets_sold: 0,
-        buyers: [],
-        isSolana: false,
-        isHuddle: false,
-    })
+    const [featEvent, setFeatEvent] = useState<Event>(eventData)
 
     async function getFeaturedEvents() {
         const featuredQuery = {
@@ -189,7 +166,7 @@ const Event: NextPage = () => {
                     <Skeleton isLoaded={featEvent.id !== ''}>
                         <EventLayout
                             event={featEvent}
-                            // address={address as string}
+                            isInviteOnly={isInviteOnly}
                         />
                     </Skeleton>
                 </Box>
@@ -199,3 +176,17 @@ const Event: NextPage = () => {
 }
 
 export default Event
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+    const { address } = ctx.query
+
+    const { data, error } = await supabase
+        .from('events')
+        .select('inviteOnly')
+        .eq('contractAddress', address)
+    return {
+        props: {
+            isInviteOnly: data?.[0].inviteOnly,
+        },
+    }
+}

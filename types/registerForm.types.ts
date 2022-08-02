@@ -11,4 +11,9 @@ interface formType {
     customQues: customQues
 }
 
-export type { Question, customQues, formType }
+interface formDataType {
+    id: number
+    data: formType
+}
+
+export type { Question, customQues, formType, formDataType }

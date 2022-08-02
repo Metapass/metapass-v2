@@ -43,7 +43,7 @@ import Confetti from '../../components/Misc/Confetti.component'
 import { ticketToIPFS } from '../../utils/imageHelper'
 import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
-
+import { IoCheckmarkDoneOutline } from 'react-icons/io5'
 import { decryptLink } from '../../utils/linkResolvers'
 
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
@@ -70,10 +70,17 @@ import axios from 'axios'
 import { generateMetadata } from '../../utils/generateMetadata'
 import { useAccount, useSigner } from 'wagmi'
 import { supabase } from '../../lib/config/supabaseConfig'
+import { RegisterFormModal } from '../../components/Modals/RegisterForm.modal'
 
 declare const window: any
 
-export default function EventLayout({ event }: { event: Event }) {
+export default function EventLayout({
+    event,
+    isInviteOnly,
+}: {
+    event: Event
+    isInviteOnly: boolean
+}) {
     const network =
         process.env.NEXT_PUBLIC_ENV === 'prod'
             ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
@@ -94,8 +101,6 @@ export default function EventLayout({ event }: { event: Event }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [wallet] = useContext<WalletType[]>(walletContext)
     const solanaWallet = useWallet()
-
-    // const connection = new Connection(clusterApiUrl(network ?? 'devnet'))
 
     const [explorerLink, setExplorerLink] = useState<string>('')
     let opensea =
@@ -504,6 +509,11 @@ export default function EventLayout({ event }: { event: Event }) {
     }, [event.link])
 
     const [isDisplayed, setIsDisplayed] = useState(false)
+    const {
+        isOpen: isOpen2,
+        onOpen: onOpen2,
+        onClose: onClose2,
+    } = useDisclosure()
 
     useEffect(() => {
         if (hasBought) {
@@ -524,6 +534,12 @@ export default function EventLayout({ event }: { event: Event }) {
                     }}
                 />
             )}
+            <RegisterFormModal
+                isOpen={isOpen2}
+                onOpen={onOpen2}
+                onClose={onClose2}
+                event={event.childAddress}
+            />
             {hasBought && <Confetti />}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />
@@ -844,9 +860,13 @@ export default function EventLayout({ event }: { event: Event }) {
                             cursor: 'not-allowed',
                         }}
                         _hover={{}}
-                        onClick={
-                            event.isSolana ? buySolanaTicket : buyPolygonTicket
-                        }
+                        onClick={() => {
+                            isInviteOnly
+                                ? onOpen2()
+                                : event.isSolana
+                                ? buySolanaTicket
+                                : buyPolygonTicket
+                        }}
                         disabled={event.tickets_available === 0}
                         _focus={{}}
                         _active={{}}
@@ -855,19 +875,29 @@ export default function EventLayout({ event }: { event: Event }) {
                         leftIcon={
                             <Box
                                 _groupHover={{ transform: 'scale(1.1)' }}
-                                transitionDuration="200ms"
+                                transitionDuration="100ms"
                             >
-                                <Image
-                                    src="/assets/elements/event_ticket.svg"
-                                    w={{ base: '6', md: '5' }}
-                                    alt="ticket"
-                                />
+                                {isInviteOnly ? (
+                                    <IoCheckmarkDoneOutline size={22} />
+                                ) : (
+                                    <Image
+                                        src="/assets/elements/event_ticket.svg"
+                                        w={{ base: '6', md: '5' }}
+                                        alt="ticket"
+                                    />
+                                )}
                             </Box>
                         }
                     >
-                        {event.tickets_available === 0
-                            ? 'Sold Out'
-                            : 'Buy Ticket'}
+                        {isInviteOnly ? (
+                            <>Register</>
+                        ) : (
+                            <>
+                                {event.tickets_available === 0
+                                    ? 'Sold Out'
+                                    : 'Buy Ticket'}
+                            </>
+                        )}
                     </Button>
                 </Flex>
                 <Flex
