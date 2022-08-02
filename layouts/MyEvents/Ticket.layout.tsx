@@ -57,16 +57,19 @@ export default function TicketLayout({
         const fetchDetails = async () => {
             if (wallet.address && contractAddress) {
                 try {
+                    const { data: userData, error: userError } = await supabase
+                        .from('users')
+                        .select('id')
+                        .eq('address', wallet.address)
                     const { data, error } = await supabase
                         .from('tickets')
                         .select('uuid')
-                        .eq('buyer', wallet.address)
+                        .eq('buyer', userData?.[0]?.id)
                         .filter(
                             'event',
                             'in',
                             `("${ethers.utils.getAddress(contractAddress)}")`
                         )
-                    console.log(data)
                     setQr(data?.[0]?.uuid)
                 } catch (error) {}
             }
