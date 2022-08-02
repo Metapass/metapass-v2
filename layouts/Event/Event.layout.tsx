@@ -212,7 +212,19 @@ export default function EventLayout({ event }: { event: Event }) {
                                     gasPrice: 50,
                                     gasLimit: 900000,
                                 })
-                                .then(() => {})
+                                .then(() => {
+                                    if (
+                                        event.category.event_type == 'In-Person'
+                                    ) {
+                                        generateAndSendUUID(
+                                            event.childAddress,
+                                            wallet.address as string,
+                                            event.tickets_sold + 1
+                                        ).then((uuid) => {
+                                            setQrId(String(uuid))
+                                        })
+                                    }
+                                })
                                 .catch((err: any) => {
                                     toast.error(
                                         'Oops! Failed to mint the ticket'
@@ -226,7 +238,19 @@ export default function EventLayout({ event }: { event: Event }) {
                                         event.fee.toString()
                                     )._hex,
                                 })
-                                .then(() => {})
+                                .then(() => {
+                                    if (
+                                        event.category.event_type == 'In-Person'
+                                    ) {
+                                        generateAndSendUUID(
+                                            event.childAddress,
+                                            wallet.address as string,
+                                            event.tickets_sold + 1
+                                        ).then((uuid) => {
+                                            setQrId(String(uuid))
+                                        })
+                                    }
+                                })
                                 .catch((err: any) => {
                                     toast.error(err.data?.message, {
                                         id: 'error10',
@@ -245,14 +269,7 @@ export default function EventLayout({ event }: { event: Event }) {
                     metapass.on('Transfer', (res) => {
                         setIsLoading(false)
                         setHasBought(true)
-                        event.category.event_type == 'In-Person' &&
-                            generateAndSendUUID(
-                                event.childAddress,
-                                wallet.address as string,
-                                event.tickets_sold + 1
-                            ).then((uuid) => {
-                                setQrId(String(uuid))
-                            })
+
                         let link =
                             opensea +
                             '/' +
