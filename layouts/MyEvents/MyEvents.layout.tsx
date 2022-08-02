@@ -351,10 +351,10 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                                             }
                                                             wallet={wallet}
                                                             ticket={data}
-                                                            contractAddress={ethers.utils.getAddress(
+                                                            contractAddress={
                                                                 data.event
                                                                     .childAddress
-                                                            )}
+                                                            }
                                                             eventLink={
                                                                 data.event
                                                                     .link as string
