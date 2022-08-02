@@ -217,7 +217,9 @@ export default function EventLayout({ event }: { event: Event }) {
                                         event.category.event_type == 'In-Person'
                                     ) {
                                         generateAndSendUUID(
-                                            event.childAddress,
+                                            ethers.utils.getAddress(
+                                                event.childAddress
+                                            ),
                                             wallet.address as string,
                                             event.tickets_sold + 1
                                         ).then((uuid) => {
@@ -243,7 +245,9 @@ export default function EventLayout({ event }: { event: Event }) {
                                         event.category.event_type == 'In-Person'
                                     ) {
                                         generateAndSendUUID(
-                                            event.childAddress,
+                                            ethers.utils.getAddress(
+                                                event.childAddress
+                                            ),
                                             wallet.address as string,
                                             event.tickets_sold + 1
                                         ).then((uuid) => {
