@@ -16,7 +16,11 @@ const Home: NextPage = ({ events }: any) => {
         <Box h="100vh" overflow="scroll">
             <HeroCTA />
             <Box p={{ md: '2' }} />
-            <FeaturedEvents events={events} />
+            {events ? (
+                <FeaturedEvents events={events} />
+            ) : (
+                <>No Featured Events</>
+            )}
         </Box>
     )
 }
@@ -75,41 +79,45 @@ export const getServerSideProps = async () => {
         return decodeURIComponent(atob(str))
     }
     const parseFeaturedEvents = (featuredEvents: Array<any>): Event[] => {
-        return featuredEvents.map((event: { event: any }) => {
-            let type = JSON.parse(
-                UnicodeDecodeB64(event.event.category)
-            ).event_type
-            let category: CategoryType = JSON.parse(
-                UnicodeDecodeB64(event.event.category)
-            )
-            let image: ImageType = JSON.parse(
-                UnicodeDecodeB64(event.event.image)
-            )
-            let desc: DescriptionType = JSON.parse(
-                UnicodeDecodeB64(event.event.description)
-            )
-            return {
-                id: event.event.id,
-                title: event.event.title,
-                childAddress: event.event.childAddress,
-                category: category,
-                image: image,
-                eventHost: event.event.eventHost,
-                fee: Number(event.event.fee) / 10 ** 18,
-                date: event.event.date,
-                description: desc,
-                seats: event.event.seats,
-                owner: event.event.eventHost,
-                link: event.event.link,
-                type: type,
-                tickets_available:
-                    event.event.seats - event.event.ticketsBought.length,
-                tickets_sold: event.event.ticketsBought.length,
-                buyers: event.event.buyers,
-                isHuddle: event.event.link.includes('huddle01'),
-                isSolana: false,
-            } as Event
-        })
+        if (featuredEvents) {
+            return featuredEvents.map((event: { event: any }) => {
+                let type = JSON.parse(
+                    UnicodeDecodeB64(event.event.category)
+                ).event_type
+                let category: CategoryType = JSON.parse(
+                    UnicodeDecodeB64(event.event.category)
+                )
+                let image: ImageType = JSON.parse(
+                    UnicodeDecodeB64(event.event.image)
+                )
+                let desc: DescriptionType = JSON.parse(
+                    UnicodeDecodeB64(event.event.description)
+                )
+                return {
+                    id: event.event.id,
+                    title: event.event.title,
+                    childAddress: event.event.childAddress,
+                    category: category,
+                    image: image,
+                    eventHost: event.event.eventHost,
+                    fee: Number(event.event.fee) / 10 ** 18,
+                    date: event.event.date,
+                    description: desc,
+                    seats: event.event.seats,
+                    owner: event.event.eventHost,
+                    link: event.event.link,
+                    type: type,
+                    tickets_available:
+                        event.event.seats - event.event.ticketsBought.length,
+                    tickets_sold: event.event.ticketsBought.length,
+                    buyers: event.event.buyers,
+                    isHuddle: event.event.link.includes('huddle01'),
+                    isSolana: false,
+                } as Event
+            })
+        } else {
+            return []
+        }
     }
     const getSolanaFetauredEvents = async (): Promise<Event[]> => {
         let data: Event[] = []
@@ -149,6 +157,6 @@ export const getServerSideProps = async () => {
 
     const finalEvents = await getFeaturedEvents()
     return {
-        props: { events: finalEvents },
+        props: { events: finalEvents.length > 0 ? finalEvents : null },
     }
 }
