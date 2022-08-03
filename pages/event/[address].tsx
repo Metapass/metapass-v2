@@ -14,6 +14,7 @@ import { Skeleton } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import { gqlEndpoint } from '../../utils/subgraphApi'
+import Head from 'next/head'
 
 const Event: NextPage = () => {
     const router = useRouter()
@@ -161,6 +162,13 @@ const Event: NextPage = () => {
 
     return (
         <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
+            <Head>
+                <meta property="og:title" content={featEvent.title} />
+                <meta
+                    property="og:image"
+                    content={`https://mp-og.vercel.app/${featEvent.title}`}
+                />
+            </Head>
             <NavigationBar mode="white" />
             <Box p="4" />
             <Flex
@@ -174,10 +182,7 @@ const Event: NextPage = () => {
             >
                 <Box maxW="1000px" w="full">
                     <Skeleton isLoaded={featEvent.id !== ''}>
-                        <EventLayout
-                            event={featEvent}
-                            // address={address as string}
-                        />
+                        <EventLayout event={featEvent} />
                     </Skeleton>
                 </Box>
             </Flex>
