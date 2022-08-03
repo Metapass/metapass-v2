@@ -14,55 +14,54 @@ import { Skeleton } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import { gqlEndpoint } from '../../utils/subgraphApi'
+import { ethers } from 'ethers'
 
-const Event: NextPage = () => {
-    const router = useRouter()
-    const { address } = router.query
+const Event: NextPage = ({ event }: any) => {
+    const [featEvent, setFeatEvent] = useState<Event>(event)
 
-    const [featEvent, setFeatEvent] = useState<Event>({
-        id: '',
-        title: '',
-        childAddress: '',
-        category: {
-            event_type: '',
-            category: [''],
-        },
-        image: {
-            image: '',
-            gallery: [],
-            video: '',
-        },
-        eventHost: '',
-        fee: 0,
-        date: '',
-        description: {
-            short_desc: '',
-            long_desc: '',
-        },
-        seats: 0,
-        owner: '',
-        // price: 0,
-        type: '',
-        tickets_available: 0,
-        tickets_sold: 0,
-        buyers: [],
-        isSolana: false,
-        isHuddle: false,
-    })
+    return (
+        <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
+            <NavigationBar mode="white" />
+            <Box p="4" />
+            <Flex
+                justify="center"
+                mx="auto"
+                mt="16"
+                px="6"
+                w="full"
+                maxW="1400px"
+                experimental_spaceX="10"
+            >
+                <Box maxW="1000px" w="full">
+                    <Skeleton isLoaded={featEvent.id !== ''}>
+                        <EventLayout event={featEvent} />
+                    </Skeleton>
+                </Box>
+            </Flex>
+        </Box>
+    )
+}
 
+export default Event
+
+export async function getServerSideProps({ query }: any) {
+    const address = query.address
+    const isEtherAddress = ethers.utils.isAddress(address)
     async function getFeaturedEvents() {
         const featuredQuery = {
             operationName: 'fetchFeaturedEvents',
             query: `query fetchFeaturedEvents {
-          childCreatedEntities(where:{id:"${String(address).toLowerCase()}"}) {
-            id
-            title
-            childAddress
-            category
-            ticketsBought{
-                id
-            }
-            link
+                childCreatedEntities(where:{id:"${String(
+                    address
+                ).toLowerCase()}"}) {
+                    id
+                    title
+                    childAddress
+                    category
+                    ticketsBought{
+                        id
+                    }
+                    link
             description
             date
             fee
@@ -70,10 +69,10 @@ const Event: NextPage = () => {
             eventHost
             seats
             buyers{
-              id
+                id
             }
-          }
-          
+        }
+        
     }`,
         }
         try {
@@ -130,16 +129,13 @@ const Event: NextPage = () => {
             isHuddle: event.link.includes('huddle'),
         } as Event
     }
-
     const getSolanaEvents = async () => {
         const event = await axios.get(
             `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/getEvent/${address}`
         )
         if (event.data) {
             const data = event.data
-            console.log(data)
-            console.log(address)
-            setFeatEvent({
+            return {
                 ...data,
                 owner: data.eventHost,
                 childAddress: address as string,
@@ -147,55 +143,22 @@ const Event: NextPage = () => {
                 image: JSON.parse(data.image),
                 description: JSON.parse(data.description),
                 isSolana: true,
-            })
+            }
         } else {
             console.log('No such document!')
         }
     }
-    useEffect(() => {
-        getFeaturedEvents()
-            .then((res) => {
-                // console.log(res.data.childCreatedEntities[0],"res")
-                if (res.data.childCreatedEntities[0]) {
-                    const data: Event = parseFeaturedEvents(
-                        res.data.childCreatedEntities[0]
-                    )
+    let parsedEvent
+    if (isEtherAddress) {
+        const event = await getFeaturedEvents()
+        parsedEvent = parseFeaturedEvents(event.data.childCreatedEntities[0])
+    } else {
+        parsedEvent = await getSolanaEvents()
+    }
 
-                    // console.log(data, 'data')
-                    setFeatEvent(data)
-                } else {
-                    getSolanaEvents()
-                }
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-    }, [address])
-
-    return (
-        <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
-            <NavigationBar mode="white" />
-            <Box p="4" />
-            <Flex
-                justify="center"
-                mx="auto"
-                mt="16"
-                px="6"
-                w="full"
-                maxW="1400px"
-                experimental_spaceX="10"
-            >
-                <Box maxW="1000px" w="full">
-                    <Skeleton isLoaded={featEvent.id !== ''}>
-                        <EventLayout
-                            event={featEvent}
-                            // address={address as string}
-                        />
-                    </Skeleton>
-                </Box>
-            </Flex>
-        </Box>
-    )
+    return {
+        props: {
+            event: parsedEvent,
+        },
+    }
 }
-
-export default Event
