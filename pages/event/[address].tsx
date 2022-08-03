@@ -11,7 +11,6 @@ import { useEffect, useState } from 'react'
 import NavigationBar from '../../components/Navigation/NavigationBar.component'
 import EventLayout from '../../layouts/Event/Event.layout'
 import { Skeleton } from '@chakra-ui/react'
-import { useRouter } from 'next/router'
 import axios from 'axios'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import { ethers } from 'ethers'
@@ -34,7 +33,11 @@ const Event: NextPage = ({ event }: any) => {
             >
                 <Box maxW="1000px" w="full">
                     <Skeleton isLoaded={featEvent.id !== ''}>
-                        <EventLayout event={featEvent} />
+                        {featEvent ? (
+                            <EventLayout event={featEvent} />
+                        ) : (
+                            <>Event Doesn't Exist</>
+                        )}
                     </Skeleton>
                 </Box>
             </Flex>
@@ -46,7 +49,7 @@ export default Event
 
 export async function getServerSideProps({ query }: any) {
     const address = query.address
-    const isEtherAddress = ethers.utils.isAddress(address)
+    let parsedEvent
     async function getFeaturedEvents() {
         const featuredQuery = {
             operationName: 'fetchFeaturedEvents',
@@ -62,18 +65,17 @@ export async function getServerSideProps({ query }: any) {
                         id
                     }
                     link
-            description
-            date
-            fee
-            image
-            eventHost
-            seats
-            buyers{
-                id
-            }
-        }
-        
-    }`,
+                    description
+                    date
+                    fee
+                    image
+                    eventHost
+                    seats
+                    buyers{
+                        id
+                    }
+                }
+            }`,
         }
         try {
             const res = await axios({
@@ -96,38 +98,42 @@ export async function getServerSideProps({ query }: any) {
     function UnicodeDecodeB64(str: any) {
         return decodeURIComponent(atob(str))
     }
-    const parseFeaturedEvents = (event: any): Event => {
-        let type: string = JSON.parse(
-            UnicodeDecodeB64(event.category)
-        ).event_type
-        let category: CategoryType = JSON.parse(
-            UnicodeDecodeB64(event.category)
-        )
-        let image: ImageType = JSON.parse(UnicodeDecodeB64(event.image))
-        let desc: DescriptionType = JSON.parse(
-            UnicodeDecodeB64(event.description)
-        )
-        return {
-            id: event.id,
-            title: event.title,
-            childAddress: event.childAddress,
-            category: category,
-            image: image,
-            eventHost: event.eventHost,
-            fee: Number(event.fee) / 10 ** 18,
-            date: event.date,
-            description: desc,
-            seats: event.seats,
-            owner: event.eventHost,
-            link: event.link,
-            type: type,
-            tickets_available: event.seats - event.ticketsBought?.length,
-            tickets_sold: event.ticketsBought?.length,
-            buyers: event.buyers,
-            slides: image.gallery,
-            isSolana: false,
-            isHuddle: event.link.includes('huddle'),
-        } as Event
+    const parseFeaturedEvents = (event: any) => {
+        if (event) {
+            let type: string = JSON.parse(
+                UnicodeDecodeB64(event.category)
+            ).event_type
+            let category: CategoryType = JSON.parse(
+                UnicodeDecodeB64(event.category)
+            )
+            let image: ImageType = JSON.parse(UnicodeDecodeB64(event.image))
+            let desc: DescriptionType = JSON.parse(
+                UnicodeDecodeB64(event.description)
+            )
+            return {
+                id: event.id,
+                title: event.title,
+                childAddress: event.childAddress,
+                category: category,
+                image: image,
+                eventHost: event.eventHost,
+                fee: Number(event.fee) / 10 ** 18,
+                date: event.date,
+                description: desc,
+                seats: event.seats,
+                owner: event.eventHost,
+                link: event.link,
+                type: type,
+                tickets_available: event.seats - event.ticketsBought?.length,
+                tickets_sold: event.ticketsBought?.length,
+                buyers: event.buyers,
+                slides: image.gallery,
+                isSolana: false,
+                isHuddle: event.link.includes('huddle'),
+            } as Event
+        } else {
+            return undefined
+        }
     }
     const getSolanaEvents = async () => {
         const event = await axios.get(
@@ -145,15 +151,21 @@ export async function getServerSideProps({ query }: any) {
                 isSolana: true,
             }
         } else {
-            console.log('No such document!')
+            return undefined
         }
     }
-    let parsedEvent
-    if (isEtherAddress) {
-        const event = await getFeaturedEvents()
-        parsedEvent = parseFeaturedEvents(event.data.childCreatedEntities[0])
-    } else {
-        parsedEvent = await getSolanaEvents()
+
+    if (address) {
+        const isEtherAddress = ethers.utils.isAddress(address)
+
+        if (isEtherAddress) {
+            const event = await getFeaturedEvents()
+            parsedEvent = parseFeaturedEvents(
+                event.data.childCreatedEntities[0]
+            )
+        } else {
+            parsedEvent = await getSolanaEvents()
+        }
     }
 
     return {
