@@ -32,13 +32,13 @@ const Event: NextPage = ({ event }: any) => {
                 experimental_spaceX="10"
             >
                 <Box maxW="1000px" w="full">
-                    <Skeleton isLoaded={featEvent.id !== ''}>
-                        {featEvent ? (
+                    {featEvent ? (
+                        <Skeleton isLoaded={featEvent.id !== ''}>
                             <EventLayout event={featEvent} />
-                        ) : (
-                            <>Event Doesn't Exist</>
-                        )}
-                    </Skeleton>
+                        </Skeleton>
+                    ) : (
+                        <Flex alignItems={'center'}>Event Doesn't Exist</Flex>
+                    )}
                 </Box>
             </Flex>
         </Box>
@@ -132,7 +132,7 @@ export async function getServerSideProps({ query }: any) {
                 isHuddle: event.link.includes('huddle'),
             } as Event
         } else {
-            return undefined
+            return null
         }
     }
     const getSolanaEvents = async () => {
@@ -151,7 +151,7 @@ export async function getServerSideProps({ query }: any) {
                 isSolana: true,
             }
         } else {
-            return undefined
+            return null
         }
     }
 
