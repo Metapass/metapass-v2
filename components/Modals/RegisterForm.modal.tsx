@@ -71,6 +71,7 @@ export const RegisterFormModal = ({
             : toast.success('Details Uploaded')
 
         setIsLoading(false)
+        reset()
         onClose()
     }
 
