@@ -187,7 +187,7 @@ const Create: NextPage = () => {
                     event.link,
                     event.date,
                     b64EncodeUnicode(JSON.stringify(event.category)),
-                    'undefined'
+                    b64EncodeUnicode(JSON.stringify(event.venue))
                 )
                 txn.wait().then(async (res: any) => {
                     let child = res.events.filter(
