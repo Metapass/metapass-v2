@@ -11,6 +11,7 @@ export type Event = {
     seats: number
     owner: string
     type: string
+    venue?: VenueType
     buyers: Array<string>
     tickets_available: number
     tickets_sold: number
@@ -21,7 +22,11 @@ export type Event = {
     profileImage?: string
     customSPLToken?: string
 }
-
+export type VenueType = {
+    name: string
+    x: number
+    y: number
+}
 export type ImageType = {
     image: string
     gallery: Array<string>
@@ -32,6 +37,6 @@ export type DescriptionType = {
     long_desc?: string
 }
 export type CategoryType = {
-    event_type: string
+    event_type: 'In-Person' | 'Online' | ''
     category: [string]
 }

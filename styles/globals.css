@@ -62,3 +62,9 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #d981ff;
 }
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+  }
