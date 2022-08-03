@@ -131,7 +131,7 @@ export async function getServerSideProps({ query }: any) {
     }
     const getSolanaEvents = async () => {
         const event = await axios.get(
-            `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/getEvent/${address}`
+            `${process.env.NEXT_PUBLIC_MONGO_API}/getEvent/${address}`
         )
         if (event.data) {
             const data = event.data
