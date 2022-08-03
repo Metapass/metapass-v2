@@ -132,24 +132,11 @@ const Event: NextPage = () => {
     }
 
     const getSolanaEvents = async () => {
-        const event = await axios.get(
-            `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/getEvent/${address}`
-        )
-        if (event.data) {
-            const data = event.data
-            console.log(data)
-            console.log(address)
-            setFeatEvent({
-                ...data,
-                owner: data.eventHost,
-                childAddress: address as string,
-                category: JSON.parse(data.category),
-                image: JSON.parse(data.image),
-                description: JSON.parse(data.description),
-                isSolana: true,
+        if (address) {
+            const { data } = await axios.post('/api/getSolanaEvents', {
+                address: address,
             })
-        } else {
-            console.log('No such document!')
+            setFeatEvent(data)
         }
     }
     useEffect(() => {
