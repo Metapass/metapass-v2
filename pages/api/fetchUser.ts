@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import Cors from 'cors'
 import { utils } from 'ethers'
 import { supabase } from '../../lib/config/supabaseConfig'
-import { PublicKey } from '@solana/web3.js'
+import { AddressLookupTableInstruction, PublicKey } from '@solana/web3.js'
 
 const cors = Cors({
     methods: ['GET', 'POST'],
@@ -22,20 +22,16 @@ function runMiddleware(req: NextApiRequest, res: NextApiResponse, fn: any) {
 
 const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
     await runMiddleware(req, res, cors)
+    const { address } = req.body
 
     if (req.method === 'POST') {
         const auth = req.headers.authorization
-        const { address } = req.body
 
-        if (auth !== `Bearer ${process.env.API_KEY}`) {
-            console.log(address !== undefined)
+        if (auth === `Bearer ${process.env.API_KEY}`) {
             if (address !== undefined) {
                 try {
-                    console.log('in1')
                     const isSol = !(address as string).startsWith('0x')
-                    console.log(isSol, 'isSol', address, 'address')
                     if (isSol) {
-                        // console.log('in2')
                         const { data, error } = await supabase
                             .from('users')
                             .select('email')
@@ -48,7 +44,6 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                               })
                             : res.status(200).json({ email: data?.[0]?.email })
                     } else {
-                        // console.log('in')
                         const { data, error } = await supabase
                             .from('users')
                             .select('email')
@@ -62,16 +57,28 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                             : res.status(200).json({ email: data?.[0]?.email })
                     }
                 } catch (error) {
-                    res.status(404).send('Invalid address')
+                    res.status(404).json({
+                        address: address,
+                        data: 'Invalid Address',
+                    })
                 }
             } else {
-                res.status(400).send('Please add in address')
+                res.status(400).json({
+                    address: address,
+                    data: 'Please add in address',
+                })
             }
         } else {
-            res.status(401).send('Authorization Code required')
+            res.status(401).json({
+                address: address,
+                data: 'Authorization Code required',
+            })
         }
     } else {
-        res.status(402).send('Method not allowed')
+        res.status(402).json({
+            address: address,
+            data: 'Method not allowed',
+        })
     }
 }
 
