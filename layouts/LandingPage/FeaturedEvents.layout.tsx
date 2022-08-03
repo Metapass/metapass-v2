@@ -163,30 +163,8 @@ export default function FeaturedEvents() {
         })
     }
     const getSolanaFetauredEvents = async (): Promise<Event[]> => {
-        let data: Event[] = []
-        const event = await axios.get(
-            `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/featuredEvents`
-        )
-        if (event.data) {
-            console.log(event.data)
-            let events = event.data
-
-            events.forEach((event: any) => {
-                data.push({
-                    ...event,
-                    category: JSON.parse(event.category),
-                    image: JSON.parse(event.image),
-                    description: JSON.parse(event.description),
-                    owner: event.eventHost,
-                    childAddress: event.eventPDA,
-                    isSolana: true,
-                })
-            })
-            return data
-        } else {
-            console.log('No such document! solana events')
-            return []
-        }
+        const { data } = await axios.get('/api/solFeat')
+        return data.events
     }
     const getFeaturedEvents = async () => {
         let allEvents: Event[] = []
