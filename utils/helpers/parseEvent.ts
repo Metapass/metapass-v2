@@ -6,7 +6,7 @@ import {
 } from '../../types/Event.type'
 
 function UnicodeDecodeB64(str: any) {
-    return decodeURIComponent(atob(str))
+    return decodeURIComponent(Buffer.from(str, 'base64').toString())
 }
 
 const parseEvent = (event: any): Event => {

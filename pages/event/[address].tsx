@@ -96,7 +96,7 @@ export async function getServerSideProps({ query }: any) {
         }
     }
     function UnicodeDecodeB64(str: any) {
-        return decodeURIComponent(atob(str))
+        return decodeURIComponent(Buffer.from(str, 'base64').toString())
     }
     const parseFeaturedEvents = (event: any) => {
         if (event) {
