@@ -21,9 +21,10 @@ import {
     Fade,
     useDisclosure,
 } from '@chakra-ui/react'
-import { useState, useContext, useEffect, Component } from 'react'
+import { useState, useContext, useEffect, Component, useRef } from 'react'
 import ReactPlayer from 'react-player'
 import { Event } from '../../types/Event.type'
+import { FiMapPin } from 'react-icons/fi'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
@@ -70,10 +71,17 @@ import axios from 'axios'
 import { generateMetadata } from '../../utils/generateMetadata'
 import { useAccount, useSigner } from 'wagmi'
 import { supabase } from '../../lib/config/supabaseConfig'
+import mapboxgl from 'mapbox-gl'
 
 declare const window: any
 
 export default function EventLayout({ event }: { event: Event }) {
+    // event.venue = {
+    //     name: 'JW Marriott Hotel New Delhi Aerocity',
+    //     x: 77.121491,
+    //     y: 28.552782,
+    // }
+    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
         process.env.NEXT_PUBLIC_ENV === 'prod'
             ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
@@ -94,7 +102,7 @@ export default function EventLayout({ event }: { event: Event }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [wallet] = useContext<WalletType[]>(walletContext)
     const solanaWallet = useWallet()
-
+    const mapContainerRef = useRef(null)
     // const connection = new Connection(clusterApiUrl(network ?? 'devnet'))
 
     const [explorerLink, setExplorerLink] = useState<string>('')
@@ -514,7 +522,7 @@ export default function EventLayout({ event }: { event: Event }) {
                 console.log(event.link)
             } else {
                 const declink = decryptLink(event.link as string)
-                setEventLink(declink)
+                setEventLink(declink as string)
             }
         }
     }, [event.link])
@@ -528,6 +536,36 @@ export default function EventLayout({ event }: { event: Event }) {
             }, 5000)
         }
     }, [hasBought])
+    useEffect(() => {
+        if (event && event.venue) {
+            const map = new mapboxgl.Map({
+                container: mapContainerRef.current || 'map', // container ID
+                style: 'mapbox://styles/mapbox/streets-v11', // style URL
+                center: [event.venue.x, event.venue.y], // starting position
+                zoom: 8, // starting zoom
+            })
+            map.addControl(
+                new mapboxgl.GeolocateControl({
+                    positionOptions: {
+                        enableHighAccuracy: true,
+                    },
+                    // When active the map will receive updates to the device's location as it changes.
+                    trackUserLocation: true,
+                    // Draw an arrow next to the location dot to indicate which direction the device is heading.
+                    showUserLocation: true,
+                })
+            )
+            // const markerNode = document.createElement('div')
+            // add navigation control (the +/- zoom buttons)
+
+            map.addControl(new mapboxgl.NavigationControl(), 'bottom-right')
+            const marker = new mapboxgl.Marker() // initialize a new marker
+                .setLngLat([event?.venue?.x, event?.venue?.y]) // Marker [lng, lat] coordinates
+                .addTo(map)
+
+            return () => map.remove()
+        }
+    }, [event?.venue?.name])
 
     return (
         <>
@@ -811,10 +849,12 @@ export default function EventLayout({ event }: { event: Event }) {
                         <Text fontSize="2xl" fontWeight="semibold">
                             {event.title}
                         </Text>
+                        {/* <Flex mt="1" flexDirection="column"> */}
                         <Flex
                             experimental_spaceX="2"
                             color="blackAlpha.600"
                             mt="1"
+                            mr="4"
                         >
                             <Box
                                 boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
@@ -843,6 +883,29 @@ export default function EventLayout({ event }: { event: Event }) {
                                 {Array(event.category.category).join(' & ')}
                             </Box>
                         </Flex>
+                        {/* <Box
+                                boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
+                                rounded="full"
+                                fontSize="10px"
+                                fontWeight="semibold"
+                                border="1px"
+                                borderColor="blackAlpha.200"
+                                px="2"
+                                py="0.5"
+                                color="blackAlpha.800"
+                                bg="white"
+                                w="fit-content"
+                            >
+                                <Flex gap="2" align="center">
+                                    <FiMapPin size="16" />
+                                    <Text>
+                                        {' '}
+                                        {event.venue?.name ||
+                                            'J.W Marriott Hotel Aerocity New Delhi'}
+                                    </Text>
+                                </Flex>
+                            </Box> */}
+                        {/* </Flex> */}
                     </Box>
 
                     <Button
@@ -1058,7 +1121,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                 <MarkdownPreview
                                     style={{
                                         fontSize: event.description.long_desc
-                                            ? '12px'
+                                            ? '17px'
                                             : '14px',
                                         overflow: 'auto',
                                     }}
@@ -1205,6 +1268,55 @@ export default function EventLayout({ event }: { event: Event }) {
                             boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                             py="2"
                         >
+                            <Flex justify="space-between" align="center">
+                                <Text color="blackAlpha.500" fontSize="xs">
+                                    Tickets Sold
+                                </Text>
+                                <Flex fontSize="xs" align="center">
+                                    <Text
+                                        fontWeight="bold"
+                                        style={{
+                                            background:
+                                                '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
+                                            WebkitBackgroundClip: 'text',
+                                            WebkitTextFillColor: 'transparent',
+                                        }}
+                                    >
+                                        {event.tickets_sold}
+                                    </Text>
+                                    <Text fontSize="xx-small">/</Text>
+                                    <Text> {event.seats}</Text>
+                                </Flex>
+                            </Flex>
+                            <Flex
+                                w="full"
+                                h="5"
+                                bg="brand.gradient"
+                                rounded="full"
+                                mt="2"
+                                justify="end"
+                                overflow="hidden"
+                            >
+                                {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
+                                <Box
+                                    w={`${
+                                        100 -
+                                        (event.tickets_sold / event.seats) * 100
+                                    }%`}
+                                    h="full"
+                                    bg="gray.100"
+                                />
+                            </Flex>
+                        </Box>
+                        <Box
+                            mt="3"
+                            rounded="xl"
+                            px="4"
+                            border="1px"
+                            borderColor="blackAlpha.100"
+                            boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
+                            py="2"
+                        >
                             <Text color="blackAlpha.500" fontSize="xs">
                                 Hosted By
                             </Text>
@@ -1239,6 +1351,40 @@ export default function EventLayout({ event }: { event: Event }) {
                                 </Flex>
                             </Flex>
                         </Box>
+                        {event.venue?.name && (
+                            <Box
+                                mt="3"
+                                rounded="xl"
+                                px="4"
+                                border="1px"
+                                borderColor="blackAlpha.100"
+                                boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
+                                py="2"
+                            >
+                                <Flex justify="space-between" align="center">
+                                    <Text color="blackAlpha.700" fontSize="sm">
+                                        Location
+                                    </Text>
+                                    <Flex fontSize="xs" align="center"></Flex>
+                                </Flex>
+                                <Link>
+                                    <Text
+                                        color="blackAlpha.800"
+                                        as="u"
+                                        fontSize="xs"
+                                    >
+                                        {event.venue.name}
+                                    </Text>
+                                </Link>
+                                <Box
+                                    className="map-container"
+                                    w="100%"
+                                    h="15vh"
+                                    borderRadius="md"
+                                    ref={mapContainerRef}
+                                ></Box>
+                            </Box>
+                        )}
                         <Box
                             mt="3"
                             rounded="xl"
@@ -1287,55 +1433,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                 </Text>
                             )}
                         </Box>
-                        <Box
-                            mt="3"
-                            rounded="xl"
-                            px="4"
-                            border="1px"
-                            borderColor="blackAlpha.100"
-                            boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
-                            py="2"
-                        >
-                            <Flex justify="space-between" align="center">
-                                <Text color="blackAlpha.500" fontSize="xs">
-                                    Tickets Sold
-                                </Text>
-                                <Flex fontSize="xs" align="center">
-                                    <Text
-                                        fontWeight="bold"
-                                        style={{
-                                            background:
-                                                '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
-                                            WebkitBackgroundClip: 'text',
-                                            WebkitTextFillColor: 'transparent',
-                                        }}
-                                    >
-                                        {event.tickets_sold}
-                                    </Text>
-                                    <Text fontSize="xx-small">/</Text>
-                                    <Text> {event.seats}</Text>
-                                </Flex>
-                            </Flex>
-                            <Flex
-                                w="full"
-                                h="5"
-                                bg="brand.gradient"
-                                rounded="full"
-                                mt="2"
-                                justify="end"
-                                overflow="hidden"
-                            >
-                                {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
-                                <Box
-                                    w={`${
-                                        100 -
-                                        (event.tickets_sold / event.seats) * 100
-                                    }%`}
-                                    h="full"
-                                    bg="gray.100"
-                                />
-                            </Flex>
-                        </Box>
+
                         {event.buyers.find(
                             (buyer: any) =>
                                 String(buyer.id).toLowerCase() ===

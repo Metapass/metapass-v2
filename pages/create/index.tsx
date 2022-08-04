@@ -498,6 +498,7 @@ const Create: NextPage = () => {
                             type: event.category.event_type,
                             link: event.link,
                             fee: event.fee,
+                            venue: JSON.stringify(event.venue),
                         }
                     )
                     const { data, error } = await supabase
@@ -612,6 +613,7 @@ const Create: NextPage = () => {
                                 type: event.category.event_type,
                                 link: event.link,
                                 fee: event.fee,
+                                venue: JSON.stringify(event.venue),
                             }
                         )
                         const { data, error } = await supabase
