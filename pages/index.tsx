@@ -76,7 +76,7 @@ export const getServerSideProps = async () => {
         } catch (error) {}
     }
     function UnicodeDecodeB64(str: any) {
-        return decodeURIComponent(atob(str))
+        return decodeURIComponent(Buffer.from(str, 'base64').toString())
     }
     const parseFeaturedEvents = (featuredEvents: Array<any>): Event[] => {
         if (featuredEvents) {
