@@ -29,6 +29,8 @@ export const RegisterFormModal = ({
     const [formData, setData] = useState<formDataType>()
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
+    const user = supabase.auth.user()
+
     useEffect(() => {
         const fetchData = async () => {
             if (event) {
@@ -64,6 +66,7 @@ export const RegisterFormModal = ({
             event: utils.getAddress(event as string),
             form: formData?.id,
             response: res,
+            email: user?.email,
         })
 
         error
@@ -98,6 +101,9 @@ export const RegisterFormModal = ({
                                         w="md"
                                         isRequired={ques.isRequired}
                                         {...register(camelize(ques.val))}
+                                        defaultValue={
+                                            ques.id === 2 ? user?.email : ''
+                                        }
                                     />
                                 </FormControl>
                             ))}

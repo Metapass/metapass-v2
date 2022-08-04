@@ -71,6 +71,8 @@ import { generateMetadata } from '../../utils/generateMetadata'
 import { useAccount, useSigner } from 'wagmi'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { RegisterFormModal } from '../../components/Modals/RegisterForm.modal'
+import { FiCheckCircle } from 'react-icons/fi'
+import { handleRegister } from '../../utils/helpers/handleRegister'
 
 declare const window: any
 
@@ -882,7 +884,7 @@ export default function EventLayout({
                         _hover={{}}
                         onClick={() => {
                             isInviteOnly
-                                ? onOpen2()
+                                ? handleRegister(user, onOpen2, setToOpen)
                                 : event.isSolana
                                 ? buySolanaTicket
                                 : buyPolygonTicket
@@ -898,7 +900,7 @@ export default function EventLayout({
                                 transitionDuration="100ms"
                             >
                                 {isInviteOnly ? (
-                                    <IoCheckmarkDoneOutline size={22} />
+                                    <FiCheckCircle size={22} />
                                 ) : (
                                     <Image
                                         src="/assets/elements/event_ticket.svg"
