@@ -15,6 +15,7 @@ import {
     Text,
 } from '@chakra-ui/react'
 import { useRecoilValue } from 'recoil'
+// import {VenueAutoComplete} from '../../components/Misc/Step4AutoComplete.component'
 import { FaChevronDown } from 'react-icons/fa'
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import '@uiw/react-md-editor/markdown-editor.css'
@@ -25,6 +26,7 @@ import { encryptLink } from '../../utils/linkResolvers'
 import BoringAva from '../../utils/BoringAva'
 import resolveDomains from '../../hooks/useDomain'
 import { inviteOnlyAtom } from '../../lib/recoil/atoms'
+import VenueAutoComplete from '../../components/Misc/Step4AutoComplete.component'
 
 export default function Step4({
     event,
@@ -38,7 +40,14 @@ export default function Step4({
     const [wallet] = useContext<WalletType[]>(walletContext)
     const [_link, setLink] = useState<string>('')
     const [ensName, setEnsName] = useState<string>('')
-    const [huddle, setHuddle] = useState(true)
+    const [venue, setVenue] = useState<'Huddle' | 'Self Hosted' | 'In Person'>(
+        'Huddle'
+    )
+    const [venueXY, setVenueXY] = useState({
+        name: '',
+        x: 0,
+        y: 0,
+    })
 
     useEffect(() => {
         const resolve = async () => {
@@ -51,13 +60,21 @@ export default function Step4({
         resolve()
     }, [event.owner, wallet.chain])
 
+    useEffect(() => {
+        console.log('venueXY', venueXY)
+    }, [venueXY])
+
     return (
         <>
             {wallet.address && (
                 <form
                     onSubmit={(e) => {
                         e.preventDefault()
-                        onSubmit(encryptLink(_link), huddle)
+                        onSubmit(
+                            encryptLink(_link),
+                            venue === 'Huddle',
+                            venueXY
+                        )
                     }}
                 >
                     <Box color="brand.black">
@@ -154,11 +171,7 @@ export default function Step4({
                                                     _placeholder={{
                                                         color: 'gray.300',
                                                     }}
-                                                    value={
-                                                        huddle
-                                                            ? 'Huddle01'
-                                                            : 'Self Hosted'
-                                                    }
+                                                    value={venue}
                                                     placeholder="Is this event using huddle01/self hosted?"
                                                     bg="transparent"
                                                     border="none"
@@ -181,55 +194,78 @@ export default function Step4({
                                             zIndex={9}
                                         >
                                             <MenuItem
-                                                onClick={() => setHuddle(true)}
+                                                onClick={() =>
+                                                    setVenue('Huddle')
+                                                }
                                             >
                                                 Huddle01
                                             </MenuItem>
                                             <MenuItem
-                                                onClick={() => setHuddle(false)}
+                                                onClick={() =>
+                                                    setVenue('Self Hosted')
+                                                }
                                             >
                                                 Self Hosted
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() =>
+                                                    setVenue('In Person')
+                                                }
+                                            >
+                                                In Person
                                             </MenuItem>
                                         </MenuList>
                                     </Menu>
                                 </FormControl>
-                                {!huddle ? (
-                                    <FormControl
-                                        maxW="500px"
-                                        mt="8"
-                                        isRequired
-                                        borderBottom="2px"
-                                        borderBottomColor="gray.200"
-                                        _focusWithin={{
-                                            borderBottomColor: 'gray.300',
-                                        }}
-                                    >
-                                        <FormLabel
-                                            fontSize={{ base: 'md', xl: 'lg' }}
-                                            color="blackAlpha.700"
-                                            my="0"
-                                        >
-                                            Link for attendees.
-                                        </FormLabel>
-
-                                        <Input
-                                            onChange={(e) => {
-                                                setLink(e.target.value)
+                                {!(venue === 'Huddle') ? (
+                                    venue === 'Self Hosted' ? (
+                                        <FormControl
+                                            maxW="500px"
+                                            mt="8"
+                                            isRequired
+                                            borderBottom="2px"
+                                            borderBottomColor="gray.200"
+                                            _focusWithin={{
+                                                borderBottomColor: 'gray.300',
                                             }}
-                                            fontSize="sm"
-                                            value={_link}
-                                            required
-                                            px="0"
-                                            _placeholder={{ color: 'gray.300' }}
-                                            placeholder="Link for attendees to join"
-                                            bg="transparent"
-                                            border="none"
-                                            rounded="none"
-                                            _hover={{}}
-                                            _focus={{}}
-                                            _active={{}}
+                                        >
+                                            <FormLabel
+                                                fontSize={{
+                                                    base: 'md',
+                                                    xl: 'lg',
+                                                }}
+                                                color="blackAlpha.700"
+                                                my="0"
+                                            >
+                                                Link for attendees.
+                                            </FormLabel>
+
+                                            <Input
+                                                onChange={(e) => {
+                                                    setLink(e.target.value)
+                                                }}
+                                                fontSize="sm"
+                                                value={_link}
+                                                required
+                                                px="0"
+                                                _placeholder={{
+                                                    color: 'gray.300',
+                                                }}
+                                                placeholder="Link for attendees to join"
+                                                bg="transparent"
+                                                border="none"
+                                                rounded="none"
+                                                _hover={{}}
+                                                _focus={{}}
+                                                _active={{}}
+                                            />
+                                        </FormControl>
+                                    ) : (
+                                        <VenueAutoComplete
+                                            venueXY={venueXY}
+                                            setVenueXY={setVenueXY}
                                         />
-                                    </FormControl>
+                                    )
                                 ) : null}
                             </Box>
                             <Box h="auto" w="2px" my="10" bg="gray.100" />
@@ -312,7 +348,7 @@ export default function Step4({
                             justifyContent="center"
                             alignItems="center"
                             alignContent="center"
-                            mt="10"
+                            mt="16"
                             mb="20"
                         >
                             <Button
@@ -341,7 +377,9 @@ export default function Step4({
                                 fontWeight="medium"
                                 px="8"
                             >
-                                {isInviteOnly ? 'Customize Register Form' : 'Review Details'}
+                                {isInviteOnly
+                                    ? 'Customize Register Form'
+                                    : 'Review Details'}
                             </Button>
                         </Flex>
                     </Box>

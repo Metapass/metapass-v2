@@ -17,6 +17,7 @@ import {
     Heading,
 } from '@chakra-ui/react'
 import axios from 'axios'
+import { ethers } from 'ethers'
 import { useEffect, useState, useContext } from 'react'
 import {
     Event,

@@ -61,8 +61,11 @@ export default function TicketLayout({
                         .from('tickets')
                         .select('uuid')
                         .eq('buyer', wallet.address)
-                        .filter('event', 'in', `("${contractAddress}")`)
-
+                        .filter(
+                            'event',
+                            'in',
+                            `("${ethers.utils.getAddress(contractAddress)}")`
+                        )
                     setQr(data?.[0]?.uuid)
                 } catch (error) {}
             }

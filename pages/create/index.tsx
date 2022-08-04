@@ -12,7 +12,7 @@ import Step4 from '../../layouts/CreateEvent/Step4.layout'
 import SubmitStep from '../../layouts/CreateEvent/SubmitStep.layout'
 import { walletContext, WalletType } from '../../utils/walletContext'
 
-import { Event } from '../../types/Event.type'
+import { Event, VenueType } from '../../types/Event.type'
 import { ethers } from 'ethers'
 import abi from '../../utils/MetapassFactory.json'
 import MetapassABI from '../../utils/Metapass.json'
@@ -130,6 +130,13 @@ const Create: NextPage = () => {
         function b64EncodeUnicode(str: any) {
             return btoa(encodeURIComponent(str))
         }
+        console.log(event, 'event')
+        // const { data, error } = await supabase.from('events').insert({
+        //     contractAddress: '0x1',
+        //     inviteOnly: false,
+        //     Venue: JSON.stringify(event.venue),
+        // })
+
         if (!event.isHuddle) {
             try {
                 let txn = await contract?.createEvent(
@@ -142,7 +149,7 @@ const Create: NextPage = () => {
                     event.link,
                     event.date,
                     b64EncodeUnicode(JSON.stringify(event.category)),
-                    'undefined'
+                    b64EncodeUnicode(JSON.stringify(event.venue))
                 )
                 txn.wait().then(async (res: any) => {
                     let child = res.events.filter(
@@ -190,6 +197,8 @@ const Create: NextPage = () => {
                         .insert({
                             contractAddress: child,
                             inviteOnly: isInviteOnly,
+                            Venue: JSON.stringify(event.venue),
+                            IRL: event.category.event_type === 'In-Person',
                         })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
@@ -294,6 +303,8 @@ const Create: NextPage = () => {
                         .insert({
                             contractAddress: child,
                             inviteOnly: isInviteOnly,
+                            Venue: JSON.stringify(event.venue),
+                            IRL: event.category.event_type === 'In-Person',
                         })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
@@ -463,6 +474,14 @@ const Create: NextPage = () => {
                             fee: event.fee,
                         }
                     )
+                    const { data, error } = await supabase
+                        .from('events')
+                        .insert({
+                            contractAddress: child,
+                            inviteOnly: false,
+                            Venue: JSON.stringify(event.venue),
+                            IRL: event.category.event_type === 'In-Person',
+                        })
                     setIsPublished(true)
                     setInTxn(false)
                 } catch (error) {
@@ -569,7 +588,14 @@ const Create: NextPage = () => {
                                 fee: event.fee,
                             }
                         )
-
+                        const { data, error } = await supabase
+                            .from('events')
+                            .insert({
+                                contractAddress: child,
+                                inviteOnly: false,
+                                Venue: JSON.stringify(event.venue),
+                                IRL: event.category.event_type === 'In-Person',
+                            })
                         setIsPublished(true)
                         setInTxn(false)
                     } else {
@@ -658,12 +684,17 @@ const Create: NextPage = () => {
                             {/* STEP4🔺 */}
                             <Step4
                                 event={event}
-                                onSubmit={(link: any, huddle: boolean) => {
+                                onSubmit={(
+                                    link: any,
+                                    huddle: boolean,
+                                    venue: VenueType
+                                ) => {
                                     setStep(4)
                                     setEvent({
                                         ...event,
                                         link,
                                         isHuddle: huddle,
+                                        venue: venue,
                                     })
                                 }}
                             />
