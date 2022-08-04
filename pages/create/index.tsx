@@ -543,10 +543,14 @@ const Create: NextPage = () => {
                             'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
                         'CST'
                     )
-                    const CST = new PublicKey(
-                        event.customSPLToken ||
+                    let CST
+                    if (event.fee === 0) {
+                        CST = new PublicKey(
                             'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-                    )
+                        )
+                    } else {
+                        CST = new PublicKey(event.customSPLToken as string)
+                    }
 
                     const transactionData = {
                         createEventInfo: {
