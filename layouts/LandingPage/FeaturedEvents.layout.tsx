@@ -164,6 +164,7 @@ export default function FeaturedEvents() {
     }
     const getSolanaFetauredEvents = async (): Promise<Event[]> => {
         const { data } = await axios.get('/api/solFeat')
+        console.log(data, 'data')
         return data.events
     }
     const getFeaturedEvents = async () => {
