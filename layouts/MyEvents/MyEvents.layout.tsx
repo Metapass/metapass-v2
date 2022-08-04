@@ -72,7 +72,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
         },
     ])
     function UnicodeDecodeB64(str: any) {
-        return decodeURIComponent(atob(str))
+        return decodeURIComponent(Buffer.from(str, 'base64').toString())
     }
     const parseMyEvents = (myTickets: Array<any>): TicketType[] => {
         let ticketArray = myTickets.map((ticket: any) => {

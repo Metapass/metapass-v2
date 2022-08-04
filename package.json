@@ -46,6 +46,7 @@
         "next": "^12.2.3",
         "next-remove-imports": "^1.0.6",
         "next-transpile-modules": "^9.0.0",
+        "nextjs-progressbar": "^0.0.14",
         "react": "^18.2.0",
         "react-confetti": "^6.0.1",
         "react-dom": "^18.2.0",
