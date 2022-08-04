@@ -82,6 +82,7 @@ export default function Step1({
         } else if (wallet.chain === 'POLYGON') {
             formDetails.customSPLToken = CustomTokens.POLYGON[paymentToken]
         }
+        console.log(formDetails.customSPLToken, 'final')
     }, [paymentToken])
     // In the future we should prompt either solana or eth wallet to connect base on the chain user selects in form
     if (wallet.address) {

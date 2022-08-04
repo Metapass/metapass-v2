@@ -1370,7 +1370,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                 </Flex>
                             </Flex>
                         </Box>
-                        {console.log(event.venue, 'venue')}
+                        {/* {console.log(event.venue, 'venue')} */}
                         {event.venue?.name && (
                             <Box
                                 mt="3"

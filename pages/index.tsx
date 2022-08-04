@@ -111,9 +111,10 @@ export const getServerSideProps = async () => {
                     owner: event.event.eventHost,
                     link: event.event.link,
                     type: type,
-                    venue: event.event.venue
-                        ? JSON.parse(UnicodeDecodeB64(event.event.venue))
-                        : undefined,
+                    venue:
+                        event.event.venue !== 'undefined'
+                            ? JSON.parse(UnicodeDecodeB64(event.event.venue))
+                            : null,
                     tickets_available:
                         event.event.seats - event.event.ticketsBought.length,
                     tickets_sold: event.event.ticketsBought.length,
