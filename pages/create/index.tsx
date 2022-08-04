@@ -212,7 +212,7 @@ const Create: NextPage = () => {
             } catch (err: any) {
                 setInTxn(false)
                 setIsPublished(false)
-                toast.error('errorrrr')
+                toast.error('Oops! Couldnt create event')
             }
         } else {
             try {
@@ -318,7 +318,7 @@ const Create: NextPage = () => {
             } catch (err: any) {
                 setInTxn(false)
                 setIsPublished(false)
-                toast.error('errorrrr2')
+                toast.error('Oops! Couldnt create Event')
             }
         }
     }
@@ -716,7 +716,7 @@ const Create: NextPage = () => {
                                         />
                                     </Box>
                                 ) : null}
-                                {step === 5 && (
+                                {step === 5 ? (
                                     <Box>
                                         {/* STEP5🔺 */}
                                         <SubmitStep
@@ -729,7 +729,7 @@ const Create: NextPage = () => {
                                             }
                                         />
                                     </Box>
-                                )}
+                                ) : null}
                             </>
                         ) : (
                             <Box display={step === 4 ? 'block' : 'none'}>

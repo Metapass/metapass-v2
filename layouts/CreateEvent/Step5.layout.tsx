@@ -4,13 +4,16 @@ import CustomQues from '../../components/Misc/CustomQues.misc'
 import { useState } from 'react'
 import { Question } from '../../types/registerForm.types'
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
+import { useRecoilValue } from 'recoil'
+import { formDetails } from '../../lib/recoil/atoms'
 
 export default function Step5({
     onSubmit,
 }: {
     onSubmit: (data: Question[]) => void
 }) {
-    const [questions, setQuestions] = useState<Question[]>([])
+    const formData = useRecoilValue(formDetails)
+    const [questions, setQuestions] = useState<Question[]>(formData?.customQues)
 
     return (
         <Box color="brand.black">
