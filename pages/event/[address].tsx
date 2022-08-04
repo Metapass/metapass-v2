@@ -68,6 +68,7 @@ export async function getServerSideProps({ query }: any) {
                     description
                     date
                     fee
+                    venue
                     image
                     eventHost
                     seats
@@ -110,6 +111,8 @@ export async function getServerSideProps({ query }: any) {
             let desc: DescriptionType = JSON.parse(
                 UnicodeDecodeB64(event.description)
             )
+            console.log(event, 'event.venue')
+            let venue = JSON.parse(UnicodeDecodeB64(event.venue))
             return {
                 id: event.id,
                 title: event.title,
@@ -124,6 +127,7 @@ export async function getServerSideProps({ query }: any) {
                 owner: event.eventHost,
                 link: event.link,
                 type: type,
+                venue: venue,
                 tickets_available: event.seats - event.ticketsBought?.length,
                 tickets_sold: event.ticketsBought?.length,
                 buyers: event.buyers,
