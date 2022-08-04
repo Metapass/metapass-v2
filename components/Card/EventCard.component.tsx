@@ -66,7 +66,7 @@ export default function EventCard({
             w="full"
             border="1px"
             position="relative"
-            h="20rem"
+            h={['18rem', '20rem']}
             borderColor="blackAlpha.200"
         >
             {!previewOnly && showEventModal && (
@@ -263,11 +263,17 @@ export default function EventCard({
                             color="blackAlpha.700"
                             fontSize={{ base: '10px', xl: 'xs' }}
                             experimental_spaceX="1"
+                            // mb="1"
+                            align="center"
+                            justify={
+                                event.venue ? 'space-evenly' : 'flex-start'
+                            }
                         >
                             <Text>by</Text>
                             <Link
-                                fontWeight="medium"
+                                fontWeight="600"
                                 noOfLines={1}
+                                fontSize="11.6px"
                                 _hover={{ color: 'brand.black600' }}
                             >
                                 {(event.owner.length > 20
@@ -278,9 +284,27 @@ export default function EventCard({
                                       )
                                     : event.owner) || 'Anonymous'}
                             </Link>
+
+                            {event.venue && (
+                                <>
+                                    <Text mx="1px" px="0">
+                                        •
+                                    </Text>
+                                    <Text
+                                        fontWeight="600"
+                                        fontSize="11.6px"
+                                        lineHeight="13.61px"
+                                        letterSpacing="1%"
+                                        color="#EF24246E"
+                                        noOfLines={1}
+                                    >
+                                        {event.venue?.name}
+                                    </Text>
+                                </>
+                            )}
                         </Flex>
                         <Text
-                            mt="1"
+                            mt="2"
                             color="blackAlpha.500"
                             fontFamily="body"
                             fontSize={{ base: 'xs', xl: 'sm' }}

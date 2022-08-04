@@ -77,11 +77,11 @@ import MapPinLine from '../../components/Misc/MapPinLine.component'
 declare const window: any
 
 export default function EventLayout({ event }: { event: Event }) {
-    event.venue = {
-        name: 'JW Marriott Hotel New Delhi Aerocity',
-        x: 77.121491,
-        y: 28.552782,
-    }
+    // event.venue = {
+    //     name: 'JW Marriott Hotel New Delhi Aerocity',
+    //     x: 77.121491,
+    //     y: 28.552782,
+    // }
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
         process.env.NEXT_PUBLIC_ENV === 'prod'
