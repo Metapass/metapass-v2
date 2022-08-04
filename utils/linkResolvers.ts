@@ -10,5 +10,13 @@ export const encryptLink = (link: string) => {
 
 export const decryptLink = (link: string) => {
     let dec = crypto.AES.decrypt(link, process.env.NEXT_PUBLIC_SECRET as string)
-    return dec.toString(crypto.enc.Utf8)
+    // console.log(link, ' | ', dec, dec.toString(crypto.enc.Utf8))
+    try {
+        return dec.toString(crypto.enc.Utf8)
+    } catch (e) {
+        let error = e as Error
+        if (error.message.includes('Malformed UTF-8 data')) {
+            return dec.toString(crypto.enc.Base64)
+        }
+    }
 }
