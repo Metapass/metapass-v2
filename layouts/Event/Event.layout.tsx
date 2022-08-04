@@ -72,15 +72,16 @@ import { generateMetadata } from '../../utils/generateMetadata'
 import { useAccount, useSigner } from 'wagmi'
 import { supabase } from '../../lib/config/supabaseConfig'
 import mapboxgl from 'mapbox-gl'
+import MapPinLine from '../../components/Misc/MapPinLine.component'
 
 declare const window: any
 
 export default function EventLayout({ event }: { event: Event }) {
-    // event.venue = {
-    //     name: 'JW Marriott Hotel New Delhi Aerocity',
-    //     x: 77.121491,
-    //     y: 28.552782,
-    // }
+    event.venue = {
+        name: 'JW Marriott Hotel New Delhi Aerocity',
+        x: 77.121491,
+        y: 28.552782,
+    }
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
         process.env.NEXT_PUBLIC_ENV === 'prod'
@@ -537,35 +538,53 @@ export default function EventLayout({ event }: { event: Event }) {
         }
     }, [hasBought])
     useEffect(() => {
-        if (event && event.venue) {
+        if (
+            event &&
+            event.venue &&
+            event.venue.x &&
+            event.venue.y &&
+            mapContainerRef.current
+        ) {
             const map = new mapboxgl.Map({
-                container: mapContainerRef.current || 'map', // container ID
+                container: mapContainerRef.current, // container ID
                 style: 'mapbox://styles/mapbox/streets-v11', // style URL
                 center: [event.venue.x, event.venue.y], // starting position
                 zoom: 8, // starting zoom
             })
-            map.addControl(
-                new mapboxgl.GeolocateControl({
-                    positionOptions: {
-                        enableHighAccuracy: true,
-                    },
-                    // When active the map will receive updates to the device's location as it changes.
-                    trackUserLocation: true,
-                    // Draw an arrow next to the location dot to indicate which direction the device is heading.
-                    showUserLocation: true,
-                })
-            )
+
             // const markerNode = document.createElement('div')
             // add navigation control (the +/- zoom buttons)
 
-            map.addControl(new mapboxgl.NavigationControl(), 'bottom-right')
-            const marker = new mapboxgl.Marker() // initialize a new marker
-                .setLngLat([event?.venue?.x, event?.venue?.y]) // Marker [lng, lat] coordinates
-                .addTo(map)
+            if (map) {
+                map.addControl(
+                    new mapboxgl.GeolocateControl({
+                        positionOptions: {
+                            enableHighAccuracy: true,
+                        },
+                        // When active the map will receive updates to the device's location as it changes.
+                        trackUserLocation: false,
 
-            return () => map.remove()
+                        // Draw an arrow next to the location dot to indicate which direction the device is heading.
+                        showUserLocation: false,
+                    })
+                )
+                map.addControl(
+                    new mapboxgl.NavigationControl({
+                        showCompass: false,
+                        showZoom: false,
+                        visualizePitch: true,
+                    }),
+                    'bottom-left'
+                )
+                const marker = new mapboxgl.Marker({
+                    draggable: false,
+                }) // initialize a new marker
+                    .setLngLat([event?.venue?.x, event?.venue?.y]) // Marker [lng, lat] coordinates
+                    .addTo(map)
+                return () => map.remove()
+            }
         }
-    }, [event?.venue?.name])
+    }, [event?.venue])
 
     return (
         <>
@@ -1361,17 +1380,33 @@ export default function EventLayout({ event }: { event: Event }) {
                                 boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                                 py="2"
                             >
-                                <Flex justify="space-between" align="center">
-                                    <Text color="blackAlpha.700" fontSize="sm">
+                                <Flex
+                                    justify="flex-end"
+                                    align="center"
+                                    flexDirection="row-reverse"
+                                    gap="2"
+                                >
+                                    <Text
+                                        color="blackAlpha.700"
+                                        fontSize="16px"
+                                        fontFamily="Poppins"
+                                        fontWeight="700"
+                                        lineHeight="24px"
+                                    >
                                         Location
                                     </Text>
-                                    <Flex fontSize="xs" align="center"></Flex>
+                                    <Flex fontSize="xs" align="center">
+                                        <MapPinLine />
+                                    </Flex>
                                 </Flex>
                                 <Link>
                                     <Text
-                                        color="blackAlpha.800"
-                                        as="u"
-                                        fontSize="xs"
+                                        color="blackAlpha.600"
+                                        // as="u"
+                                        fontSize="16px"
+                                        fontFamily="Poppins"
+                                        fontWeight="500"
+                                        lineHeight="24px"
                                     >
                                         {event.venue.name}
                                     </Text>
@@ -1379,8 +1414,8 @@ export default function EventLayout({ event }: { event: Event }) {
                                 <Box
                                     className="map-container"
                                     w="100%"
-                                    h="15vh"
-                                    borderRadius="md"
+                                    h="10vh"
+                                    borderRadius="lg"
                                     ref={mapContainerRef}
                                 ></Box>
                             </Box>
