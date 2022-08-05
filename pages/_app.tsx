@@ -14,6 +14,7 @@ import { configureChains, chain, createClient, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 import { RecoilRoot } from 'recoil'
 
+import NextNProgress from 'nextjs-progressbar'
 const { chains, provider, webSocketProvider } = configureChains(
     [chain.polygon, chain.polygonMumbai],
     [publicProvider()]
@@ -89,6 +90,8 @@ function MyApp({ Component, pageProps }: AppProps) {
                                     <Toaster />
                                     <ChakraProvider theme={theme}>
                                         <ChatwootWidget />
+                                    <NextNProgress color="#6451FB" />
+
                                         <Component {...pageProps} />
                                     </ChakraProvider>
                                 </Contract>

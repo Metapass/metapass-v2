@@ -10,16 +10,12 @@ import {
     ModalOverlay,
     ModalContent,
     ModalBody,
-    MenuButton,
     InputGroup,
-    InputLeftElement,
-    Menu,
     Input,
     Heading,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import EventCard from '../../components/Card/EventCard.component'
-import { events } from '../../utils/testData'
 import {
     CategoryType,
     DescriptionType,
@@ -29,14 +25,9 @@ import {
 import sendToAirtable from '../../utils/sendToAirtable'
 import ScrollContainer from 'react-indiana-drag-scroll'
 import { gqlEndpoint } from '../../utils/subgraphApi'
-// import { MdCalendarToday as CalendarToday } from "react-icons/md";
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import axios from 'axios'
-
-import { MdTag } from 'react-icons/md'
 import { AiOutlineSend } from 'react-icons/ai'
-import { SetStateAction } from 'react'
-import FeaturedEventCard from '../../components/Card/FeaturedEventCard.component'
 import EventsLoading from '../../components/Misc/EventsLoading.component'
 
 export default function FeaturedEvents() {
@@ -163,30 +154,8 @@ export default function FeaturedEvents() {
         })
     }
     const getSolanaFetauredEvents = async (): Promise<Event[]> => {
-        let data: Event[] = []
-        const event = await axios.get(
-            `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/featuredEvents`
-        )
-        if (event.data) {
-            console.log(event.data)
-            let events = event.data
-
-            events.forEach((event: any) => {
-                data.push({
-                    ...event,
-                    category: JSON.parse(event.category),
-                    image: JSON.parse(event.image),
-                    description: JSON.parse(event.description),
-                    owner: event.eventHost,
-                    childAddress: event.eventPDA,
-                    isSolana: true,
-                })
-            })
-            return data
-        } else {
-            console.log('No such document! solana events')
-            return []
-        }
+        const { data } = await axios.get('/api/solFeat')
+        return data.events
     }
     const getFeaturedEvents = async () => {
         let allEvents: Event[] = []
