@@ -126,8 +126,30 @@ export default function EventLayout({
     ]
 
     const [toOpen, setToOpen] = useState<boolean>(false)
+    const [formRes, setFormRes] = useState<
+        'Register' | 'Awaiting Approval' | 'Accepted'
+    >('Register')
 
     const user = supabase.auth.user()
+
+    useEffect(() => {
+        async function getData() {
+            const { data, error } = await supabase
+                .from('responses')
+                .select('accepted')
+                .eq('email', user?.email)
+
+            if (data?.length !== 0) {
+                data?.[0]?.accepted
+                    ? setFormRes('Accepted')
+                    : setFormRes('Awaiting Approval')
+            } else {
+                setFormRes('Register')
+            }
+        }
+
+        getData()
+    }, [user?.email])
 
     useEffect(() => {
         const addUser = async () => {
@@ -889,7 +911,11 @@ export default function EventLayout({
                                 ? buySolanaTicket
                                 : buyPolygonTicket
                         }}
-                        disabled={event.tickets_available === 0}
+                        disabled={
+                            event.tickets_available === 0 ||
+                            formRes === 'Accepted' ||
+                            formRes === 'Awaiting Approval'
+                        }
                         _focus={{}}
                         _active={{}}
                         w={{ base: '70%', md: 'auto' }}
@@ -912,7 +938,7 @@ export default function EventLayout({
                         }
                     >
                         {isInviteOnly ? (
-                            <>Register</>
+                            <>{formRes}</>
                         ) : (
                             <>
                                 {event.tickets_available === 0

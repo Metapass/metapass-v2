@@ -19,6 +19,7 @@ import type { formDataType } from '../../types/registerForm.types'
 import { useForm } from 'react-hook-form'
 import { camelize } from '../../utils/helpers/camelize'
 import toast from 'react-hot-toast'
+import { sendRegisteredMail } from '../../utils/helpers/sendRegisteredMail'
 
 export const RegisterFormModal = ({
     isOpen,
@@ -60,22 +61,29 @@ export const RegisterFormModal = ({
     } = useForm()
 
     const onSubmit = async (res: any) => {
-        setIsLoading(true)
+        if (user) {
+            setIsLoading(true)
 
-        const { data, error } = await supabase.from('responses').insert({
-            event: utils.getAddress(event as string),
-            form: formData?.id,
-            response: res,
-            email: user?.email,
-        })
+            const { data, error } = await supabase.from('responses').insert({
+                event: utils.getAddress(event as string),
+                form: formData?.id,
+                response: res,
+                email: user?.email,
+                accepted: false
+            })
 
-        error
-            ? toast.error('Error Uploading Details')
-            : toast.success('Details Uploaded')
+            error
+                ? toast.error('Error Uploading Details')
+                : () => {
+                      toast.success('Details Uploaded')
+                  }
 
-        setIsLoading(false)
-        reset()
-        onClose()
+            const response = await sendRegisteredMail(user?.email as string)
+            console.log(response)
+            setIsLoading(false)
+            reset()
+            onClose()
+        }
     }
 
     return (
