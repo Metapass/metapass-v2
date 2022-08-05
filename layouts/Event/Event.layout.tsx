@@ -93,6 +93,7 @@ export default function EventLayout({ event }: { event: Event }) {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [ensName, setEnsName] = useState<string | null>(null)
     const [openseaLink, setToOpenseaLink] = useState<string>('')
+    const [hasTicket, setHasTicket] = useState<boolean>(false)
     const [qrId, setQrId] = useState<string>('')
     const { isOpen, onOpen } = useDisclosure()
     const [wallet] = useContext<WalletType[]>(walletContext)
@@ -156,6 +157,12 @@ export default function EventLayout({ event }: { event: Event }) {
 
     const { data: WalletSigner } = useSigner()
     const { isConnected } = useAccount()
+
+    useEffect(() => {
+        if (wallet.address) {
+            setHasTicket(event.buyers.includes(wallet.address))
+        }
+    }, [wallet.address])
 
     const buyPolygonTicket = async () => {
         if (isConnected) {
@@ -440,13 +447,10 @@ export default function EventLayout({ event }: { event: Event }) {
                                 // skipPreflight: true,
                             }
                         )
-                        await axios.post(
-                            `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/buyTicket`,
-                            {
-                                eventPDA: event.childAddress,
-                                publicKey: solanaWallet.publicKey?.toString(),
-                            }
-                        )
+                        await axios.post(`/api/buyTicket`, {
+                            eventPDA: event.childAddress,
+                            publicKey: solanaWallet.publicKey?.toString(),
+                        })
 
                         setExplorerLink(
                             `https://solscan.io/tx/${txid}?cluster=${network}`
@@ -914,7 +918,7 @@ export default function EventLayout({ event }: { event: Event }) {
                         onClick={
                             event.isSolana ? buySolanaTicket : buyPolygonTicket
                         }
-                        disabled={event.tickets_available === 0}
+                        disabled={hasTicket || event.tickets_available === 0}
                         _focus={{}}
                         _active={{}}
                         w={{ base: '70%', md: 'auto' }}
@@ -934,6 +938,8 @@ export default function EventLayout({ event }: { event: Event }) {
                     >
                         {event.tickets_available === 0
                             ? 'Sold Out'
+                            : hasTicket
+                            ? 'Already Bought'
                             : 'Buy Ticket'}
                     </Button>
                 </Flex>
