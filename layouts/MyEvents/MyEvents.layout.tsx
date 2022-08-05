@@ -19,6 +19,7 @@ import {
 import axios from 'axios'
 import { ethers } from 'ethers'
 import { useEffect, useState, useContext } from 'react'
+import { useAccount } from 'wagmi'
 import {
     Event,
     CategoryType,
@@ -26,12 +27,14 @@ import {
     ImageType,
 } from '../../types/Event.type'
 import { TicketType } from '../../types/Ticket.type'
+import { decryptLink } from '../../utils/linkResolvers'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import { walletContext } from '../../utils/walletContext'
 import TicketLayout from './Ticket.layout'
+
 export default function MyEvents({ isOpen, onClose }: any) {
     const [tab, setTab] = useState('upcoming')
-    const [wallet] = useContext<[{ address: ''; balance: '' }]>(walletContext)
+    const [wallet] = useContext<any>(walletContext)
     const [store, setStore] = useState<TicketType[]>()
     const [myTickets, setMyTickets] = useState<TicketType[]>([
         {
@@ -68,11 +71,12 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 tickets_sold: 0,
                 buyers: [],
                 isHuddle: false,
+                isSolana: false,
             },
         },
     ])
     function UnicodeDecodeB64(str: any) {
-        return decodeURIComponent(Buffer.from(str, 'base64').toString())
+        return decodeURIComponent(atob(str))
     }
     const parseMyEvents = (myTickets: Array<any>): TicketType[] => {
         let ticketArray = myTickets.map((ticket: any) => {
@@ -110,16 +114,57 @@ export default function MyEvents({ isOpen, onClose }: any) {
                     tickets_sold: event.ticketsBought.length,
                     buyers: event.buyers,
                     isHuddle: event.link.includes('huddle01') ? true : false,
+                    isSolana: !ethers.utils.isAddress(event.childAddress),
                 } as Event,
             } as TicketType
         })
         return ticketArray.reverse()
     }
-    useEffect(() => {
-        async function getMyTickets() {
-            const myTicketsQuery = {
-                operationName: 'fetchMyTickets',
-                query: `query fetchMyTickets {
+
+    const parseMySolEvents = (myTickets: Array<any>): TicketType[] => {
+        let ticketArray = myTickets.map((ticket: any) => {
+            const event: any = ticket.eventPDA
+            let type = ticket.type
+            let category: CategoryType = JSON.parse(ticket.category)
+            let image: ImageType = JSON.parse(ticket.image)
+            let desc: DescriptionType = JSON.parse(ticket.description)
+            const link = decryptLink(ticket.link)
+
+            return {
+                id: ticket.id,
+                ticketID: ticket.id,
+                buyer: {
+                    id: ticket.id,
+                },
+                event: {
+                    id: ticket.id,
+                    title: ticket.title,
+                    childAddress: ticket.childAddress,
+                    category: category,
+                    image: image,
+                    eventHost: ticket.eventHost,
+                    fee: Number(ticket.fee) / 10 ** 18,
+                    date: ticket.date,
+                    description: desc,
+                    seats: ticket.seats,
+                    owner: ticket.eventHost,
+                    link: link,
+                    type: type,
+                    tickets_available: ticket.seats - ticket.buyers.length,
+                    tickets_sold: ticket.buyers.length,
+                    buyers: ticket.buyers,
+                    isHuddle: ticket.link.includes('huddle01') ? true : false,
+                    isSolana: true,
+                } as Event,
+            } as TicketType
+        })
+        return ticketArray.reverse()
+    }
+
+    async function getMyTickets() {
+        const myTicketsQuery = {
+            operationName: 'fetchMyTickets',
+            query: `query fetchMyTickets {
                     ticketBoughtEntities(
                       where: { buyer_contains: "${wallet.address.toLowerCase()}" }
                     ) {
@@ -146,32 +191,57 @@ export default function MyEvents({ isOpen, onClose }: any) {
                       }
                     }
                   }`,
-            }
-            try {
-                const res = await axios({
-                    method: 'POST',
-                    url: gqlEndpoint,
-                    data: myTicketsQuery,
-                    headers: {
-                        'content-type': 'application/json',
-                    },
-                })
-                if (!!res.data?.errors?.length) {
-                    throw new Error('Error fetching featured events')
-                }
-                return res.data
-            } catch (error) {}
         }
-        if (wallet?.address) {
-            getMyTickets()
-                .then((res) => {
-                    const data: TicketType[] = parseMyEvents(
-                        res.data.ticketBoughtEntities
-                    )
+        try {
+            const res = await axios({
+                method: 'POST',
+                url: gqlEndpoint,
+                data: myTicketsQuery,
+                headers: {
+                    'content-type': 'application/json',
+                },
+            })
+            if (!!res.data?.errors?.length) {
+                throw new Error('Error fetching featured events')
+            }
+            return res.data
+        } catch (error) {}
+    }
+
+    const getSolEvents = async () => {
+        const { data } = await axios.get(`/api/getTickets`, {
+            params: {
+                address: wallet?.address,
+            },
+        })
+        return data
+    }
+
+    const { isConnected } = useAccount()
+
+    useEffect(() => {
+        if (isConnected) {
+            if (wallet?.address) {
+                getMyTickets()
+                    .then((res) => {
+                        const data: TicketType[] = parseMyEvents(
+                            res.data.ticketBoughtEntities
+                        )
+                        setStore(data)
+                        setMyTickets(data)
+                    })
+                    .catch((err) => {})
+            }
+        } else {
+            if (wallet.address) {
+                getSolEvents().then((res: any) => {
+                    const data: TicketType[] = parseMySolEvents(res)
                     setStore(data)
                     setMyTickets(data)
+                    console.log(data)
+                    console.error('SOLANA Fired')
                 })
-                .catch((err) => {})
+            }
         }
     }, [wallet.address])
 
