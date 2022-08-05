@@ -238,8 +238,6 @@ export default function MyEvents({ isOpen, onClose }: any) {
                     const data: TicketType[] = parseMySolEvents(res)
                     setStore(data)
                     setMyTickets(data)
-                    console.log(data)
-                    console.error('SOLANA Fired')
                 })
             }
         }
