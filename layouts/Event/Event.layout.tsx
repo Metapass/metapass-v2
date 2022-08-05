@@ -73,6 +73,8 @@ import { supabase } from '../../lib/config/supabaseConfig'
 import { RegisterFormModal } from '../../components/Modals/RegisterForm.modal'
 import { FiCheckCircle } from 'react-icons/fi'
 import { handleRegister } from '../../utils/helpers/handleRegister'
+import { useRecoilValue } from 'recoil'
+import { updateOnce } from '../../lib/recoil/atoms'
 
 declare const window: any
 
@@ -129,6 +131,7 @@ export default function EventLayout({
     const [formRes, setFormRes] = useState<
         'Register' | 'Awaiting Approval' | 'Accepted'
     >('Register')
+    const toUpdate = useRecoilValue(updateOnce)
 
     const user = supabase.auth.user()
 
@@ -149,7 +152,7 @@ export default function EventLayout({
         }
 
         getData()
-    }, [user?.email])
+    }, [user?.email, toUpdate])
 
     useEffect(() => {
         const addUser = async () => {
@@ -582,7 +585,7 @@ export default function EventLayout({
                 isOpen={isOpen2}
                 onOpen={onOpen2}
                 onClose={onClose2}
-                event={event.childAddress}
+                event={event}
             />
             {hasBought && <Confetti />}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>

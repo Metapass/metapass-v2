@@ -10,6 +10,7 @@ import {
     FormControl,
     FormLabel,
     Flex,
+    Badge,
 } from '@chakra-ui/react'
 import { utils } from 'ethers'
 import { useEffect, useState } from 'react'
@@ -20,6 +21,9 @@ import { useForm } from 'react-hook-form'
 import { camelize } from '../../utils/helpers/camelize'
 import toast from 'react-hot-toast'
 import { sendRegisteredMail } from '../../utils/helpers/sendRegisteredMail'
+import { Event } from '../../types/Event.type'
+import { useRecoilState } from 'recoil'
+import { updateOnce } from '../../lib/recoil/atoms'
 
 export const RegisterFormModal = ({
     isOpen,
@@ -29,6 +33,7 @@ export const RegisterFormModal = ({
 }: ModalProps) => {
     const [formData, setData] = useState<formDataType>()
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [toUpdate, setToUpdate] = useRecoilState(updateOnce)
 
     const user = supabase.auth.user()
 
@@ -38,7 +43,7 @@ export const RegisterFormModal = ({
                 const { data, error } = await supabase
                     .from('forms')
                     .select('id, data')
-                    .eq('event', utils.getAddress(event as string))
+                    .eq('event', utils.getAddress(event.childAddress as string))
 
                 setData({
                     id: data?.[0]?.id,
@@ -65,21 +70,21 @@ export const RegisterFormModal = ({
             setIsLoading(true)
 
             const { data, error } = await supabase.from('responses').insert({
-                event: utils.getAddress(event as string),
+                event: utils.getAddress(event?.childAddress as string),
                 form: formData?.id,
                 response: res,
                 email: user?.email,
-                accepted: false
+                accepted: false,
             })
 
-            error
-                ? toast.error('Error Uploading Details')
-                : () => {
-                      toast.success('Details Uploaded')
-                  }
+            if (error) {
+                toast.error('Error Uploading Details')
+            } else {
+                toast.success('Details Uploaded')
+                sendRegisteredMail(user?.email as string, event as Event)
+                setToUpdate(!toUpdate)
+            }
 
-            const response = await sendRegisteredMail(user?.email as string)
-            console.log(response)
             setIsLoading(false)
             reset()
             onClose()
@@ -103,28 +108,60 @@ export const RegisterFormModal = ({
                         >
                             {formData?.data?.preDefinedQues.map((ques) => (
                                 <FormControl key={ques.id}>
-                                    <FormLabel>{ques.val}</FormLabel>
-                                    <Input
-                                        placeholder={ques.val}
-                                        w="md"
-                                        isRequired={ques.isRequired}
-                                        {...register(camelize(ques.val))}
-                                        defaultValue={
-                                            ques.id === 2 ? user?.email : ''
-                                        }
-                                    />
+                                    <FormLabel>{ques.val} </FormLabel>
+                                    <Flex gap="2" alignItems="center">
+                                        <Input
+                                            placeholder={ques.val}
+                                            w="md"
+                                            isRequired={ques.isRequired}
+                                            {...register(camelize(ques.val))}
+                                            defaultValue={
+                                                ques.id === 2 ? user?.email : ''
+                                            }
+                                            isReadOnly={ques.id === 2}
+                                        />
+                                        {ques.isRequired && (
+                                            <Badge
+                                                display="grid"
+                                                placeItems="center"
+                                                px="3"
+                                                rounded="full"
+                                                colorScheme="purple"
+                                                h="6"
+                                            >
+                                                Required
+                                            </Badge>
+                                        )}
+                                    </Flex>
                                 </FormControl>
                             ))}
 
                             {formData?.data?.customQues.map((ques) => (
                                 <FormControl key={ques.id}>
                                     <FormLabel>{ques.val}</FormLabel>
-                                    <Input
-                                        placeholder={ques.val}
-                                        w="md"
-                                        isRequired={ques.isRequired}
-                                        {...register(camelize(ques.val))}
-                                    />
+                                    <Flex gap="2" alignItems="center">
+                                        <Input
+                                            placeholder={ques.val}
+                                            w="md"
+                                            isRequired={ques.isRequired}
+                                            {...register(camelize(ques.val))}
+                                            defaultValue={
+                                                ques.id === 2 ? user?.email : ''
+                                            }
+                                        />
+                                        {ques.isRequired && (
+                                            <Badge
+                                                display="grid"
+                                                placeItems="center"
+                                                px="3"
+                                                rounded="full"
+                                                colorScheme="purple"
+                                                h="6"
+                                            >
+                                                Required
+                                            </Badge>
+                                        )}
+                                    </Flex>
                                 </FormControl>
                             ))}
 

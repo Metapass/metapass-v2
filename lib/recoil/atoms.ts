@@ -17,4 +17,9 @@ const formDetails = atom<formType>({
     default: defaultFormData,
 })
 
-export { stepAtom, inviteOnlyAtom, formDetails }
+const updateOnce = atom<boolean>({
+    key: 'updateOnce',
+    default: false,
+})
+
+export { stepAtom, inviteOnlyAtom, formDetails, updateOnce }
