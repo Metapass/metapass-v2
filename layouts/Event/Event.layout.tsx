@@ -24,7 +24,6 @@ import {
 import { useState, useContext, useEffect, Component, useRef } from 'react'
 import ReactPlayer from 'react-player'
 import { Event } from '../../types/Event.type'
-import { FiMapPin } from 'react-icons/fi'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import dynamic from 'next/dynamic'
@@ -77,11 +76,6 @@ import MapPinLine from '../../components/Misc/MapPinLine.component'
 declare const window: any
 
 export default function EventLayout({ event }: { event: Event }) {
-    // event.venue = {
-    //     name: 'JW Marriott Hotel New Delhi Aerocity',
-    //     x: 77.121491,
-    //     y: 28.552782,
-    // }
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
         process.env.NEXT_PUBLIC_ENV === 'prod'
@@ -520,7 +514,6 @@ export default function EventLayout({ event }: { event: Event }) {
         if (event.link) {
             if (event.link.includes('huddle')) {
                 setEventLink(event.link)
-                console.log(event.link)
             } else {
                 const declink = decryptLink(event.link as string)
                 setEventLink(declink as string)
@@ -1347,7 +1340,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                 </Flex>
                             </Flex>
                         </Box>
-                        {event?.venue?.name && (
+                        {event.venue?.name && (
                             <Box
                                 mt="3"
                                 rounded="xl"

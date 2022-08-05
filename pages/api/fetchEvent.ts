@@ -1,5 +1,5 @@
-import { Box, Flex } from '@chakra-ui/react'
-import type { NextPage } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import axios from 'axios'
 
 import {
     CategoryType,
@@ -7,49 +7,14 @@ import {
     Event,
     ImageType,
 } from '../../types/Event.type'
-import { useEffect, useState } from 'react'
-import NavigationBar from '../../components/Navigation/NavigationBar.component'
-import EventLayout from '../../layouts/Event/Event.layout'
-import { Skeleton } from '@chakra-ui/react'
-import axios from 'axios'
+
 import { gqlEndpoint } from '../../utils/subgraphApi'
+
 import { ethers } from 'ethers'
 
-const Event: NextPage = ({ event }: any) => {
-    const [featEvent, setFeatEvent] = useState<Event>(event)
-
-    return (
-        <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
-            <NavigationBar mode="white" />
-            <Box p="4" />
-            <Flex
-                justify="center"
-                mx="auto"
-                mt="16"
-                px="6"
-                w="full"
-                maxW="1400px"
-                experimental_spaceX="10"
-            >
-                <Box maxW="1000px" w="full">
-                    {featEvent ? (
-                        <Skeleton isLoaded={featEvent.id !== ''}>
-                            <EventLayout event={featEvent} />
-                        </Skeleton>
-                    ) : (
-                        <Flex alignItems={'center'}>Event Doesn't Exist</Flex>
-                    )}
-                </Box>
-            </Flex>
-        </Box>
-    )
-}
-
-export default Event
-
-export async function getServerSideProps({ query }: any) {
-    const address = query.address
-    let parsedEvent
+export default async function (req: NextApiRequest, res: NextApiResponse) {
+    const { address } = req.body
+    let parsedEvent: any
 
     async function getFeaturedEvents() {
         const featuredQuery = {
@@ -97,15 +62,11 @@ export async function getServerSideProps({ query }: any) {
             console.log('error', error)
         }
     }
-    function UnicodeDecodeB64(str: any): any {
-        if (str !== 'undefined') {
-            try {
-                return decodeURIComponent(Buffer.from(str, 'base64').toString())
-            } catch (error) {
-                return decodeURIComponent(Buffer.from(str, 'utf-8').toString())
-            }
-        } else {
-            return undefined
+    function UnicodeDecodeB64(str: any) {
+        try {
+            return decodeURIComponent(Buffer.from(str, 'base64').toString())
+        } catch (error) {
+            return decodeURIComponent(Buffer.from(str, 'utf-8').toString())
         }
     }
     const parseFeaturedEvents = (event: any) => {
@@ -120,14 +81,7 @@ export async function getServerSideProps({ query }: any) {
             let desc: DescriptionType = JSON.parse(
                 UnicodeDecodeB64(event.description)
             )
-            let venue
-
-            try {
-                venue = JSON.parse(UnicodeDecodeB64(event.venue))
-            } catch (e) {
-                venue = UnicodeDecodeB64(event.venue)
-            }
-
+            let venue = JSON.parse(UnicodeDecodeB64(event.venue))
             return {
                 id: event.id,
                 title: event.title,
@@ -173,23 +127,19 @@ export async function getServerSideProps({ query }: any) {
             return null
         }
     }
+    if (req.method == 'POST') {
+        if (address) {
+            const isEtherAddress = ethers.utils.isAddress(address)
 
-    if (address) {
-        const isEtherAddress = ethers.utils.isAddress(address)
-
-        if (isEtherAddress) {
-            const event = await getFeaturedEvents()
-            parsedEvent = parseFeaturedEvents(
-                event.data.childCreatedEntities[0]
-            )
-        } else {
-            parsedEvent = await getSolanaEvents()
+            if (isEtherAddress) {
+                const event = await getFeaturedEvents()
+                parsedEvent = parseFeaturedEvents(
+                    event.data.childCreatedEntities[0]
+                )
+            } else {
+                parsedEvent = await getSolanaEvents()
+            }
         }
-    }
-
-    return {
-        props: {
-            event: parsedEvent,
-        },
+        res.status(200).send(parsedEvent)
     }
 }
