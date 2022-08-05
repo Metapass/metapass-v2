@@ -902,29 +902,6 @@ export default function EventLayout({ event }: { event: Event }) {
                                 {Array(event.category.category).join(' & ')}
                             </Box>
                         </Flex>
-                        {/* <Box
-                                boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
-                                rounded="full"
-                                fontSize="10px"
-                                fontWeight="semibold"
-                                border="1px"
-                                borderColor="blackAlpha.200"
-                                px="2"
-                                py="0.5"
-                                color="blackAlpha.800"
-                                bg="white"
-                                w="fit-content"
-                            >
-                                <Flex gap="2" align="center">
-                                    <FiMapPin size="16" />
-                                    <Text>
-                                        {' '}
-                                        {event.venue?.name ||
-                                            'J.W Marriott Hotel Aerocity New Delhi'}
-                                    </Text>
-                                </Flex>
-                            </Box> */}
-                        {/* </Flex> */}
                     </Box>
 
                     <Button
@@ -1370,8 +1347,7 @@ export default function EventLayout({ event }: { event: Event }) {
                                 </Flex>
                             </Flex>
                         </Box>
-                        {/* {console.log(event.venue, 'venue')} */}
-                        {event.venue?.name && (
+                        {event?.venue?.name && (
                             <Box
                                 mt="3"
                                 rounded="xl"

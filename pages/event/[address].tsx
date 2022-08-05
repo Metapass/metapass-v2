@@ -127,7 +127,7 @@ export async function getServerSideProps({ query }: any) {
                 owner: event.eventHost,
                 link: event.link,
                 type: type,
-                venue: venue,
+                venue: venue || null,
                 tickets_available: event.seats - event.ticketsBought?.length,
                 tickets_sold: event.ticketsBought?.length,
                 buyers: event.buyers,
