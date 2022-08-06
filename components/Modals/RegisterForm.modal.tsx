@@ -24,6 +24,7 @@ import { sendRegisteredMail } from '../../utils/helpers/sendRegisteredMail'
 import { Event } from '../../types/Event.type'
 import { useRecoilState } from 'recoil'
 import { updateOnce } from '../../lib/recoil/atoms'
+import { defaultFormData } from '../../lib/constants'
 
 export const RegisterFormModal = ({
     isOpen,
@@ -31,7 +32,10 @@ export const RegisterFormModal = ({
     onOpen,
     event,
 }: ModalProps) => {
-    const [formData, setData] = useState<formDataType>()
+    const [formData, setData] = useState<formDataType>({
+        id: 0,
+        data: defaultFormData,
+    })
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [toUpdate, setToUpdate] = useRecoilState(updateOnce)
 
@@ -81,7 +85,10 @@ export const RegisterFormModal = ({
                 toast.error('Error Uploading Details')
             } else {
                 toast.success('Details Uploaded')
-                sendRegisteredMail(user?.email as string, event as Event)
+                sendRegisteredMail(
+                    user?.email as string,
+                    event?.title as string
+                )
                 setToUpdate(!toUpdate)
             }
 

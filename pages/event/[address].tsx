@@ -14,14 +14,26 @@ import axios from 'axios'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import { ethers } from 'ethers'
 import { supabase } from '../../lib/config/supabaseConfig'
+import { useRouter } from 'next/router'
 
-interface IPageProps {
-    event: Event
-    isInviteOnly: boolean
-}
-
-const Event: NextPage<IPageProps> = ({ event, isInviteOnly }: any) => {
+const Event: NextPage = ({ event }: any) => {
     const [featEvent, setFeatEvent] = useState<Event>(event)
+    const [isInviteOnly, setInviteOnly] = useState<boolean>(false)
+    const router = useRouter()
+    const { address } = router.query
+
+    useEffect(() => {
+        async function fetchData() {
+            const { data, error } = await supabase
+                .from('events')
+                .select('inviteOnly')
+                .eq('contractAddress', address)
+
+            data && setInviteOnly(data?.[0].inviteOnly)
+        }
+
+        fetchData()
+    }, [address])
 
     return (
         <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
@@ -45,7 +57,7 @@ const Event: NextPage<IPageProps> = ({ event, isInviteOnly }: any) => {
                             />
                         </Skeleton>
                     ) : (
-                        <Flex alignItems={'center'}>Event Doesn't Exist</Flex>
+                        <Flex alignItems={'center'}>Event Doesn&apos;t Exist</Flex>
                     )}
                 </Box>
             </Flex>
@@ -113,7 +125,7 @@ export async function getServerSideProps({ query }: any) {
                 return decodeURIComponent(Buffer.from(str, 'utf-8').toString())
             }
         } else {
-            return undefined
+            return null
         }
     }
     const parseFeaturedEvents = (event: any) => {
@@ -128,10 +140,10 @@ export async function getServerSideProps({ query }: any) {
             let desc: DescriptionType = JSON.parse(
                 UnicodeDecodeB64(event.description)
             )
-            let venue
+            let venue = null
 
             try {
-                venue = JSON.parse(UnicodeDecodeB64(event.venue))
+                venue = JSON.parse(UnicodeDecodeB64(event?.venue!))
             } catch (e) {
                 venue = UnicodeDecodeB64(event.venue)
             }
@@ -195,15 +207,9 @@ export async function getServerSideProps({ query }: any) {
         }
     }
 
-    const { data, error } = await supabase
-        .from('events')
-        .select('inviteOnly')
-        .eq('contractAddress', address)
-
     return {
         props: {
             event: parsedEvent,
-            isInviteOnly: data?.[0].inviteOnly,
         },
     }
 }
