@@ -50,7 +50,7 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                             .eq('address', utils.getAddress(address))
 
                         data?.length === 0
-                            ? res.status(404).json({
+                            ? res.status(200).json({
                                   result: 'User not found',
                                   address: address,
                               })
