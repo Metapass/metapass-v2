@@ -105,7 +105,7 @@ export async function getServerSideProps({ query }: any) {
                 return decodeURIComponent(Buffer.from(str, 'utf-8').toString())
             }
         } else {
-            return undefined
+            return null
         }
     }
     const parseFeaturedEvents = (event: any) => {
