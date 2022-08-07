@@ -46,7 +46,7 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                     } else {
                         const { data, error } = await supabase
                             .from('users')
-                            .select('email')
+                            .select('email,avatar_url')
                             .eq('address', utils.getAddress(address))
 
                         data?.length === 0
@@ -54,7 +54,12 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                                   result: 'User not found',
                                   address: address,
                               })
-                            : res.status(200).json({ email: data?.[0]?.email })
+                            : res
+                                  .status(200)
+                                  .json({
+                                      email: data?.[0]?.email,
+                                      avatar_url: data?.[0]?.avatar_url || null,
+                                  })
                     }
                 } catch (error) {
                     res.status(404).json({
