@@ -49,7 +49,8 @@ export const RegisterFormModal = ({
                     .select('id, data')
                     .eq('event', utils.getAddress(event.childAddress as string))
 
-                setData({
+                    
+                data?.length !== 0 && setData({
                     id: data?.[0]?.id,
                     data: {
                         preDefinedQues: data?.[0].data?.preDefinedQues,

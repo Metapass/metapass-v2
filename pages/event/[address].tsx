@@ -29,7 +29,7 @@ const Event: NextPage = ({ event }: any) => {
                 .select('inviteOnly')
                 .eq('contractAddress', address)
 
-            data && setInviteOnly(data?.[0].inviteOnly)
+            data?.length !== 0 && setInviteOnly(data?.[0].inviteOnly)
         }
 
         fetchData()
