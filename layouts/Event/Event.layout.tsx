@@ -1399,12 +1399,17 @@ export default function EventLayout({
                                                       '...' +
                                                       ensName?.slice(-6)
                                                     : ensName ||
-                                                      event.owner.slice(0, 6) +
+                                                      event?.owner?.slice(
+                                                          0,
+                                                          6
+                                                      ) +
                                                           '...' +
-                                                          event?.owner.slice(-6)
-                                                : event.owner.slice(0, 6) +
+                                                          event?.owner?.slice(
+                                                              -6
+                                                          )
+                                                : event?.owner?.slice(0, 6) +
                                                   '...' +
-                                                  event?.owner.slice(-6)}
+                                                  event?.owner?.slice(-6)}
                                         </Text>
                                     </Box>
                                 </Flex>
