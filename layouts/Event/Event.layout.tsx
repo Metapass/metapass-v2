@@ -635,7 +635,7 @@ export default function EventLayout({
                 />
             )}
             <RegisterFormModal
-                isOpen={true}
+                isOpen={isOpen2}
                 onOpen={onOpen2}
                 onClose={onClose2}
                 event={event}
