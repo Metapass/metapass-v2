@@ -448,34 +448,31 @@ const Create: NextPage = () => {
                         transactionData
                     )
                     const transaction = new Transaction().add(txnInstruction)
-                    // const signature = await wallet.sendTransaction(
-                    //     transaction,
-                    //     connection
-                    // )
-                    console.log('tx sign', 'signature')
+                    const signature = await wallet.sendTransaction(
+                        transaction,
+                        connection
+                    )
+                    console.log('tx sign', signature)
                     setEventLink(
                         window.location.origin + '/event/' + eventPDA.toString()
                     )
-                    setTxnId('signature')
+                    setTxnId(signature)
                     try {
-                        await axios.post(
-                            `${process.env.NEXT_PUBLIC_MONGO_API}/create`,
-                            {
-                                id: nonce,
-                                title: event.title,
-                                category: JSON.stringify(event.category),
-                                image: JSON.stringify(event.image),
-                                eventPDA: eventPDA.toString(),
-                                eventHost: wallet.publicKey.toString(),
-                                date: event.date,
-                                description: JSON.stringify(event.description),
-                                seats: event.seats,
-                                type: event.category.event_type,
-                                link: event.link,
-                                fee: event.fee,
-                                venue: JSON.stringify(event.venue),
-                            }
-                        )
+                        await axios.post(`/api/create`, {
+                            id: nonce,
+                            title: event.title,
+                            category: JSON.stringify(event.category),
+                            image: JSON.stringify(event.image),
+                            eventPDA: eventPDA.toString(),
+                            eventHost: wallet.publicKey.toString(),
+                            date: event.date,
+                            description: JSON.stringify(event.description),
+                            seats: event.seats,
+                            type: event.category.event_type,
+                            link: event.link,
+                            fee: event.fee,
+                            venue: JSON.stringify(event.venue),
+                        })
                     } catch (e) {
                         console.log('create api')
                     }
@@ -489,6 +486,10 @@ const Create: NextPage = () => {
                         })
                     setIsPublished(true)
                     setInTxn(false)
+                    if (isInviteOnly) {
+                        uploadFormDetails(formData, child)
+                    }
+                    setFormData(defaultFormData)
                 } catch (error) {
                     console.log('error', error)
                 }
@@ -566,9 +567,9 @@ const Create: NextPage = () => {
                         const signedTx = await wallet.signTransaction(
                             transaction
                         )
-                        // const txid = await connection.sendRawTransaction(
-                        //     signedTx.serialize()
-                        // )
+                        const txid = await connection.sendRawTransaction(
+                            signedTx.serialize()
+                        )
                         console.log(
                             'Event created',
                             `https://solscan.io/tx/${'txid'}`
@@ -578,29 +579,24 @@ const Create: NextPage = () => {
                                 '/event/' +
                                 eventPDA.toString()
                         )
-                        setTxnId('txid')
+                        setTxnId(txid)
 
                         try {
-                            await axios.post(
-                                `${process.env.NEXT_PUBLIC_MONGO_API}/create`,
-                                {
-                                    id: nonce,
-                                    title: event.title,
-                                    category: JSON.stringify(event.category),
-                                    image: JSON.stringify(event.image),
-                                    eventPDA: eventPDA.toString(),
-                                    eventHost: wallet.publicKey.toString(),
-                                    date: event.date,
-                                    description: JSON.stringify(
-                                        event.description
-                                    ),
-                                    seats: event.seats,
-                                    type: event.category.event_type,
-                                    link: event.link,
-                                    fee: event.fee,
-                                    venue: JSON.stringify(event.venue),
-                                }
-                            )
+                            await axios.post(`/api/create`, {
+                                id: nonce,
+                                title: event.title,
+                                category: JSON.stringify(event.category),
+                                image: JSON.stringify(event.image),
+                                eventPDA: eventPDA.toString(),
+                                eventHost: wallet.publicKey.toString(),
+                                date: event.date,
+                                description: JSON.stringify(event.description),
+                                seats: event.seats,
+                                type: event.category.event_type,
+                                link: event.link,
+                                fee: event.fee,
+                                venue: JSON.stringify(event.venue),
+                            })
                         } catch (e) {
                             console.log('create api')
                         }
@@ -614,6 +610,10 @@ const Create: NextPage = () => {
                             })
                         setIsPublished(true)
                         setInTxn(false)
+                        if (isInviteOnly) {
+                            uploadFormDetails(formData, child)
+                        }
+                        setFormData(defaultFormData)
                     } else {
                         throw Error(
                             'signTransaction is undefined, line 205 create/index.tsx'
