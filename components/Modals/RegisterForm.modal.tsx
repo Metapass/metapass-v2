@@ -11,9 +11,11 @@ import {
     FormLabel,
     Flex,
     Badge,
+    Box,
+    Text,
 } from '@chakra-ui/react'
 import { utils } from 'ethers'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { ModalProps } from '../../types/ModalProps.types'
 import type { formDataType } from '../../types/registerForm.types'
@@ -25,6 +27,7 @@ import { Event } from '../../types/Event.type'
 import { useRecoilState } from 'recoil'
 import { updateOnce } from '../../lib/recoil/atoms'
 import { defaultFormData } from '../../lib/constants'
+import { walletContext } from '../../utils/walletContext'
 
 export const RegisterFormModal = ({
     isOpen,
@@ -40,6 +43,7 @@ export const RegisterFormModal = ({
     const [toUpdate, setToUpdate] = useRecoilState(updateOnce)
 
     const user = supabase.auth.user()
+    const [wallet, setWallet] = useContext(walletContext)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -49,14 +53,14 @@ export const RegisterFormModal = ({
                     .select('id, data')
                     .eq('event', utils.getAddress(event.childAddress as string))
 
-                    
-                data?.length !== 0 && setData({
-                    id: data?.[0]?.id,
-                    data: {
-                        preDefinedQues: data?.[0].data?.preDefinedQues,
-                        customQues: data?.[0].data?.customQues!,
-                    },
-                })
+                data?.length !== 0 &&
+                    setData({
+                        id: data?.[0]?.id,
+                        data: {
+                            preDefinedQues: data?.[0].data?.preDefinedQues,
+                            customQues: data?.[0].data?.customQues!,
+                        },
+                    })
             }
         }
 
@@ -116,7 +120,18 @@ export const RegisterFormModal = ({
                         >
                             {formData?.data?.preDefinedQues.map((ques) => (
                                 <FormControl key={ques.id}>
-                                    <FormLabel>{ques.val} </FormLabel>
+                                    <Box
+                                        display={'flex'}
+                                        justifyContent={'start'}
+                                        alignItems={'start'}
+                                    >
+                                        <FormLabel>{ques.val} </FormLabel>
+                                        {ques.isRequired && (
+                                            <Text ml={-2} color="red">
+                                                *
+                                            </Text>
+                                        )}
+                                    </Box>
                                     <Flex gap="2" alignItems="center">
                                         <Input
                                             placeholder={ques.val}
@@ -124,29 +139,31 @@ export const RegisterFormModal = ({
                                             isRequired={ques.isRequired}
                                             {...register(camelize(ques.val))}
                                             defaultValue={
-                                                ques.id === 2 ? user?.email : ''
+                                                ques.id === 2
+                                                    ? user?.email
+                                                    : '' || ques.id === 3
+                                                    ? wallet?.address
+                                                    : ''
                                             }
                                             isReadOnly={ques.id === 2}
                                         />
-                                        {ques.isRequired && (
-                                            <Badge
-                                                display="grid"
-                                                placeItems="center"
-                                                px="3"
-                                                rounded="full"
-                                                colorScheme="purple"
-                                                h="6"
-                                            >
-                                                Required
-                                            </Badge>
-                                        )}
                                     </Flex>
                                 </FormControl>
                             ))}
 
                             {formData?.data?.customQues.map((ques) => (
                                 <FormControl key={ques.id}>
-                                    <FormLabel>{ques.val}</FormLabel>
+                                    <Box
+                                        display={'flex'}
+                                        justifyContent={'start'}
+                                    >
+                                        <FormLabel>{ques.val}</FormLabel>
+                                        {ques.isRequired && (
+                                            <Text ml={-2} color="red">
+                                                *
+                                            </Text>
+                                        )}
+                                    </Box>
                                     <Flex gap="2" alignItems="center">
                                         <Input
                                             placeholder={ques.val}
@@ -157,26 +174,15 @@ export const RegisterFormModal = ({
                                                 ques.id === 2 ? user?.email : ''
                                             }
                                         />
-                                        {ques.isRequired && (
-                                            <Badge
-                                                display="grid"
-                                                placeItems="center"
-                                                px="3"
-                                                rounded="full"
-                                                colorScheme="purple"
-                                                h="6"
-                                            >
-                                                Required
-                                            </Badge>
-                                        )}
                                     </Flex>
                                 </FormControl>
                             ))}
 
                             <Button
-                                colorScheme="purple"
-                                fontWeight="400"
+                                bg={'brand.gradient'}
+                                fontWeight="500"
                                 _focus={{}}
+                                _hover={{ bg: 'brand.gradient' }}
                                 _active={{}}
                                 w="28"
                                 type="submit"
