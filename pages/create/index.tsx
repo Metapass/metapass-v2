@@ -458,7 +458,7 @@ const Create: NextPage = () => {
                     )
                     setTxnId(signature)
                     await axios.post(
-                        `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/create`,
+                        `https://${process.env.NEXT_PUBLIC_MONGO_API}/create`,
                         {
                             id: nonce,
                             title: event.title,
@@ -577,7 +577,7 @@ const Create: NextPage = () => {
                         setTxnId(txid)
 
                         await axios.post(
-                            `https://cors-anywhere-production-4dbd.up.railway.app/${process.env.NEXT_PUBLIC_MONGO_API}/create`,
+                            `https://${process.env.NEXT_PUBLIC_MONGO_API}/create`,
                             {
                                 id: nonce,
                                 title: event.title,

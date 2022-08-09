@@ -81,7 +81,13 @@ import MapPinLine from '../../components/Misc/MapPinLine.component'
 
 declare const window: any
 
-export default function EventLayout({ event, isInviteOnly }: { event: Event, isInviteOnly: boolean }) {
+export default function EventLayout({
+    event,
+    isInviteOnly,
+}: {
+    event: Event
+    isInviteOnly: boolean
+}) {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
         process.env.NEXT_PUBLIC_ENV === 'prod'
@@ -629,7 +635,7 @@ export default function EventLayout({ event, isInviteOnly }: { event: Event, isI
                 />
             )}
             <RegisterFormModal
-                isOpen={isOpen2}
+                isOpen={true}
                 onOpen={onOpen2}
                 onClose={onClose2}
                 event={event}
