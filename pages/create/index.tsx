@@ -576,7 +576,7 @@ const Create: NextPage = () => {
                         )
                         setTxnId(txid)
 
-                        await axios.post(`/api/create`, {
+                        await axios.post(`/api/createEvent`, {
                             id: nonce,
                             title: event.title,
                             category: JSON.stringify(event.category),
