@@ -48,10 +48,14 @@ export const RegisterFormModal = ({
     useEffect(() => {
         const fetchData = async () => {
             if (event) {
+                let a = event.childAddress as string
+                if (event.childAddress.startsWith('0x')) {
+                    a = utils.getAddress(event.childAddress as string)
+                }
                 const { data, error } = await supabase
                     .from('forms')
                     .select('id, data')
-                    .eq('event', utils.getAddress(event.childAddress as string))
+                    .eq('event', a)
 
                 data?.length !== 0 &&
                     setData({

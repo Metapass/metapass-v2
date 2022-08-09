@@ -448,38 +448,42 @@ const Create: NextPage = () => {
                         transactionData
                     )
                     const transaction = new Transaction().add(txnInstruction)
-                    const signature = await wallet.sendTransaction(
-                        transaction,
-                        connection
-                    )
-                    console.log('tx sign', signature)
+                    // const signature = await wallet.sendTransaction(
+                    //     transaction,
+                    //     connection
+                    // )
+                    console.log('tx sign', 'signature')
                     setEventLink(
                         window.location.origin + '/event/' + eventPDA.toString()
                     )
-                    setTxnId(signature)
-                    await axios.post(
-                        `${process.env.NEXT_PUBLIC_MONGO_API}/create`,
-                        {
-                            id: nonce,
-                            title: event.title,
-                            category: JSON.stringify(event.category),
-                            image: JSON.stringify(event.image),
-                            eventPDA: eventPDA.toString(),
-                            eventHost: wallet.publicKey.toString(),
-                            date: event.date,
-                            description: JSON.stringify(event.description),
-                            seats: event.seats,
-                            type: event.category.event_type,
-                            link: event.link,
-                            fee: event.fee,
-                            venue: JSON.stringify(event.venue),
-                        }
-                    )
+                    setTxnId('signature')
+                    try {
+                        await axios.post(
+                            `${process.env.NEXT_PUBLIC_MONGO_API}/create`,
+                            {
+                                id: nonce,
+                                title: event.title,
+                                category: JSON.stringify(event.category),
+                                image: JSON.stringify(event.image),
+                                eventPDA: eventPDA.toString(),
+                                eventHost: wallet.publicKey.toString(),
+                                date: event.date,
+                                description: JSON.stringify(event.description),
+                                seats: event.seats,
+                                type: event.category.event_type,
+                                link: event.link,
+                                fee: event.fee,
+                                venue: JSON.stringify(event.venue),
+                            }
+                        )
+                    } catch (e) {
+                        console.log('create api')
+                    }
                     const { data, error } = await supabase
                         .from('events')
                         .insert({
-                            contractAddress: child,
-                            inviteOnly: false,
+                            contractAddress: eventPDA.toString(),
+                            inviteOnly: isInviteOnly,
                             Venue: JSON.stringify(event.venue),
                             IRL: event.category.event_type === 'In-Person',
                         })
@@ -562,40 +566,49 @@ const Create: NextPage = () => {
                         const signedTx = await wallet.signTransaction(
                             transaction
                         )
-                        const txid = await connection.sendRawTransaction(
-                            signedTx.serialize()
-                        )
+                        // const txid = await connection.sendRawTransaction(
+                        //     signedTx.serialize()
+                        // )
                         console.log(
                             'Event created',
-                            `https://solscan.io/tx/${txid}`
+                            `https://solscan.io/tx/${'txid'}`
                         )
                         setEventLink(
                             window.location.origin +
                                 '/event/' +
                                 eventPDA.toString()
                         )
-                        setTxnId(txid)
+                        setTxnId('txid')
 
-                        await axios.post(`/api/createEvent`, {
-                            id: nonce,
-                            title: event.title,
-                            category: JSON.stringify(event.category),
-                            image: JSON.stringify(event.image),
-                            eventPDA: eventPDA.toString(),
-                            eventHost: wallet.publicKey.toString(),
-                            date: event.date,
-                            description: JSON.stringify(event.description),
-                            seats: event.seats,
-                            type: event.category.event_type,
-                            link: event.link,
-                            fee: event.fee,
-                            venue: JSON.stringify(event.venue),
-                        })
+                        try {
+                            await axios.post(
+                                `${process.env.NEXT_PUBLIC_MONGO_API}/create`,
+                                {
+                                    id: nonce,
+                                    title: event.title,
+                                    category: JSON.stringify(event.category),
+                                    image: JSON.stringify(event.image),
+                                    eventPDA: eventPDA.toString(),
+                                    eventHost: wallet.publicKey.toString(),
+                                    date: event.date,
+                                    description: JSON.stringify(
+                                        event.description
+                                    ),
+                                    seats: event.seats,
+                                    type: event.category.event_type,
+                                    link: event.link,
+                                    fee: event.fee,
+                                    venue: JSON.stringify(event.venue),
+                                }
+                            )
+                        } catch (e) {
+                            console.log('create api')
+                        }
                         const { data, error } = await supabase
                             .from('events')
                             .insert({
-                                contractAddress: child,
-                                inviteOnly: false,
+                                contractAddress: eventPDA.toString(),
+                                inviteOnly: isInviteOnly,
                                 Venue: JSON.stringify(event.venue),
                                 IRL: event.category.event_type === 'In-Person',
                             })
