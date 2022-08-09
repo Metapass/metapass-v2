@@ -38,7 +38,6 @@ export async function uploadToCloudinary(image: any) {
         formData
     )
     return post.data.secure_url
-
 }
 
 export function getBlob(file: any) {
@@ -68,21 +67,21 @@ export const ticketToIPFS = async (
     date: string,
     person: string
 ) => {
-
     let parsedDate = date.split('T')[0]
     const BASE_ENDPOINT = 'https://ticket-img-production-f075.up.railway.app'
     const res = await axios.get(
-        `${BASE_ENDPOINT}/api/v2/2d/edit/hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${months[new Date(parsedDate).getMonth()] +
-        ' ' +
-        new Date(parsedDate).getDate()
+        `${BASE_ENDPOINT}/api/v2/2d/edit/hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${
+            months[new Date(parsedDate).getMonth()] +
+            ' ' +
+            new Date(parsedDate).getDate()
         }?url=${url}`
     )
     // @ts
     // @ts-ignore
     let { cid } = await ipfs.add(urlSource(res.data[0]))
-//     await axios.post('/api/pin', {
-//         hash: cid.toString(),
-//     })
+    //     await axios.post('/api/pin', {
+    //         hash: cid.toString(),
+    //     })
     return {
         img: `https://ipfs.io/ipfs/${cid.toString()}`,
         fastimg: res.data[0],
@@ -96,15 +95,22 @@ export const genTicket = async (
     date: string,
     person: string
 ) => {
-
     let parsedDate = date.split('T')[0]
-    const BASE_ENDPOINT = 'https://ticket-img-production-f075.up.railway.app'
-    const res = await axios.get(
-        `${BASE_ENDPOINT}/api/v2/2d/edit/hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${months[new Date(parsedDate).getMonth()] +
-        ' ' +
-        new Date(parsedDate).getDate()
-        }?url=${url}`
-    )
+    // const BASE_ENDPOINT = 'https://ticket-img-production-f075.up.railway.app'
+    // const res = await axios.get(
+    //     `${BASE_ENDPOINT}/api/v2/2d/edit/hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${months[new Date(parsedDate).getMonth()] +
+    //     ' ' +
+    //     new Date(parsedDate).getDate()
+    //     }?url=${url}`
+    // )
+    const res = await axios.post('/api/image', {
+        title,
+        ticketNumber,
+        person,
+        months,
+        parsedDate,
+        url,
+    })
     return {
         fastimg: res.data[0],
     }
