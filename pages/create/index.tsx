@@ -452,7 +452,7 @@ const Create: NextPage = () => {
                         transaction,
                         connection
                     )
-                    console.log('tx sign', signature)
+                    console.log('tx signature', signature)
                     setEventLink(
                         window.location.origin + '/event/' + eventPDA.toString()
                     )
