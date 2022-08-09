@@ -503,15 +503,14 @@ export default function EventLayout({
                         //     wallet.publicKey?.toString() as string,
                         //     event.tickets_sold + 1
                         // )
-                        // event.category.event_type == 'In-Person' &&
-                        //     generateAndSendUUID(
-                        //         event.childAddress,
-                        //         wallet.publicKey?.toString() as string,
-                        //         event.tickets_sold + 1,
-                        //         chain
-                        //     ).then((uuid) => {
-                        //         setQrId(String(uuid))
-                        //     })
+                        event.category.event_type == 'In-Person' &&
+                            generateAndSendUUID(
+                                event.childAddress,
+                                wallet.address as string,
+                                event.tickets_sold + 1
+                            ).then((uuid) => {
+                                setQrId(String(uuid))
+                            })
                     } catch (error) {
                         const e = error as Error
                         if (e.message.includes('0x1')) {

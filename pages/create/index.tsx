@@ -458,7 +458,7 @@ const Create: NextPage = () => {
                     )
                     setTxnId(signature)
                     await axios.post(
-                        `https://${process.env.NEXT_PUBLIC_MONGO_API}/create`,
+                        `${process.env.NEXT_PUBLIC_MONGO_API}/create`,
                         {
                             id: nonce,
                             title: event.title,
