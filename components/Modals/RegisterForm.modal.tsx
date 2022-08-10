@@ -54,9 +54,9 @@ export const RegisterFormModal = ({
                 }
                 const { data, error } = await supabase
                     .from('forms')
-                    .select('id, data')
+                    .select('id,event, data')
                     .eq('event', a)
-
+                console.log(data)
                 data?.length !== 0 &&
                     setData({
                         id: data?.[0]?.id,
@@ -81,9 +81,12 @@ export const RegisterFormModal = ({
     const onSubmit = async (res: any) => {
         if (user) {
             setIsLoading(true)
-
+            let a = event?.childAddress as string
+            if (event?.childAddress.startsWith('0x')) {
+                a = utils.getAddress(event.childAddress as string)
+            }
             const { data, error } = await supabase.from('responses').insert({
-                event: utils.getAddress(event?.childAddress as string),
+                event: a,
                 form: formData?.id,
                 response: res,
                 email: user?.email,

@@ -147,6 +147,7 @@ export default function EventLayout({
                 .from('responses')
                 .select('accepted')
                 .eq('email', user?.email)
+                .eq('event', event.id)
 
             if (data?.length !== 0) {
                 data?.[0]?.accepted
@@ -966,7 +967,12 @@ export default function EventLayout({
                         _hover={{}}
                         onClick={() => {
                             isInviteOnly
-                                ? handleRegister(user, onOpen2, setToOpen)
+                                ? handleRegister(
+                                      user,
+                                      onOpen2,
+                                      setToOpen,
+                                      event.id
+                                  )
                                 : event.isSolana
                                 ? buySolanaTicket
                                 : buyPolygonTicket

@@ -5,7 +5,8 @@ import { supabase } from '../../lib/config/supabaseConfig'
 const handleRegister = async (
     user: User | null,
     onOpen: () => void,
-    setToOpen: any
+    setToOpen: any,
+    event: string
 ) => {
     if (user) {
         setToOpen(false)
@@ -13,6 +14,7 @@ const handleRegister = async (
             .from('responses')
             .select('email')
             .eq('email', user?.email)
+            .eq('event', event)
 
         data?.length !== 0
             ? toast.error("You've already filled the form")
