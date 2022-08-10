@@ -4,7 +4,7 @@ const pinata = pinataSDK(
     process.env.PINATA_API as string,
     process.env.PINATA_SECRET as string
 )
-
+console.log(process.env.PINATA_API, process.env.PINATA_SECRET)
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         pinata
