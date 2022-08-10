@@ -16,6 +16,7 @@ export default async function generateAndSendUUID(
         checkedIn: false,
         ticketImage: image,
     })
+    // console.log(data)
 
     return uuid as string
 }
