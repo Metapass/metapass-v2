@@ -987,10 +987,12 @@ export default function EventLayout({
                                         event.childAddress,
                                         isConnected
                                     )
-                                } else {
+                                }
+                                if (formRes === 'Accepted') {
                                     event.isSolana
                                         ? buySolanaTicket()
                                         : buyPolygonTicket()
+                                } else {
                                 }
                             } else {
                                 if (event.isSolana) {
