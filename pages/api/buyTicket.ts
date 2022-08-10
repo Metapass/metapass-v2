@@ -10,6 +10,6 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
             publicKey: publicKey,
         })
 
-        res.status(200)
+        res.status(200).send('Success')
     }
 }

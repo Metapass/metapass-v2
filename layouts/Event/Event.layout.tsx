@@ -93,7 +93,7 @@ export default function EventLayout({
         process.env.NEXT_PUBLIC_ENV === 'prod'
             ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
             : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
-    const connection = new Connection(clusterApiUrl('mainnet-beta'))
+    const connection = new Connection(network)
     const [image, setImage] = useState(event.image.gallery[0])
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
@@ -271,7 +271,8 @@ export default function EventLayout({
                                                 event.childAddress
                                             ),
                                             wallet.address as string,
-                                            event.tickets_sold + 1
+                                            event.tickets_sold + 1,
+                                            fastimg
                                         ).then((uuid) => {
                                             setQrId(String(uuid))
                                         })
@@ -299,7 +300,8 @@ export default function EventLayout({
                                                 event.childAddress
                                             ),
                                             wallet.address as string,
-                                            event.tickets_sold + 1
+                                            event.tickets_sold + 1,
+                                            fastimg
                                         ).then((uuid) => {
                                             setQrId(String(uuid))
                                         })
@@ -342,10 +344,12 @@ export default function EventLayout({
         }
     }
     const buySolanaTicket = async () => {
+        console.log('buySolanaTicket')
         if (user === null) {
             setToOpen(true)
         } else {
             if (solanaWallet.publicKey && wallet.address) {
+                console.log('solanaWallet')
                 setIsLoading(true)
                 const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey(
                     'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
@@ -470,24 +474,26 @@ export default function EventLayout({
                 const transaction = new web3.Transaction().add(
                     transactionInstruction
                 )
-
+                console.log('tx')
                 const { blockhash } = await connection.getLatestBlockhash()
                 transaction.recentBlockhash = blockhash
                 transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
-
+                console.log('hello')
                 if (solanaWallet.signTransaction) {
                     try {
                         transaction.sign(mint)
                         const signedTx = await solanaWallet.signTransaction(
                             transaction
                         )
+                        console.log('signedTx', signedTx)
                         const txid = await connection.sendRawTransaction(
                             signedTx.serialize(),
                             {
-                                preflightCommitment: 'recent',
+                                preflightCommitment: 'finalized',
                                 // skipPreflight: true,
                             }
                         )
+                        console.log(txid)
                         await axios.post(`/api/buyTicket`, {
                             eventPDA: event.childAddress,
                             publicKey: solanaWallet.publicKey?.toString(),
@@ -509,7 +515,8 @@ export default function EventLayout({
                             generateAndSendUUID(
                                 event.childAddress,
                                 wallet.address as string,
-                                event.tickets_sold + 1
+                                event.tickets_sold + 1,
+                                fastimg
                             ).then((uuid) => {
                                 setQrId(String(uuid))
                             })
@@ -644,6 +651,7 @@ export default function EventLayout({
                 onClose={onClose2}
                 event={event}
             />
+
             {hasBought && <Confetti />}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />
@@ -966,21 +974,30 @@ export default function EventLayout({
                             cursor: 'not-allowed',
                         }}
                         _hover={{}}
-                        onClick={() => {
-                            isInviteOnly
-                                ? handleRegister(
-                                      user,
-                                      onOpen2,
-                                      setToOpen,
-                                      event.childAddress
-                                  )
-                                : event.isSolana
-                                ? buySolanaTicket
-                                : buyPolygonTicket
+                        onClick={async () => {
+                            if (isInviteOnly) {
+                                if (formRes === 'Register') {
+                                    await handleRegister(
+                                        user,
+                                        onOpen2,
+                                        setToOpen,
+                                        event.childAddress
+                                    )
+                                } else {
+                                    event.isSolana
+                                        ? buySolanaTicket()
+                                        : buyPolygonTicket()
+                                }
+                            } else {
+                                if (event.isSolana) {
+                                    buySolanaTicket()
+                                } else {
+                                    buyPolygonTicket()
+                                }
+                            }
                         }}
                         disabled={
                             event.tickets_available === 0 ||
-                            formRes === 'Accepted' ||
                             formRes === 'Awaiting Approval'
                         }
                         _focus={{}}
@@ -1217,33 +1234,62 @@ export default function EventLayout({
                                     cursor: 'not-allowed',
                                 }}
                                 _hover={{}}
-                                onClick={
-                                    event.isSolana
-                                        ? buySolanaTicket
-                                        : buyPolygonTicket
+                                onClick={async () => {
+                                    if (isInviteOnly) {
+                                        if (formRes === 'Register') {
+                                            await handleRegister(
+                                                user,
+                                                onOpen2,
+                                                setToOpen,
+                                                event.childAddress
+                                            )
+                                        } else {
+                                            event.isSolana
+                                                ? buySolanaTicket()
+                                                : buyPolygonTicket()
+                                        }
+                                    } else {
+                                        if (event.isSolana) {
+                                            buySolanaTicket()
+                                        } else {
+                                            buyPolygonTicket()
+                                        }
+                                    }
+                                }}
+                                disabled={
+                                    event.tickets_available === 0 ||
+                                    formRes === 'Awaiting Approval'
                                 }
-                                disabled={event.tickets_available === 0}
                                 _focus={{}}
                                 _active={{}}
-                                w={{ base: '90%', md: 'auto' }}
-                                my="4"
+                                w={{ base: '80%', md: 'auto' }}
+                                mr="3"
+                                mb="3"
                                 leftIcon={
                                     <Box
                                         _groupHover={{
                                             transform: 'scale(1.1)',
                                         }}
-                                        transitionDuration="200ms"
+                                        transitionDuration="100ms"
                                     >
-                                        <Image
-                                            src="/assets/elements/event_ticket.svg"
-                                            w={{ base: '6', md: '5' }}
-                                            alt="ticket"
-                                        />
+                                        {isInviteOnly ? (
+                                            <FiCheckCircle size={22} />
+                                        ) : (
+                                            <Image
+                                                src="/assets/elements/event_ticket.svg"
+                                                w={{ base: '6', md: '5' }}
+                                                alt="ticket"
+                                            />
+                                        )}
                                     </Box>
                                 }
                             >
-                                {event.tickets_available === 0
+                                {isInviteOnly
+                                    ? formRes
+                                    : event.tickets_available === 0
                                     ? 'Sold Out'
+                                    : hasTicket
+                                    ? 'Already Bought'
                                     : 'Buy Ticket'}
                             </Button>
                         </Flex>
