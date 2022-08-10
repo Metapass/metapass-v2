@@ -1,24 +1,29 @@
-import pinataSDK from '@pinata/sdk'
+import axios from 'axios'
 import { NextApiRequest, NextApiResponse } from 'next'
-const pinata = pinataSDK(
-    process.env.PINATA_API as string,
-    process.env.PINATA_SECRET as string
-)
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
-        console.log(process.env.PINATA_API, process.env.PINATA_SECRET)
-        pinata
-            .pinByHash(req.body.hash)
-            .then((result: any) => {
-                res.status(200).json({
-                    msg: 'Pinned to ipfs',
+        console.log(process.env.PINATA_JWT)
+        const { hash } = req.body
+        axios
+            .post(
+                'https://api.pinata.cloud/pinning/pinByHash',
+                {
+                    hashToPin: hash,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${process.env.PINATA_JWT}`,
+                    },
+                }
+            )
+            .then(() => {
+                res.status(200).send({
+                    msg: 'pinned!',
                 })
             })
-            .catch((error: any) => {
-                res.status(400).json({
-                    msg: 'failed to pin ' + error,
-                })
+            .catch((error) => {
+                res.status(400).send({ error })
             })
     } else {
         res.status(400).json({ msg: 'wrong method bro' })
