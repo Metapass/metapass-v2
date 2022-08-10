@@ -116,6 +116,7 @@ const Create: NextPage = () => {
     }, [wallet, contractAddress, isConnected, multichainProvider])
 
     const uploadFormDetails = async (form: formType, child: string) => {
+        console.log('updating form details', form, child)
         const { data, error } = await supabase.from('forms').insert({
             event: child,
             data: form,
@@ -205,7 +206,8 @@ const Create: NextPage = () => {
                     setInTxn(false)
                     setChild(child)
                     if (isInviteOnly) {
-                        uploadFormDetails(formData, child)
+                        console.log('invite only')
+                        await uploadFormDetails(formData, child)
                     }
                     setFormData(defaultFormData)
                 })
@@ -311,7 +313,8 @@ const Create: NextPage = () => {
                     setInTxn(false)
                     setChild(child)
                     if (isInviteOnly) {
-                        uploadFormDetails(formData, child)
+                        console.log('invite only')
+                        await uploadFormDetails(formData, child)
                     }
                     setFormData(defaultFormData)
                 })
@@ -572,7 +575,7 @@ const Create: NextPage = () => {
                         )
                         console.log(
                             'Event created',
-                            `https://solscan.io/tx/${'txid'}`
+                            `https://solscan.io/tx/${txid}`
                         )
                         setEventLink(
                             window.location.origin +
@@ -670,6 +673,7 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 1 ? 'block' : 'none'}>
                             {/* STEP2🔺 */}
+                            {console.log('step 2', event)}
                             <Step2
                                 event={event}
                                 onSubmit={(formDetails: any) => {
@@ -684,6 +688,7 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 2 ? 'block' : 'none'}>
                             {/* STEP3🔺 */}
+                            {console.log('step 3', event)}
                             <Step3
                                 event={event}
                                 onSubmit={(formDetails: any) => {
@@ -698,6 +703,7 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 3 ? 'block' : 'none'}>
                             {/* STEP4🔺 */}
+                            {console.log('step 4', event)}
                             <Step4
                                 event={event}
                                 onSubmit={(
@@ -719,6 +725,7 @@ const Create: NextPage = () => {
                             <>
                                 {step === 4 ? (
                                     <Box>
+                                        {console.log(event, formData, 'logui')}
                                         {/* STEP5🔺 */}
                                         <Step5
                                             onSubmit={(data) => {
@@ -735,6 +742,7 @@ const Create: NextPage = () => {
                                 {step === 5 ? (
                                     <Box>
                                         {/* STEP5🔺 */}
+                                        {console.log(event, 'logzp')}
                                         <SubmitStep
                                             event={event}
                                             inTxn={inTxn}
@@ -750,6 +758,7 @@ const Create: NextPage = () => {
                         ) : (
                             <Box display={step === 4 ? 'block' : 'none'}>
                                 {/* STEP5🔺 */}
+                                {console.log(event, 'logxy')}
                                 <SubmitStep
                                     event={event}
                                     inTxn={inTxn}
