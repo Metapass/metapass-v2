@@ -10,6 +10,7 @@ const handleRegister = async (
 ) => {
     if (user) {
         setToOpen(false)
+
         const { data, error } = await supabase
             .from('responses')
             .select('email')

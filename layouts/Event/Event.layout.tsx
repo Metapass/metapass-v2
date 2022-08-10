@@ -143,12 +143,13 @@ export default function EventLayout({
 
     useEffect(() => {
         async function getData() {
+            // let id = event.eve
             const { data, error } = await supabase
                 .from('responses')
                 .select('accepted')
                 .eq('email', user?.email)
-                .eq('event', event.id)
-
+                .eq('event', event.childAddress)
+            console.log(data, 'error', user?.email, event)
             if (data?.length !== 0) {
                 data?.[0]?.accepted
                     ? setFormRes('Accepted')
@@ -971,7 +972,7 @@ export default function EventLayout({
                                       user,
                                       onOpen2,
                                       setToOpen,
-                                      event.id
+                                      event.childAddress
                                   )
                                 : event.isSolana
                                 ? buySolanaTicket
