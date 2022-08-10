@@ -194,6 +194,7 @@ export const RegisterFormModal = ({
                                 w="28"
                                 type="submit"
                                 isLoading={isLoading}
+                                textColor="white"
                             >
                                 Submit
                             </Button>

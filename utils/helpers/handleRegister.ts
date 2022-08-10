@@ -6,22 +6,27 @@ const handleRegister = async (
     user: User | null,
     onOpen: () => void,
     setToOpen: any,
-    event: string
+    event: string,
+    isConnected?: boolean
 ) => {
-    if (user) {
-        setToOpen(false)
+    if (isConnected) {
+        if (user) {
+            setToOpen(false)
 
-        const { data, error } = await supabase
-            .from('responses')
-            .select('email')
-            .eq('email', user?.email)
-            .eq('event', event)
+            const { data, error } = await supabase
+                .from('responses')
+                .select('email')
+                .eq('email', user?.email)
+                .eq('event', event)
 
-        data?.length !== 0
-            ? toast.error("You've already filled the form")
-            : onOpen()
+            data?.length !== 0
+                ? toast.error("You've already filled the form")
+                : onOpen()
+        } else {
+            setToOpen(true)
+             toast.error('Please connect your Polygon wallet')
+        }
     } else {
-        setToOpen(true)
     }
 }
 

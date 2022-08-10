@@ -30,7 +30,7 @@ import dynamic from 'next/dynamic'
 import moment from 'moment'
 import { motion } from 'framer-motion'
 import { walletContext, WalletType } from '../../utils/walletContext'
-import { ethers } from 'ethers'
+import { ethers, utils } from 'ethers'
 import { BsCalendarPlus } from 'react-icons/bs'
 import abi from '../../utils/Metapass.json'
 import youtubeThumbnail from 'youtube-thumbnail'
@@ -143,13 +143,12 @@ export default function EventLayout({
 
     useEffect(() => {
         async function getData() {
-            // let id = event.eve
             const { data, error } = await supabase
                 .from('responses')
                 .select('accepted')
                 .eq('email', user?.email)
-                .eq('event', event.childAddress)
-            console.log(data, 'error', user?.email, event)
+                .eq('event', utils.getAddress(event.childAddress))
+
             if (data?.length !== 0) {
                 data?.[0]?.accepted
                     ? setFormRes('Accepted')
@@ -160,7 +159,7 @@ export default function EventLayout({
         }
 
         getData()
-    }, [user?.email, toUpdate])
+    }, [user?.email, toUpdate, event.childAddress])
 
     useEffect(() => {
         const addUser = async () => {
@@ -981,7 +980,8 @@ export default function EventLayout({
                                         user,
                                         onOpen2,
                                         setToOpen,
-                                        event.childAddress
+                                        event.childAddress,
+                                        isConnected
                                     )
                                 } else {
                                     event.isSolana
