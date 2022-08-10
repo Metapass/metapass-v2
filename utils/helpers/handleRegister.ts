@@ -6,27 +6,23 @@ const handleRegister = async (
     user: User | null,
     onOpen: () => void,
     setToOpen: any,
-    event: string,
-    isConnected?: boolean
+    event: string
 ) => {
-    if (isConnected) {
-        if (user) {
-            setToOpen(false)
+    if (user) {
+        setToOpen(false)
 
-            const { data, error } = await supabase
-                .from('responses')
-                .select('email')
-                .eq('email', user?.email)
-                .eq('event', event)
+        const { data, error } = await supabase
+            .from('responses')
+            .select('email')
+            .eq('email', user?.email)
+            .eq('event', event)
 
-            data?.length !== 0
-                ? toast.error("You've already filled the form")
-                : onOpen()
-        } else {
-            setToOpen(true)
-             toast.error('Please connect your wallet first')
-        }
+        data?.length !== 0
+            ? toast.error("You've already filled the form")
+            : onOpen()
     } else {
+        setToOpen(true)
+        toast.error('Please connect your wallet first')
     }
 }
 

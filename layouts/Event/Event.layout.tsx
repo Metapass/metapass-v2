@@ -347,8 +347,10 @@ export default function EventLayout({
         }
     }
     const buySolanaTicket = async () => {
-        console.log('buySolanaTicket')
+        console.log('buySolanaTicket', user)
+
         if (user === null) {
+            console.log('user is null')
             setToOpen(true)
         } else {
             if (solanaWallet.publicKey && wallet.address) {
@@ -979,13 +981,13 @@ export default function EventLayout({
                         _hover={{}}
                         onClick={async () => {
                             if (isInviteOnly) {
+                                console.log('isInviteOnly')
                                 if (formRes === 'Register') {
                                     await handleRegister(
                                         user,
                                         onOpen2,
                                         setToOpen,
-                                        event.childAddress,
-                                        isConnected
+                                        event.childAddress
                                     )
                                 }
                                 if (formRes === 'Accepted') {
@@ -1241,6 +1243,7 @@ export default function EventLayout({
                                 }}
                                 _hover={{}}
                                 onClick={async () => {
+                                    console.log(event.id)
                                     if (isInviteOnly) {
                                         if (formRes === 'Register') {
                                             await handleRegister(
