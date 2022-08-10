@@ -90,6 +90,7 @@ export const RegisterFormModal = ({
                 form: formData?.id,
                 response: res,
                 email: user?.email,
+                address: wallet.address,
                 accepted: false,
             })
 

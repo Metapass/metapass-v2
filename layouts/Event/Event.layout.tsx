@@ -150,7 +150,7 @@ export default function EventLayout({
             const { data, error } = await supabase
                 .from('responses')
                 .select('accepted')
-                .eq('email', user?.email)
+                .eq('address', wallet.address)
                 .eq('event', a)
 
             if (data?.length !== 0) {
