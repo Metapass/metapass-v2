@@ -15,7 +15,6 @@ import {
     Text,
 } from '@chakra-ui/react'
 import { useRecoilValue } from 'recoil'
-// import {VenueAutoComplete} from '../../components/Misc/Step4AutoComplete.component'
 import { FaChevronDown } from 'react-icons/fa'
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import '@uiw/react-md-editor/markdown-editor.css'
