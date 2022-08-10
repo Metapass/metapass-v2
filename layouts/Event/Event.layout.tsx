@@ -143,11 +143,15 @@ export default function EventLayout({
 
     useEffect(() => {
         async function getData() {
+            let a = event.childAddress as string
+            if (event.childAddress.startsWith('0x')) {
+                a = utils.getAddress(event.childAddress as string)
+            }
             const { data, error } = await supabase
                 .from('responses')
                 .select('accepted')
                 .eq('email', user?.email)
-                .eq('event', utils.getAddress(event.childAddress))
+                .eq('event', a)
 
             if (data?.length !== 0) {
                 data?.[0]?.accepted
