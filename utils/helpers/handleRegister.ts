@@ -1,12 +1,15 @@
 import { User } from '@supabase/supabase-js'
+import { useContext } from 'react'
 import toast from 'react-hot-toast'
 import { supabase } from '../../lib/config/supabaseConfig'
+import { walletContext } from '../walletContext'
 
 const handleRegister = async (
     user: User | null,
     onOpen: () => void,
     setToOpen: any,
-    event: string
+    event: string,
+    wallet: any
 ) => {
     if (user) {
         setToOpen(false)
@@ -14,7 +17,7 @@ const handleRegister = async (
         const { data, error } = await supabase
             .from('responses')
             .select('email')
-            .eq('email', user?.email)
+            .eq('address', wallet?.address)
             .eq('event', event)
 
         data?.length !== 0

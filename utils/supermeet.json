@@ -1,0 +1,36 @@
+{
+    "name": "Superparty Goa",
+    "description": "Superparty Goa",
+    "image": "https://res.cloudinary.com/dev-connect/image/upload/92007",
+    "animation_url": "",
+    "external_url": "https://metapasshq.xyz",
+    "attributes": [
+        {
+            "trait_type": "location",
+            "value": "Mike's Place Cavelossim, Goa"
+        },
+        {
+            "trait_type": "Event",
+            "value": "Superparty Goa"
+        }
+    ],
+    "collection": {
+        "name": "Metapass x Superparty Goa",
+        "family": "Metapass"
+    },
+    "properties": {
+        "files": [
+            {
+                "uri": "https://res.cloudinary.com/dev-connect/image/upload/92007",
+                "type": "image/png"
+            }
+        ],
+        "category": "image",
+        "creators": [
+            {
+                "address": "DZFbytJWS5BMgaaJQ3LFvqMcm6mqaKqorgT7ZbhDHGY8",
+                "share": 100
+            }
+        ]
+    }
+}

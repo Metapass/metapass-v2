@@ -152,7 +152,7 @@ export default function EventLayout({
                 .select('accepted')
                 .eq('address', wallet.address)
                 .eq('event', a)
-
+            console.log(data, 'd')
             if (data?.length !== 0) {
                 data?.[0]?.accepted
                     ? setFormRes('Accepted')
@@ -987,7 +987,8 @@ export default function EventLayout({
                                         user,
                                         onOpen2,
                                         setToOpen,
-                                        event.childAddress
+                                        event.childAddress,
+                                        wallet
                                     )
                                 }
                                 if (formRes === 'Accepted') {
@@ -1250,7 +1251,8 @@ export default function EventLayout({
                                                 user,
                                                 onOpen2,
                                                 setToOpen,
-                                                event.childAddress
+                                                event.childAddress,
+                                                wallet
                                             )
                                         } else {
                                             event.isSolana
