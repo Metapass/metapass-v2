@@ -56,16 +56,15 @@ export default function TicketLayout({
     useEffect(() => {
         const fetchDetails = async () => {
             if (wallet.address && contractAddress) {
+                let c = contractAddress.startsWith('0x')
+                    ? ethers.utils.getAddress(contractAddress)
+                    : contractAddress
                 try {
                     const { data, error } = await supabase
                         .from('tickets')
                         .select('uuid')
                         .eq('buyer', wallet.address)
-                        .filter(
-                            'event',
-                            'in',
-                            `("${ethers.utils.getAddress(contractAddress)}")`
-                        )
+                        .filter('event', 'in', `("${c}")`)
                     setQr(data?.[0]?.uuid)
                 } catch (error) {}
             }
