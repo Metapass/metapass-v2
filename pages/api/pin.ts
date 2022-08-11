@@ -10,16 +10,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         pinata
             .pinByHash(req.body.hash)
             .then((result: any) => {
-                res.status(200).json({
+                res.status(200).send({
                     msg: 'Pinned to ipfs',
                 })
             })
             .catch((error: any) => {
-                res.status(400).json({
+                res.status(400).send({
                     msg: 'failed to pin ' + error,
                 })
             })
     } else {
-        res.status(400).json({ msg: 'wrong method bro' })
+        res.status(400).send({ msg: 'wrong method bro' })
     }
 }
