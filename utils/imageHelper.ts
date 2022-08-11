@@ -1,10 +1,17 @@
 import axios from 'axios'
 import { create, urlSource } from 'ipfs-http-client'
+const projectId = process.env.NEXT_PUBLIC_IPFS_PROJECT
+const projectSecret = process.env.NEXT_PUBLIC_IPFS_SECRET
+const auth =
+    'Basic ' + Buffer.from(projectId + ':' + projectSecret).toString('base64')
 
 const ipfs = create({
     host: 'ipfs.infura.io',
     port: 5001,
     protocol: 'https',
+    headers: {
+        authorization: auth,
+    },
 })
 
 const months = [
@@ -76,14 +83,16 @@ export const ticketToIPFS = async (
             new Date(parsedDate).getDate()
         }?url=${url}`
     )
-    // @ts
-    // @ts-ignore
-    let { cid } = await ipfs.add(urlSource(res.data[0]))
+
+    const { data } = await axios.post('/api/addToIPFS', {
+        file: res.data[0],
+    })
+
     await axios.post('/api/pin', {
-        hash: cid.toString(),
+        hash: data.cid,
     })
     return {
-        img: `https://ipfs.io/ipfs/${cid.toString()}`,
+        img: `https://ipfs.io/ipfs/${data.cid}`,
         fastimg: res.data[0],
     }
 }
@@ -96,13 +105,7 @@ export const genTicket = async (
     person: string
 ) => {
     let parsedDate = date.split('T')[0]
-    // const BASE_ENDPOINT = 'https://ticket-img-production-f075.up.railway.app'
-    // const res = await axios.get(
-    //     `${BASE_ENDPOINT}/api/v2/2d/edit/hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${months[new Date(parsedDate).getMonth()] +
-    //     ' ' +
-    //     new Date(parsedDate).getDate()
-    //     }?url=${url}`
-    // )
+
     const res = await axios.post('/api/image', {
         title,
         ticketNumber,
