@@ -1575,110 +1575,107 @@ export default function EventLayout({
                                 </Text>
                             )}
                         </Box>
-
-                        {event.buyers.find(
+                        {console.log(event.buyers)}
+                        {(event.buyers.find(
                             (buyer: any) =>
-                                String(buyer.id).toLowerCase() ===
+                                String(buyer?.id).toLowerCase() ===
                                 String(wallet.address).toLowerCase()
                         ) ||
-                            (event.buyers.find(
-                                (buyer: any) =>
+                            event.buyers.find(
+                                (buyer) =>
                                     String(buyer).toLowerCase() ===
-                                    String(wallet.address).toLowerCase()
-                            ) && (
-                                <Flex align="center" justify="space-evenly">
-                                    <Box
-                                        p="1.5px"
-                                        mx="auto"
-                                        mt="6"
-                                        transitionDuration="200ms"
+                                    String(wallet?.address).toLowerCase()
+                            )) && (
+                            <Flex align="center" justify="space-evenly">
+                                <Box
+                                    p="1.5px"
+                                    mx="auto"
+                                    mt="6"
+                                    transitionDuration="200ms"
+                                    rounded="full"
+                                    w="fit-content"
+                                    boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
+                                    bg="brand.gradient"
+                                    _hover={{ transform: 'scale(1.05)' }}
+                                    _focus={{}}
+                                    _active={{ transform: 'scale(0.95)' }}
+                                >
+                                    <Button
+                                        type="submit"
                                         rounded="full"
-                                        w="fit-content"
-                                        boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
-                                        bg="brand.gradient"
-                                        _hover={{ transform: 'scale(1.05)' }}
+                                        bg="white"
+                                        size="sm"
+                                        color="blackAlpha.700"
+                                        fontWeight="medium"
+                                        _hover={{}}
+                                        leftIcon={
+                                            <Box
+                                                _groupHover={{
+                                                    transform: 'scale(1.1)',
+                                                }}
+                                                transitionDuration="200ms"
+                                            >
+                                                <Image
+                                                    src="/assets/elements/event_ticket_gradient.svg"
+                                                    w="4"
+                                                    alt="ticket"
+                                                />
+                                            </Box>
+                                        }
                                         _focus={{}}
-                                        _active={{ transform: 'scale(0.95)' }}
-                                    >
-                                        <Button
-                                            type="submit"
-                                            rounded="full"
-                                            bg="white"
-                                            size="sm"
-                                            color="blackAlpha.700"
-                                            fontWeight="medium"
-                                            _hover={{}}
-                                            leftIcon={
-                                                <Box
-                                                    _groupHover={{
-                                                        transform: 'scale(1.1)',
-                                                    }}
-                                                    transitionDuration="200ms"
-                                                >
-                                                    <Image
-                                                        src="/assets/elements/event_ticket_gradient.svg"
-                                                        w="4"
-                                                        alt="ticket"
-                                                    />
-                                                </Box>
-                                            }
-                                            _focus={{}}
-                                            _active={{}}
-                                            onClick={() => {
-                                                window.open(eventLink, '_blank')
-                                            }}
-                                            role="group"
-                                        >
-                                            Go to event
-                                        </Button>
-                                    </Box>
-                                    <IconButton
-                                        p="1.5px"
-                                        mx="auto"
-                                        mt="6"
-                                        icon={<BsCalendarPlus />}
-                                        role="button"
+                                        _active={{}}
                                         onClick={() => {
-                                            let eventdate = event.date
-                                            let date = eventdate.split('T')[0]
-                                            let startDate = eventdate
-                                                .split('T')[1]
-                                                .split('-')[0]
-                                            let endDate = eventdate
-                                                .split('T')[1]
-                                                .split('-')[1]
-                                            let finalStartDate = moment(
-                                                date + ' ' + startDate
-                                            ).format()
-
-                                            // console.log(new Date(date+" "+startDate))
-
-                                            let finalEndDate = moment(
-                                                date + ' ' + endDate
-                                            ).format()
-
-                                            let googleStartDate =
-                                                toGoogleCalDate(
-                                                    new Date(finalStartDate)
-                                                )
-                                            let googleEndDate = toGoogleCalDate(
-                                                new Date(finalEndDate)
-                                            )
-                                            window.open(
-                                                `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${
-                                                    event.title
-                                                }&dates=${googleStartDate}/${googleEndDate}&details=${
-                                                    event.description.short_desc
-                                                }&location=${decryptLink(
-                                                    event.link as string
-                                                )}&sf=true&output=xml`,
-                                                '_blank'
-                                            )
+                                            window.open(eventLink, '_blank')
                                         }}
-                                        aria-label="add to calendar"
-                                    ></IconButton>
-                                </Flex>
-                            ))}
+                                        role="group"
+                                    >
+                                        Go to event
+                                    </Button>
+                                </Box>
+                                <IconButton
+                                    p="1.5px"
+                                    mx="auto"
+                                    mt="6"
+                                    icon={<BsCalendarPlus />}
+                                    role="button"
+                                    onClick={() => {
+                                        let eventdate = event.date
+                                        let date = eventdate.split('T')[0]
+                                        let startDate = eventdate
+                                            .split('T')[1]
+                                            .split('-')[0]
+                                        let endDate = eventdate
+                                            .split('T')[1]
+                                            .split('-')[1]
+                                        let finalStartDate = moment(
+                                            date + ' ' + startDate
+                                        ).format()
+
+                                        let finalEndDate = moment(
+                                            date + ' ' + endDate
+                                        ).format()
+
+                                        let googleStartDate = toGoogleCalDate(
+                                            new Date(finalStartDate)
+                                        )
+                                        let googleEndDate = toGoogleCalDate(
+                                            new Date(finalEndDate)
+                                        )
+                                        window.open(
+                                            `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${
+                                                event.title
+                                            }&dates=${googleStartDate}/${googleEndDate}&details=${
+                                                event.description.short_desc
+                                            }&location=${decryptLink(
+                                                event.link as string
+                                            )}&sf=true&output=xml`,
+                                            '_blank'
+                                        )
+                                    }}
+                                    aria-label="add to calendar"
+                                ></IconButton>
+                            </Flex>
+                        )}
                     </Flex>
                 </Flex>
             </Box>
