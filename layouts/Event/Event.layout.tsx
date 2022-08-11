@@ -152,8 +152,8 @@ export default function EventLayout({
                 .select('accepted')
                 .eq('address', wallet.address)
                 .eq('event', a)
-
-            if (data?.length !== 0) {
+            console.log(data, 'd')
+            if (data && data?.length > 0) {
                 data?.[0]?.accepted
                     ? setFormRes('Accepted')
                     : setFormRes('Awaiting Approval')
@@ -163,7 +163,7 @@ export default function EventLayout({
         }
 
         getData()
-    }, [user?.email, toUpdate, event.childAddress])
+    }, [user?.email, toUpdate, event.childAddress, wallet.address])
 
     useEffect(() => {
         const addUser = async () => {
@@ -987,7 +987,8 @@ export default function EventLayout({
                                         user,
                                         onOpen2,
                                         setToOpen,
-                                        event.childAddress
+                                        event.childAddress,
+                                        wallet
                                     )
                                 }
                                 if (formRes === 'Accepted') {
@@ -1250,7 +1251,8 @@ export default function EventLayout({
                                                 user,
                                                 onOpen2,
                                                 setToOpen,
-                                                event.childAddress
+                                                event.childAddress,
+                                                wallet.address
                                             )
                                         } else {
                                             event.isSolana
@@ -1575,7 +1577,7 @@ export default function EventLayout({
                                 </Text>
                             )}
                         </Box>
-                        {console.log(event.buyers)}
+                        {/* {console.log(event.buyers)} */}
                         {(event.buyers.find(
                             (buyer: any) =>
                                 String(buyer?.id).toLowerCase() ===

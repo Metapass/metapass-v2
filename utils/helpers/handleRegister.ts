@@ -6,7 +6,8 @@ const handleRegister = async (
     user: User | null,
     onOpen: () => void,
     setToOpen: any,
-    event: string
+    event: string,
+    address: string
 ) => {
     if (user) {
         setToOpen(false)
@@ -14,7 +15,7 @@ const handleRegister = async (
         const { data, error } = await supabase
             .from('responses')
             .select('email')
-            .eq('email', user?.email)
+            .eq('address', address)
             .eq('event', event)
 
         data?.length !== 0
