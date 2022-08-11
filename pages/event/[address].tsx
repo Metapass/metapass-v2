@@ -1,6 +1,5 @@
 import { Box, Flex } from '@chakra-ui/react'
-import type { NextPage } from 'next'
-
+import type { GetServerSideProps, NextPage } from 'next'
 import {
     CategoryType,
     DescriptionType,
@@ -14,9 +13,27 @@ import { Skeleton } from '@chakra-ui/react'
 import axios from 'axios'
 import { gqlEndpoint } from '../../utils/subgraphApi'
 import { ethers } from 'ethers'
+import { supabase } from '../../lib/config/supabaseConfig'
+import { useRouter } from 'next/router'
 
 const Event: NextPage = ({ event }: any) => {
     const [featEvent, setFeatEvent] = useState<Event>(event)
+    const [isInviteOnly, setInviteOnly] = useState<boolean>(false)
+    const router = useRouter()
+    const { address } = router.query
+
+    useEffect(() => {
+        async function fetchData() {
+            const { data, error } = await supabase
+                .from('events')
+                .select('inviteOnly')
+                .eq('contractAddress', address)
+
+            data?.length !== 0 && setInviteOnly(data?.[0].inviteOnly)
+        }
+
+        fetchData()
+    }, [address])
 
     return (
         <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
@@ -34,10 +51,13 @@ const Event: NextPage = ({ event }: any) => {
                 <Box maxW="1000px" w="full">
                     {featEvent ? (
                         <Skeleton isLoaded={featEvent.id !== ''}>
-                            <EventLayout event={featEvent} />
+                            <EventLayout
+                                event={featEvent}
+                                isInviteOnly={isInviteOnly}
+                            />
                         </Skeleton>
                     ) : (
-                        <Flex alignItems={'center'}>Event Doesn't Exist</Flex>
+                        <Flex alignItems={'center'}>Event Doesn&apos;t Exist</Flex>
                     )}
                 </Box>
             </Flex>
@@ -120,10 +140,10 @@ export async function getServerSideProps({ query }: any) {
             let desc: DescriptionType = JSON.parse(
                 UnicodeDecodeB64(event.description)
             )
-            let venue
+            let venue = null
 
             try {
-                venue = JSON.parse(UnicodeDecodeB64(event.venue))
+                venue = JSON.parse(UnicodeDecodeB64(event?.venue!))
             } catch (e) {
                 venue = UnicodeDecodeB64(event.venue)
             }

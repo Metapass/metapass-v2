@@ -1,10 +1,18 @@
 import { Box, Flex, Text, Image } from '@chakra-ui/react'
-// import { FaCh } from "@mui/icons-material";
 import { FaCheck } from 'react-icons/fa'
-import SearchBar from '../../components/Elements/SearchBar.component'
 import NavigationBar from '../../components/Navigation/NavigationBar.component'
 
-export default function CreateEventCTA({ step = 0, setStep }: any) {
+export default function CreateEventCTA({
+    step,
+    setStep,
+    isInviteOnly,
+}: {
+    step: number
+    setStep: any
+    isInviteOnly: boolean
+}) {
+    const steps = isInviteOnly ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5]
+
     return (
         <>
             <Box
@@ -70,7 +78,7 @@ export default function CreateEventCTA({ step = 0, setStep }: any) {
                     p="2"
                 >
                     <Flex experimental_spaceX="4">
-                        {[1, 2, 3, 4, 5].map((data, key) => (
+                        {steps.map((data, key) => (
                             <Flex
                                 w="10"
                                 h="10"

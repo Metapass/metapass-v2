@@ -275,126 +275,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                         setMyEvents(false)
                     }}
                 />
-
-                <Modal size="xl" isOpen={isOpen2} onClose={onClose2} isCentered>
-                    <ModalOverlay />
-                    <ModalContent rounded="xl">
-                        <Flex justify="center">
-                            <Image
-                                src="/assets/bolt.svg"
-                                maxH="28"
-                                maxW="28"
-                                pos="absolute"
-                                // skewY="50px"
-                                zIndex="overlay"
-                                top="-14"
-                                //   left="250"
-                                alt="bolt"
-                            />
-                        </Flex>
-                        <ModalBody
-                            mt="6"
-                            //   borderRadius="xl"
-                            p="10"
-                        >
-                            <Flex
-                                flexDir="column"
-                                justify="center"
-                                align="center"
-                            >
-                                <Heading
-                                    fontFamily="azonix"
-                                    textAlign="center"
-                                    //  fontFamily="azonix"
-                                    fontSize={{
-                                        base: '3xl',
-                                        lg: '3xl',
-                                        xl: '3xl',
-                                    }}
-                                >
-                                    REACHING OUT
-                                </Heading>
-                                <Text
-                                    m="4"
-                                    p="4"
-                                    lineHeight="23.72px"
-                                    letterSpacing="3%"
-                                    fontFamily="Product Sans"
-                                    fontSize="18px"
-                                    maxW="500px"
-                                    height="63.08px"
-                                    fontWeight="400"
-
-                                    //  noOfLines={4}
-                                >
-                                    <span
-                                        style={{
-                                            color: 'rgba(0, 0, 0, 0.31)',
-                                            fontWeight: 400,
-                                            fontSize: '18px',
-                                            fontFamily: 'Product Sans',
-                                        }}
-                                    >
-                                        We&apos;re on the mission to
-                                        revolutionize event ticketing with
-                                        blockchain, join the waitlist and lets
-                                        band together on this journey!
-                                    </span>{' '}
-                                    🚀
-                                </Text>
-                                <Link
-                                    href="mailto:gm@metapasshq.xyz"
-                                    isExternal
-                                    _hover={{}}
-                                    _focus={{}}
-                                    _active={{}}
-                                >
-                                    <Box
-                                        p="1.5px"
-                                        mx="auto"
-                                        mt="10"
-                                        transitionDuration="200ms"
-                                        rounded="full"
-                                        w="fit-content"
-                                        boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
-                                        bg="brand.gradient"
-                                        _hover={{ transform: 'scale(1.05)' }}
-                                        _focus={{}}
-                                        _active={{ transform: 'scale(0.95)' }}
-                                    >
-                                        <Button
-                                            type="submit"
-                                            rounded="full"
-                                            bg="white"
-                                            color="blackAlpha.700"
-                                            fontWeight="medium"
-                                            _hover={{}}
-                                            leftIcon={
-                                                <Box
-                                                    _groupHover={{
-                                                        transform: 'scale(1.1)',
-                                                    }}
-                                                    transitionDuration="200ms"
-                                                >
-                                                    <Image
-                                                        src="/assets/elements/mail.svg"
-                                                        w="6"
-                                                        alt="ticket"
-                                                    />
-                                                </Box>
-                                            }
-                                            _focus={{}}
-                                            _active={{}}
-                                            role="group"
-                                        >
-                                            Reach us
-                                        </Button>
-                                    </Box>
-                                </Link>
-                            </Flex>
-                        </ModalBody>
-                    </ModalContent>
-                </Modal>
                 <Modal isOpen={isOpen1} onClose={onClose1}>
                     <ModalOverlay />
                     <ModalContent rounded="xl">
@@ -537,20 +417,18 @@ export default function NavigationBar({ mode = 'dark' }) {
                     </NextLink>
                     {wallet.address ? (
                         <Menu>
-                            <MenuButton display={{ base: 'block', md: 'none' }}>
-                                <Button
-                                    size="md"
-                                    bg="transparent"
-                                    _hover={{ bg: 'whiteAlpha.200' }}
-                                    _focus={{}}
-                                    _active={{}}
-                                >
-                                    <FaBars
-                                        color={
-                                            mode === 'white' ? 'black' : 'white'
-                                        }
-                                    />
-                                </Button>
+                            <MenuButton
+                                display={{ base: 'block', md: 'none' }}
+                                size="md"
+                                bg="transparent"
+                                _hover={{ bg: 'whiteAlpha.200' }}
+                                _focus={{}}
+                                _active={{}}
+                                as={Button}
+                            >
+                                <FaBars
+                                    color={mode === 'white' ? 'black' : 'white'}
+                                />
                             </MenuButton>{' '}
                             <MenuList
                                 zIndex={999}
@@ -707,40 +585,39 @@ export default function NavigationBar({ mode = 'dark' }) {
                         </Button>
                         {wallet.address ? (
                             <Menu>
-                                <MenuButton>
-                                    <Button
-                                        rounded="full"
-                                        color="white"
-                                        bg="blackAlpha.500"
-                                        border="2px"
-                                        pl="1.5"
-                                        _hover={{ bg: 'blackAlpha.600' }}
-                                        _focus={{}}
-                                        fontWeight="normal"
-                                        leftIcon={
-                                            user?.user_metadata?.avatar_url ? (
-                                                <Avatar
-                                                    size="sm"
-                                                    src={
-                                                        user?.user_metadata
-                                                            ?.avatar_url
-                                                    }
-                                                />
-                                            ) : (
-                                                <BoringAva
-                                                    address={wallet.address}
-                                                />
-                                            )
-                                        }
-                                        rightIcon={<HiOutlineChevronDown />}
-                                    >
-                                        {wallet.domain ||
-                                            wallet.address.substring(0, 4) +
-                                                '...' +
-                                                wallet.address.substring(
-                                                    wallet.address.length - 4
-                                                )}
-                                    </Button>
+                                <MenuButton
+                                    as={Button}
+                                    rounded="full"
+                                    color="white"
+                                    bg="blackAlpha.500"
+                                    border="2px"
+                                    pl="1.5"
+                                    _hover={{ bg: 'blackAlpha.600' }}
+                                    _focus={{}}
+                                    fontWeight="normal"
+                                    leftIcon={
+                                        user?.user_metadata?.avatar_url ? (
+                                            <Avatar
+                                                size="sm"
+                                                src={
+                                                    user?.user_metadata
+                                                        ?.avatar_url
+                                                }
+                                            />
+                                        ) : (
+                                            <BoringAva
+                                                address={wallet.address}
+                                            />
+                                        )
+                                    }
+                                    rightIcon={<HiOutlineChevronDown />}
+                                >
+                                    {wallet.domain ||
+                                        wallet.address.substring(0, 4) +
+                                            '...' +
+                                            wallet.address.substring(
+                                                wallet.address.length - 4
+                                            )}
                                 </MenuButton>
                                 <MenuList
                                     shadow="none"

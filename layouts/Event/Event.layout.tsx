@@ -30,7 +30,7 @@ import dynamic from 'next/dynamic'
 import moment from 'moment'
 import { motion } from 'framer-motion'
 import { walletContext, WalletType } from '../../utils/walletContext'
-import { ethers } from 'ethers'
+import { ethers, utils } from 'ethers'
 import { BsCalendarPlus } from 'react-icons/bs'
 import abi from '../../utils/Metapass.json'
 import youtubeThumbnail from 'youtube-thumbnail'
@@ -43,7 +43,7 @@ import Confetti from '../../components/Misc/Confetti.component'
 import { ticketToIPFS } from '../../utils/imageHelper'
 import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
-
+import { IoCheckmarkDoneOutline } from 'react-icons/io5'
 import { decryptLink } from '../../utils/linkResolvers'
 
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
@@ -70,18 +70,30 @@ import axios from 'axios'
 import { generateMetadata } from '../../utils/generateMetadata'
 import { useAccount, useSigner } from 'wagmi'
 import { supabase } from '../../lib/config/supabaseConfig'
+import { RegisterFormModal } from '../../components/Modals/RegisterForm.modal'
+import { FiCheckCircle } from 'react-icons/fi'
+import { handleRegister } from '../../utils/helpers/handleRegister'
+import { useRecoilValue } from 'recoil'
+import { updateOnce } from '../../lib/recoil/atoms'
+
 import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
 
 declare const window: any
 
-export default function EventLayout({ event }: { event: Event }) {
+export default function EventLayout({
+    event,
+    isInviteOnly,
+}: {
+    event: Event
+    isInviteOnly: boolean
+}) {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
         process.env.NEXT_PUBLIC_ENV === 'prod'
             ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
             : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
-    const connection = new Connection(clusterApiUrl('mainnet-beta'))
+    const connection = new Connection(network)
     const [image, setImage] = useState(event.image.gallery[0])
     const [mediaType, setMediaType] = useState(
         event.image.video ? 'video' : 'image'
@@ -122,36 +134,68 @@ export default function EventLayout({ event }: { event: Event }) {
     ]
 
     const [toOpen, setToOpen] = useState<boolean>(false)
+    const [formRes, setFormRes] = useState<
+        'Register' | 'Awaiting Approval' | 'Accepted'
+    >('Register')
+    const toUpdate = useRecoilValue(updateOnce)
 
     const user = supabase.auth.user()
-    const addUser = async () => {
-        try {
-            if (user && wallet.address) {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('address', wallet.address)
-                //  console.log('d', data, wallet.address)
-                if (data && data?.length > 0) {
-                    console.log('user already exists', data)
-                } else {
-                    const { data, error } = await supabase.from('users').upsert(
-                        {
-                            address: wallet.address,
-                            email: user.email,
-                            Name: user.user_metadata.name,
-                            avatar_url: user.user_metadata.avatar_url,
-                        },
 
-                        { returning: 'minimal' }
-                    )
-                }
-            }
-        } catch (error) {
-            console.log('e', error)
-        }
-    }
     useEffect(() => {
+        async function getData() {
+            let a = event.childAddress as string
+            if (event.childAddress.startsWith('0x')) {
+                a = utils.getAddress(event.childAddress as string)
+            }
+            const { data, error } = await supabase
+                .from('responses')
+                .select('accepted')
+                .eq('address', wallet.address)
+                .eq('event', a)
+
+            if (data?.length !== 0) {
+                data?.[0]?.accepted
+                    ? setFormRes('Accepted')
+                    : setFormRes('Awaiting Approval')
+            } else {
+                setFormRes('Register')
+            }
+        }
+
+        getData()
+    }, [user?.email, toUpdate, event.childAddress])
+
+    useEffect(() => {
+        const addUser = async () => {
+            try {
+                if (user && wallet.address) {
+                    const { data, error } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('address', wallet.address)
+                    //  console.log('d', data, wallet.address)
+                    if (data && data?.length > 0) {
+                        console.log('user already exists', data)
+                    } else {
+                        const { data, error } = await supabase
+                            .from('users')
+                            .upsert(
+                                {
+                                    address: wallet.address,
+                                    email: user.email,
+                                    Name: user.user_metadata.name,
+                                    avatar_url: user.user_metadata.avatar_url,
+                                },
+
+                                { returning: 'minimal' }
+                            )
+                    }
+                }
+            } catch (error) {
+                console.log('e', error)
+            }
+        }
+
         addUser()
     }, [user, wallet.address])
 
@@ -230,7 +274,8 @@ export default function EventLayout({ event }: { event: Event }) {
                                                 event.childAddress
                                             ),
                                             wallet.address as string,
-                                            event.tickets_sold + 1
+                                            event.tickets_sold + 1,
+                                            fastimg
                                         ).then((uuid) => {
                                             setQrId(String(uuid))
                                         })
@@ -258,7 +303,8 @@ export default function EventLayout({ event }: { event: Event }) {
                                                 event.childAddress
                                             ),
                                             wallet.address as string,
-                                            event.tickets_sold + 1
+                                            event.tickets_sold + 1,
+                                            fastimg
                                         ).then((uuid) => {
                                             setQrId(String(uuid))
                                         })
@@ -301,10 +347,14 @@ export default function EventLayout({ event }: { event: Event }) {
         }
     }
     const buySolanaTicket = async () => {
+        console.log('buySolanaTicket', user)
+
         if (user === null) {
+            console.log('user is null')
             setToOpen(true)
         } else {
             if (solanaWallet.publicKey && wallet.address) {
+                console.log('solanaWallet')
                 setIsLoading(true)
                 const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey(
                     'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
@@ -429,24 +479,26 @@ export default function EventLayout({ event }: { event: Event }) {
                 const transaction = new web3.Transaction().add(
                     transactionInstruction
                 )
-
+                console.log('tx')
                 const { blockhash } = await connection.getLatestBlockhash()
                 transaction.recentBlockhash = blockhash
                 transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
-
+                console.log('hello')
                 if (solanaWallet.signTransaction) {
                     try {
                         transaction.sign(mint)
                         const signedTx = await solanaWallet.signTransaction(
                             transaction
                         )
+                        console.log('signedTx', signedTx)
                         const txid = await connection.sendRawTransaction(
                             signedTx.serialize(),
                             {
-                                preflightCommitment: 'recent',
+                                preflightCommitment: 'finalized',
                                 // skipPreflight: true,
                             }
                         )
+                        console.log(txid)
                         await axios.post(`/api/buyTicket`, {
                             eventPDA: event.childAddress,
                             publicKey: solanaWallet.publicKey?.toString(),
@@ -464,15 +516,15 @@ export default function EventLayout({ event }: { event: Event }) {
                         //     wallet.publicKey?.toString() as string,
                         //     event.tickets_sold + 1
                         // )
-                        // event.category.event_type == 'In-Person' &&
-                        //     generateAndSendUUID(
-                        //         event.childAddress,
-                        //         wallet.publicKey?.toString() as string,
-                        //         event.tickets_sold + 1,
-                        //         chain
-                        //     ).then((uuid) => {
-                        //         setQrId(String(uuid))
-                        //     })
+                        event.category.event_type == 'In-Person' &&
+                            generateAndSendUUID(
+                                event.childAddress,
+                                wallet.address as string,
+                                event.tickets_sold + 1,
+                                fastimg
+                            ).then((uuid) => {
+                                setQrId(String(uuid))
+                            })
                     } catch (error) {
                         const e = error as Error
                         if (e.message.includes('0x1')) {
@@ -525,6 +577,11 @@ export default function EventLayout({ event }: { event: Event }) {
     }, [event.link])
 
     const [isDisplayed, setIsDisplayed] = useState(false)
+    const {
+        isOpen: isOpen2,
+        onOpen: onOpen2,
+        onClose: onClose2,
+    } = useDisclosure()
 
     useEffect(() => {
         if (hasBought) {
@@ -593,6 +650,13 @@ export default function EventLayout({ event }: { event: Event }) {
                     }}
                 />
             )}
+            <RegisterFormModal
+                isOpen={isOpen2}
+                onOpen={onOpen2}
+                onClose={onClose2}
+                event={event}
+            />
+
             {hasBought && <Confetti />}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />
@@ -915,10 +979,35 @@ export default function EventLayout({ event }: { event: Event }) {
                             cursor: 'not-allowed',
                         }}
                         _hover={{}}
-                        onClick={
-                            event.isSolana ? buySolanaTicket : buyPolygonTicket
+                        onClick={async () => {
+                            if (isInviteOnly) {
+                                console.log('isInviteOnly')
+                                if (formRes === 'Register') {
+                                    await handleRegister(
+                                        user,
+                                        onOpen2,
+                                        setToOpen,
+                                        event.childAddress
+                                    )
+                                }
+                                if (formRes === 'Accepted') {
+                                    event.isSolana
+                                        ? buySolanaTicket()
+                                        : buyPolygonTicket()
+                                } else {
+                                }
+                            } else {
+                                if (event.isSolana) {
+                                    buySolanaTicket()
+                                } else {
+                                    buyPolygonTicket()
+                                }
+                            }
+                        }}
+                        disabled={
+                            event.tickets_available === 0 ||
+                            formRes === 'Awaiting Approval'
                         }
-                        disabled={hasTicket || event.tickets_available === 0}
                         _focus={{}}
                         _active={{}}
                         w={{ base: '70%', md: 'auto' }}
@@ -926,21 +1015,29 @@ export default function EventLayout({ event }: { event: Event }) {
                         leftIcon={
                             <Box
                                 _groupHover={{ transform: 'scale(1.1)' }}
-                                transitionDuration="200ms"
+                                transitionDuration="100ms"
                             >
-                                <Image
-                                    src="/assets/elements/event_ticket.svg"
-                                    w={{ base: '6', md: '5' }}
-                                    alt="ticket"
-                                />
+                                {isInviteOnly ? (
+                                    <FiCheckCircle size={22} />
+                                ) : (
+                                    <Image
+                                        src="/assets/elements/event_ticket.svg"
+                                        w={{ base: '6', md: '5' }}
+                                        alt="ticket"
+                                    />
+                                )}
                             </Box>
                         }
                     >
-                        {event.tickets_available === 0
-                            ? 'Sold Out'
-                            : hasTicket
-                            ? 'Already Bought'
-                            : 'Buy Ticket'}
+                        {isInviteOnly ? (
+                            <>{formRes}</>
+                        ) : event.tickets_available === 0 ? (
+                            'Sold Out'
+                        ) : hasTicket ? (
+                            'Already Bought'
+                        ) : (
+                            'Buy Ticket'
+                        )}
                     </Button>
                 </Flex>
                 <Flex
@@ -1145,33 +1242,63 @@ export default function EventLayout({ event }: { event: Event }) {
                                     cursor: 'not-allowed',
                                 }}
                                 _hover={{}}
-                                onClick={
-                                    event.isSolana
-                                        ? buySolanaTicket
-                                        : buyPolygonTicket
+                                onClick={async () => {
+                                    console.log(event.id)
+                                    if (isInviteOnly) {
+                                        if (formRes === 'Register') {
+                                            await handleRegister(
+                                                user,
+                                                onOpen2,
+                                                setToOpen,
+                                                event.childAddress
+                                            )
+                                        } else {
+                                            event.isSolana
+                                                ? buySolanaTicket()
+                                                : buyPolygonTicket()
+                                        }
+                                    } else {
+                                        if (event.isSolana) {
+                                            buySolanaTicket()
+                                        } else {
+                                            buyPolygonTicket()
+                                        }
+                                    }
+                                }}
+                                disabled={
+                                    event.tickets_available === 0 ||
+                                    formRes === 'Awaiting Approval'
                                 }
-                                disabled={event.tickets_available === 0}
                                 _focus={{}}
                                 _active={{}}
-                                w={{ base: '90%', md: 'auto' }}
-                                my="4"
+                                w={{ base: '80%', md: 'auto' }}
+                                mr="3"
+                                mb="3"
                                 leftIcon={
                                     <Box
                                         _groupHover={{
                                             transform: 'scale(1.1)',
                                         }}
-                                        transitionDuration="200ms"
+                                        transitionDuration="100ms"
                                     >
-                                        <Image
-                                            src="/assets/elements/event_ticket.svg"
-                                            w={{ base: '6', md: '5' }}
-                                            alt="ticket"
-                                        />
+                                        {isInviteOnly ? (
+                                            <FiCheckCircle size={22} />
+                                        ) : (
+                                            <Image
+                                                src="/assets/elements/event_ticket.svg"
+                                                w={{ base: '6', md: '5' }}
+                                                alt="ticket"
+                                            />
+                                        )}
                                     </Box>
                                 }
                             >
-                                {event.tickets_available === 0
+                                {isInviteOnly
+                                    ? formRes
+                                    : event.tickets_available === 0
                                     ? 'Sold Out'
+                                    : hasTicket
+                                    ? 'Already Bought'
                                     : 'Buy Ticket'}
                             </Button>
                         </Flex>
@@ -1334,12 +1461,17 @@ export default function EventLayout({ event }: { event: Event }) {
                                                       '...' +
                                                       ensName?.slice(-6)
                                                     : ensName ||
-                                                      event.owner.slice(0, 6) +
+                                                      event?.owner?.slice(
+                                                          0,
+                                                          6
+                                                      ) +
                                                           '...' +
-                                                          event?.owner.slice(-6)
-                                                : event.owner.slice(0, 6) +
+                                                          event?.owner?.slice(
+                                                              -6
+                                                          )
+                                                : event?.owner?.slice(0, 6) +
                                                   '...' +
-                                                  event?.owner.slice(-6)}
+                                                  event?.owner?.slice(-6)}
                                         </Text>
                                     </Box>
                                 </Flex>

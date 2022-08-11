@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react'
 
 import type { NextComponentType, NextPageContext } from 'next'
-import type { ModalProps } from '../../types/AuthModal.types'
+import type { ModalProps } from '../../types/ModalProps.types'
 
 const UpdateProfileModal: NextComponentType<
     NextPageContext,

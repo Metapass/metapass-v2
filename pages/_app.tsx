@@ -12,6 +12,8 @@ import ChatwootWidget from '../components/Elements/Chatwoot.component'
 import { ContextProvider } from '../contexts/ContextProvider'
 import { configureChains, chain, createClient, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
+import { RecoilRoot } from 'recoil'
+
 import NextNProgress from 'nextjs-progressbar'
 const { chains, provider, webSocketProvider } = configureChains(
     [chain.polygon, chain.polygonMumbai],
@@ -79,23 +81,25 @@ function MyApp({ Component, pageProps }: AppProps) {
                     content="Book NFT tickets for online and IRL events"
                 />
             </Head>
-
-            <Wallet>
-                <WagmiConfig client={client}>
-                    <Web3Wrapper>
-                        <ContextProvider>
-                            <Contract>
-                                <Toaster />
-                                <ChakraProvider theme={theme}>
-                                    <ChatwootWidget />
+            <RecoilRoot>
+                <Wallet>
+                    <WagmiConfig client={client}>
+                        <Web3Wrapper>
+                            <ContextProvider>
+                                <Contract>
+                                    <Toaster />
+                                    <ChakraProvider theme={theme}>
+                                        <ChatwootWidget />
                                     <NextNProgress color="#6451FB" />
-                                    <Component {...pageProps} />
-                                </ChakraProvider>
-                            </Contract>
-                        </ContextProvider>
-                    </Web3Wrapper>
-                </WagmiConfig>
-            </Wallet>
+
+                                        <Component {...pageProps} />
+                                    </ChakraProvider>
+                                </Contract>
+                            </ContextProvider>
+                        </Web3Wrapper>
+                    </WagmiConfig>
+                </Wallet>
+            </RecoilRoot>
         </>
     )
 }

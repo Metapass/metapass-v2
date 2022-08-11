@@ -1,8 +1,6 @@
 import {
-    Avatar,
     Box,
     Button,
-    Divider,
     Flex,
     FormControl,
     FormLabel,
@@ -15,9 +13,8 @@ import {
     MenuItem,
     MenuList,
     Text,
-    useDisclosure,
 } from '@chakra-ui/react'
-// import {VenueAutoComplete} from '../../components/Misc/Step4AutoComplete.component'
+import { useRecoilValue } from 'recoil'
 import { FaChevronDown } from 'react-icons/fa'
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import '@uiw/react-md-editor/markdown-editor.css'
@@ -26,8 +23,8 @@ import { useContext, useEffect, useState } from 'react'
 import { walletContext, WalletType } from '../../utils/walletContext'
 import { encryptLink } from '../../utils/linkResolvers'
 import BoringAva from '../../utils/BoringAva'
-import { getAllEnsLinked } from '../../utils/resolveEns'
 import resolveDomains from '../../hooks/useDomain'
+import { inviteOnlyAtom } from '../../lib/recoil/atoms'
 import VenueAutoComplete from '../../components/Misc/Step4AutoComplete.component'
 
 export default function Step4({
@@ -37,6 +34,8 @@ export default function Step4({
     event: any
     onSubmit: Function
 }) {
+    const isInviteOnly = useRecoilValue(inviteOnlyAtom)
+
     const [wallet] = useContext<WalletType[]>(walletContext)
     const [_link, setLink] = useState<string>('')
     const [ensName, setEnsName] = useState<string>('')
@@ -58,7 +57,8 @@ export default function Step4({
             domain && setEnsName(domain?.domain as string)
         }
         resolve()
-    }, [event.owner])
+    }, [event.owner, wallet.chain])
+
     useEffect(() => {
         console.log('venueXY', venueXY)
     }, [venueXY])
@@ -178,6 +178,7 @@ export default function Step4({
                                                     _hover={{}}
                                                     _focus={{}}
                                                     _active={{}}
+                                                    readOnly
                                                 />
                                                 <InputRightElement color="gray.400">
                                                     <FaChevronDown />
@@ -375,7 +376,9 @@ export default function Step4({
                                 fontWeight="medium"
                                 px="8"
                             >
-                                Review Details
+                                {isInviteOnly
+                                    ? 'Customize Register Form'
+                                    : 'Review Details'}
                             </Button>
                         </Flex>
                     </Box>
