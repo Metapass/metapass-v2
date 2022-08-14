@@ -1,12 +1,16 @@
 import axios from 'axios'
 import { NextApiRequest, NextApiResponse } from 'next'
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+    req: NextApiRequest,
+    res: NextApiResponse
+) {
     if (req.method === 'POST') {
         console.log(process.env.PINATA_JWT)
         const { hash } = req.body
-        axios
-            .post(
+
+        try {
+            const { data } = await axios.post(
                 'https://api.pinata.cloud/pinning/pinByHash',
                 {
                     hashToPin: hash,
@@ -17,14 +21,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
                     },
                 }
             )
-            .then(() => {
-                res.status(200).send({
-                    msg: 'pinned!',
-                })
-            })
-            .catch((error) => {
-                res.status(400).send({ error })
-            })
+            res.status(200).json({ msg: 'pinned!', data, hash })
+        } catch (error) {
+            res.status(500).json({ msg: 'error', error })
+        }
     } else {
         res.status(400).json({ msg: 'wrong method bro' })
     }

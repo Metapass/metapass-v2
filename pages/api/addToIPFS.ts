@@ -18,7 +18,10 @@ const ipfs = create({
 export default async function (req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         const { file } = req.body
-        const { cid } = await ipfs.add(urlSource(file))
+
+        const { cid } = await ipfs.add(
+            file.startsWith('https') ? urlSource(file) : file
+        )
         res.status(200).send({
             cid: cid.toString(),
         })
