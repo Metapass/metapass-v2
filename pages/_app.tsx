@@ -29,21 +29,6 @@ const client = createClient({
 })
 
 function MyApp({ Component, pageProps }: AppProps) {
-    const router = useRouter()
-    const { address } = router.query
-    const [src, setSrc] = useState<string>(
-        'https://res.cloudinary.com/dev-connect/image/upload/v1645093690/img/embed_wqfswz.webp'
-    )
-
-    useEffect(() => {
-        if (address) {
-            let img = (og as any)[address as string]
-            if (img) {
-                setSrc(img)
-            }
-        }
-    }, [router.query])
-
     return (
         <>
             <Script
@@ -84,7 +69,6 @@ function MyApp({ Component, pageProps }: AppProps) {
                     content="MetaPass - Reimagining Events"
                 />
                 <meta name="twitter:creator" content="@metapasshq" />
-                <meta name="twitter:image" content={src} />
                 <meta
                     name="twitter:description"
                     content="Book NFT tickets for online and IRL events"

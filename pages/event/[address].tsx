@@ -15,8 +15,10 @@ import { gqlEndpoint } from '../../utils/subgraphApi'
 import { ethers } from 'ethers'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { useRouter } from 'next/router'
+import og from '../../OG.json'
+import Head from 'next/head'
 
-const Event: NextPage = ({ event }: any) => {
+const Event: NextPage = ({ event, og }: any) => {
     const [featEvent, setFeatEvent] = useState<Event>(event)
     const [isInviteOnly, setInviteOnly] = useState<boolean>(false)
     const router = useRouter()
@@ -37,6 +39,10 @@ const Event: NextPage = ({ event }: any) => {
 
     return (
         <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
+            <Head>
+                {' '}
+                <meta name="twitter:image" content={og} />
+            </Head>
             <NavigationBar mode="white" />
             <Box p="4" />
             <Flex
@@ -57,7 +63,9 @@ const Event: NextPage = ({ event }: any) => {
                             />
                         </Skeleton>
                     ) : (
-                        <Flex alignItems={'center'}>Event Doesn&apos;t Exist</Flex>
+                        <Flex alignItems={'center'}>
+                            Event Doesn&apos;t Exist
+                        </Flex>
                     )}
                 </Box>
             </Flex>
@@ -70,6 +78,8 @@ export default Event
 export async function getServerSideProps({ query }: any) {
     const address = query.address
     let parsedEvent
+
+    let img = (og as any)[address as string]
 
     async function getFeaturedEvents() {
         const featuredQuery = {
@@ -210,6 +220,9 @@ export async function getServerSideProps({ query }: any) {
     return {
         props: {
             event: parsedEvent,
+            og: img
+                ? img
+                : 'https://res.cloudinary.com/dev-connect/image/upload/v1645093690/img/embed_wqfswz.webp',
         },
     }
 }
