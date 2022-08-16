@@ -13,8 +13,10 @@ import { ContextProvider } from '../contexts/ContextProvider'
 import { configureChains, chain, createClient, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 import { RecoilRoot } from 'recoil'
-
+import og from '../OG.json'
 import NextNProgress from 'nextjs-progressbar'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 const { chains, provider, webSocketProvider } = configureChains(
     [chain.polygon, chain.polygonMumbai],
     [publicProvider()]
@@ -27,6 +29,21 @@ const client = createClient({
 })
 
 function MyApp({ Component, pageProps }: AppProps) {
+    const router = useRouter()
+    const { address } = router.query
+    const [src, setSrc] = useState<string>(
+        'https://res.cloudinary.com/dev-connect/image/upload/v1645093690/img/embed_wqfswz.webp'
+    )
+
+    useEffect(() => {
+        if (address) {
+            let img = (og as any)[address as string]
+            if (img) {
+                setSrc(img)
+            }
+        }
+    }, [router.query])
+
     return (
         <>
             <Script
@@ -90,7 +107,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                                     <Toaster />
                                     <ChakraProvider theme={theme}>
                                         <ChatwootWidget />
-                                    <NextNProgress color="#6451FB" />
+                                        <NextNProgress color="#6451FB" />
 
                                         <Component {...pageProps} />
                                     </ChakraProvider>
