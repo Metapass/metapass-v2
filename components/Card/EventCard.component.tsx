@@ -208,7 +208,7 @@ export default function EventCard({
   // @ts-ignore */}
                 <LazyImage
                     w="full"
-                    src={event.image.gallery[0]}
+                    src={event.image.gallery[0] || "/assets/gradient.png"}
                     alt="event image"
                 />
             </AspectRatio>
