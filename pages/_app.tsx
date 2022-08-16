@@ -84,10 +84,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                     content="MetaPass - Reimagining Events"
                 />
                 <meta name="twitter:creator" content="@metapasshq" />
-                <meta
-                    name="twitter:image"
-                    content="https://res.cloudinary.com/dev-connect/image/upload/v1645093690/img/embed_wqfswz.webp"
-                />
+                <meta name="twitter:image" content={src} />
                 <meta
                     name="twitter:description"
                     content="Book NFT tickets for online and IRL events"
