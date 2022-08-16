@@ -43,7 +43,7 @@
         "kleur": "^4.1.4",
         "logrocket": "^2.2.0",
         "mapbox-gl": "^2.9.2",
-        "metapass-sdk": "^0.2.2",
+        "metapass-sdk": "^0.2.7",
         "moment": "^2.29.1",
         "next": "^12.2.3",
         "next-remove-imports": "^1.0.6",

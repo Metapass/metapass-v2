@@ -490,7 +490,7 @@ const Create: NextPage = () => {
                     setIsPublished(true)
                     setInTxn(false)
                     if (isInviteOnly) {
-                        uploadFormDetails(formData, child)
+                        uploadFormDetails(formData, eventPDA.toString())
                     }
                     setFormData(defaultFormData)
                 } catch (error) {
@@ -614,7 +614,7 @@ const Create: NextPage = () => {
                         setIsPublished(true)
                         setInTxn(false)
                         if (isInviteOnly) {
-                            uploadFormDetails(formData, child)
+                            uploadFormDetails(formData, eventPDA.toString())
                         }
                         setFormData(defaultFormData)
                     } else {
