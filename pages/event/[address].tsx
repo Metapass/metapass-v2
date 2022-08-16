@@ -42,6 +42,7 @@ const Event: NextPage = ({ event, og }: any) => {
             <Head>
                 {' '}
                 <meta name="twitter:image" content={og} />
+                <meta property="og:image" content={og} />
             </Head>
             <NavigationBar mode="white" />
             <Box p="4" />
