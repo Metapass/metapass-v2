@@ -78,6 +78,7 @@ import { updateOnce } from '../../lib/recoil/atoms'
 
 import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
+import AcceptedModalComponent from '../../components/Modals/Accepted.modal'
 
 declare const window: any
 
@@ -658,6 +659,14 @@ export default function EventLayout({
             />
 
             {hasBought && <Confetti />}
+            {formRes === 'Accepted' && <Confetti />}
+            {formRes === 'Accepted' && (
+                <AcceptedModalComponent
+                    isApproved={formRes === 'Accepted'}
+                    event={event}
+                    mail={user?.email as string}
+                />
+            )}
             <Modal isOpen={!isDisplayed && hasBought} onClose={() => {}}>
                 <ModalOverlay />
                 <ModalContent rounded="2xl" bgColor={'transparent'}>
@@ -988,7 +997,7 @@ export default function EventLayout({
                                         onOpen2,
                                         setToOpen,
                                         event.childAddress,
-                                        wallet
+                                        wallet.address as string
                                     )
                                 }
                                 if (formRes === 'Accepted') {
@@ -1007,7 +1016,8 @@ export default function EventLayout({
                         }}
                         disabled={
                             event.tickets_available === 0 ||
-                            formRes === 'Awaiting Approval'
+                            formRes === 'Awaiting Approval' ||
+                            formRes === 'Accepted'
                         }
                         _focus={{}}
                         _active={{}}
@@ -1252,7 +1262,7 @@ export default function EventLayout({
                                                 onOpen2,
                                                 setToOpen,
                                                 event.childAddress,
-                                                wallet.address
+                                                wallet.address as string
                                             )
                                         } else {
                                             event.isSolana
@@ -1269,7 +1279,8 @@ export default function EventLayout({
                                 }}
                                 disabled={
                                     event.tickets_available === 0 ||
-                                    formRes === 'Awaiting Approval'
+                                    formRes === 'Awaiting Approval' ||
+                                    formRes === 'Accepted'
                                 }
                                 _focus={{}}
                                 _active={{}}

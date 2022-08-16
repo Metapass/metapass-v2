@@ -26,10 +26,12 @@ export default function EventCard({
     event,
     isFeatured = false,
     previewOnly = false,
+    props,
 }: {
     event: Event
     isFeatured?: boolean
     previewOnly?: boolean
+    props?: {}
 }) {
     const [showEventModal, setEventModal] = useState(false)
     const currentDevice = useMobileDetect()
@@ -58,7 +60,7 @@ export default function EventCard({
             rounded="lg"
             overflow="hidden"
             bg="white"
-            _hover={{ transform: 'scale(1.01)' }}
+            _hover={{ transform: 'translateY(-7px) scale(1.02);' }}
             _active={{ transform: 'scale(1.03)' }}
             transitionDuration="200ms"
             cursor="pointer"
@@ -208,7 +210,7 @@ export default function EventCard({
   // @ts-ignore */}
                 <LazyImage
                     w="full"
-                    src={event.image.gallery[0] || "/assets/gradient.png"}
+                    src={event.image.gallery[0] || '/assets/gradient.png'}
                     alt="event image"
                 />
             </AspectRatio>
