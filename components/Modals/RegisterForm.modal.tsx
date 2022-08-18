@@ -91,6 +91,7 @@ export const RegisterFormModal = ({
                 response: res,
                 email: user?.email,
                 address: wallet.address,
+                accepted: null,
             })
 
             if (error) {
