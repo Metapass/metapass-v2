@@ -153,7 +153,6 @@ export default function EventLayout({
                 .select('accepted')
                 .eq('address', wallet.address)
                 .eq('event', a)
-            console.log(data, 'd')
             if (data && data?.length > 0) {
                 data?.[0]?.accepted
                     ? setFormRes('Accepted')
