@@ -28,7 +28,7 @@ import { FaChevronDown } from 'react-icons/fa'
 import EventCard from '../../components/Card/EventCard.component'
 import DateModal from './DateModal.layout'
 import { walletContext, WalletType } from '../../utils/walletContext'
-import { inviteOnlyAtom } from '../../lib/recoil/atoms'
+import { disordBased, inviteOnlyAtom } from '../../lib/recoil/atoms'
 export type PaymentToken = 'USDC' | 'USDT'
 export const CustomTokens = {
     SOL: {
@@ -49,10 +49,16 @@ export default function Step1({
 }) {
     const [isPaid, setIsPaid] = useState(true)
     const [isInviteOnly, setIsInviteOnly] = useRecoilState(inviteOnlyAtom)
+    const [isDiscordBased, setIsDiscordBased] = useRecoilState(disordBased)
     const [formDetails, setFormDetails] = useState({
         title: '',
         type: '',
-        category: { category: [''], event_type: '', inviteOnly: false },
+        category: {
+            category: [''],
+            event_type: '',
+            inviteOnly: false,
+            isDiscordBased: false,
+        },
         fee: 0,
         date: '',
         seats: 0,
@@ -170,6 +176,41 @@ export default function Step1({
                                 })
                             }}
                             isChecked={isInviteOnly}
+                            id="price"
+                            colorScheme="linkedin"
+                        />
+                    </FormControl>
+
+                    <FormControl
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        fontFamily="body"
+                        mt="2"
+                        fontWeight="normal"
+                    >
+                        <FormLabel
+                            fontFamily="body"
+                            color="blackAlpha.700"
+                            fontWeight="normal"
+                            mb="0"
+                            htmlFor="price"
+                        >
+                            Is Discord Based
+                        </FormLabel>
+
+                        <Switch
+                            onChange={(e) => {
+                                setIsDiscordBased(e.target.checked)
+                                setFormDetails({
+                                    ...formDetails,
+                                    category: {
+                                        ...formDetails.category,
+                                        isDiscordBased: e.target.checked,
+                                    },
+                                })
+                            }}
+                            isChecked={isDiscordBased}
                             id="price"
                             colorScheme="linkedin"
                         />
@@ -643,6 +684,7 @@ export default function Step1({
                                         />
                                     </InputGroup>
                                 </FormControl>
+
                                 {wallet.chain == 'SOL' && !isSolHost && (
                                     <FormControl
                                         mt="6"
@@ -758,54 +800,21 @@ export default function Step1({
                                         </FormControl>
                                     </>
                                 )}
-                                {/* <FormControl
-                                    mt="6"
-                                    w="50%"
-                                    borderBottom="2px"
-                                    borderBottomColor="gray.200"
-                                    _focusWithin={{
-                                        borderBottomColor: 'gray.300',
-                                    }}
-                                    isDisabled={!isPaid}
+                            </Flex>
+                            <Flex experimental_spaceX="8" mt="6">
+                                <Button
+                                    bg="brand.gradient"
+                                    rounded="full"
+                                    color="white"
+                                    fontWeight="500"
+                                    w="72"
+                                    _hover={{}}
+                                    _active={{}}
+                                    _focus={{}}
+                                    isDisabled={!isDiscordBased}
                                 >
-                                    <FormLabel
-                                        fontSize={{
-                                            lg: 'md',
-                                            xl: 'lg',
-                                        }}
-                                        color="blackAlpha.700"
-                                        my="0"
-                                    >
-                                        Payment Token
-                                    </FormLabel>
-                                    <InputGroup>
-                                        <Input
-                                            onChange={(e) => {
-                                                setFormDetails({
-                                                    ...formDetails,
-                                                    customSPLToken:
-                                                        e.target.value,
-                                                })
-                                            }}
-                                            _placeholder={{
-                                                color: 'gray.300',
-                                            }}
-                                            fontSize="sm"
-                                            min="1"
-                                            type="text"
-                                            step="1"
-                                            px="0"
-                                            placeholder="Add your name"
-                                            bg="transparent"
-                                            border="none"
-                                            rounded="none"
-                                            _hover={{}}
-                                            _focus={{}}
-                                            _active={{}}
-                                        />
-                                    </InputGroup>
-                                    
-                                </FormControl> */}
+                                    Update Discord Integration info
+                                </Button>
                             </Flex>
                         </Box>
                         <Box h="auto" w="2px" my="20" bg="gray.100" />
@@ -860,6 +869,7 @@ export default function Step1({
                                                 formDetails.category
                                                     .category[0] || 'category',
                                             ],
+                                            // @ts-ignore
                                             event_type:
                                                 formDetails.category
                                                     .event_type || 'type',

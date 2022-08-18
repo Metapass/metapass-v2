@@ -5,6 +5,7 @@
         "dev-d": "doppler setup -p metapass-v2 -c dev && doppler run -- next dev",
         "dev": "next dev",
         "build": "next build",
+        "build-d": "doppler setup -p metapass-v2 -c dev && doppler run -- next build",
         "start": "next start",
         "lint": "next lint"
     },

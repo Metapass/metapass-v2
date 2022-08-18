@@ -22,4 +22,9 @@ const updateOnce = atom<boolean>({
     default: false,
 })
 
-export { stepAtom, inviteOnlyAtom, formDetails, updateOnce }
+const disordBased = atom<boolean>({
+    key: 'disordBased',
+    default: false,
+})
+
+export { stepAtom, inviteOnlyAtom, formDetails, updateOnce, disordBased }
