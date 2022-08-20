@@ -34,11 +34,17 @@ export const RegisterFormModal = ({
     onClose,
     onOpen,
     event,
+    isInviteOnly,
+    isResponseOn,
+    formData,
+    setData,
+    buySolanaTicket,
+    buyPolygonTicket,
 }: ModalProps) => {
-    const [formData, setData] = useState<formDataType>({
-        id: 0,
-        data: defaultFormData,
-    })
+    // const [formData, setData] = useState<formDataType>({
+    //     id: 0,
+    //     data: defaultFormData,
+    // })
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [toUpdate, setToUpdate] = useRecoilState(updateOnce)
 
@@ -87,24 +93,31 @@ export const RegisterFormModal = ({
             if (event?.childAddress.startsWith('0x')) {
                 a = utils.getAddress(event.childAddress as string)
             }
-            const { data, error } = await supabase.from('responses').insert({
-                event: a,
-                form: formData?.id,
-                response: res,
-                email: user?.email,
-                address: wallet.address,
-                accepted: null,
-            })
+            if (isInviteOnly) {
+                const { data, error } = await supabase
+                    .from('responses')
+                    .insert({
+                        event: a,
+                        form: formData?.id,
+                        response: res,
+                        email: user?.email,
+                        address: wallet.address,
+                        accepted: null,
+                    })
 
-            if (error) {
-                toast.error('Error Uploading Details')
-            } else {
-                toast.success('Details Uploaded')
-                sendRegisteredMail(
-                    user?.email as string,
-                    event?.title as string
-                )
-                setToUpdate(!toUpdate)
+                if (error) {
+                    toast.error('Error Uploading Details')
+                } else {
+                    toast.success('Details Uploaded')
+                    sendRegisteredMail(
+                        user?.email as string,
+                        event?.title as string
+                    )
+                    setToUpdate(!toUpdate)
+                }
+            }
+            if (isResponseOn) {
+                event?.isSolana ? buySolanaTicket() : buyPolygonTicket()
             }
 
             setIsLoading(false)

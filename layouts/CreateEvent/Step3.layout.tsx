@@ -97,19 +97,21 @@ export default function Step3({
                 }
             }}
         >
-            <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
+            {isOpen && (
+                <Modal isOpen={isOpen} onClose={onClose}>
+                    <ModalOverlay />
 
-                <ModalContent>
-                    <ModalCloseButton></ModalCloseButton>
-                    <ModalBody>
-                        <Text align={'center'} mt={4} fontWeight={'bold'}>
-                            This is how your NFT Ticket will look like:
-                        </Text>
-                        <Image src={ticket} alt="Ticket Image" />
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+                    <ModalContent>
+                        <ModalCloseButton></ModalCloseButton>
+                        <ModalBody>
+                            <Text align={'center'} mt={4} fontWeight={'bold'}>
+                                This is how your NFT Ticket will look like:
+                            </Text>
+                            <Image src={ticket} alt="Ticket Image" />
+                        </ModalBody>
+                    </ModalContent>
+                </Modal>
+            )}
             {loading && (
                 <Box position="fixed" top="5" left="5" zIndex={9}>
                     <Spinner w="6" h="6" />
