@@ -270,7 +270,7 @@ export default function EventLayout({
                                         event.fee.toString()
                                     )._hex,
                                     gasPrice: 50,
-                                    gasLimit: 900000,
+                                    gasLimit: 950000,
                                 })
                                 .then(() => {
                                     if (

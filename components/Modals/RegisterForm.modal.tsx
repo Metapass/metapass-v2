@@ -141,7 +141,7 @@ export const RegisterFormModal = ({
                             direction="column"
                             gap="3"
                         >
-                            {formData?.data?.preDefinedQues.map((ques) => (
+                            {formData?.data?.preDefinedQues.map((ques: any) => (
                                 <FormControl key={ques.id}>
                                     <Box
                                         display={'flex'}
@@ -173,7 +173,7 @@ export const RegisterFormModal = ({
                                     </Flex>
                                 </FormControl>
                             ))}
-                            {formData?.data?.customQues.map((ques) => (
+                            {formData?.data?.customQues.map((ques: any) => (
                                 <FormControl key={ques.id}>
                                     <Box
                                         display={'flex'}
