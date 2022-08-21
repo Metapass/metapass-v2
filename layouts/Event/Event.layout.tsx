@@ -553,6 +553,37 @@ export default function EventLayout({
         }
     }
 
+    const clickBuyTicket = async () => {
+        if (isInviteOnly) {
+            console.log('isInviteOnly')
+            if (formRes === 'Register') {
+                if (
+                    (event.isSolana && wallet.chain === 'SOL') ||
+                    (!event.isSolana && wallet.chain === 'POLYGON')
+                ) {
+                    await handleRegister(
+                        user,
+                        onOpen2,
+                        setToOpen,
+                        event.childAddress,
+                        wallet.address as string
+                    )
+                } else {
+                    toast.error('Please connect your wallet for the chain')
+                }
+            }
+            if (formRes === 'Accepted') {
+                event.isSolana ? buySolanaTicket() : buyPolygonTicket()
+            } else {
+            }
+        } else {
+            if (event.isSolana) {
+                buySolanaTicket()
+            } else {
+                buyPolygonTicket()
+            }
+        }
+    }
     useEffect(() => {
         const resolve = async () => {
             const domain = await resolveDomains(
@@ -987,32 +1018,7 @@ export default function EventLayout({
                             cursor: 'not-allowed',
                         }}
                         _hover={{}}
-                        onClick={async () => {
-                            if (isInviteOnly) {
-                                console.log('isInviteOnly')
-                                if (formRes === 'Register') {
-                                    await handleRegister(
-                                        user,
-                                        onOpen2,
-                                        setToOpen,
-                                        event.childAddress,
-                                        wallet.address as string
-                                    )
-                                }
-                                if (formRes === 'Accepted') {
-                                    event.isSolana
-                                        ? buySolanaTicket()
-                                        : buyPolygonTicket()
-                                } else {
-                                }
-                            } else {
-                                if (event.isSolana) {
-                                    buySolanaTicket()
-                                } else {
-                                    buyPolygonTicket()
-                                }
-                            }
-                        }}
+                        onClick={clickBuyTicket}
                         disabled={
                             event.tickets_available === 0 ||
                             formRes === 'Awaiting Approval' ||
@@ -1252,30 +1258,7 @@ export default function EventLayout({
                                     cursor: 'not-allowed',
                                 }}
                                 _hover={{}}
-                                onClick={async () => {
-                                    console.log(event.id)
-                                    if (isInviteOnly) {
-                                        if (formRes === 'Register') {
-                                            await handleRegister(
-                                                user,
-                                                onOpen2,
-                                                setToOpen,
-                                                event.childAddress,
-                                                wallet.address as string
-                                            )
-                                        } else {
-                                            event.isSolana
-                                                ? buySolanaTicket()
-                                                : buyPolygonTicket()
-                                        }
-                                    } else {
-                                        if (event.isSolana) {
-                                            buySolanaTicket()
-                                        } else {
-                                            buyPolygonTicket()
-                                        }
-                                    }
-                                }}
+                                onClick={clickBuyTicket}
                                 disabled={
                                     event.tickets_available === 0 ||
                                     formRes === 'Awaiting Approval' ||
