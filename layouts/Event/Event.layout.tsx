@@ -43,7 +43,6 @@ import Confetti from '../../components/Misc/Confetti.component'
 import { ticketToIPFS } from '../../utils/imageHelper'
 import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
-import { IoCheckmarkDoneOutline } from 'react-icons/io5'
 import { decryptLink } from '../../utils/linkResolvers'
 
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
@@ -63,12 +62,12 @@ import {
     getAssociatedTokenAddress,
     TOKEN_PROGRAM_ID,
 } from '@solana/spl-token'
-import { Connection, clusterApiUrl } from '@solana/web3.js'
+import { Connection } from '@solana/web3.js'
 import SignUpModal from '../../components/Modals/SignUp.modal'
 import resolveDomains from '../../hooks/useDomain'
 import axios from 'axios'
 import { generateMetadata } from '../../utils/generateMetadata'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount, useProvider, useSigner } from 'wagmi'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { RegisterFormModal } from '../../components/Modals/RegisterForm.modal'
 import { FiCheckCircle } from 'react-icons/fi'
@@ -207,138 +206,194 @@ export default function EventLayout({
             setHasTicket(event.buyers.includes(wallet.address))
         }
     }, [wallet.address])
+    let biconomy: any
+    useEffect(() => {
+        const initBiconomy = async () => {
+            console.log(wallet.address)
+            console.log(WalletSigner?.provider)
+            biconomy = new Biconomy(WalletSigner?.provider as any, {
+                apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
+                debug: process.env.NEXT_PUBLIC_ENV == 'dev',
+                contractAddresses: [
+                    ethers.utils.getAddress(event.childAddress),
+                ],
+            })
+            await biconomy.init()
+        }
+        if (wallet.address?.startsWith('0x') && WalletSigner?.provider) {
+            initBiconomy()
+            console.log('init bico', wallet.address, WalletSigner.provider)
+        }
+    }, [wallet.address, WalletSigner?.provider])
 
     const buyPolygonTicket = async () => {
-        if (isConnected) {
+        console.log(biconomy)
+        if (isConnected && biconomy.ethersProvider) {
             if (user === null) {
                 setToOpen(true)
             } else {
-                if (typeof window.ethereum != undefined) {
-                    const provider = WalletSigner?.provider
-                    const biconomy = new Biconomy(provider, {
-                        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
-                        debug: process.env.NEXT_PUBLIC_ENV == 'dev',
-                    })
-                    setIsLoading(true)
-                    let ethersProvider = new ethers.providers.Web3Provider(
-                        biconomy
-                    )
-
-                    const signer = ethersProvider.getSigner()
-                    let metapass = new ethers.Contract(
-                        event.childAddress,
-                        abi.abi,
-                        signer
-                    )
-                    toast.loading('Generating your unique ticket', {
-                        duration: 5000,
-                    })
-                    let { img, fastimg } = await ticketToIPFS(
-                        event.title,
-                        event.tickets_sold + 1,
-                        event.image.image,
-                        event.date.split('T')[0],
-                        wallet?.domain ||
-                            wallet?.address?.substring(0, 4) +
-                                '...' +
-                                wallet?.address?.substring(
-                                    wallet?.address?.length - 4
-                                )
-                    )
-                    setMintedImage(fastimg)
-                    let metadata = {
-                        name: event.title,
-                        description: `NFT Ticket for ${event.title}`,
-                        image: img,
-                        properties: {
-                            'Ticket Number': event.tickets_sold + 1,
-                        },
-                    }
-
-                    try {
-                        if (event.fee === 0) {
-                            metapass
-                                .getTix(JSON.stringify(metadata), {
-                                    value: ethers.utils.parseEther(
-                                        event.fee.toString()
-                                    )._hex,
-                                    gasPrice: 50,
-                                    gasLimit: 900000,
-                                })
-                                .then(() => {
-                                    if (
-                                        event.category.event_type == 'In-Person'
-                                    ) {
-                                        generateAndSendUUID(
-                                            ethers.utils.getAddress(
-                                                event.childAddress
-                                            ),
-                                            wallet.address as string,
-                                            event.tickets_sold + 1,
-                                            fastimg
-                                        ).then((uuid) => {
-                                            setQrId(String(uuid))
-                                        })
-                                    }
-                                })
-                                .catch((err: any) => {
-                                    toast.error(
-                                        'Oops! Failed to mint the ticket'
-                                    )
-                                    setIsLoading(false)
-                                })
-                        } else {
-                            metapass
-                                .getTix(JSON.stringify(metadata), {
-                                    value: ethers.utils.parseEther(
-                                        event.fee.toString()
-                                    )._hex,
-                                })
-                                .then(() => {
-                                    if (
-                                        event.category.event_type == 'In-Person'
-                                    ) {
-                                        generateAndSendUUID(
-                                            ethers.utils.getAddress(
-                                                event.childAddress
-                                            ),
-                                            wallet.address as string,
-                                            event.tickets_sold + 1,
-                                            fastimg
-                                        ).then((uuid) => {
-                                            setQrId(String(uuid))
-                                        })
-                                    }
-                                })
-                                .catch((err: any) => {
-                                    toast.error(err.data?.message, {
-                                        id: 'error10',
-                                        style: {
-                                            fontSize: '12px',
-                                        },
-                                    })
-                                    setIsLoading(false)
-                                })
-                        }
-                    } catch (e: any) {
-                        toast.error('Ooops! Failed to mint the ticket.')
-                        setIsLoading(false)
-                    }
-
-                    metapass.on('Transfer', (res) => {
-                        setIsLoading(false)
-                        setHasBought(true)
-                        let link =
-                            opensea +
-                            '/' +
-                            event.childAddress +
-                            '/' +
-                            ethers.BigNumber.from(res).toNumber()
-
-                        setToOpenseaLink(link)
-                    })
-                } else {
+                setIsLoading(true)
+                toast.loading('Generating your unique ticket', {
+                    duration: 5000,
+                })
+                let { img, fastimg } = await ticketToIPFS(
+                    event.title,
+                    event.tickets_sold + 1,
+                    event.image.image,
+                    event.date.split('T')[0],
+                    wallet?.domain ||
+                        wallet?.address?.substring(0, 4) +
+                            '...' +
+                            wallet?.address?.substring(
+                                wallet?.address?.length - 4
+                            )
+                )
+                setMintedImage(fastimg)
+                let metadata = {
+                    name: event.title,
+                    description: `NFT Ticket for ${event.title}`,
+                    image: img,
+                    properties: {
+                        'Ticket Number': event.tickets_sold + 1,
+                    },
                 }
+
+                try {
+                    if (event.fee === 0) {
+                        let ethersProvider = biconomy.provider
+                        let metapass = new ethers.Contract(
+                            event.childAddress,
+                            abi.abi,
+                            biconomy.ethersProvider
+                        )
+                        let { data } =
+                            await metapass.populateTransaction.getTix(
+                                JSON.stringify(metadata)
+                            )
+                        let txParams = {
+                            data: data,
+                            to: event.childAddress,
+                            from: wallet.address,
+                            signatureType: 'PERSONAL_SIGN',
+                        }
+                        await ethersProvider.send('eth_sendTransaction', [
+                            txParams,
+                        ])
+
+                        biconomy.on('txMined', (data: any) => {
+                            if (event.category.event_type == 'In-Person') {
+                                generateAndSendUUID(
+                                    ethers.utils.getAddress(event.childAddress),
+                                    wallet.address as string,
+                                    event.tickets_sold + 1,
+                                    fastimg
+                                ).then((uuid) => {
+                                    setQrId(String(uuid))
+                                })
+                            }
+                        })
+
+                        // metapass
+                        //     .getTix(JSON.stringify(metadata), {
+                        //         value: ethers.utils.parseEther(
+                        //             event.fee.toString()
+                        //         )._hex,
+                        //         gasPrice: 50,
+                        //         gasLimit: 900000,
+                        //     })
+                        //     .then(() => {
+
+                        //     })
+                        //     .catch((err: any) => {
+                        //         toast.error('Oops! Failed to mint the ticket')
+                        //         setIsLoading(false)
+                        //     })
+                    } else {
+                        // metapass
+                        //     .getTix(JSON.stringify(metadata), {
+                        //         value: ethers.utils.parseEther(
+                        //             event.fee.toString()
+                        //         )._hex,
+                        //     })
+                        //     .then(() => {
+                        //         if (event.category.event_type == 'In-Person') {
+                        //             generateAndSendUUID(
+                        //                 ethers.utils.getAddress(
+                        //                     event.childAddress
+                        //                 ),
+                        //                 wallet.address as string,
+                        //                 event.tickets_sold + 1,
+                        //                 fastimg
+                        //             ).then((uuid) => {
+                        //                 setQrId(String(uuid))
+                        //             })
+                        //         }
+                        //     })
+                        //     .catch((err: any) => {
+                        //         toast.error(err.data?.message, {
+                        //             id: 'error10',
+                        //             style: {
+                        //                 fontSize: '12px',
+                        //             },
+                        //         })
+                        //         setIsLoading(false)
+                        //     })
+                        try {
+                            let ethersProvider = biconomy.provider
+                            let metapass = new ethers.Contract(
+                                event.childAddress,
+                                abi.abi,
+                                biconomy.ethersProvider
+                            )
+                            let { data } =
+                                await metapass.populateTransaction.getTix(
+                                    JSON.stringify(metadata)
+                                )
+                            let txParams = {
+                                data: data,
+                                to: event.childAddress,
+                                from: wallet.address,
+                                signatureType: 'PERSONAL_SIGN',
+                            }
+                            await ethersProvider.send('eth_sendTransaction', [
+                                txParams,
+                            ])
+
+                            biconomy.on('txMined', (data: any) => {
+                                if (event.category.event_type == 'In-Person') {
+                                    generateAndSendUUID(
+                                        ethers.utils.getAddress(
+                                            event.childAddress
+                                        ),
+                                        wallet.address as string,
+                                        event.tickets_sold + 1,
+                                        fastimg
+                                    ).then((uuid) => {
+                                        setQrId(String(uuid))
+                                    })
+                                }
+                            })
+                        } catch (e) {
+                            console.log(e)
+                        }
+                    }
+                } catch (e: any) {
+                    toast.error('Ooops! Failed to mint the ticket.')
+                    setIsLoading(false)
+                }
+
+                // metapass.on('Transfer', (res) => {
+                //     setIsLoading(false)
+                //     setHasBought(true)
+                //     let link =
+                //         opensea +
+                //         '/' +
+                //         event.childAddress +
+                //         '/' +
+                //         ethers.BigNumber.from(res).toNumber()
+
+                //     setToOpenseaLink(link)
+                // })
             }
         } else {
             toast.error('Please connect your Polygon wallet', {
