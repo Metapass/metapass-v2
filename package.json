@@ -9,7 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
-        "@biconomy/mexa": "^2.0.32",
+        "@biconomy/mexa": "^3.0.2",
         "@bonfida/spl-name-service": "^0.1.40",
         "@chakra-ui/icons": "^2.0.4",
         "@chakra-ui/react": "^2.2.4",
@@ -78,9 +78,14 @@
         "@types/react": "17.0.38",
         "@types/react-dom": "^18.0.6",
         "@types/uuid": "^8.3.4",
+        "bufferutil": "^4.0.6",
         "eslint": "8.7.0",
         "eslint-config-next": "12.0.8",
+        "net": "^1.0.2",
         "prettier": "2.6.0",
-        "typescript": "4.5.5"
+        "request": "^2.88.2",
+        "tls": "^0.0.1",
+        "typescript": "4.5.5",
+        "utf-8-validate": "^5.0.9"
     }
 }
