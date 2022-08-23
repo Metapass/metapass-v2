@@ -554,34 +554,38 @@ export default function EventLayout({
     }
 
     const clickBuyTicket = async () => {
-        if (isInviteOnly) {
-            console.log('isInviteOnly')
-            if (formRes === 'Register') {
-                if (
-                    (event.isSolana && wallet.chain === 'SOL') ||
-                    (!event.isSolana && wallet.chain === 'POLYGON')
-                ) {
-                    await handleRegister(
-                        user,
-                        onOpen2,
-                        setToOpen,
-                        event.childAddress,
-                        wallet.address as string
-                    )
+        if (wallet.address) {
+            if (isInviteOnly) {
+                console.log('isInviteOnly')
+                if (formRes === 'Register') {
+                    if (
+                        (event.isSolana && wallet.chain === 'SOL') ||
+                        (!event.isSolana && wallet.chain === 'POLYGON')
+                    ) {
+                        await handleRegister(
+                            user,
+                            onOpen2,
+                            setToOpen,
+                            event.childAddress,
+                            wallet.address as string
+                        )
+                    } else {
+                        toast.error('Please connect your wallet for the chain')
+                    }
+                }
+                if (formRes === 'Accepted') {
+                    event.isSolana ? buySolanaTicket() : buyPolygonTicket()
                 } else {
-                    toast.error('Please connect your wallet for the chain')
+                }
+            } else {
+                if (event.isSolana) {
+                    buySolanaTicket()
+                } else {
+                    buyPolygonTicket()
                 }
             }
-            if (formRes === 'Accepted') {
-                event.isSolana ? buySolanaTicket() : buyPolygonTicket()
-            } else {
-            }
         } else {
-            if (event.isSolana) {
-                buySolanaTicket()
-            } else {
-                buyPolygonTicket()
-            }
+            toast.error('Please connect your solana wallet')
         }
     }
     useEffect(() => {

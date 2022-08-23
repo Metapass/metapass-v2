@@ -147,7 +147,9 @@ export const RegisterFormModal = ({
                                             placeholder={ques.val}
                                             w="md"
                                             isRequired={ques.isRequired}
-                                            isReadOnly={ques.id === 2}
+                                            isReadOnly={
+                                                ques.id === 3 || ques.id == 2
+                                            }
                                             defaultValue={
                                                 ques.id == 2
                                                     ? user?.email
