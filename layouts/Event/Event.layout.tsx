@@ -887,51 +887,6 @@ export default function EventLayout({
                                             </Button>
                                         </InputRightElement>{' '}
                                     </InputGroup>
-                                    <Box
-                                        p="1.5px"
-                                        mx="auto"
-                                        mt="6"
-                                        transitionDuration="200ms"
-                                        rounded="full"
-                                        w="fit-content"
-                                        boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
-                                        bg="brand.gradient"
-                                        _hover={{ transform: 'scale(1.05)' }}
-                                        _focus={{}}
-                                        _active={{ transform: 'scale(0.95)' }}
-                                    >
-                                        <Button
-                                            type="submit"
-                                            rounded="full"
-                                            bg="white"
-                                            size="sm"
-                                            color="blackAlpha.700"
-                                            fontWeight="medium"
-                                            _hover={{}}
-                                            leftIcon={
-                                                <Box
-                                                    _groupHover={{
-                                                        transform: 'scale(1.1)',
-                                                    }}
-                                                    transitionDuration="200ms"
-                                                >
-                                                    <Image
-                                                        src="/assets/elements/event_ticket_gradient.svg"
-                                                        w="4"
-                                                        alt="ticket"
-                                                    />
-                                                </Box>
-                                            }
-                                            _focus={{}}
-                                            _active={{}}
-                                            onClick={() => {
-                                                window.open(eventLink, '_blank')
-                                            }}
-                                            role="group"
-                                        >
-                                            Go to event
-                                        </Button>
-                                    </Box>
                                 </>
                             )}
                             {event.category.event_type == 'In-Person' && (
@@ -1586,51 +1541,54 @@ export default function EventLayout({
                                     String(wallet?.address).toLowerCase()
                             )) && (
                             <Flex align="center" justify="space-evenly">
-                                <Box
-                                    p="1.5px"
-                                    mx="auto"
-                                    mt="6"
-                                    transitionDuration="200ms"
-                                    rounded="full"
-                                    w="fit-content"
-                                    boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
-                                    bg="brand.gradient"
-                                    _hover={{ transform: 'scale(1.05)' }}
-                                    _focus={{}}
-                                    _active={{ transform: 'scale(0.95)' }}
-                                >
-                                    <Button
-                                        type="submit"
+                                {event.category.event_type == 'Online' ? (
+                                    <Box
+                                        p="1.5px"
+                                        mx="auto"
+                                        mt="6"
+                                        transitionDuration="200ms"
                                         rounded="full"
-                                        bg="white"
-                                        size="sm"
-                                        color="blackAlpha.700"
-                                        fontWeight="medium"
-                                        _hover={{}}
-                                        leftIcon={
-                                            <Box
-                                                _groupHover={{
-                                                    transform: 'scale(1.1)',
-                                                }}
-                                                transitionDuration="200ms"
-                                            >
-                                                <Image
-                                                    src="/assets/elements/event_ticket_gradient.svg"
-                                                    w="4"
-                                                    alt="ticket"
-                                                />
-                                            </Box>
-                                        }
+                                        w="fit-content"
+                                        boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
+                                        bg="brand.gradient"
+                                        _hover={{ transform: 'scale(1.05)' }}
                                         _focus={{}}
-                                        _active={{}}
-                                        onClick={() => {
-                                            window.open(eventLink, '_blank')
-                                        }}
-                                        role="group"
+                                        _active={{ transform: 'scale(0.95)' }}
                                     >
-                                        Go to event
-                                    </Button>
-                                </Box>
+                                        <Button
+                                            type="submit"
+                                            rounded="full"
+                                            bg="white"
+                                            size="sm"
+                                            color="blackAlpha.700"
+                                            fontWeight="medium"
+                                            _hover={{}}
+                                            leftIcon={
+                                                <Box
+                                                    _groupHover={{
+                                                        transform: 'scale(1.1)',
+                                                    }}
+                                                    transitionDuration="200ms"
+                                                >
+                                                    <Image
+                                                        src="/assets/elements/event_ticket_gradient.svg"
+                                                        w="4"
+                                                        alt="ticket"
+                                                    />
+                                                </Box>
+                                            }
+                                            _focus={{}}
+                                            _active={{}}
+                                            onClick={() => {
+                                                window.open(eventLink, '_blank')
+                                            }}
+                                            role="group"
+                                        >
+                                            Go to event
+                                        </Button>
+                                    </Box>
+                                ) : null}
+
                                 <IconButton
                                     p="1.5px"
                                     mx="auto"
