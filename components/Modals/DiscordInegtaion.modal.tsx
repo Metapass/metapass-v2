@@ -10,11 +10,38 @@ import {
     Button,
     Select,
 } from '@chakra-ui/react'
+import axios from 'axios'
 import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { ModalProps } from '../../types/ModalProps.types'
 
 const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
+    const user = supabase.auth.user()
+
+    const [isDiscordAuth, setIsDiscordAuth] = useState(false)
+
+    useEffect(() => {
+        if (user) {
+            user.app_metadata.providers.map((p: string) => {
+                if (p === 'discord') {
+                    setIsDiscordAuth(true)
+                }
+            })
+        }
+    }, [user])
+
+    useEffect(() => {
+        axios
+            .get('https://metapass-discord-inte-production.up.railway.app/')
+            .then((res) => {
+                console.log(res)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }, [user])
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay />
@@ -53,7 +80,32 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
                     alignItems="center"
                     gap="3"
                 >
-                    <Button>Connect Discord Account</Button>
+                    {isDiscordAuth ? (
+                        <Flex justify="center">
+                            hello, {''}
+                            {user?.identities?.map((id) => {
+                                if (id.provider === 'discord') {
+                                    return id.identity_data.name
+                                }
+                            })}
+                        </Flex>
+                    ) : (
+                        <Button
+                            onClick={async () => {
+                                await supabase.auth.signIn(
+                                    {
+                                        provider: 'discord',
+                                    },
+                                    {
+                                        redirectTo:
+                                            'http://localhost:3000/create',
+                                    }
+                                )
+                            }}
+                        >
+                            Connect Discord Account
+                        </Button>
+                    )}
 
                     <Select placeholder="Select your Server"></Select>
                     <Select placeholder="Select desired Role"></Select>

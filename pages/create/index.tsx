@@ -206,7 +206,6 @@ const Create: NextPage = () => {
                     setInTxn(false)
                     setChild(child)
                     if (isInviteOnly) {
-                        console.log('invite only')
                         await uploadFormDetails(formData, child)
                     }
                     setFormData(defaultFormData)
@@ -313,7 +312,6 @@ const Create: NextPage = () => {
                     setInTxn(false)
                     setChild(child)
                     if (isInviteOnly) {
-                        console.log('invite only')
                         await uploadFormDetails(formData, child)
                     }
                     setFormData(defaultFormData)
@@ -349,7 +347,6 @@ const Create: NextPage = () => {
 
     const onSolanaSubmit = async () => {
         const wallet = solanaWallet
-        console.log(wallet.publicKey, program)
         const connection = new Connection(
             process.env.NEXT_PUBLIC_ENV == 'prod'
                 ? clusterApiUrl('mainnet-beta')
@@ -673,7 +670,6 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 1 ? 'block' : 'none'}>
                             {/* STEP2🔺 */}
-                            {console.log('step 2', event)}
                             <Step2
                                 event={event}
                                 onSubmit={(formDetails: any) => {
@@ -688,7 +684,6 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 2 ? 'block' : 'none'}>
                             {/* STEP3🔺 */}
-                            {console.log('step 3', event)}
                             <Step3
                                 event={event}
                                 onSubmit={(formDetails: any) => {
@@ -703,7 +698,6 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 3 ? 'block' : 'none'}>
                             {/* STEP4🔺 */}
-                            {console.log('step 4', event)}
                             <Step4
                                 event={event}
                                 onSubmit={(
@@ -725,7 +719,6 @@ const Create: NextPage = () => {
                             <>
                                 {step === 4 ? (
                                     <Box>
-                                        {console.log(event, formData, 'logui')}
                                         {/* STEP5🔺 */}
                                         <Step5
                                             onSubmit={(data) => {
@@ -742,7 +735,6 @@ const Create: NextPage = () => {
                                 {step === 5 ? (
                                     <Box>
                                         {/* STEP5🔺 */}
-                                        {console.log(event, 'logzp')}
                                         <SubmitStep
                                             event={event}
                                             inTxn={inTxn}
@@ -758,7 +750,6 @@ const Create: NextPage = () => {
                         ) : (
                             <Box display={step === 4 ? 'block' : 'none'}>
                                 {/* STEP5🔺 */}
-                                {console.log(event, 'logxy')}
                                 <SubmitStep
                                     event={event}
                                     inTxn={inTxn}
