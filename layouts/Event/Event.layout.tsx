@@ -211,7 +211,7 @@ export default function EventLayout({
         const initBiconomy = async () => {
             console.log(wallet.address)
             console.log(WalletSigner?.provider)
-            biconomy = new Biconomy(WalletSigner?.provider as any, {
+            biconomy = new Biconomy((WalletSigner?.provider as any).provider, {
                 apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
                 debug: process.env.NEXT_PUBLIC_ENV == 'dev',
                 contractAddresses: [
@@ -280,7 +280,17 @@ export default function EventLayout({
                             txParams,
                         ])
 
-                        biconomy.on('txMined', (data: any) => {
+                        biconomy.on('txHashGenerated', (data: any) => {
+                            setIsLoading(false)
+                            setHasBought(true)
+                            let link =
+                                opensea +
+                                '/' +
+                                event.childAddress +
+                                '/' +
+                                event.tickets_sold
+
+                            setToOpenseaLink(link)
                             if (event.category.event_type == 'In-Person') {
                                 generateAndSendUUID(
                                     ethers.utils.getAddress(event.childAddress),
@@ -359,7 +369,8 @@ export default function EventLayout({
                                 txParams,
                             ])
 
-                            biconomy.on('txMined', (data: any) => {
+                            biconomy.on('txHashhenerated', (data: any) => {
+                                setIsLoading(false)
                                 if (event.category.event_type == 'In-Person') {
                                     generateAndSendUUID(
                                         ethers.utils.getAddress(
@@ -371,6 +382,15 @@ export default function EventLayout({
                                     ).then((uuid) => {
                                         setQrId(String(uuid))
                                     })
+                                    setHasBought(true)
+                                    let link =
+                                        opensea +
+                                        '/' +
+                                        event.childAddress +
+                                        '/' +
+                                        event.tickets_sold
+
+                                    setToOpenseaLink(link)
                                 }
                             })
                         } catch (e) {
@@ -385,14 +405,6 @@ export default function EventLayout({
                 // metapass.on('Transfer', (res) => {
                 //     setIsLoading(false)
                 //     setHasBought(true)
-                //     let link =
-                //         opensea +
-                //         '/' +
-                //         event.childAddress +
-                //         '/' +
-                //         ethers.BigNumber.from(res).toNumber()
-
-                //     setToOpenseaLink(link)
                 // })
             }
         } else {
