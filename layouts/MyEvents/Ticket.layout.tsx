@@ -25,9 +25,8 @@ export default function TicketLayout({
     const [qr, setQr] = useState<string>('')
     const [ticketimg, setTicketimg] = useState<string>('')
     useEffect(() => {
-        // console.log(contractAddress)
         async function getMeta(contract: any, tokenuri: string) {
-            // console.log(tokenuri)
+            console.log(image)
             const metadata = await contract.tokenURI(tokenuri)
             const img = JSON.parse(metadata).image
             if (img) {
@@ -35,7 +34,10 @@ export default function TicketLayout({
             } else {
             }
         }
-        if ((window.ethereum || window.w3.currentProvider) && contractAddress) {
+        if (
+            (window.ethereum || window.w3.currentProvider) &&
+            contractAddress.startsWith('0x')
+        ) {
             const provider = new ethers.providers.Web3Provider(
                 window.ethereum || window.w3.currentProvider
             )
@@ -65,12 +67,13 @@ export default function TicketLayout({
                         .select('uuid')
                         .eq('buyer', wallet.address)
                         .filter('event', 'in', `("${c}")`)
+                    console.log(data, 'uuid data')
                     setQr(data?.[0]?.uuid)
                 } catch (error) {}
             }
         }
         fetchDetails()
-    }, [contractAddress, wallet.address, ticket])
+    }, [])
 
     return (
         <Box
@@ -99,7 +102,7 @@ export default function TicketLayout({
                 <Image
                     w="sm"
                     borderRadius="md"
-                    src={ticketimg}
+                    src={ticketimg || image}
                     alt="ticket img"
                 />
                 <Flex flexDir="column" mr={{ md: '6' }}>

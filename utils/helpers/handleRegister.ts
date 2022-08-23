@@ -28,7 +28,6 @@ const handleRegister = async (
             : onOpen()
     } else {
         setToOpen(true)
-        // toast.error('Please connect your wallet first')
     }
 }
 
