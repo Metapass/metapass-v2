@@ -54,9 +54,8 @@ export const RegisterFormModal = ({
                 }
                 const { data, error } = await supabase
                     .from('forms')
-                    .select('id,event, data')
+                    .select('id, event, data')
                     .eq('event', a)
-                console.log(data)
                 data?.length !== 0 &&
                     setData({
                         id: data?.[0]?.id,
@@ -70,6 +69,9 @@ export const RegisterFormModal = ({
 
         fetchData()
     }, [event])
+
+    console.log(formData?.data, 'form data')
+
     const {
         register,
         handleSubmit,
@@ -91,6 +93,7 @@ export const RegisterFormModal = ({
                 response: res,
                 email: user?.email,
                 address: wallet.address,
+                accepted: null,
             })
 
             if (error) {
@@ -144,20 +147,19 @@ export const RegisterFormModal = ({
                                             placeholder={ques.val}
                                             w="md"
                                             isRequired={ques.isRequired}
-                                            {...register(camelize(ques.val))}
+                                            isReadOnly={ques.id === 2}
                                             defaultValue={
-                                                ques.id === 2
+                                                ques.id == 2
                                                     ? user?.email
-                                                    : '' || ques.id === 3
+                                                    : ques.id == 3
                                                     ? wallet?.address
                                                     : ''
                                             }
-                                            isReadOnly={ques.id === 2}
+                                            {...register(camelize(ques.val))}
                                         />
                                     </Flex>
                                 </FormControl>
                             ))}
-
                             {formData?.data?.customQues.map((ques) => (
                                 <FormControl key={ques.id}>
                                     <Box
@@ -175,16 +177,14 @@ export const RegisterFormModal = ({
                                         <Input
                                             placeholder={ques.val}
                                             w="md"
-                                            isRequired={ques.isRequired}
-                                            {...register(camelize(ques.val))}
-                                            defaultValue={
-                                                ques.id === 2 ? user?.email : ''
-                                            }
+                                            isRequired={false}
+                                            {...register(
+                                                camelize('Default Value')
+                                            )}
                                         />
                                     </Flex>
                                 </FormControl>
                             ))}
-
                             <Button
                                 bg={'brand.gradient'}
                                 fontWeight="500"
