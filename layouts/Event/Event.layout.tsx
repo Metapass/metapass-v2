@@ -302,52 +302,7 @@ export default function EventLayout({
                                 })
                             }
                         })
-
-                        // metapass
-                        //     .getTix(JSON.stringify(metadata), {
-                        //         value: ethers.utils.parseEther(
-                        //             event.fee.toString()
-                        //         )._hex,
-                        //         gasPrice: 50,
-                        //         gasLimit: 900000,
-                        //     })
-                        //     .then(() => {
-
-                        //     })
-                        //     .catch((err: any) => {
-                        //         toast.error('Oops! Failed to mint the ticket')
-                        //         setIsLoading(false)
-                        //     })
                     } else {
-                        // metapass
-                        //     .getTix(JSON.stringify(metadata), {
-                        //         value: ethers.utils.parseEther(
-                        //             event.fee.toString()
-                        //         )._hex,
-                        //     })
-                        //     .then(() => {
-                        //         if (event.category.event_type == 'In-Person') {
-                        //             generateAndSendUUID(
-                        //                 ethers.utils.getAddress(
-                        //                     event.childAddress
-                        //                 ),
-                        //                 wallet.address as string,
-                        //                 event.tickets_sold + 1,
-                        //                 fastimg
-                        //             ).then((uuid) => {
-                        //                 setQrId(String(uuid))
-                        //             })
-                        //         }
-                        //     })
-                        //     .catch((err: any) => {
-                        //         toast.error(err.data?.message, {
-                        //             id: 'error10',
-                        //             style: {
-                        //                 fontSize: '12px',
-                        //             },
-                        //         })
-                        //         setIsLoading(false)
-                        //     })
                         try {
                             let ethersProvider = biconomy.provider
                             let metapass = new ethers.Contract(
@@ -401,11 +356,6 @@ export default function EventLayout({
                     toast.error('Ooops! Failed to mint the ticket.')
                     setIsLoading(false)
                 }
-
-                // metapass.on('Transfer', (res) => {
-                //     setIsLoading(false)
-                //     setHasBought(true)
-                // })
             }
         } else {
             toast.error('Please connect your Polygon wallet', {
