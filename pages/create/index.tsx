@@ -42,11 +42,15 @@ import toast from 'react-hot-toast'
 import { MetapassProgram } from '../../types/MetapassProgram.types'
 import { useAccount } from 'wagmi'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { inviteOnlyAtom, stepAtom, formDetails } from '../../lib/recoil/atoms'
+import {
+    inviteOnlyAtom,
+    stepAtom,
+    formDetails,
+    ResponseCollectAtom,
+} from '../../lib/recoil/atoms'
 import Step5 from '../../layouts/CreateEvent/Step5.layout'
 import EventCreatedModal from '../../components/Modals/EventCreated.modal'
 import { defaultFormData, eventData } from '../../lib/constants'
-import { polygonEventHandler } from '../../utils/helpers/onPolygonSubmit'
 import { formType } from '../../types/registerForm.types'
 declare const window: any
 
@@ -55,6 +59,7 @@ const Create: NextPage = () => {
     const solanaWallet = useWallet()
     const [step, setStep] = useRecoilState(stepAtom)
     const isInviteOnly = useRecoilValue(inviteOnlyAtom)
+    const isResponseOn = useRecoilValue(ResponseCollectAtom)
     const [isSolHost, setIsSolHost] = useState<Boolean>(true)
     const [event, setEvent] = useState<Event>(eventData)
 
@@ -200,13 +205,13 @@ const Create: NextPage = () => {
                             inviteOnly: isInviteOnly,
                             Venue: JSON.stringify(event.venue),
                             IRL: event.category.event_type === 'In-Person',
+                            responseOn: isResponseOn,
                         })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
                     setInTxn(false)
                     setChild(child)
-                    if (isInviteOnly) {
-                        console.log('invite only')
+                    if (isInviteOnly || isResponseOn) {
                         await uploadFormDetails(formData, child)
                     }
                     setFormData(defaultFormData)
@@ -307,12 +312,13 @@ const Create: NextPage = () => {
                             inviteOnly: isInviteOnly,
                             Venue: JSON.stringify(event.venue),
                             IRL: event.category.event_type === 'In-Person',
+                            responseOn: isResponseOn,
                         })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
                     setInTxn(false)
                     setChild(child)
-                    if (isInviteOnly) {
+                    if (isInviteOnly || isResponseOn) {
                         console.log('invite only')
                         await uploadFormDetails(formData, child)
                     }
@@ -486,10 +492,12 @@ const Create: NextPage = () => {
                             inviteOnly: isInviteOnly,
                             Venue: JSON.stringify(event.venue),
                             IRL: event.category.event_type === 'In-Person',
+                            responseOn: isResponseOn,
                         })
+
                     setIsPublished(true)
                     setInTxn(false)
-                    if (isInviteOnly) {
+                    if (isInviteOnly || isResponseOn) {
                         uploadFormDetails(formData, eventPDA.toString())
                     }
                     setFormData(defaultFormData)
@@ -610,6 +618,7 @@ const Create: NextPage = () => {
                                 inviteOnly: isInviteOnly,
                                 Venue: JSON.stringify(event.venue),
                                 IRL: event.category.event_type === 'In-Person',
+                                responseOn: isResponseOn,
                             })
                         setIsPublished(true)
                         setInTxn(false)
@@ -654,6 +663,7 @@ const Create: NextPage = () => {
                     step={step}
                     setStep={setStep}
                     isInviteOnly={isInviteOnly}
+                    isResponseOn={isResponseOn}
                 />
                 {wallet.address != null ? (
                     <Box mt="6">
@@ -743,6 +753,22 @@ const Create: NextPage = () => {
                                     <Box>
                                         {/* STEP5🔺 */}
                                         {console.log(event, 'logzp')}
+                                        <SubmitStep
+                                            event={event}
+                                            inTxn={inTxn}
+                                            onSubmit={
+                                                wallet.chain === 'SOL'
+                                                    ? onSolanaSubmit
+                                                    : onPolygonSubmit
+                                            }
+                                        />
+                                    </Box>
+                                ) : !isResponseOn ? (
+                                    <Box
+                                        display={step === 4 ? 'block' : 'none'}
+                                    >
+                                        {/* STEP5🔺 */}
+                                        {console.log(event, 'logxy')}
                                         <SubmitStep
                                             event={event}
                                             inTxn={inTxn}

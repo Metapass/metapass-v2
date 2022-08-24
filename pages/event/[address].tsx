@@ -22,6 +22,7 @@ const Event: NextPage = ({ event, og }: any) => {
     const [featEvent, setFeatEvent] = useState<Event>(event)
     const [isInviteOnly, setInviteOnly] = useState<boolean>(false)
     const router = useRouter()
+    const [isResponseOn, setResponseOn] = useState<boolean>(false)
     const { address } = router.query
 
     useEffect(() => {
@@ -30,6 +31,12 @@ const Event: NextPage = ({ event, og }: any) => {
                 .from('events')
                 .select('inviteOnly')
                 .eq('contractAddress', address)
+            const { data: response, error: err } = await supabase
+                .from('events')
+                .select('responseOn')
+                .eq('contractAddress', address)
+
+            response?.length !== 0 && setResponseOn(response?.[0].responseOn)
 
             data?.length !== 0 && setInviteOnly(data?.[0].inviteOnly)
         }
@@ -59,6 +66,7 @@ const Event: NextPage = ({ event, og }: any) => {
                     {featEvent ? (
                         <Skeleton isLoaded={featEvent.id !== ''}>
                             <EventLayout
+                                isResponseOn={isResponseOn}
                                 event={featEvent}
                                 isInviteOnly={isInviteOnly}
                             />

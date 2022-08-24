@@ -74,6 +74,8 @@ import { FiCheckCircle } from 'react-icons/fi'
 import { handleRegister } from '../../utils/helpers/handleRegister'
 import { useRecoilValue } from 'recoil'
 import { updateOnce } from '../../lib/recoil/atoms'
+import { defaultFormData } from '../../lib/constants'
+import { formDataType } from '../../types/registerForm.types'
 
 import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
@@ -84,9 +86,11 @@ declare const window: any
 export default function EventLayout({
     event,
     isInviteOnly,
+    isResponseOn,
 }: {
     event: Event
     isInviteOnly: boolean
+    isResponseOn: boolean
 }) {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
@@ -111,7 +115,10 @@ export default function EventLayout({
     const [wallet] = useContext<WalletType[]>(walletContext)
     const solanaWallet = useWallet()
     const mapContainerRef = useRef(null)
-
+    const [formData, setData] = useState<formDataType>({
+        id: 0,
+        data: defaultFormData,
+    })
     const [explorerLink, setExplorerLink] = useState<string>('')
     let opensea =
         process.env.NEXT_PUBLIC_ENV === 'dev'
@@ -227,7 +234,6 @@ export default function EventLayout({
     }, [wallet.address, WalletSigner?.provider])
 
     const buyPolygonTicket = async () => {
-        console.log(biconomy)
         if (isConnected && biconomy.ethersProvider) {
             if (user === null) {
                 setToOpen(true)
@@ -296,11 +302,13 @@ export default function EventLayout({
                                     ethers.utils.getAddress(event.childAddress),
                                     wallet.address as string,
                                     event.tickets_sold + 1,
-                                    fastimg
+                                    fastimg,
+                                    formData
                                 ).then((uuid) => {
                                     setQrId(String(uuid))
                                 })
                             }
+                            setIsLoading(false)
                         })
                     } else {
                         try {
@@ -325,7 +333,6 @@ export default function EventLayout({
                             ])
 
                             biconomy.on('txHashhenerated', (data: any) => {
-                                setIsLoading(false)
                                 if (event.category.event_type == 'In-Person') {
                                     generateAndSendUUID(
                                         ethers.utils.getAddress(
@@ -333,7 +340,8 @@ export default function EventLayout({
                                         ),
                                         wallet.address as string,
                                         event.tickets_sold + 1,
-                                        fastimg
+                                        fastimg,
+                                        formData
                                     ).then((uuid) => {
                                         setQrId(String(uuid))
                                     })
@@ -348,6 +356,7 @@ export default function EventLayout({
                                     setToOpenseaLink(link)
                                 }
                             })
+                            setIsLoading(false)
                         } catch (e) {
                             console.log(e)
                         }
@@ -364,8 +373,6 @@ export default function EventLayout({
         }
     }
     const buySolanaTicket = async () => {
-        console.log('buySolanaTicket', user)
-
         if (user === null) {
             console.log('user is null')
             setToOpen(true)
@@ -538,7 +545,8 @@ export default function EventLayout({
                                 event.childAddress,
                                 wallet.address as string,
                                 event.tickets_sold + 1,
-                                fastimg
+                                fastimg,
+                                formData
                             ).then((uuid) => {
                                 setQrId(String(uuid))
                             })
@@ -570,41 +578,41 @@ export default function EventLayout({
         }
     }
 
-    const clickBuyTicket = async () => {
-        if (wallet.address) {
-            if (isInviteOnly) {
-                console.log('isInviteOnly')
-                if (formRes === 'Register') {
-                    if (
-                        (event.isSolana && wallet.chain === 'SOL') ||
-                        (!event.isSolana && wallet.chain === 'POLYGON')
-                    ) {
-                        await handleRegister(
-                            user,
-                            onOpen2,
-                            setToOpen,
-                            event.childAddress,
-                            wallet.address as string
-                        )
-                    } else {
-                        toast.error('Please connect your wallet for the chain')
-                    }
-                }
-                if (formRes === 'Accepted') {
-                    event.isSolana ? buySolanaTicket() : buyPolygonTicket()
-                } else {
-                }
-            } else {
-                if (event.isSolana) {
-                    buySolanaTicket()
-                } else {
-                    buyPolygonTicket()
-                }
+    const BuyTicket = async () => {
+        console.log(isResponseOn)
+
+        if (isInviteOnly) {
+            console.log('isInviteOnly')
+            if (formRes === 'Register') {
+                await handleRegister(
+                    user,
+                    onOpen2,
+                    setToOpen,
+                    event.childAddress,
+                    wallet.address as string
+                )
             }
+            if (formRes === 'Accepted') {
+                event.isSolana ? buySolanaTicket() : buyPolygonTicket()
+            } else {
+            }
+        } else if (isResponseOn) {
+            await handleRegister(
+                user,
+                onOpen2,
+                setToOpen,
+                event.childAddress,
+                wallet.address as string
+            )
         } else {
-            toast.error('Please connect your solana wallet')
+            if (event.isSolana) {
+                buySolanaTicket()
+            } else {
+                buyPolygonTicket()
+            }
         }
     }
+
     useEffect(() => {
         const resolve = async () => {
             const domain = await resolveDomains(
@@ -700,14 +708,23 @@ export default function EventLayout({
                     onClose={() => {
                         setToOpen(false)
                     }}
+                    isInviteOnly={isInviteOnly}
                 />
             )}
-            <RegisterFormModal
-                isOpen={isOpen2}
-                onOpen={onOpen2}
-                onClose={onClose2}
-                event={event}
-            />
+            {isOpen2 && (
+                <RegisterFormModal
+                    isResponseOn={isResponseOn}
+                    isInviteOnly={isInviteOnly}
+                    isOpen={isOpen2}
+                    onOpen={onOpen2}
+                    onClose={onClose2}
+                    event={event}
+                    formData={formData}
+                    setData={setData}
+                    buyPolygonTicket={buyPolygonTicket}
+                    buySolanaTicket={buySolanaTicket}
+                />
+            )}
 
             {hasBought && <Confetti />}
             {formRes === 'Accepted' && <Confetti />}
@@ -994,7 +1011,7 @@ export default function EventLayout({
                             cursor: 'not-allowed',
                         }}
                         _hover={{}}
-                        onClick={clickBuyTicket}
+                        onClick={BuyTicket}
                         disabled={
                             event.tickets_available === 0 ||
                             formRes === 'Awaiting Approval' ||
@@ -1234,7 +1251,7 @@ export default function EventLayout({
                                     cursor: 'not-allowed',
                                 }}
                                 _hover={{}}
-                                onClick={clickBuyTicket}
+                                onClick={BuyTicket}
                                 disabled={
                                     event.tickets_available === 0 ||
                                     formRes === 'Awaiting Approval' ||
