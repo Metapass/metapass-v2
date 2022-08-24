@@ -6,15 +6,12 @@ export default function CreateEventCTA({
     step,
     setStep,
     isInviteOnly,
-    isResponseOn,
 }: {
     step: number
     setStep: any
     isInviteOnly: boolean
-    isResponseOn: boolean
 }) {
-    const steps =
-        isInviteOnly || isResponseOn ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5]
+    const steps = isInviteOnly ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5]
 
     return (
         <>

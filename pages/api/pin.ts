@@ -6,7 +6,6 @@ export default async function handler(
     res: NextApiResponse
 ) {
     if (req.method === 'POST') {
-        console.log(process.env.PINATA_JWT)
         const { hash } = req.body
 
         try {

@@ -139,7 +139,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
                 event: {
                     id: ticket.id,
                     title: ticket.title,
-                    childAddress: ticket.childAddress,
+                    childAddress: ticket.eventPDA,
                     category: category,
                     image: image,
                     eventHost: ticket.eventHost,
@@ -415,7 +415,13 @@ export default function MyEvents({ isOpen, onClose }: any) {
                                                         <TicketLayout
                                                             image={
                                                                 data.event.image
-                                                                    .image
+                                                                    .gallery[
+                                                                    data.event
+                                                                        .image
+                                                                        .gallery
+                                                                        .length -
+                                                                        1
+                                                                ]
                                                             }
                                                             wallet={wallet}
                                                             ticket={data}

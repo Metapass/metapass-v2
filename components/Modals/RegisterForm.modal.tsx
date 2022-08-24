@@ -28,23 +28,18 @@ import { useRecoilState } from 'recoil'
 import { updateOnce } from '../../lib/recoil/atoms'
 import { defaultFormData } from '../../lib/constants'
 import { walletContext } from '../../utils/walletContext'
+import axios from 'axios'
 
 export const RegisterFormModal = ({
     isOpen,
     onClose,
     onOpen,
     event,
-    isInviteOnly,
-    isResponseOn,
-    formData,
-    setData,
-    buySolanaTicket,
-    buyPolygonTicket,
 }: ModalProps) => {
-    // const [formData, setData] = useState<formDataType>({
-    //     id: 0,
-    //     data: defaultFormData,
-    // })
+    const [formData, setData] = useState<formDataType>({
+        id: 0,
+        data: defaultFormData,
+    })
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [toUpdate, setToUpdate] = useRecoilState(updateOnce)
 
@@ -93,31 +88,28 @@ export const RegisterFormModal = ({
             if (event?.childAddress.startsWith('0x')) {
                 a = utils.getAddress(event.childAddress as string)
             }
-            if (isInviteOnly) {
-                const { data, error } = await supabase
-                    .from('responses')
-                    .insert({
-                        event: a,
-                        form: formData?.id,
-                        response: res,
-                        email: user?.email,
-                        address: wallet.address,
-                        accepted: null,
-                    })
-
-                if (error) {
-                    toast.error('Error Uploading Details')
-                } else {
-                    toast.success('Details Uploaded')
-                    sendRegisteredMail(
-                        user?.email as string,
-                        event?.title as string
-                    )
-                    setToUpdate(!toUpdate)
-                }
-            }
-            if (isResponseOn) {
-                event?.isSolana ? buySolanaTicket() : buyPolygonTicket()
+            const { data, error } = await supabase.from('responses').insert({
+                event: a,
+                form: formData?.id,
+                response: res,
+                email: user?.email,
+                address: wallet.address,
+                accepted: null,
+            })
+            await axios.post('/api/sendRegisteredEmail', {
+                email: user?.email,
+                message: `gm! your request for ${a} event on Metapass has been recorded, you'll receive the NFT and QR Code if an IRL event once approved! `,
+                subject: 'Registered Successfully!',
+            })
+            if (error) {
+                toast.error('Error Uploading Details')
+            } else {
+                toast.success('Details Uploaded')
+                sendRegisteredMail(
+                    user?.email as string,
+                    event?.title as string
+                )
+                setToUpdate(!toUpdate)
             }
 
             setIsLoading(false)
@@ -160,7 +152,9 @@ export const RegisterFormModal = ({
                                             placeholder={ques.val}
                                             w="md"
                                             isRequired={ques.isRequired}
-                                            isReadOnly={ques.id === 2}
+                                            isReadOnly={
+                                                ques.id === 3 || ques.id == 2
+                                            }
                                             defaultValue={
                                                 ques.id == 2
                                                     ? user?.email

@@ -275,67 +275,13 @@ export default function NavigationBar({ mode = 'dark' }) {
                         setMyEvents(false)
                     }}
                 />
-                <Modal isOpen={isOpen1} onClose={onClose1}>
-                    <ModalOverlay />
-                    <ModalContent rounded="xl">
-                        <ModalBody m={2} p={4}>
-                            {mdcontent.map((item, index) => {
-                                return !(index == 2) ? (
-                                    <Flex
-                                        key={index}
-                                        w="full"
-                                        flexDirection="column"
-                                        alignItems="center"
-                                        borderRadius="md"
-                                        as="button"
-                                        rounded="xl"
-                                        _hover={{ bg: 'gray.100' }}
-                                        onClick={item.connector}
-                                    >
-                                        <Flex
-                                            justify="space-between"
-                                            alignItems="center"
-                                            px="4"
-                                            py="4"
-                                        >
-                                            <Text
-                                                fontSize="lg"
-                                                fontWeight="medium"
-                                            >
-                                                {item.title}
-                                            </Text>
-                                        </Flex>
-                                        <Image
-                                            src={item.icon}
-                                            alt="icon"
-                                            w="10%"
-                                        />
-                                        <Flex
-                                            justify="space-between"
-                                            alignItems="center"
-                                            px="4"
-                                            py="4"
-                                        >
-                                            <Text
-                                                fontSize="md"
-                                                fontWeight="normal"
-                                                color="gray.400"
-                                            >
-                                                {item.description}
-                                            </Text>
-                                        </Flex>
-                                    </Flex>
-                                ) : (
-                                    <ConnectWallet
-                                        key={index}
-                                        setWallet={setWallet}
-                                        setAddress={setAddress}
-                                        setBalance={setBalance}
-                                        setWalletType={setWalletType}
-                                        onClose={onClose1}
-                                        isOpen={isOpen1}
-                                        onOpen={onOpen1}
-                                    >
+                {isOpen1 && (
+                    <Modal isOpen={isOpen1} onClose={onClose1}>
+                        <ModalOverlay />
+                        <ModalContent rounded="xl">
+                            <ModalBody m={2} p={4}>
+                                {mdcontent.map((item, index) => {
+                                    return !(index == 2) ? (
                                         <Flex
                                             key={index}
                                             w="full"
@@ -345,6 +291,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                             as="button"
                                             rounded="xl"
                                             _hover={{ bg: 'gray.100' }}
+                                            onClick={item.connector}
                                         >
                                             <Flex
                                                 justify="space-between"
@@ -379,12 +326,67 @@ export default function NavigationBar({ mode = 'dark' }) {
                                                 </Text>
                                             </Flex>
                                         </Flex>
-                                    </ConnectWallet>
-                                )
-                            })}
-                        </ModalBody>
-                    </ModalContent>
-                </Modal>
+                                    ) : (
+                                        <ConnectWallet
+                                            key={index}
+                                            setWallet={setWallet}
+                                            setAddress={setAddress}
+                                            setBalance={setBalance}
+                                            setWalletType={setWalletType}
+                                            onClose={onClose1}
+                                            isOpen={isOpen1}
+                                            onOpen={onOpen1}
+                                        >
+                                            <Flex
+                                                key={index}
+                                                w="full"
+                                                flexDirection="column"
+                                                alignItems="center"
+                                                borderRadius="md"
+                                                as="button"
+                                                rounded="xl"
+                                                _hover={{ bg: 'gray.100' }}
+                                            >
+                                                <Flex
+                                                    justify="space-between"
+                                                    alignItems="center"
+                                                    px="4"
+                                                    py="4"
+                                                >
+                                                    <Text
+                                                        fontSize="lg"
+                                                        fontWeight="medium"
+                                                    >
+                                                        {item.title}
+                                                    </Text>
+                                                </Flex>
+                                                <Image
+                                                    src={item.icon}
+                                                    alt="icon"
+                                                    w="10%"
+                                                />
+                                                <Flex
+                                                    justify="space-between"
+                                                    alignItems="center"
+                                                    px="4"
+                                                    py="4"
+                                                >
+                                                    <Text
+                                                        fontSize="md"
+                                                        fontWeight="normal"
+                                                        color="gray.400"
+                                                    >
+                                                        {item.description}
+                                                    </Text>
+                                                </Flex>
+                                            </Flex>
+                                        </ConnectWallet>
+                                    )
+                                })}
+                            </ModalBody>
+                        </ModalContent>
+                    </Modal>
+                )}
             </Fade>
             <Box position="absolute" w="full">
                 <Flex

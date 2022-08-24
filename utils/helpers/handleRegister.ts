@@ -17,13 +17,17 @@ const handleRegister = async (
             .select('email')
             .eq('address', address)
             .eq('event', event)
+        const { data: emailData, error: emailError } = await supabase
+            .from('responses')
+            .select('email')
+            .eq('email', user.email)
+            .eq('event', event)
 
-        data?.length !== 0
+        data?.length && emailData?.length !== 0
             ? toast.error("You've already filled the form")
             : onOpen()
     } else {
         setToOpen(true)
-        // toast.error('Please connect your wallet first')
     }
 }
 
