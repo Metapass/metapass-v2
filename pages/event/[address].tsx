@@ -195,6 +195,7 @@ export async function getServerSideProps({ query }: any) {
         }
     }
     const getSolanaEvents = async () => {
+        console.log(`${process.env.NEXT_PUBLIC_MONGO_API}/getEvent/${address}`)
         const event = await axios.get(
             `${process.env.NEXT_PUBLIC_MONGO_API}/getEvent/${address}`
         )
