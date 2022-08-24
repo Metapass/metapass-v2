@@ -2,14 +2,18 @@ import axios from 'axios'
 import { API_URL } from '../../../lib/constants'
 
 const getAllRoles = async (guild: string, token: string) => {
-    try {
-        const { data: roles } = await axios.post(`${API_URL}/roles`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+    let options = {
+        method: 'POST',
+        url: 'https://metapass-discord-inte-production.up.railway.app/roles',
+        headers: {
+            Authorization:
+                `Bearer ${token}`,
+        },
+        data: { guild: guild },
+    }
 
-            data: { guild: guild },
-        })
+    try {
+        const { data: roles } = await axios.request(options as any)
 
         return roles
     } catch (error) {
