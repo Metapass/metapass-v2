@@ -5,8 +5,7 @@ export default async function generateAndSendUUID(
     event_address: string,
     user_address: string,
     ticketID: number,
-    image: string,
-    formData: any
+    image: string
 ) {
     const uuid = uuidv4()
     const { data, error } = await supabase.from('tickets').insert({
@@ -16,7 +15,6 @@ export default async function generateAndSendUUID(
         event: event_address,
         checkedIn: false,
         ticketImage: image,
-        formresponse: formData,
     })
 
     return uuid as string

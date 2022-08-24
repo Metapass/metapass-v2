@@ -78,19 +78,15 @@ import { updateOnce } from '../../lib/recoil/atoms'
 import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
 import AcceptedModalComponent from '../../components/Modals/Accepted.modal'
-import { defaultFormData } from '../../lib/constants'
-import { formDataType } from '../../types/registerForm.types'
 
 declare const window: any
 
 export default function EventLayout({
     event,
     isInviteOnly,
-    isResponseOn,
 }: {
     event: Event
     isInviteOnly: boolean
-    isResponseOn: boolean
 }) {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
@@ -115,10 +111,7 @@ export default function EventLayout({
     const [wallet] = useContext<WalletType[]>(walletContext)
     const solanaWallet = useWallet()
     const mapContainerRef = useRef(null)
-    const [formData, setData] = useState<formDataType>({
-        id: 0,
-        data: defaultFormData,
-    })
+
     const [explorerLink, setExplorerLink] = useState<string>('')
     let opensea =
         process.env.NEXT_PUBLIC_ENV === 'dev'
@@ -545,8 +538,7 @@ export default function EventLayout({
                                 event.childAddress,
                                 wallet.address as string,
                                 event.tickets_sold + 1,
-                                fastimg,
-                                formData
+                                fastimg
                             ).then((uuid) => {
                                 setQrId(String(uuid))
                             })
@@ -699,40 +691,6 @@ export default function EventLayout({
         }
     }, [event?.venue])
 
-    const BuyTicket = async () => {
-        console.log(isResponseOn)
-
-        if (isInviteOnly) {
-            console.log('isInviteOnly')
-            if (formRes === 'Register') {
-                await handleRegister(
-                    user,
-                    onOpen2,
-                    setToOpen,
-                    event.childAddress,
-                    wallet.address as string
-                )
-            }
-            if (formRes === 'Accepted') {
-                event.isSolana ? buySolanaTicket() : buyPolygonTicket()
-            } else {
-            }
-        } else if (isResponseOn) {
-            await handleRegister(
-                user,
-                onOpen2,
-                setToOpen,
-                event.childAddress,
-                wallet.address as string
-            )
-        } else {
-            if (event.isSolana) {
-                buySolanaTicket()
-            } else {
-                buyPolygonTicket()
-            }
-        }
-    }
     return (
         <>
             {toOpen && (
@@ -744,20 +702,12 @@ export default function EventLayout({
                     }}
                 />
             )}
-            {isOpen2 && (
-                <RegisterFormModal
-                    isResponseOn={isResponseOn}
-                    isInviteOnly={isInviteOnly}
-                    isOpen={isOpen2}
-                    onOpen={onOpen2}
-                    onClose={onClose2}
-                    event={event}
-                    formData={formData}
-                    setData={setData}
-                    buyPolygonTicket={buyPolygonTicket}
-                    buySolanaTicket={buySolanaTicket}
-                />
-            )}
+            <RegisterFormModal
+                isOpen={isOpen2}
+                onOpen={onOpen2}
+                onClose={onClose2}
+                event={event}
+            />
 
             {hasBought && <Confetti />}
             {formRes === 'Accepted' && <Confetti />}
@@ -1044,7 +994,6 @@ export default function EventLayout({
                             cursor: 'not-allowed',
                         }}
                         _hover={{}}
-
                         onClick={clickBuyTicket}
                         disabled={
                             event.tickets_available === 0 ||
@@ -1060,7 +1009,7 @@ export default function EventLayout({
                                 _groupHover={{ transform: 'scale(1.1)' }}
                                 transitionDuration="100ms"
                             >
-                                {isInviteOnly || isResponseOn ? (
+                                {isInviteOnly ? (
                                     <FiCheckCircle size={22} />
                                 ) : (
                                     <Image
@@ -1285,7 +1234,6 @@ export default function EventLayout({
                                     cursor: 'not-allowed',
                                 }}
                                 _hover={{}}
-
                                 onClick={clickBuyTicket}
                                 disabled={
                                     event.tickets_available === 0 ||
