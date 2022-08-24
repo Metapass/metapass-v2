@@ -9,17 +9,22 @@ import {
     ModalCloseButton,
     Button,
     Select,
+    Spinner,
 } from '@chakra-ui/react'
 import axios from 'axios'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { ModalProps } from '../../types/ModalProps.types'
+import { getAllSvs } from '../../utils/helpers/api/getAllSvs'
+import { isCommonSv } from '../../utils/helpers/api/isCommonSv'
 
 const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
     const user = supabase.auth.user()
+    const session = supabase.auth.session()
 
     const [isDiscordAuth, setIsDiscordAuth] = useState(false)
+    const [commonSvs, setCommonSvs] = useState<any[]>([])
 
     useEffect(() => {
         if (user) {
@@ -32,15 +37,28 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
     }, [user])
 
     useEffect(() => {
-        axios
-            .get('https://metapass-discord-inte-production.up.railway.app/')
-            .then((res) => {
-                console.log(res)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-    }, [user])
+        const fetchCommonSvs = async () => {
+            let arr: any[] = []
+            if (user) {
+                const allSvs = await getAllSvs(session?.access_token!)
+
+                allSvs?.data.map(async (s: any) => {
+                    const res = await isCommonSv(
+                        s.id!,
+                        user?.user_metadata.sub,
+                        session?.access_token!
+                    )
+
+                    if (res.isAdmin) {
+                        arr.push(s)
+                    }
+                })
+            }
+            setCommonSvs(arr)
+        }
+
+        fetchCommonSvs()
+    }, [session, user])
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -78,11 +96,15 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
                     flexDir="column"
                     justifyContent="center"
                     alignItems="center"
-                    gap="3"
+                    gap="6"
                 >
                     {isDiscordAuth ? (
-                        <Flex justify="center">
-                            hello, {''}
+                        <Flex
+                            justify="center"
+                            color="rgba(0, 0, 0, 0.8)"
+                            fontWeight="500"
+                        >
+                            Hello, {''}
                             {user?.identities?.map((id) => {
                                 if (id.provider === 'discord') {
                                     return id.identity_data.name
@@ -102,13 +124,38 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
                                     }
                                 )
                             }}
+                            h="10"
+                            px="10"
+                            rounded="full"
+                            fontWeight="500"
+                            color="rgba(0, 0, 0, 0.8)"
+                            bg="white"
+                            border="1px solid #E7B0FF"
+                            gap="2"
                         >
+                            <Image
+                                src="/assets/icons/discord.svg"
+                                alt="discord"
+                                height="6"
+                            />
                             Connect Discord Account
                         </Button>
                     )}
 
-                    <Select placeholder="Select your Server"></Select>
-                    <Select placeholder="Select desired Role"></Select>
+                    {commonSvs.length > 0 ? (
+                        <>
+                            <Select placeholder="Select your Server">
+                                {commonSvs.map((s: any) => (
+                                    <option value={s.id} key={s.id}>
+                                        {s.name}
+                                    </option>
+                                ))}
+                            </Select>
+                            <Select placeholder="Select desired Role"></Select>
+                        </>
+                    ) : (
+                        <Spinner />
+                    )}
 
                     <Button>Update Integration</Button>
                 </ModalBody>

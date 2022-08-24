@@ -44,4 +44,6 @@ const eventData: Event = {
     customSPLToken: '',
 }
 
-export { defaultFormData, eventData }
+const API_URL = 'https://metapass-discord-inte-production.up.railway.app'
+
+export { defaultFormData, eventData, API_URL }

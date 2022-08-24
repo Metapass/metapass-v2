@@ -29,7 +29,7 @@ import EventCard from '../../components/Card/EventCard.component'
 import DateModal from './DateModal.layout'
 import { walletContext, WalletType } from '../../utils/walletContext'
 import { disordBased, inviteOnlyAtom } from '../../lib/recoil/atoms'
-import DiscordModal from '../../components/Modals/DiscordInegtaion.modal'
+import DiscordModal from '../../components/Modals/DiscordIntegration.modal'
 export type PaymentToken = 'USDC' | 'USDT'
 export const CustomTokens = {
     SOL: {
