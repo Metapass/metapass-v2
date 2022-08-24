@@ -654,7 +654,7 @@ export default function EventLayout({
                 container: mapContainerRef.current, // container ID
                 style: 'mapbox://styles/mapbox/streets-v11', // style URL
                 center: [event.venue.x, event.venue.y], // starting position
-                zoom: 8, // starting zoom
+                zoom: 15, // starting zoom
             })
 
             // const markerNode = document.createElement('div')
@@ -1457,6 +1457,7 @@ export default function EventLayout({
                                 borderColor="blackAlpha.100"
                                 boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                                 py="2"
+                                maxW="18rem"
                             >
                                 <Flex
                                     justify="flex-end"
@@ -1477,7 +1478,9 @@ export default function EventLayout({
                                         <MapPinLine />
                                     </Flex>
                                 </Flex>
-                                <Link>
+                                <Link
+                                    href={`https://maps.google.com/?q=${event.venue.name}`}
+                                >
                                     <Text
                                         color="blackAlpha.600"
                                         // as="u"
@@ -1486,7 +1489,10 @@ export default function EventLayout({
                                         fontWeight="500"
                                         lineHeight="24px"
                                     >
-                                        {event.venue.name}
+                                        {event.venue.name.substring(
+                                            0,
+                                            event.venue.name.indexOf(',')
+                                        ) || event.venue.name}
                                     </Text>
                                 </Link>
                                 <Box
