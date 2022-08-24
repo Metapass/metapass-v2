@@ -11,6 +11,10 @@ const inviteOnlyAtom = atom<boolean>({
     key: 'inviteOnlyAtom',
     default: false,
 })
+const ResponseCollectAtom = atom<boolean>({
+    key: 'ResponseCollectAtom',
+    default: false,
+})
 
 const formDetails = atom<formType>({
     key: 'registerFormDetails',
@@ -22,4 +26,10 @@ const updateOnce = atom<boolean>({
     default: false,
 })
 
-export { stepAtom, inviteOnlyAtom, formDetails, updateOnce }
+export {
+    stepAtom,
+    inviteOnlyAtom,
+    formDetails,
+    updateOnce,
+    ResponseCollectAtom,
+}

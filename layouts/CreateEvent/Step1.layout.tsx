@@ -28,7 +28,8 @@ import { FaChevronDown } from 'react-icons/fa'
 import EventCard from '../../components/Card/EventCard.component'
 import DateModal from './DateModal.layout'
 import { walletContext, WalletType } from '../../utils/walletContext'
-import { inviteOnlyAtom } from '../../lib/recoil/atoms'
+import { inviteOnlyAtom, ResponseCollectAtom } from '../../lib/recoil/atoms'
+import { id } from 'ethers/lib/utils'
 export type PaymentToken = 'USDC' | 'USDT'
 export const CustomTokens = {
     SOL: {
@@ -49,6 +50,7 @@ export default function Step1({
 }) {
     const [isPaid, setIsPaid] = useState(true)
     const [isInviteOnly, setIsInviteOnly] = useRecoilState(inviteOnlyAtom)
+    const [isResponseOn, setIsResponse] = useRecoilState(ResponseCollectAtom)
     const [formDetails, setFormDetails] = useState({
         title: '',
         type: '',
@@ -88,18 +90,20 @@ export default function Step1({
                 }}
             >
                 <Box color="brand.black">
-                    <DateModal
-                        isOpen={isOpen}
-                        onClose={onClose}
-                        onSubmit={(date: any) => {
-                            setFormDetails({
-                                ...formDetails,
-                                date,
-                            })
+                    {isOpen && (
+                        <DateModal
+                            isOpen={isOpen}
+                            onClose={onClose}
+                            onSubmit={(date: any) => {
+                                setFormDetails({
+                                    ...formDetails,
+                                    date,
+                                })
 
-                            console.log(date)
-                        }}
-                    />
+                                console.log(date)
+                            }}
+                        />
+                    )}
                     <Text
                         align="center"
                         color="brand.black400"
@@ -159,8 +163,12 @@ export default function Step1({
                         </FormLabel>
 
                         <Switch
+                            disabled={isResponseOn}
                             onChange={(e) => {
-                                setIsInviteOnly(e.target.checked)
+                                if (!isResponseOn) {
+                                    setIsInviteOnly(e.target.checked)
+                                }
+
                                 setFormDetails({
                                     ...formDetails,
                                     category: {
@@ -170,6 +178,43 @@ export default function Step1({
                                 })
                             }}
                             isChecked={isInviteOnly}
+                            id="price"
+                            colorScheme="linkedin"
+                        />
+                    </FormControl>
+                    <FormControl
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        fontFamily="body"
+                        mt="2"
+                        fontWeight="normal"
+                    >
+                        <FormLabel
+                            fontFamily="body"
+                            color="blackAlpha.700"
+                            fontWeight="normal"
+                            mb="0"
+                            htmlFor="price"
+                        >
+                            Do you need Response ?
+                        </FormLabel>
+
+                        <Switch
+                            disabled={isInviteOnly}
+                            onChange={(e) => {
+                                if (!isInviteOnly) {
+                                    setIsResponse(e.target.checked)
+                                }
+                                // setFormDetails({
+                                //     ...formDetails,
+                                //     category: {
+                                //         ...formDetails.category,
+                                //         inviteOnly: e.target.checked,
+                                //     },
+                                // })
+                            }}
+                            isChecked={isResponseOn}
                             id="price"
                             colorScheme="linkedin"
                         />
