@@ -172,7 +172,6 @@ export default function EventLayout({
                         .from('users')
                         .select('*')
                         .eq('address', wallet.address)
-                    //  console.log('d', data, wallet.address)
                     if (data && data?.length > 0) {
                         console.log('user already exists', data)
                     } else {
@@ -216,7 +215,6 @@ export default function EventLayout({
     useEffect(() => {
         const initBiconomy = async () => {
             if (wallet.type == 'ramper') {
-                console.log('here abc')
                 biconomy = new Biconomy(await getBiconomyProvider(alchemy), {
                     apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
                     debug: process.env.NEXT_PUBLIC_ENV == 'dev',
@@ -244,12 +242,10 @@ export default function EventLayout({
             (WalletSigner?.provider || wallet.type == 'ramper')
         ) {
             initBiconomy()
-            console.log('init bico', wallet.address, WalletSigner?.provider)
         }
-    }, [wallet.address])
+    }, [wallet.address, WalletSigner?.provider])
 
     const buyPolygonTicket = async () => {
-        console.log(biconomy, wallet.type == 'ramper')
         if ((isConnected || wallet.type == 'ramper') && biconomy) {
             if (user === null) {
                 setToOpen(true)
@@ -292,6 +288,7 @@ export default function EventLayout({
                             await metapass.populateTransaction.getTix(
                                 JSON.stringify(metadata)
                             )
+                        console.log(data)
                         let txParams = {
                             data: data,
                             to: event.childAddress,
@@ -372,6 +369,7 @@ export default function EventLayout({
                             })
                         } catch (e) {
                             console.log(e)
+                            setIsLoading(false)
                         }
                     }
                 } catch (e: any) {
@@ -386,14 +384,10 @@ export default function EventLayout({
         }
     }
     const buySolanaTicket = async () => {
-        console.log('buySolanaTicket', user)
-
         if (user === null) {
-            console.log('user is null')
             setToOpen(true)
         } else {
             if (solanaWallet.publicKey && wallet.address) {
-                console.log('solanaWallet')
                 setIsLoading(true)
                 const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey(
                     'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
@@ -518,18 +512,15 @@ export default function EventLayout({
                 const transaction = new web3.Transaction().add(
                     transactionInstruction
                 )
-                console.log('tx')
                 const { blockhash } = await connection.getLatestBlockhash()
                 transaction.recentBlockhash = blockhash
                 transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
-                console.log('hello')
                 if (solanaWallet.signTransaction) {
                     try {
                         transaction.sign(mint)
                         const signedTx = await solanaWallet.signTransaction(
                             transaction
                         )
-                        console.log('signedTx', signedTx)
                         const txid = await connection.sendRawTransaction(
                             signedTx.serialize(),
                             {
@@ -537,7 +528,6 @@ export default function EventLayout({
                                 // skipPreflight: true,
                             }
                         )
-                        console.log(txid)
                         await axios.post(`/api/buyTicket`, {
                             eventPDA: event.childAddress,
                             publicKey: solanaWallet.publicKey?.toString(),
@@ -595,7 +585,6 @@ export default function EventLayout({
     const clickBuyTicket = async () => {
         if (wallet.address) {
             if (isInviteOnly) {
-                console.log('isInviteOnly')
                 if (formRes === 'Register') {
                     if (
                         (event.isSolana && wallet.chain === 'SOL') ||
@@ -633,7 +622,6 @@ export default function EventLayout({
                 event.isSolana ? 'SOL' : 'POLYGON',
                 event.owner
             )
-            // console.log('domain', domain)
             domain && setEnsName(domain?.domain as string)
         }
         resolve()
@@ -1162,7 +1150,6 @@ export default function EventLayout({
                                                 />
                                             </AspectRatio>
                                         )}
-                                        {/* {console.log(image.hero_image,"hero_image")} */}
                                         {event.image.gallery?.map(
                                             (data, key) => (
                                                 <AspectRatio
@@ -1411,7 +1398,6 @@ export default function EventLayout({
                                 justify="end"
                                 overflow="hidden"
                             >
-                                {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
                                 <Box
                                     w={`${
                                         100 -
@@ -1574,7 +1560,6 @@ export default function EventLayout({
                                 </Text>
                             )}
                         </Box>
-                        {/* {console.log(event.buyers)} */}
                         {(event.buyers.find(
                             (buyer: any) =>
                                 String(buyer?.id).toLowerCase() ===
