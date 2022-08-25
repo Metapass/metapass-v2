@@ -308,48 +308,41 @@ export default function EventLayout({
                             let metapass = new ethers.Contract(
                                 event.childAddress,
                                 abi.abi,
-                                biconomy.ethersProvider
+                                WalletSigner?.provider
                             )
-                            let { data } =
-                                await metapass.populateTransaction.getTix(
-                                    JSON.stringify(metadata)
-                                )
-                            let txParams = {
-                                data: data,
-                                to: event.childAddress,
-                                from: wallet.address,
-                                signatureType: 'PERSONAL_SIGN',
-                            }
-                            await ethersProvider.send('eth_sendTransaction', [
-                                txParams,
-                            ])
-
-                            biconomy.on('txHashhenerated', (data: any) => {
-                                setIsLoading(false)
-                                if (event.category.event_type == 'In-Person') {
-                                    generateAndSendUUID(
-                                        ethers.utils.getAddress(
-                                            event.childAddress
-                                        ),
-                                        wallet.address as string,
-                                        event.tickets_sold + 1,
-                                        fastimg
-                                    ).then((uuid) => {
-                                        setQrId(String(uuid))
-                                    })
-                                    setHasBought(true)
-                                    let link =
-                                        opensea +
-                                        '/' +
-                                        event.childAddress +
-                                        '/' +
-                                        event.tickets_sold
-
-                                    setToOpenseaLink(link)
+                            let txn = await metapass.getTix(
+                                JSON.stringify(metadata),
+                                {
+                                    value: ethers.utils.parseEther(
+                                        event.fee.toString()
+                                    ),
                                 }
-                            })
+                            )
+                            console.log(txn.hash)
+                            setIsLoading(false)
+                            if (event.category.event_type == 'In-Person') {
+                                generateAndSendUUID(
+                                    ethers.utils.getAddress(event.childAddress),
+                                    wallet.address as string,
+                                    event.tickets_sold + 1,
+                                    fastimg
+                                ).then((uuid) => {
+                                    setQrId(String(uuid))
+                                })
+                                setHasBought(true)
+                                let link =
+                                    opensea +
+                                    '/' +
+                                    event.childAddress +
+                                    '/' +
+                                    event.tickets_sold
+
+                                setToOpenseaLink(link)
+                            }
                         } catch (e) {
                             console.log(e)
+                            toast.error("Mint wasn't successful!")
+                            setIsLoading(false)
                         }
                     }
                 } catch (e: any) {
