@@ -302,15 +302,23 @@ export default function EventLayout({
                                 })
                             }
                         })
-                    } catch (e: any) {
-                        toast.error('Ooops! Failed to mint the ticket.')
+                        biconomy.on(
+                            'onError',
+                            (data: { error: any; transactionId: string }) => {
+                                console.log(data)
+                                toast.error('Ooops! Failed to mint the ticket.')
+                                setIsLoading(false)
+                                if (
+                                    data.error.reason ==
+                                    'execution reverted: Already minted tickets'
+                                ) {
+                                    toast.error('Tickets Already Minted!')
+                                }
+                            }
+                        )
                         setIsLoading(false)
-                        if (
-                            e.reason ==
-                            'execution reverted: Already minted tickets'
-                        ) {
-                            toast.error('Tickets Already Minted!')
-                        }
+                    } catch (e: any) {
+                        console.log(e)
                     }
                 } else {
                     try {
