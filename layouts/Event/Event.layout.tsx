@@ -74,7 +74,7 @@ import { FiCheckCircle } from 'react-icons/fi'
 import { handleRegister } from '../../utils/helpers/handleRegister'
 import { useRecoilValue } from 'recoil'
 import { updateOnce } from '../../lib/recoil/atoms'
-
+import { getBiconomyProvider } from '@ramper/ethereum'
 import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
 import AcceptedModalComponent from '../../components/Modals/Accepted.modal'
@@ -200,6 +200,12 @@ export default function EventLayout({
 
     const { data: WalletSigner } = useSigner()
     const { isConnected } = useAccount()
+    const endpoint: any =
+        process.env.NEXT_PUBLIC_ENV == 'prod'
+            ? process.env.NEXT_PUBLIC_ENDPOINT_POLYGON
+            : process.env.NEXT_PUBLIC_ENDPOINT_MUMBAI
+
+    const alchemy = new ethers.providers.JsonRpcProvider(endpoint)
 
     useEffect(() => {
         if (wallet.address) {
@@ -209,26 +215,42 @@ export default function EventLayout({
     let biconomy: any
     useEffect(() => {
         const initBiconomy = async () => {
-            console.log(wallet.address)
-            console.log(WalletSigner?.provider)
-            biconomy = new Biconomy((WalletSigner?.provider as any).provider, {
-                apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
-                debug: process.env.NEXT_PUBLIC_ENV == 'dev',
-                contractAddresses: [
-                    ethers.utils.getAddress(event.childAddress),
-                ],
-            })
-            await biconomy.init()
+            if (wallet.type == 'ramper') {
+                console.log('here abc')
+                biconomy = new Biconomy(await getBiconomyProvider(alchemy), {
+                    apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
+                    debug: process.env.NEXT_PUBLIC_ENV == 'dev',
+                    contractAddresses: [
+                        ethers.utils.getAddress(event.childAddress),
+                    ],
+                })
+                await biconomy.init()
+            } else {
+                biconomy = new Biconomy(
+                    (WalletSigner?.provider as any).provider,
+                    {
+                        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
+                        debug: process.env.NEXT_PUBLIC_ENV == 'dev',
+                        contractAddresses: [
+                            ethers.utils.getAddress(event.childAddress),
+                        ],
+                    }
+                )
+                await biconomy.init()
+            }
         }
-        if (wallet.address?.startsWith('0x') && WalletSigner?.provider) {
+        if (
+            wallet.address?.startsWith('0x') &&
+            (WalletSigner?.provider || wallet.type == 'ramper')
+        ) {
             initBiconomy()
-            console.log('init bico', wallet.address, WalletSigner.provider)
+            console.log('init bico', wallet.address, WalletSigner?.provider)
         }
-    }, [wallet.address, WalletSigner?.provider])
+    }, [wallet.address])
 
     const buyPolygonTicket = async () => {
-        console.log(biconomy)
-        if (isConnected && biconomy.ethersProvider) {
+        console.log(biconomy, wallet.type == 'ramper')
+        if ((isConnected || wallet.type == 'ramper') && biconomy) {
             if (user === null) {
                 setToOpen(true)
             } else {

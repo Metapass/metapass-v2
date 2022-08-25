@@ -18,6 +18,7 @@
         "@emotion/styled": "^11.9.3",
         "@pinata/sdk": "^1.1.23",
         "@project-serum/anchor": "^0.25.0-beta.1",
+        "@ramper/ethereum": "^0.0.21",
         "@sendgrid/mail": "^7.7.0",
         "@solana/wallet-adapter-base": "^0.9.7",
         "@solana/wallet-adapter-react": "^0.15.6",
