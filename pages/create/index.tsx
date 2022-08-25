@@ -42,12 +42,19 @@ import toast from 'react-hot-toast'
 import { MetapassProgram } from '../../types/MetapassProgram.types'
 import { useAccount } from 'wagmi'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { inviteOnlyAtom, stepAtom, formDetails } from '../../lib/recoil/atoms'
+import {
+    inviteOnlyAtom,
+    stepAtom,
+    formDetails,
+    discordBased,
+    discordEventDataAtom,
+} from '../../lib/recoil/atoms'
 import Step5 from '../../layouts/CreateEvent/Step5.layout'
 import EventCreatedModal from '../../components/Modals/EventCreated.modal'
 import { defaultFormData, eventData } from '../../lib/constants'
 import { polygonEventHandler } from '../../utils/helpers/onPolygonSubmit'
 import { formType } from '../../types/registerForm.types'
+import { IDiscordEvent } from '../../types/discordEveent.types'
 declare const window: any
 
 const Create: NextPage = () => {
@@ -59,6 +66,9 @@ const Create: NextPage = () => {
     const [event, setEvent] = useState<Event>(eventData)
 
     const [formData, setFormData] = useRecoilState(formDetails)
+    const [isDiscordBased, setIsDiscordBased] = useRecoilState(discordBased)
+    const [discordEventData, setDiscordEventData] =
+        useRecoilState(discordEventDataAtom)
 
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
@@ -120,6 +130,19 @@ const Create: NextPage = () => {
         const { data, error } = await supabase.from('forms').insert({
             event: child,
             data: form,
+        })
+
+        error ? console.log(error) : console.log(data)
+    }
+
+    const uploadDiscordEventData = async (
+        req: IDiscordEvent,
+        child: string
+    ) => {
+        const { data, error } = await supabase.from('discord_events').insert({
+            event: child,
+            guild: req.guild,
+            roles: req.roles,
         })
 
         error ? console.log(error) : console.log(data)
@@ -208,6 +231,13 @@ const Create: NextPage = () => {
                     if (isInviteOnly) {
                         await uploadFormDetails(formData, child)
                     }
+                    if (isDiscordBased) {
+                        await uploadDiscordEventData(discordEventData, child)
+                    }
+                    setDiscordEventData({
+                        guild: '',
+                        roles: [],
+                    })
                     setFormData(defaultFormData)
                 })
             } catch (err: any) {
@@ -314,6 +344,13 @@ const Create: NextPage = () => {
                     if (isInviteOnly) {
                         await uploadFormDetails(formData, child)
                     }
+                    if (isDiscordBased) {
+                        await uploadDiscordEventData(discordEventData, child)
+                    }
+                    setDiscordEventData({
+                        guild: '',
+                        roles: [],
+                    })
                     setFormData(defaultFormData)
                 })
             } catch (err: any) {
@@ -489,6 +526,13 @@ const Create: NextPage = () => {
                     if (isInviteOnly) {
                         uploadFormDetails(formData, eventPDA.toString())
                     }
+                    if (isDiscordBased) {
+                        await uploadDiscordEventData(discordEventData, child)
+                    }
+                    setDiscordEventData({
+                        guild: '',
+                        roles: [],
+                    })
                     setFormData(defaultFormData)
                 } catch (error) {
                     console.log('error', error)
@@ -613,6 +657,16 @@ const Create: NextPage = () => {
                         if (isInviteOnly) {
                             uploadFormDetails(formData, eventPDA.toString())
                         }
+                        if (isDiscordBased) {
+                            await uploadDiscordEventData(
+                                discordEventData,
+                                child
+                            )
+                        }
+                        setDiscordEventData({
+                            guild: '',
+                            roles: [],
+                        })
                         setFormData(defaultFormData)
                     } else {
                         throw Error(

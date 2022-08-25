@@ -11,32 +11,28 @@ import {
     Select,
     Spinner,
     Box,
+    Text,
 } from '@chakra-ui/react'
 import axios from 'axios'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { ModalProps } from '../../types/ModalProps.types'
+import { IRole } from '../../types/discordEveent.types'
 import { getAllSvs } from '../../utils/helpers/api/getAllSvs'
 import { isCommonSv } from '../../utils/helpers/api/isCommonSv'
 import RoleChooser from '../Misc/RoleChooser.elem'
+import { useRecoilState } from 'recoil'
+import { discordEventDataAtom } from '../../lib/recoil/atoms'
 
 const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
     const user = supabase.auth.user()
     const session = supabase.auth.session()
+    const [discordEventData, setDiscordEventData] =
+        useRecoilState(discordEventDataAtom)
 
     const [isDiscordAuth, setIsDiscordAuth] = useState(false)
-    const [commonSvs, setCommonSvs] = useState<any[]>([
-        {
-            id: '1009738223863480370',
-            name: 'metapass-discord-inte',
-        },
-        {
-            id: '1011584449865072801',
-            name: 'metapass-test-2',
-        },
-    ])
-    const [sv, setSv] = useState<string>('')
+    const [commonSvs, setCommonSvs] = useState<any[]>([])
 
     useEffect(() => {
         if (user) {
@@ -48,32 +44,32 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
         }
     }, [user])
 
-    // useEffect(() => {
-    //     const fetchCommonSvs = async () => {
-    //         let arr: any[] = []
-    //         if (user) {
-    //             const allSvs = await getAllSvs(session?.access_token!)
+    useEffect(() => {
+        const fetchCommonSvs = async () => {
+            let arr: any[] = []
+            if (user) {
+                const allSvs = await getAllSvs(session?.access_token!)
 
-    //             allSvs?.data.map(async (s: any) => {
-    //                 const res = await isCommonSv(
-    //                     s.id!,
-    //                     user?.user_metadata.sub,
-    //                     session?.access_token!
-    //                 )
+                allSvs?.data.map(async (s: any) => {
+                    const res = await isCommonSv(
+                        s.id!,
+                        user?.user_metadata.sub,
+                        session?.access_token!
+                    )
 
-    //                 if (res.isAdmin) {
-    //                     arr.push(s)
-    //                 }
-    //             })
-    //         }
-    //         setCommonSvs(arr)
-    //     }
+                    if (res.isAdmin) {
+                        arr.push(s)
+                    }
+                })
+            }
+            setCommonSvs(arr)
+        }
 
-    //     fetchCommonSvs()
-    // }, [session, user])
+        fetchCommonSvs()
+    }, [session, user])
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} isCentered size="5xl">
+        <Modal isOpen={isOpen} onClose={onClose} isCentered size="2xl">
             <ModalOverlay />
 
             <ModalContent
@@ -111,26 +107,23 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
                     gap="6"
                 >
                     {isDiscordAuth ? (
-                        <Box bg="brand.gradient" rounded="full" p="1px">
-                            <Flex
-                                justify="center"
-                                color="rgba(0, 0, 0, 0.8)"
-                                fontWeight="500"
-                                h="full"
-                                w="full"
-                                py="2"
-                                px="8"
-                                bg="white"
-                                rounded="full"
-                            >
-                                Hello, {''}
-                                {user?.identities?.map((id) => {
-                                    if (id.provider === 'discord') {
-                                        return id.identity_data.name
-                                    }
-                                })}
-                            </Flex>
-                        </Box>
+                        <Flex
+                            justify="center"
+                            color="rgba(0, 0, 0, 0.8)"
+                            fontWeight="500"
+                            alignItems="center"
+                        >
+                            Hello,&nbsp;
+                            {user?.identities?.map((id) => {
+                                if (id.provider === 'discord') {
+                                    return (
+                                        <Text as="span" color="pink.500">
+                                            {id.identity_data.name}
+                                        </Text>
+                                    )
+                                }
+                            })}
+                        </Flex>
                     ) : (
                         <Button
                             onClick={async () => {
@@ -166,7 +159,11 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
                                 placeholder="Select your Server"
                                 w="sm"
                                 onChange={(e) => {
-                                    setSv(e.target.value)
+                                    setDiscordEventData({
+                                        ...discordEventData,
+                                        guild: e.target.value,
+                                        roles: [],
+                                    })
                                 }}
                             >
                                 {commonSvs.map((s: any) => (
@@ -180,7 +177,7 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
                         )}
                     </Flex>
 
-                    <RoleChooser guild={sv} />
+                    <RoleChooser guild={discordEventData.guild} />
 
                     <Button
                         bg="brand.gradient"
@@ -190,6 +187,7 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
                         _hover={{}}
                         fontWeight="500"
                         mb="4"
+                        onClick={onClose}
                     >
                         Update Integration
                     </Button>

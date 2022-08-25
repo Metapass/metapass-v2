@@ -28,7 +28,7 @@ import { FaChevronDown } from 'react-icons/fa'
 import EventCard from '../../components/Card/EventCard.component'
 import DateModal from './DateModal.layout'
 import { walletContext, WalletType } from '../../utils/walletContext'
-import { disordBased, inviteOnlyAtom } from '../../lib/recoil/atoms'
+import { discordBased, inviteOnlyAtom } from '../../lib/recoil/atoms'
 import DiscordModal from '../../components/Modals/DiscordIntegration.modal'
 export type PaymentToken = 'USDC' | 'USDT'
 export const CustomTokens = {
@@ -50,7 +50,7 @@ export default function Step1({
 }) {
     const [isPaid, setIsPaid] = useState(true)
     const [isInviteOnly, setIsInviteOnly] = useRecoilState(inviteOnlyAtom)
-    const [isDiscordBased, setIsDiscordBased] = useRecoilState(disordBased)
+    const [isDiscordBased, setIsDiscordBased] = useRecoilState(discordBased)
     const [formDetails, setFormDetails] = useState({
         title: '',
         type: '',
@@ -179,6 +179,7 @@ export default function Step1({
                             <Switch
                                 onChange={(e) => {
                                     setIsInviteOnly(e.target.checked)
+                                    setIsDiscordBased(false)
                                     setFormDetails({
                                         ...formDetails,
                                         category: {
@@ -214,6 +215,7 @@ export default function Step1({
                             <Switch
                                 onChange={(e) => {
                                     setIsDiscordBased(e.target.checked)
+                                    setIsInviteOnly(false)
                                     setFormDetails({
                                         ...formDetails,
                                         category: {
@@ -834,7 +836,7 @@ export default function Step1({
                                         rounded="full"
                                         color="white"
                                         fontWeight="500"
-                                        w="72"
+                                        px="6"
                                         _hover={{}}
                                         _active={{}}
                                         _focus={{}}
