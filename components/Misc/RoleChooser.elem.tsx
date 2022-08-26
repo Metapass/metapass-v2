@@ -48,6 +48,15 @@ const RoleChooser = ({ guild }: any) => {
         }
     }
 
+    const handleDel = (id: string) => {
+        setDiscordEventData({
+            ...discordEventData,
+            roles: discordEventData.roles.filter((r: any) => r.id !== id),
+        })
+
+        toast.success('Role removed')
+    }
+
     return (
         <Flex gap="4" direction="column">
             <Box
@@ -68,14 +77,33 @@ const RoleChooser = ({ guild }: any) => {
                     <Box
                         key={role.id}
                         bg="purple.400"
-                        rounded="lg"
-                        h="6"
+                        rounded="full"
+                        h="8"
                         display="grid"
                         placeItems="center"
-                        px="2"
+                        // px="2"
                         color="white"
-                        fontSize="sm"
+                        fontSize="15px"
+                        cursor="pointer"
+                        role="group"
                     >
+                        <Flex
+                            display="none"
+                            w="full"
+                            h="8"
+                            rounded="full"
+                            bg="red.400"
+                            color="white"
+                            alignItems="center"
+                            justifyContent="center"
+                            _groupHover={{
+                                display: 'flex',
+                            }}
+                            transition="all 0.4s"
+                            onClick={() => handleDel(role.id)}
+                        >
+                            Delete
+                        </Flex>
                         {role.name}
                     </Box>
                 ))}

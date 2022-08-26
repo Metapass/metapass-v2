@@ -152,27 +152,23 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
                         </Button>
                     )}
                     <Flex justifyContent="center">
-                        {commonSvs.length > 0 ? (
-                            <Select
-                                placeholder="Select your Server"
-                                w="sm"
-                                onChange={(e) => {
-                                    setDiscordEventData({
-                                        ...discordEventData,
-                                        guild: e.target.value,
-                                        roles: [],
-                                    })
-                                }}
-                            >
-                                {commonSvs.map((s: any) => (
-                                    <option value={s.id} key={s.id}>
-                                        {s.name}
-                                    </option>
-                                ))}
-                            </Select>
-                        ) : (
-                            <Spinner />
-                        )}
+                        <Select
+                            placeholder="Select your Server"
+                            w="sm"
+                            onChange={(e) => {
+                                setDiscordEventData({
+                                    ...discordEventData,
+                                    guild: e.target.value,
+                                    roles: [],
+                                })
+                            }}
+                        >
+                            {commonSvs.map((s: any) => (
+                                <option value={s.id} key={s.id}>
+                                    {s.name}
+                                </option>
+                            ))}
+                        </Select>
                     </Flex>
 
                     <RoleChooser guild={discordEventData.guild} />
