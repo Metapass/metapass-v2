@@ -32,7 +32,6 @@ const DiscordRoleModal = ({
     const [isDiscordAuth, setIsDiscordAuth] = useState<boolean>(false)
     const [discordData, setDiscordData] = useState<IDiscordData>()
     const [isAllowed, setIsAllowed] = useState<boolean>(false)
-    console.log(isAllowed)
     const user = supabase.auth.user()
     const session = supabase.auth.session()
 
@@ -87,7 +86,6 @@ const DiscordRoleModal = ({
                 session?.access_token!
             )
 
-            console.log(res)
             setDiscordData({
                 ...discordData!,
                 name: res?.name!,
@@ -95,7 +93,7 @@ const DiscordRoleModal = ({
         }
 
         fetchData()
-    })
+    }, [discordData, session])
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered>

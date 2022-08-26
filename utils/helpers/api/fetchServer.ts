@@ -16,6 +16,7 @@ const fetchServer = async (guild: string, token: string) => {
 
         return data
     } catch (error) {
+        console.log(error)
         return error
     }
 }
