@@ -21,6 +21,8 @@ import Head from 'next/head'
 const Event: NextPage = ({ event, og }: any) => {
     const [featEvent, setFeatEvent] = useState<Event>(event)
     const [isInviteOnly, setInviteOnly] = useState<boolean>(false)
+    const [isDiscordBased, setIsDiscordBased] = useState<boolean>(false)
+    console.log(isDiscordBased)
     const router = useRouter()
     const { address } = router.query
 
@@ -28,10 +30,13 @@ const Event: NextPage = ({ event, og }: any) => {
         async function fetchData() {
             const { data, error } = await supabase
                 .from('events')
-                .select('inviteOnly')
+                .select('inviteOnly, isDiscordBased')
                 .eq('contractAddress', address)
 
-            data?.length !== 0 && setInviteOnly(data?.[0].inviteOnly)
+            if (data?.length !== 0) {
+                setInviteOnly(data?.[0].inviteOnly)
+                setIsDiscordBased(data?.[0].isDiscordBased)
+            }
         }
 
         fetchData()
@@ -61,6 +66,7 @@ const Event: NextPage = ({ event, og }: any) => {
                             <EventLayout
                                 event={featEvent}
                                 isInviteOnly={isInviteOnly}
+                                isDiscordBased={isDiscordBased}
                             />
                         </Skeleton>
                     ) : (

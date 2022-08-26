@@ -35,7 +35,13 @@ const RoleChooser = ({ guild }: any) => {
             const role = roles.find((r: any) => r.id === id)
             setDiscordEventData({
                 ...discordEventData,
-                roles: [...discordEventData.roles, role as IRole],
+                roles: [
+                    ...discordEventData.roles,
+                    {
+                        id: role?.id!,
+                        name: role?.name!,
+                    },
+                ],
             })
 
             toast.success('Role added')

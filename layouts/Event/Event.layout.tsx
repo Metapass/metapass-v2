@@ -79,15 +79,19 @@ import { updateOnce } from '../../lib/recoil/atoms'
 import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
 import AcceptedModalComponent from '../../components/Modals/Accepted.modal'
+import DiscordModal from '../../components/Modals/DiscordIntegration.modal'
+import DiscordRoleModal from '../../components/Modals/event/Discord.modal'
 
 declare const window: any
 
 export default function EventLayout({
     event,
     isInviteOnly,
+    isDiscordBased,
 }: {
     event: Event
     isInviteOnly: boolean
+    isDiscordBased: boolean
 }) {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
@@ -555,7 +559,6 @@ export default function EventLayout({
 
     const clickBuyTicket = async () => {
         if (isInviteOnly) {
-            console.log('isInviteOnly')
             if (formRes === 'Register') {
                 if (
                     (event.isSolana && wallet.chain === 'SOL') ||
@@ -576,6 +579,8 @@ export default function EventLayout({
                 event.isSolana ? buySolanaTicket() : buyPolygonTicket()
             } else {
             }
+        } else if (isDiscordBased) {
+            onOpen3()
         } else {
             if (event.isSolana) {
                 buySolanaTicket()
@@ -612,6 +617,12 @@ export default function EventLayout({
         isOpen: isOpen2,
         onOpen: onOpen2,
         onClose: onClose2,
+    } = useDisclosure()
+
+    const {
+        isOpen: isOpen3,
+        onOpen: onOpen3,
+        onClose: onClose3,
     } = useDisclosure()
 
     useEffect(() => {
@@ -681,12 +692,22 @@ export default function EventLayout({
                     }}
                 />
             )}
-            <RegisterFormModal
-                isOpen={isOpen2}
-                onOpen={onOpen2}
-                onClose={onClose2}
-                event={event}
-            />
+            {isInviteOnly && (
+                <RegisterFormModal
+                    isOpen={isOpen2}
+                    onOpen={onOpen2}
+                    onClose={onClose2}
+                    event={event}
+                />
+            )}
+            {isDiscordBased && (
+                <DiscordRoleModal
+                    isOpen={isOpen3}
+                    onOpen={onOpen3}
+                    onClose={onClose3}
+                    event={event}
+                />
+            )}
 
             {hasBought && <Confetti />}
             {formRes === 'Accepted' && <Confetti />}

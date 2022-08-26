@@ -223,6 +223,7 @@ const Create: NextPage = () => {
                             inviteOnly: isInviteOnly,
                             Venue: JSON.stringify(event.venue),
                             IRL: event.category.event_type === 'In-Person',
+                            isDiscordBased: isDiscordBased,
                         })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
@@ -336,6 +337,7 @@ const Create: NextPage = () => {
                             inviteOnly: isInviteOnly,
                             Venue: JSON.stringify(event.venue),
                             IRL: event.category.event_type === 'In-Person',
+                            isDiscordBased: isDiscordBased,
                         })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
@@ -520,6 +522,7 @@ const Create: NextPage = () => {
                             inviteOnly: isInviteOnly,
                             Venue: JSON.stringify(event.venue),
                             IRL: event.category.event_type === 'In-Person',
+                            isDiscordBased: isDiscordBased,
                         })
                     setIsPublished(true)
                     setInTxn(false)

@@ -13,12 +13,10 @@ import {
     Box,
     Text,
 } from '@chakra-ui/react'
-import axios from 'axios'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { ModalProps } from '../../types/ModalProps.types'
-import { IRole } from '../../types/discordEveent.types'
 import { getAllSvs } from '../../utils/helpers/api/getAllSvs'
 import { isCommonSv } from '../../utils/helpers/api/isCommonSv'
 import RoleChooser from '../Misc/RoleChooser.elem'

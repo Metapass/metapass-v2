@@ -8,4 +8,9 @@ interface IDiscordEvent {
     roles: IRole[]
 }
 
-export type { IRole, IDiscordEvent }
+interface IDiscordData {
+    guild: string
+    roles: any[]
+}
+
+export type { IRole, IDiscordEvent, IDiscordData }
