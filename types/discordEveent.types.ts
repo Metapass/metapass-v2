@@ -9,6 +9,7 @@ interface IDiscordEvent {
 }
 
 interface IDiscordData {
+    name?: string
     guild: string
     roles: any[]
 }

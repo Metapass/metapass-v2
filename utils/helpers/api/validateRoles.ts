@@ -7,7 +7,7 @@ const validateRoles = async (
     guild: string,
     token: string
 ) => {
-    let newObj = requiredRoles.map((role) => {
+    let newObj = requiredRoles?.map((role) => {
         let smth = JSON.parse(role)
 
         return smth

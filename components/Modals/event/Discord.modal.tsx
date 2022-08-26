@@ -19,8 +19,16 @@ import { supabase } from '../../../lib/config/supabaseConfig'
 import { IDiscordData } from '../../../types/discordEveent.types'
 import { motion } from 'framer-motion'
 import { validateRoles } from '../../../utils/helpers/api/validateRoles'
+import { fetchServer } from '../../../utils/helpers/api/fetchServer'
 
-const DiscordRoleModal = ({ isOpen, onOpen, onClose, event }: any) => {
+const DiscordRoleModal = ({
+    isOpen,
+    onOpen,
+    onClose,
+    event,
+    handleClick,
+    isLoading,
+}: any) => {
     const [isDiscordAuth, setIsDiscordAuth] = useState<boolean>(false)
     const [discordData, setDiscordData] = useState<IDiscordData>()
     const [isAllowed, setIsAllowed] = useState<boolean>(false)
@@ -71,6 +79,23 @@ const DiscordRoleModal = ({ isOpen, onOpen, onClose, event }: any) => {
 
         fetchData()
     }, [discordData, session, user])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await fetchServer(
+                discordData?.guild!,
+                session?.access_token!
+            )
+
+            console.log(res)
+            setDiscordData({
+                ...discordData!,
+                name: res?.name!,
+            })
+        }
+
+        fetchData()
+    })
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -168,7 +193,7 @@ const DiscordRoleModal = ({ isOpen, onOpen, onClose, event }: any) => {
                             <Text color="rgba(0, 0, 0, 0.63)" fontWeight="500">
                                 This event is gated for&nbsp;
                                 <Text as="span" color="pink.500">
-                                    {discordData?.guild}
+                                    {discordData?.name}
                                 </Text>{' '}
                                 guild members with specified roles
                             </Text>
@@ -187,7 +212,7 @@ const DiscordRoleModal = ({ isOpen, onOpen, onClose, event }: any) => {
                                     fontWeight="medium"
                                     role="group"
                                     loadingText="Minting"
-                                    // isLoading={isLoading}
+                                    isLoading={isLoading}
                                     boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
                                     color="white"
                                     _disabled={{
@@ -195,8 +220,7 @@ const DiscordRoleModal = ({ isOpen, onOpen, onClose, event }: any) => {
                                         cursor: 'not-allowed',
                                     }}
                                     _hover={{}}
-                                    // onClick={clickBuyTicket}
-
+                                    onClick={handleClick}
                                     _focus={{}}
                                     _active={{}}
                                     mr="3"
@@ -220,7 +244,24 @@ const DiscordRoleModal = ({ isOpen, onOpen, onClose, event }: any) => {
                             </Center>
                         </Flex>
                     ) : (
-                        <Flex>sadge</Flex>
+                        <Flex
+                            direction="column"
+                            gap="4"
+                            justifyContent="center"
+                            textAlign="center"
+                        >
+                            <Text color="rgba(0, 0, 0, 0.63)" fontWeight="500">
+                                This event is gated for&nbsp;
+                                <Text as="span" color="pink.500">
+                                    {discordData?.name}
+                                </Text>{' '}
+                                guild members with specified roles
+                            </Text>
+
+                            <Text color="rgba(0, 0, 0, 0.63)" fontWeight="500">
+                                You do not have the required roles to proceed.
+                            </Text>
+                        </Flex>
                     )}
                 </ModalBody>
             </ModalContent>

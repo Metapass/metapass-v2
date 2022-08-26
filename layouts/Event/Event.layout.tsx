@@ -589,6 +589,15 @@ export default function EventLayout({
             }
         }
     }
+
+    const handleTicketDiscord = () => {
+        if (event.isSolana) {
+            buySolanaTicket()
+        } else {
+            buyPolygonTicket()
+        }
+    }
+
     useEffect(() => {
         const resolve = async () => {
             const domain = await resolveDomains(
@@ -706,6 +715,8 @@ export default function EventLayout({
                     onOpen={onOpen3}
                     onClose={onClose3}
                     event={event}
+                    handleClick={handleTicketDiscord}
+                    isLoading={isLoading}
                 />
             )}
 
