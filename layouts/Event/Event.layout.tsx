@@ -43,7 +43,6 @@ import Confetti from '../../components/Misc/Confetti.component'
 import { ticketToIPFS } from '../../utils/imageHelper'
 import toGoogleCalDate from '../../utils/parseIsoDate'
 import BoringAva from '../../utils/BoringAva'
-import { IoCheckmarkDoneOutline } from 'react-icons/io5'
 import { decryptLink } from '../../utils/linkResolvers'
 
 import generateAndSendUUID from '../../utils/generateAndSendUUID'
@@ -63,12 +62,12 @@ import {
     getAssociatedTokenAddress,
     TOKEN_PROGRAM_ID,
 } from '@solana/spl-token'
-import { Connection, clusterApiUrl } from '@solana/web3.js'
+import { Connection } from '@solana/web3.js'
 import SignUpModal from '../../components/Modals/SignUp.modal'
 import resolveDomains from '../../hooks/useDomain'
 import axios from 'axios'
 import { generateMetadata } from '../../utils/generateMetadata'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount, useProvider, useSigner } from 'wagmi'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { RegisterFormModal } from '../../components/Modals/RegisterForm.modal'
 import { FiCheckCircle } from 'react-icons/fi'
@@ -211,137 +210,161 @@ export default function EventLayout({
             setHasTicket(event.buyers.includes(wallet.address))
         }
     }, [wallet.address])
+    let biconomy: any
+    useEffect(() => {
+        const initBiconomy = async () => {
+            console.log(wallet.address)
+            console.log(WalletSigner?.provider)
+            biconomy = new Biconomy((WalletSigner?.provider as any).provider, {
+                apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
+                debug: process.env.NEXT_PUBLIC_ENV == 'dev',
+                contractAddresses: [
+                    ethers.utils.getAddress(event.childAddress),
+                ],
+            })
+            await biconomy.init()
+        }
+        if (wallet.address?.startsWith('0x') && WalletSigner?.provider) {
+            initBiconomy()
+            console.log('init bico', wallet.address, WalletSigner.provider)
+        }
+    }, [wallet.address, WalletSigner?.provider])
 
     const buyPolygonTicket = async () => {
-        if (isConnected) {
+        console.log(biconomy)
+        if (isConnected && biconomy.ethersProvider) {
             if (user === null) {
                 setToOpen(true)
             } else {
-                if (typeof window.ethereum != undefined) {
-                    const provider = WalletSigner?.provider
-                    const biconomy = new Biconomy(provider, {
-                        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API,
-                        debug: process.env.NEXT_PUBLIC_ENV == 'dev',
-                    })
-                    setIsLoading(true)
-                    let ethersProvider = new ethers.providers.Web3Provider(
-                        biconomy
-                    )
+                setIsLoading(true)
+                toast.loading('Generating your unique ticket', {
+                    duration: 5000,
+                })
+                let { img, fastimg } = await ticketToIPFS(
+                    event.title,
+                    event.tickets_sold + 1,
+                    event.image.image,
+                    event.date.split('T')[0],
+                    wallet?.domain ||
+                        wallet?.address?.substring(0, 4) +
+                            '...' +
+                            wallet?.address?.substring(
+                                wallet?.address?.length - 4
+                            )
+                )
+                setMintedImage(fastimg)
+                let metadata = {
+                    name: event.title,
+                    description: `NFT Ticket for ${event.title}`,
+                    image: img,
+                    properties: {
+                        'Ticket Number': event.tickets_sold + 1,
+                    },
+                }
 
-                    const signer = ethersProvider.getSigner()
-                    let metapass = new ethers.Contract(
-                        event.childAddress,
-                        abi.abi,
-                        signer
-                    )
-                    toast.loading('Generating your unique ticket', {
-                        duration: 5000,
-                    })
-                    let { img, fastimg } = await ticketToIPFS(
-                        event.title,
-                        event.tickets_sold + 1,
-                        event.image.image,
-                        event.date.split('T')[0],
-                        wallet?.domain ||
-                            wallet?.address?.substring(0, 4) +
-                                '...' +
-                                wallet?.address?.substring(
-                                    wallet?.address?.length - 4
-                                )
-                    )
-                    setMintedImage(fastimg)
-                    let metadata = {
-                        name: event.title,
-                        description: `NFT Ticket for ${event.title}`,
-                        image: img,
-                        properties: {
-                            'Ticket Number': event.tickets_sold + 1,
-                        },
-                    }
-
+                if (event.fee === 0) {
                     try {
-                        if (event.fee === 0) {
-                            metapass
-                                .getTix(JSON.stringify(metadata), {
-                                    value: ethers.utils.parseEther(
-                                        event.fee.toString()
-                                    )._hex,
-                                    gasPrice: 50,
-                                    gasLimit: 900000,
-                                })
-                                .then(() => {
-                                    if (
-                                        event.category.event_type == 'In-Person'
-                                    ) {
-                                        generateAndSendUUID(
-                                            ethers.utils.getAddress(
-                                                event.childAddress
-                                            ),
-                                            wallet.address as string,
-                                            event.tickets_sold + 1,
-                                            fastimg
-                                        ).then((uuid) => {
-                                            setQrId(String(uuid))
-                                        })
-                                    }
-                                })
-                                .catch((err: any) => {
-                                    toast.error(
-                                        'Oops! Failed to mint the ticket'
-                                    )
-                                    setIsLoading(false)
-                                })
-                        } else {
-                            metapass
-                                .getTix(JSON.stringify(metadata), {
-                                    value: ethers.utils.parseEther(
-                                        event.fee.toString()
-                                    )._hex,
-                                })
-                                .then(() => {
-                                    if (
-                                        event.category.event_type == 'In-Person'
-                                    ) {
-                                        generateAndSendUUID(
-                                            ethers.utils.getAddress(
-                                                event.childAddress
-                                            ),
-                                            wallet.address as string,
-                                            event.tickets_sold + 1,
-                                            fastimg
-                                        ).then((uuid) => {
-                                            setQrId(String(uuid))
-                                        })
-                                    }
-                                })
-                                .catch((err: any) => {
-                                    toast.error(err.data?.message, {
-                                        id: 'error10',
-                                        style: {
-                                            fontSize: '12px',
-                                        },
-                                    })
-                                    setIsLoading(false)
-                                })
+                        let ethersProvider = biconomy.provider
+                        let metapass = new ethers.Contract(
+                            event.childAddress,
+                            abi.abi,
+                            biconomy.ethersProvider
+                        )
+                        let { data } =
+                            await metapass.populateTransaction.getTix(
+                                JSON.stringify(metadata)
+                            )
+                        let txParams = {
+                            data: data,
+                            to: event.childAddress,
+                            from: wallet.address,
+                            signatureType: 'PERSONAL_SIGN',
                         }
+                        await ethersProvider.send('eth_sendTransaction', [
+                            txParams,
+                        ])
+
+                        biconomy.on('txHashGenerated', (data: any) => {
+                            setIsLoading(false)
+                            setHasBought(true)
+                            let link =
+                                opensea +
+                                '/' +
+                                event.childAddress +
+                                '/' +
+                                event.tickets_sold
+
+                            setToOpenseaLink(link)
+                            if (event.category.event_type == 'In-Person') {
+                                generateAndSendUUID(
+                                    ethers.utils.getAddress(event.childAddress),
+                                    wallet.address as string,
+                                    event.tickets_sold + 1,
+                                    fastimg
+                                ).then((uuid) => {
+                                    setQrId(String(uuid))
+                                })
+                            }
+                        })
+                        biconomy.on(
+                            'onError',
+                            (data: { error: any; transactionId: string }) => {
+                                console.log(data)
+                                toast.error('Ooops! Failed to mint the ticket.')
+                                setIsLoading(false)
+                                if (
+                                    data.error.reason ==
+                                    'execution reverted: Already minted tickets'
+                                ) {
+                                    toast.error('Tickets Already Minted!')
+                                }
+                            }
+                        )
+                        setIsLoading(false)
                     } catch (e: any) {
-                        toast.error('Ooops! Failed to mint the ticket.')
+                        console.log(e)
+                    }
+                } else {
+                    try {
+                        let metapass = new ethers.Contract(
+                            event.childAddress,
+                            abi.abi,
+                            WalletSigner?.provider
+                        )
+                        let txn = await metapass.getTix(
+                            JSON.stringify(metadata),
+                            {
+                                value: ethers.utils.parseEther(
+                                    event.fee.toString()
+                                ),
+                            }
+                        )
+                        console.log(txn.hash)
+                        setIsLoading(false)
+                        if (event.category.event_type == 'In-Person') {
+                            generateAndSendUUID(
+                                ethers.utils.getAddress(event.childAddress),
+                                wallet.address as string,
+                                event.tickets_sold + 1,
+                                fastimg
+                            ).then((uuid) => {
+                                setQrId(String(uuid))
+                            })
+                            setHasBought(true)
+                            let link =
+                                opensea +
+                                '/' +
+                                event.childAddress +
+                                '/' +
+                                event.tickets_sold
+
+                            setToOpenseaLink(link)
+                        }
+                    } catch (e) {
+                        console.log(e)
+                        toast.error("Mint wasn't successful!")
                         setIsLoading(false)
                     }
-
-                    metapass.on('Transfer', (res) => {
-                        setIsLoading(false)
-                        setHasBought(true)
-                        let link =
-                            opensea +
-                            '/' +
-                            event.childAddress +
-                            '/' +
-                            ethers.BigNumber.from(res).toNumber()
-
-                        setToOpenseaLink(link)
-                    })
-                } else {
                 }
             }
         } else {
@@ -558,35 +581,37 @@ export default function EventLayout({
     }
 
     const clickBuyTicket = async () => {
-        if (isInviteOnly) {
-            if (formRes === 'Register') {
-                if (
-                    (event.isSolana && wallet.chain === 'SOL') ||
-                    (!event.isSolana && wallet.chain === 'POLYGON')
-                ) {
-                    await handleRegister(
-                        user,
-                        onOpen2,
-                        setToOpen,
-                        event.childAddress,
-                        wallet.address as string
-                    )
+        if (wallet.address) {
+            if (isInviteOnly) {
+                if (formRes === 'Register') {
+                    if (
+                        (event.isSolana && wallet.chain === 'SOL') ||
+                        (!event.isSolana && wallet.chain === 'POLYGON')
+                    ) {
+                        await handleRegister(
+                            user,
+                            onOpen2,
+                            setToOpen,
+                            event.childAddress,
+                            wallet.address as string
+                        )
+                    } else {
+                    }
+                }
+                if (formRes === 'Accepted') {
+                    event.isSolana ? buySolanaTicket() : buyPolygonTicket()
+                }
+            } else if (isDiscordBased) {
+                onOpen3()
+            } else {
+                if (event.isSolana) {
+                    buySolanaTicket()
                 } else {
-                    toast.error('Please connect your wallet for the chain')
+                    buyPolygonTicket()
                 }
             }
-            if (formRes === 'Accepted') {
-                event.isSolana ? buySolanaTicket() : buyPolygonTicket()
-            } else {
-            }
-        } else if (isDiscordBased) {
-            onOpen3()
         } else {
-            if (event.isSolana) {
-                buySolanaTicket()
-            } else {
-                buyPolygonTicket()
-            }
+            toast.error('Please connect your solana wallet')
         }
     }
 
@@ -653,7 +678,7 @@ export default function EventLayout({
                 container: mapContainerRef.current, // container ID
                 style: 'mapbox://styles/mapbox/streets-v11', // style URL
                 center: [event.venue.x, event.venue.y], // starting position
-                zoom: 8, // starting zoom
+                zoom: 15, // starting zoom
             })
 
             // const markerNode = document.createElement('div')
@@ -915,51 +940,6 @@ export default function EventLayout({
                                             </Button>
                                         </InputRightElement>{' '}
                                     </InputGroup>
-                                    <Box
-                                        p="1.5px"
-                                        mx="auto"
-                                        mt="6"
-                                        transitionDuration="200ms"
-                                        rounded="full"
-                                        w="fit-content"
-                                        boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
-                                        bg="brand.gradient"
-                                        _hover={{ transform: 'scale(1.05)' }}
-                                        _focus={{}}
-                                        _active={{ transform: 'scale(0.95)' }}
-                                    >
-                                        <Button
-                                            type="submit"
-                                            rounded="full"
-                                            bg="white"
-                                            size="sm"
-                                            color="blackAlpha.700"
-                                            fontWeight="medium"
-                                            _hover={{}}
-                                            leftIcon={
-                                                <Box
-                                                    _groupHover={{
-                                                        transform: 'scale(1.1)',
-                                                    }}
-                                                    transitionDuration="200ms"
-                                                >
-                                                    <Image
-                                                        src="/assets/elements/event_ticket_gradient.svg"
-                                                        w="4"
-                                                        alt="ticket"
-                                                    />
-                                                </Box>
-                                            }
-                                            _focus={{}}
-                                            _active={{}}
-                                            onClick={() => {
-                                                window.open(eventLink, '_blank')
-                                            }}
-                                            role="group"
-                                        >
-                                            Go to event
-                                        </Button>
-                                    </Box>
                                 </>
                             )}
                             {event.category.event_type == 'In-Person' && (
@@ -1513,6 +1493,7 @@ export default function EventLayout({
                                 borderColor="blackAlpha.100"
                                 boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                                 py="2"
+                                maxW="18rem"
                             >
                                 <Flex
                                     justify="flex-end"
@@ -1533,7 +1514,9 @@ export default function EventLayout({
                                         <MapPinLine />
                                     </Flex>
                                 </Flex>
-                                <Link>
+                                <Link
+                                    href={`https://maps.google.com/?q=${event.venue.name}`}
+                                >
                                     <Text
                                         color="blackAlpha.600"
                                         // as="u"
@@ -1542,7 +1525,10 @@ export default function EventLayout({
                                         fontWeight="500"
                                         lineHeight="24px"
                                     >
-                                        {event.venue.name}
+                                        {event.venue.name.substring(
+                                            0,
+                                            event.venue.name.indexOf(',')
+                                        ) || event.venue.name}
                                     </Text>
                                 </Link>
                                 <Box
@@ -1614,51 +1600,54 @@ export default function EventLayout({
                                     String(wallet?.address).toLowerCase()
                             )) && (
                             <Flex align="center" justify="space-evenly">
-                                <Box
-                                    p="1.5px"
-                                    mx="auto"
-                                    mt="6"
-                                    transitionDuration="200ms"
-                                    rounded="full"
-                                    w="fit-content"
-                                    boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
-                                    bg="brand.gradient"
-                                    _hover={{ transform: 'scale(1.05)' }}
-                                    _focus={{}}
-                                    _active={{ transform: 'scale(0.95)' }}
-                                >
-                                    <Button
-                                        type="submit"
+                                {event.category.event_type == 'Online' ? (
+                                    <Box
+                                        p="1.5px"
+                                        mx="auto"
+                                        mt="6"
+                                        transitionDuration="200ms"
                                         rounded="full"
-                                        bg="white"
-                                        size="sm"
-                                        color="blackAlpha.700"
-                                        fontWeight="medium"
-                                        _hover={{}}
-                                        leftIcon={
-                                            <Box
-                                                _groupHover={{
-                                                    transform: 'scale(1.1)',
-                                                }}
-                                                transitionDuration="200ms"
-                                            >
-                                                <Image
-                                                    src="/assets/elements/event_ticket_gradient.svg"
-                                                    w="4"
-                                                    alt="ticket"
-                                                />
-                                            </Box>
-                                        }
+                                        w="fit-content"
+                                        boxShadow="0px 5px 33px rgba(0, 0, 0, 0.08)"
+                                        bg="brand.gradient"
+                                        _hover={{ transform: 'scale(1.05)' }}
                                         _focus={{}}
-                                        _active={{}}
-                                        onClick={() => {
-                                            window.open(eventLink, '_blank')
-                                        }}
-                                        role="group"
+                                        _active={{ transform: 'scale(0.95)' }}
                                     >
-                                        Go to event
-                                    </Button>
-                                </Box>
+                                        <Button
+                                            type="submit"
+                                            rounded="full"
+                                            bg="white"
+                                            size="sm"
+                                            color="blackAlpha.700"
+                                            fontWeight="medium"
+                                            _hover={{}}
+                                            leftIcon={
+                                                <Box
+                                                    _groupHover={{
+                                                        transform: 'scale(1.1)',
+                                                    }}
+                                                    transitionDuration="200ms"
+                                                >
+                                                    <Image
+                                                        src="/assets/elements/event_ticket_gradient.svg"
+                                                        w="4"
+                                                        alt="ticket"
+                                                    />
+                                                </Box>
+                                            }
+                                            _focus={{}}
+                                            _active={{}}
+                                            onClick={() => {
+                                                window.open(eventLink, '_blank')
+                                            }}
+                                            role="group"
+                                        >
+                                            Go to event
+                                        </Button>
+                                    </Box>
+                                ) : null}
+
                                 <IconButton
                                     p="1.5px"
                                     mx="auto"

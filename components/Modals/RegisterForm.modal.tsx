@@ -28,6 +28,7 @@ import { useRecoilState } from 'recoil'
 import { updateOnce } from '../../lib/recoil/atoms'
 import { defaultFormData } from '../../lib/constants'
 import { walletContext } from '../../utils/walletContext'
+import axios from 'axios'
 
 export const RegisterFormModal = ({
     isOpen,
@@ -95,7 +96,11 @@ export const RegisterFormModal = ({
                 address: wallet.address,
                 accepted: null,
             })
-
+            await axios.post('/api/sendRegisteredEmail', {
+                email: user?.email,
+                message: `gm! your request for ${a} event on Metapass has been recorded, you'll receive the NFT and QR Code if an IRL event once approved! `,
+                subject: 'Registered Successfully!',
+            })
             if (error) {
                 toast.error('Error Uploading Details')
             } else {
@@ -147,7 +152,9 @@ export const RegisterFormModal = ({
                                             placeholder={ques.val}
                                             w="md"
                                             isRequired={ques.isRequired}
-                                            isReadOnly={ques.id === 2}
+                                            isReadOnly={
+                                                ques.id === 3 || ques.id == 2
+                                            }
                                             defaultValue={
                                                 ques.id == 2
                                                     ? user?.email

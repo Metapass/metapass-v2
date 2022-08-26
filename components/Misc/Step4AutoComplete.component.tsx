@@ -77,17 +77,17 @@ const VenueAutoComplete = ({ venueXY, setVenueXY }: any) => {
                             options.map((option: any, oid) => (
                                 <AutoCompleteItem
                                     key={`option-${oid}`}
-                                    value={option.text}
+                                    value={option.place_name}
                                     textTransform="capitalize"
                                     onClick={() =>
                                         setVenueXY({
-                                            name: option.text,
+                                            name: option.place_name,
                                             x: option.center[0],
                                             y: option.center[1],
                                         })
                                     }
                                 >
-                                    {option.text}
+                                    {option.place_name}
                                 </AutoCompleteItem>
                             ))}
                     </AutoCompleteList>
