@@ -140,7 +140,9 @@ export default function NavigationBar({ mode = 'dark' }) {
                 AUTH_PROVIDER.EMAIL,
             ],
             walletProviders: [WALLET_PROVIDER.METAMASK],
-            network: SUPPORTED_ETHEREUM_NETWORKS.MATICMUM,
+            network: env
+                ? SUPPORTED_ETHEREUM_NETWORKS.MATIC
+                : SUPPORTED_ETHEREUM_NETWORKS.MATICMUM,
             theme: THEME.LIGHT,
         })
         setRamper(getUser())
