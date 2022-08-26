@@ -44,23 +44,26 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
 
     useEffect(() => {
         const fetchCommonSvs = async () => {
-            let arr: any[] = []
             if (user) {
                 const allSvs = await getAllSvs(session?.access_token!)
+                let arr: any[] = []
 
-                allSvs?.data.map(async (s: any) => {
-                    const res = await isCommonSv(
-                        s.id!,
-                        user?.user_metadata.sub,
-                        session?.access_token!
-                    )
+                allSvs?.data
+                    .map(async (s: any) => {
+                        const res = await isCommonSv(
+                            s.id!,
+                            user?.user_metadata.sub,
+                            session?.access_token!
+                        )
 
-                    if (res.isAdmin) {
-                        arr.push(s)
-                    }
-                })
+                        if (res.isAdmin) {
+                            arr.push(s)
+                        }
+                    })
+                    .then(() => {
+                        setCommonSvs(arr)
+                    })
             }
-            setCommonSvs(arr)
         }
 
         fetchCommonSvs()
