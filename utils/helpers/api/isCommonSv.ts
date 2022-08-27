@@ -7,7 +7,7 @@ const isCommonSv = async (guild: string, user: string, token: string) => {
             method: 'POST',
             url: 'https://metapass-discord-inte-production.up.railway.app/commonServer',
             headers: {
-                Authorization: `Bearer 55161b5177ffcf436354c6a3e20ad6c77c204d7b6ec292d8fbf624a40bc72191`,
+                Authorization: `Bearer ${token}`,
             },
             data: { user: user, guild: guild },
         }
