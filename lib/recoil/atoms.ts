@@ -4,17 +4,21 @@ import { defaultFormData } from '../constants'
 
 const stepAtom = atom<number>({
     key: 'stepAtom',
-    default: 0,
+    default: 5,
 })
 
 const inviteOnlyAtom = atom<boolean>({
     key: 'inviteOnlyAtom',
-    default: false,
+    default: true,
 })
 
 const formDetails = atom<formType>({
     key: 'registerFormDetails',
     default: defaultFormData,
+})
+const dropDownForm = atom<any[]>({
+    key: 'dropdownForm',
+    default: [],
 })
 
 const updateOnce = atom<boolean>({
@@ -22,4 +26,4 @@ const updateOnce = atom<boolean>({
     default: false,
 })
 
-export { stepAtom, inviteOnlyAtom, formDetails, updateOnce }
+export { stepAtom, inviteOnlyAtom, formDetails, updateOnce, dropDownForm }

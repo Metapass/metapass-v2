@@ -42,7 +42,12 @@ import toast from 'react-hot-toast'
 import { MetapassProgram } from '../../types/MetapassProgram.types'
 import { useAccount } from 'wagmi'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { inviteOnlyAtom, stepAtom, formDetails } from '../../lib/recoil/atoms'
+import {
+    inviteOnlyAtom,
+    stepAtom,
+    formDetails,
+    dropDownForm,
+} from '../../lib/recoil/atoms'
 import Step5 from '../../layouts/CreateEvent/Step5.layout'
 import EventCreatedModal from '../../components/Modals/EventCreated.modal'
 import { defaultFormData, eventData } from '../../lib/constants'
@@ -59,7 +64,7 @@ const Create: NextPage = () => {
     const [event, setEvent] = useState<Event>(eventData)
 
     const [formData, setFormData] = useRecoilState(formDetails)
-
+    const [dropdownForm, setDropDownForm] = useRecoilValue(dropDownForm)
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
@@ -115,11 +120,16 @@ const Create: NextPage = () => {
         }
     }, [wallet, contractAddress, isConnected, multichainProvider])
 
-    const uploadFormDetails = async (form: formType, child: string) => {
+    const uploadFormDetails = async (
+        form: formType,
+        child: string,
+        dropQuestions: any
+    ) => {
         console.log('updating form details', form, child)
         const { data, error } = await supabase.from('forms').insert({
             event: child,
             data: form,
+            dropdowndata: dropQuestions,
         })
 
         error ? console.log(error) : console.log(data)
@@ -207,7 +217,7 @@ const Create: NextPage = () => {
                     setChild(child)
                     if (isInviteOnly) {
                         console.log('invite only')
-                        await uploadFormDetails(formData, child)
+                        await uploadFormDetails(formData, child, dropdownForm)
                     }
                     setFormData(defaultFormData)
                 })
@@ -314,7 +324,7 @@ const Create: NextPage = () => {
                     setChild(child)
                     if (isInviteOnly) {
                         console.log('invite only')
-                        await uploadFormDetails(formData, child)
+                        await uploadFormDetails(formData, child, dropdownForm)
                     }
                     setFormData(defaultFormData)
                 })
@@ -490,7 +500,11 @@ const Create: NextPage = () => {
                     setIsPublished(true)
                     setInTxn(false)
                     if (isInviteOnly) {
-                        uploadFormDetails(formData, eventPDA.toString())
+                        uploadFormDetails(
+                            formData,
+                            eventPDA.toString(),
+                            dropDownForm
+                        )
                     }
                     setFormData(defaultFormData)
                 } catch (error) {
@@ -614,7 +628,11 @@ const Create: NextPage = () => {
                         setIsPublished(true)
                         setInTxn(false)
                         if (isInviteOnly) {
-                            uploadFormDetails(formData, eventPDA.toString())
+                            uploadFormDetails(
+                                formData,
+                                eventPDA.toString(),
+                                dropdownForm
+                            )
                         }
                         setFormData(defaultFormData)
                     } else {
@@ -733,8 +751,12 @@ const Create: NextPage = () => {
                                                     ...formData,
                                                     customQues: data,
                                                 })
+                                                setDropDownForm()
 
                                                 setStep(5)
+                                            }}
+                                            onSub={(a) => {
+                                                setDropDownForm(a)
                                             }}
                                         />
                                     </Box>
