@@ -11,13 +11,15 @@ const fetchServer = async (guild: string, token: string) => {
         data: { guild: guild },
     }
 
-    try {
-        const { data } = await axios.request(options as any)
+    if (token && guild) {
+        try {
+            const { data } = await axios.request(options as any)
 
-        return data
-    } catch (error) {
-        console.log(error)
-        return error
+            return data
+        } catch (error) {
+            console.log(error)
+            return error
+        }
     }
 }
 

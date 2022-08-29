@@ -58,6 +58,8 @@ const DiscordRoleModal = ({
                     roles: data?.[0].roles,
                 })
             }
+
+            console.log(error)
         }
 
         fetchData()
