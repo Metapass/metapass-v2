@@ -30,6 +30,7 @@ import { defaultFormData } from '../../lib/constants'
 import { walletContext } from '../../utils/walletContext'
 import axios from 'axios'
 import { QuestionComp } from '../Misc/question.component'
+import { RegistrationTemplate } from '../../utils/registrationtemplate'
 interface formNew {
     id: number
     data: formType
@@ -111,9 +112,21 @@ export const RegisterFormModal = ({
                 .eq('type', 'Registration')
                 .eq('On', true)
             if (emails && emails.length > 0) {
+                const date = event?.date as string
+                const body = RegistrationTemplate(
+                    event?.title as string,
+                    new Date(Date.parse(date.split('T')[0])).toDateString(),
+                    `https://www.google.com/maps/search/?api=1&query=${
+                        event?.venue?.name as string
+                    }`,
+                    `https://app.metapasshq.xyz/event/${
+                        event?.childAddress as string
+                    }`,
+                    emails[0].body
+                )
                 await axios.post('/api/sendRegisteredEmail', {
                     email: user?.email,
-                    message: emails[0].body,
+                    message: body,
                     subject: emails[0].subject,
                 })
             } else {
