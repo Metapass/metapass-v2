@@ -104,11 +104,21 @@ export const RegisterFormModal = ({
                 address: wallet.address,
                 accepted: null,
             })
-            await axios.post('/api/sendRegisteredEmail', {
-                email: user?.email,
-                message: `gm! your request for ${a} event on Metapass has been recorded, you'll receive the NFT and QR Code if an IRL event once approved! `,
-                subject: 'Registered Successfully!',
-            })
+            const { data: emails, error: e } = await supabase
+                .from('emails')
+                .select('*')
+                .eq('event', a)
+                .eq('type', 'Registration')
+                .eq('On', true)
+            if (emails && emails.length > 0) {
+                await axios.post('/api/sendRegisteredEmail', {
+                    email: user?.email,
+                    message: emails[0].body,
+                    subject: emails[0].subject,
+                })
+            } else {
+                console.log('no registration email')
+            }
             if (error) {
                 toast.error('Error Uploading Details')
             } else {
