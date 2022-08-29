@@ -18,7 +18,7 @@ import { utils } from 'ethers'
 import { useContext, useEffect, useState } from 'react'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { ModalProps } from '../../types/ModalProps.types'
-import type { formDataType } from '../../types/registerForm.types'
+import type { formDataType, formType } from '../../types/registerForm.types'
 import { useForm } from 'react-hook-form'
 import { camelize } from '../../utils/helpers/camelize'
 import toast from 'react-hot-toast'
@@ -29,16 +29,23 @@ import { updateOnce } from '../../lib/recoil/atoms'
 import { defaultFormData } from '../../lib/constants'
 import { walletContext } from '../../utils/walletContext'
 import axios from 'axios'
-
+import { QuestionComp } from '../Misc/question.component'
+import { RegistrationTemplate } from '../../utils/registrationtemplate'
+interface formNew {
+    id: number
+    data: formType
+    datadrop: any[]
+}
 export const RegisterFormModal = ({
     isOpen,
     onClose,
     onOpen,
     event,
 }: ModalProps) => {
-    const [formData, setData] = useState<formDataType>({
+    const [formData, setData] = useState<formNew>({
         id: 0,
         data: defaultFormData,
+        datadrop: [],
     })
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [toUpdate, setToUpdate] = useRecoilState(updateOnce)
@@ -55,7 +62,7 @@ export const RegisterFormModal = ({
                 }
                 const { data, error } = await supabase
                     .from('forms')
-                    .select('id, event, data')
+                    .select('id, event, data,datadrop')
                     .eq('event', a)
                 data?.length !== 0 &&
                     setData({
@@ -64,7 +71,9 @@ export const RegisterFormModal = ({
                             preDefinedQues: data?.[0].data?.preDefinedQues,
                             customQues: data?.[0].data?.customQues!,
                         },
+                        datadrop: data?.[0]?.datadrop.ques,
                     })
+                console.log(data)
             }
         }
 
@@ -96,19 +105,38 @@ export const RegisterFormModal = ({
                 address: wallet.address,
                 accepted: null,
             })
-            await axios.post('/api/sendRegisteredEmail', {
-                email: user?.email,
-                message: `gm! your request for ${a} event on Metapass has been recorded, you'll receive the NFT and QR Code if an IRL event once approved! `,
-                subject: 'Registered Successfully!',
-            })
+            const { data: emails, error: e } = await supabase
+                .from('emails')
+                .select('*')
+                .eq('event', a)
+                .eq('type', 'Registration')
+                .eq('On', true)
+
             if (error) {
                 toast.error('Error Uploading Details')
             } else {
                 toast.success('Details Uploaded')
-                sendRegisteredMail(
-                    user?.email as string,
-                    event?.title as string
-                )
+                if (emails && emails.length > 0) {
+                    const date = event?.date as string
+                    const body = RegistrationTemplate(
+                        event?.title as string,
+                        new Date(Date.parse(date.split('T')[0])).toDateString(),
+                        `https://www.google.com/maps/search/?api=1&query=${
+                            event?.venue?.name as string
+                        }`,
+                        `https://app.metapasshq.xyz/event/${
+                            event?.childAddress as string
+                        }`,
+                        emails[0].body
+                    )
+                    await axios.post('/api/sendRegisteredEmail', {
+                        email: user?.email,
+                        message: body,
+                        subject: emails[0].subject,
+                    })
+                } else {
+                    console.log('no registration email')
+                }
                 setToUpdate(!toUpdate)
             }
 
@@ -133,7 +161,7 @@ export const RegisterFormModal = ({
                             direction="column"
                             gap="3"
                         >
-                            {formData?.data?.preDefinedQues.map((ques) => (
+                            {formData?.data?.preDefinedQues?.map((ques) => (
                                 <FormControl key={ques.id}>
                                     <Box
                                         display={'flex'}
@@ -167,7 +195,7 @@ export const RegisterFormModal = ({
                                     </Flex>
                                 </FormControl>
                             ))}
-                            {formData?.data?.customQues.map((ques) => (
+                            {formData?.data?.customQues?.map((ques) => (
                                 <FormControl key={ques.id}>
                                     <Box
                                         display={'flex'}
@@ -192,6 +220,18 @@ export const RegisterFormModal = ({
                                     </Flex>
                                 </FormControl>
                             ))}
+                            {formData.datadrop?.map((q, index) => {
+                                return (
+                                    <>
+                                        <Flex></Flex>
+                                        <QuestionComp
+                                            key={index}
+                                            question={q}
+                                            register={register}
+                                        />
+                                    </>
+                                )
+                            })}
                             <Button
                                 bg={'brand.gradient'}
                                 fontWeight="500"

@@ -278,13 +278,13 @@ export default function EventCard({
                                 fontSize="11.6px"
                                 _hover={{ color: 'brand.black600' }}
                             >
-                                {(event.owner.length > 20
-                                    ? event.owner.substring(0, 6) +
+                                {(event.owner?.length > 20
+                                    ? event.owner?.substring(0, 6) +
                                       '...' +
-                                      event.owner.substring(
-                                          event.owner.length - 6
+                                      event.owner?.substring(
+                                          event.owner?.length - 6
                                       )
-                                    : event.owner) || 'Anonymous'}
+                                    : event?.owner) || 'Anonymous'}
                             </Link>
 
                             {event.venue && (

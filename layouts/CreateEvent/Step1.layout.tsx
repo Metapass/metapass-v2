@@ -88,18 +88,20 @@ export default function Step1({
                 }}
             >
                 <Box color="brand.black">
-                    <DateModal
-                        isOpen={isOpen}
-                        onClose={onClose}
-                        onSubmit={(date: any) => {
-                            setFormDetails({
-                                ...formDetails,
-                                date,
-                            })
+                    {isOpen && (
+                        <DateModal
+                            isOpen={isOpen}
+                            onClose={onClose}
+                            onSubmit={(date: any) => {
+                                setFormDetails({
+                                    ...formDetails,
+                                    date,
+                                })
 
-                            console.log(date)
-                        }}
-                    />
+                                console.log(date)
+                            }}
+                        />
+                    )}
                     <Text
                         align="center"
                         color="brand.black400"
