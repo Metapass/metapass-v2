@@ -64,7 +64,8 @@ const Create: NextPage = () => {
     const [event, setEvent] = useState<Event>(eventData)
 
     const [formData, setFormData] = useRecoilState(formDetails)
-    const [dropdownForm, setDropDownForm] = useRecoilState(dropDownForm)
+    const dropdownForm = useRecoilValue(dropDownForm)
+    const [dropdownForma, setDropDownForm] = useRecoilState(dropDownForm)
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
@@ -123,7 +124,7 @@ const Create: NextPage = () => {
     const uploadFormDetails = async (
         form: formType,
         child: string,
-        dropQuestions: any
+        dropQuestions: any[]
     ) => {
         console.log('updating form details', form, child)
         const { data, error } = await supabase.from('forms').insert({
@@ -503,7 +504,7 @@ const Create: NextPage = () => {
                         uploadFormDetails(
                             formData,
                             eventPDA.toString(),
-                            dropDownForm
+                            dropDownForm as any
                         )
                     }
                     setFormData(defaultFormData)
