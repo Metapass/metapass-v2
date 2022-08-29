@@ -137,8 +137,8 @@ const CustomQues = ({
             {dropDownQuestion.length > 0 && (
                 <Flex
                     axis="y"
-                    values={questions}
-                    onReorder={setQuestions}
+                    values={dropDownQuestion}
+                    onReorder={setdropDownQuestion}
                     direction="column"
                     gap="3"
                     px="6"
@@ -147,7 +147,12 @@ const CustomQues = ({
                     py="2"
                 >
                     {dropDownQuestion.map((q) => (
-                        <h1 key={0}>{q.question}</h1>
+                        <Input
+                            key={q.id}
+                            variant="filled"
+                            value={q.question}
+                            readOnly
+                        />
                     ))}
                 </Flex>
             )}
@@ -248,7 +253,7 @@ const CustomQues = ({
                         />
                     )}
                     <Checkbox
-                        isChecked={vals.isRequired}
+                        isChecked={DropDownQuestion.requird}
                         onChange={(e) => {
                             setDropDownQuestion({
                                 ...DropDownQuestion,

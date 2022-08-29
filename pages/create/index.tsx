@@ -64,7 +64,7 @@ const Create: NextPage = () => {
     const [event, setEvent] = useState<Event>(eventData)
 
     const [formData, setFormData] = useRecoilState(formDetails)
-    const [dropdownForm, setDropDownForm] = useRecoilValue(dropDownForm)
+    const [dropdownForm, setDropDownForm] = useRecoilState(dropDownForm)
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
@@ -751,12 +751,13 @@ const Create: NextPage = () => {
                                                     ...formData,
                                                     customQues: data,
                                                 })
-                                                setDropDownForm()
 
                                                 setStep(5)
                                             }}
                                             onSub={(a) => {
-                                                setDropDownForm(a)
+                                                console.log(a, '---select')
+                                                setStep(5)
+                                                setDropDownForm([...a])
                                             }}
                                         />
                                     </Box>
