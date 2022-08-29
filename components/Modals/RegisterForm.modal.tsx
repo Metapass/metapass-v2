@@ -111,35 +111,32 @@ export const RegisterFormModal = ({
                 .eq('event', a)
                 .eq('type', 'Registration')
                 .eq('On', true)
-            if (emails && emails.length > 0) {
-                const date = event?.date as string
-                const body = RegistrationTemplate(
-                    event?.title as string,
-                    new Date(Date.parse(date.split('T')[0])).toDateString(),
-                    `https://www.google.com/maps/search/?api=1&query=${
-                        event?.venue?.name as string
-                    }`,
-                    `https://app.metapasshq.xyz/event/${
-                        event?.childAddress as string
-                    }`,
-                    emails[0].body
-                )
-                await axios.post('/api/sendRegisteredEmail', {
-                    email: user?.email,
-                    message: body,
-                    subject: emails[0].subject,
-                })
-            } else {
-                console.log('no registration email')
-            }
+
             if (error) {
                 toast.error('Error Uploading Details')
             } else {
                 toast.success('Details Uploaded')
-                sendRegisteredMail(
-                    user?.email as string,
-                    event?.title as string
-                )
+                if (emails && emails.length > 0) {
+                    const date = event?.date as string
+                    const body = RegistrationTemplate(
+                        event?.title as string,
+                        new Date(Date.parse(date.split('T')[0])).toDateString(),
+                        `https://www.google.com/maps/search/?api=1&query=${
+                            event?.venue?.name as string
+                        }`,
+                        `https://app.metapasshq.xyz/event/${
+                            event?.childAddress as string
+                        }`,
+                        emails[0].body
+                    )
+                    await axios.post('/api/sendRegisteredEmail', {
+                        email: user?.email,
+                        message: body,
+                        subject: emails[0].subject,
+                    })
+                } else {
+                    console.log('no registration email')
+                }
                 setToUpdate(!toUpdate)
             }
 

@@ -8,14 +8,32 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         sgMail.setApiKey(process.env.SENDGRID_API_KEY!) //
         if (email && message && subject) {
-            const msg: MailDataRequired = {
-                to: email,
-                from: 'events@metapasshq.xyz',
-                subject: subject,
-                text: message,
-            }
+            // const msg: MailDataRequired = {
+            //     to: email,
+            //     from: 'events@metapasshq.xyz',
+            //     subject: subject,
+            //     text: message,
+            // }
             try {
-                const response = await sgMail.send(msg)
+                const response = await sgMail.send({
+                    personalizations: [
+                        {
+                            to: [email as string],
+                        },
+                    ],
+                    subject: subject,
+                    content: [
+                        {
+                            type: 'text/html',
+                            value: message,
+                        },
+                    ],
+                    from: {
+                        email: 'events@metapasshq.xyz',
+                        name: 'Metapass Notifications',
+                    },
+                    sendAt: 0,
+                })
 
                 res.status(200).json({
                     status: 200,
