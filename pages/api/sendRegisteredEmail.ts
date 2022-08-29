@@ -6,7 +6,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
         const { email, message, subject } = req.body
 
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY!)
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY!) //
         if (email && message && subject) {
             const msg: MailDataRequired = {
                 to: email,
@@ -34,7 +34,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         } else {
             res.status(400).json({
                 staus: 400,
-                message: "Missing values"
+                message: 'Missing values',
             })
         }
     } else {
