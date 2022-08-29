@@ -18,7 +18,7 @@ import { utils } from 'ethers'
 import { useContext, useEffect, useState } from 'react'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { ModalProps } from '../../types/ModalProps.types'
-import type { formDataType } from '../../types/registerForm.types'
+import type { formDataType, formType } from '../../types/registerForm.types'
 import { useForm } from 'react-hook-form'
 import { camelize } from '../../utils/helpers/camelize'
 import toast from 'react-hot-toast'
@@ -29,16 +29,22 @@ import { updateOnce } from '../../lib/recoil/atoms'
 import { defaultFormData } from '../../lib/constants'
 import { walletContext } from '../../utils/walletContext'
 import axios from 'axios'
-
+import { QuestionComp } from '../Misc/question.component'
+interface formNew {
+    id: number
+    data: formType
+    datadrop: any[]
+}
 export const RegisterFormModal = ({
     isOpen,
     onClose,
     onOpen,
     event,
 }: ModalProps) => {
-    const [formData, setData] = useState<formDataType>({
+    const [formData, setData] = useState<formNew>({
         id: 0,
         data: defaultFormData,
+        datadrop: [],
     })
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [toUpdate, setToUpdate] = useRecoilState(updateOnce)
@@ -55,7 +61,7 @@ export const RegisterFormModal = ({
                 }
                 const { data, error } = await supabase
                     .from('forms')
-                    .select('id, event, data')
+                    .select('id, event, data,datadrop')
                     .eq('event', a)
                 data?.length !== 0 &&
                     setData({
@@ -64,7 +70,9 @@ export const RegisterFormModal = ({
                             preDefinedQues: data?.[0].data?.preDefinedQues,
                             customQues: data?.[0].data?.customQues!,
                         },
+                        datadrop: data?.[0]?.datadrop.ques,
                     })
+                console.log(data)
             }
         }
 
@@ -133,7 +141,7 @@ export const RegisterFormModal = ({
                             direction="column"
                             gap="3"
                         >
-                            {formData?.data?.preDefinedQues.map((ques) => (
+                            {formData?.data?.preDefinedQues?.map((ques) => (
                                 <FormControl key={ques.id}>
                                     <Box
                                         display={'flex'}
@@ -167,7 +175,7 @@ export const RegisterFormModal = ({
                                     </Flex>
                                 </FormControl>
                             ))}
-                            {formData?.data?.customQues.map((ques) => (
+                            {formData?.data?.customQues?.map((ques) => (
                                 <FormControl key={ques.id}>
                                     <Box
                                         display={'flex'}
@@ -192,6 +200,18 @@ export const RegisterFormModal = ({
                                     </Flex>
                                 </FormControl>
                             ))}
+                            {formData.datadrop?.map((q, index) => {
+                                return (
+                                    <>
+                                        <Flex></Flex>
+                                        <QuestionComp
+                                            key={index}
+                                            question={q}
+                                            register={register}
+                                        />
+                                    </>
+                                )
+                            })}
                             <Button
                                 bg={'brand.gradient'}
                                 fontWeight="500"

@@ -128,9 +128,11 @@ const Create: NextPage = () => {
     ) => {
         console.log('updating form details', form, child)
         const { data, error } = await supabase.from('forms').insert({
-            event: child,
-            data: form,
-            dropdowndata: dropQuestions,
+            event: 'BhPvnueDxu3g1GS3g5SUR1sirJBqzbH4s4r5mV6darbf',
+            data: [],
+            datadrop: {
+                ques: dropQuestions,
+            },
         })
 
         error ? console.log(error) : console.log(data)
@@ -661,6 +663,7 @@ const Create: NextPage = () => {
                 child={child}
                 eventLink={eventLink}
             />
+
             <Box
                 position="absolute"
                 minH="100vh"
