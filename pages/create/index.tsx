@@ -128,8 +128,8 @@ const Create: NextPage = () => {
     ) => {
         console.log('updating form details', form, child)
         const { data, error } = await supabase.from('forms').insert({
-            event: 'BhPvnueDxu3g1GS3g5SUR1sirJBqzbH4s4r5mV6darbf',
-            data: [],
+            event: child,
+            data: form,
             datadrop: {
                 ques: dropQuestions,
             },
