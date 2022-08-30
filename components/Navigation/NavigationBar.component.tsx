@@ -139,7 +139,6 @@ export default function NavigationBar({ mode = 'dark' }) {
                 AUTH_PROVIDER.TWITTER,
                 AUTH_PROVIDER.EMAIL,
             ],
-            walletProviders: [WALLET_PROVIDER.METAMASK],
             network: env
                 ? SUPPORTED_ETHEREUM_NETWORKS.MATIC
                 : SUPPORTED_ETHEREUM_NETWORKS.MATICMUM,
