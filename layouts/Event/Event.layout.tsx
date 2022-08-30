@@ -201,7 +201,7 @@ export default function EventLayout({
     const { isConnected } = useAccount()
 
     const alchemy = new ethers.providers.AlchemyProvider(
-        80001,
+        process.env.NEXT_PUBLIC_ENV == 'dev' ? 80001 : 137,
         'q5pM3qSVMij2Gh1L4nh3d443ZCAC7TZl'
     )
 
