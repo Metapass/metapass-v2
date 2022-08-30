@@ -199,12 +199,11 @@ export default function EventLayout({
 
     const { data: WalletSigner } = useSigner()
     const { isConnected } = useAccount()
-    const endpoint: any =
-        process.env.NEXT_PUBLIC_ENV == 'prod'
-            ? process.env.NEXT_PUBLIC_ENDPOINT_POLYGON
-            : process.env.NEXT_PUBLIC_ENDPOINT_MUMBAI
 
-    const alchemy = new ethers.providers.JsonRpcProvider(endpoint)
+    const alchemy = new ethers.providers.AlchemyProvider(
+        80001,
+        'q5pM3qSVMij2Gh1L4nh3d443ZCAC7TZl'
+    )
 
     useEffect(() => {
         if (wallet.address) {
@@ -243,7 +242,7 @@ export default function EventLayout({
         ) {
             initBiconomy()
         }
-    }, [wallet.address, WalletSigner?.provider])
+    }, [wallet.type, WalletSigner?.provider])
 
     const buyPolygonTicket = async () => {
         if ((isConnected || wallet.type == 'ramper') && biconomy) {
@@ -286,14 +285,21 @@ export default function EventLayout({
                         )
                         let { data } =
                             await metapass.populateTransaction.getTix(
-                                JSON.stringify(metadata)
+                                JSON.stringify(metadata),
+                                {
+                                    value: ethers.utils.parseEther(
+                                        event.fee.toString()
+                                    ),
+                                    gasPrice: 50,
+                                    gasLimit: 900000,
+                                }
                             )
                         console.log(data)
                         let txParams = {
                             data: data,
                             to: event.childAddress,
                             from: wallet.address,
-                            signatureType: 'PERSONAL_SIGN',
+                            signatureType: 'EIP712_SIGN',
                         }
                         await ethersProvider.send('eth_sendTransaction', [
                             txParams,
@@ -321,6 +327,10 @@ export default function EventLayout({
                                 })
                             }
                         })
+                        biconomy.on('onError', (data: any) => {
+                            console.log(data)
+                            setIsLoading(false)
+                        })
                     } else {
                         try {
                             let ethersProvider = biconomy.provider
@@ -337,13 +347,13 @@ export default function EventLayout({
                                 data: data,
                                 to: event.childAddress,
                                 from: wallet.address,
-                                signatureType: 'PERSONAL_SIGN',
+                                signatureType: 'EIP712_SIGN',
                             }
                             await ethersProvider.send('eth_sendTransaction', [
                                 txParams,
                             ])
 
-                            biconomy.on('txHashhenerated', (data: any) => {
+                            biconomy.on('txHashGenerated', (data: any) => {
                                 setIsLoading(false)
                                 if (event.category.event_type == 'In-Person') {
                                     generateAndSendUUID(

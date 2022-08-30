@@ -220,7 +220,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
     const { isConnected } = useAccount()
 
     useEffect(() => {
-        if (isConnected) {
+        if (isConnected || wallet.type == 'ramper') {
             if (wallet?.address) {
                 getMyTickets()
                     .then((res) => {
