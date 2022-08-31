@@ -249,7 +249,6 @@ export default function EventCard({
                                     Date.parse(event.date.split('T')[0])
                                 ).getDate()
                             )}
-                            {/* event.date.date */}
                         </Text>
                     </Box>
                     <Box>
@@ -300,7 +299,8 @@ export default function EventCard({
                                         color="#EF24246E"
                                         noOfLines={1}
                                     >
-                                        {event.venue?.name}
+                                        {JSON.parse(event.venue as any).name}
+                                        {/* used any here but no option apart from changing api */}
                                     </Text>
                                 </>
                             )}
