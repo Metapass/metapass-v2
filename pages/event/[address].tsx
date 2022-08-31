@@ -41,7 +41,15 @@ const Event: NextPage = ({ event, og }: any) => {
         <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
             <Head>
                 {' '}
+                <title>{event.title}</title>
                 <meta name="twitter:image" content={og} />
+                <meta
+                    name="description"
+                    content={
+                        event.description.long_desc ||
+                        event.description.short_desc
+                    }
+                />
                 <meta property="og:image" content={og} />
             </Head>
             <NavigationBar mode="white" />
