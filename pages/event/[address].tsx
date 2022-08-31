@@ -44,13 +44,18 @@ const Event: NextPage = ({ event, og }: any) => {
                 <title>{event.title}</title>
                 <meta name="twitter:image" content={og} />
                 <meta
-                    name="description"
+                    name="og:description"
                     content={
                         event.description.long_desc ||
                         event.description.short_desc
                     }
                 />
                 <meta property="og:image" content={og} />
+                <meta property="og:title" content={event.title} />
+                <meta
+                    property="og:site_name"
+                    content={'https://app.metapasshq.xyz/'}
+                />
             </Head>
             <NavigationBar mode="white" />
             <Box p="4" />
