@@ -42,22 +42,22 @@ const Event: NextPage = ({ event, og }: any) => {
             <Head>
                 {' '}
                 <title>{event.title}</title>
-                <meta name="twitter:image" content={og} />
+                <meta name="twitter:image" content={og.img} />
+                <meta name="og:description" content={og.desc} />
+                <meta property="og:image" itemProp="image" content={og.img} />
                 <meta
-                    name="og:description"
-                    content={`Apply for ${event.title} on Metapass!`}
+                    property="og:title"
+                    content={`Apply for the ${event.title} on Metapass!`}
                 />
-                <meta property="og:image" itemProp="image" content={og} />
-                <meta property="og:title" content={event.title} />
                 <meta
                     property="og:site_name"
                     content={'https://app.metapasshq.xyz/'}
                 />
-                <meta name="twitter:title" content={event.title} />
                 <meta
-                    name="twitter:description"
-                    content={`Apply for ${event.title} on Metapass!`}
+                    name="twitter:title"
+                    content={`Apply for the ${event.title} on Metapass!`}
                 />
+                <meta name="twitter:description" content={og.desc} />
                 <meta name="twitter:card" content="summary_large_image"></meta>
             </Head>
             <NavigationBar mode="white" />
@@ -237,7 +237,12 @@ export async function getServerSideProps({ query }: any) {
     return {
         props: {
             event: parsedEvent,
-            og: img ? img : `http://mp-og.vercel.app/${parsedEvent.title}`,
+            og: img
+                ? img
+                : {
+                      desc: `Apply for ${parsedEvent.title} on Metapass now!`,
+                      img: `http://mp-og.vercel.app/${parsedEvent.title}`,
+                  },
         },
     }
 }
