@@ -78,6 +78,7 @@ import { updateOnce } from '../../lib/recoil/atoms'
 import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
 import AcceptedModalComponent from '../../components/Modals/Accepted.modal'
+import { HiOutlineTicket } from 'react-icons/hi'
 
 declare const window: any
 
@@ -1373,32 +1374,45 @@ export default function EventLayout({
                                 justify="space-between"
                                 align="center"
                                 justifyContent="center"
+                                flexDirection="row"
                             >
                                 {event.seats >= 10000000 ? (
                                     <Box
                                         p="2"
-                                        border="1px"
-                                        borderColor="blackAlpha.100"
+                                        // border="1px"
+                                        // borderColor="blackAlpha.100"
+                                        display="flex"
+                                        flexDirection="column"
                                         rounded="xl"
                                         textAlign="center"
+                                        alignItems="center"
                                         w={{ base: 'full', md: 'auto' }}
                                         minW={{ base: 'auto', md: '100px' }}
-                                        boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
+                                        // boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                                     >
                                         <Text
-                                            fontSize="xs"
+                                            fontSize="sm"
                                             color="blackAlpha.700"
                                         >
-                                            Tickets Bought
+                                            Tickets Sold
                                         </Text>
                                         <Divider my="2" />
-
-                                        <Text
-                                            fontSize="2xl"
-                                            fontWeight="semibold"
-                                        >
-                                            {event.tickets_sold}
-                                        </Text>
+                                        <Flex gap={1}>
+                                            {' '}
+                                            <Image
+                                                src="/assets/ticketgradient.svg"
+                                                alt="ticket"
+                                                w="8"
+                                                transform="rotate(-45deg);"
+                                            ></Image>
+                                            <Divider my="2" />
+                                            <Text
+                                                fontSize="2xl"
+                                                fontWeight="semibold"
+                                            >
+                                                {event.tickets_sold}
+                                            </Text>
+                                        </Flex>
                                     </Box>
                                 ) : (
                                     <>
