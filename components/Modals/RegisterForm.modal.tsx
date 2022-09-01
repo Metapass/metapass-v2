@@ -147,108 +147,118 @@ export const RegisterFormModal = ({
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} isCentered size="lg">
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader textAlign="center">Register Form</ModalHeader>
-                <ModalCloseButton _focus={{}} _active={{}} />
-                <ModalBody py="6">
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <Flex
-                            justifyContent="center"
-                            alignItems="center"
-                            w="full"
-                            direction="column"
-                            gap="3"
-                        >
-                            {formData?.data?.preDefinedQues?.map((ques) => (
-                                <FormControl key={ques.id}>
-                                    <Box
-                                        display={'flex'}
-                                        justifyContent={'start'}
-                                        alignItems={'start'}
-                                    >
-                                        <FormLabel>{ques.val} </FormLabel>
-                                        {ques.isRequired && (
-                                            <Text ml={-2} color="red">
-                                                *
-                                            </Text>
-                                        )}
-                                    </Box>
-                                    <Flex gap="2" alignItems="center">
-                                        <Input
-                                            placeholder={ques.val}
-                                            w="md"
-                                            isRequired={ques.isRequired}
-                                            isReadOnly={
-                                                ques.id === 3 || ques.id == 2
-                                            }
-                                            defaultValue={
-                                                ques.id == 2
-                                                    ? user?.email
-                                                    : ques.id == 3
-                                                    ? wallet?.address
-                                                    : ''
-                                            }
-                                            {...register(camelize(ques.val))}
-                                        />
-                                    </Flex>
-                                </FormControl>
-                            ))}
-                            {formData?.data?.customQues?.map((ques) => (
-                                <FormControl key={ques.id}>
-                                    <Box
-                                        display={'flex'}
-                                        justifyContent={'start'}
-                                    >
-                                        <FormLabel>{ques.val}</FormLabel>
-                                        {ques.isRequired && (
-                                            <Text ml={-2} color="red">
-                                                *
-                                            </Text>
-                                        )}
-                                    </Box>
-                                    <Flex gap="2" alignItems="center">
-                                        <Input
-                                            placeholder={ques.val}
-                                            w="md"
-                                            isRequired={false}
-                                            {...register(
-                                                camelize('Default Value')
-                                            )}
-                                        />
-                                    </Flex>
-                                </FormControl>
-                            ))}
-                            {formData.datadrop?.map((q, index) => {
-                                return (
-                                    <>
-                                        <Flex></Flex>
-                                        <QuestionComp
-                                            key={index}
-                                            question={q}
-                                            register={register}
-                                        />
-                                    </>
-                                )
-                            })}
-                            <Button
-                                bg={'brand.gradient'}
-                                fontWeight="500"
-                                _focus={{}}
-                                _hover={{ bg: 'brand.gradient' }}
-                                _active={{}}
-                                w="28"
-                                type="submit"
-                                isLoading={isLoading}
-                                textColor="white"
+        <Box>
+            <Modal
+                isOpen={isOpen}
+                onClose={onClose}
+                size="lg"
+                motionPreset="slideInBottom"
+            >
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader textAlign="center">Register Form</ModalHeader>
+                    <ModalCloseButton _focus={{}} _active={{}} />
+                    <ModalBody py="6">
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <Flex
+                                justifyContent="center"
+                                alignItems="center"
+                                w="full"
+                                direction="column"
+                                gap="3"
                             >
-                                Submit
-                            </Button>
-                        </Flex>
-                    </form>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
+                                {formData?.data?.preDefinedQues?.map((ques) => (
+                                    <FormControl key={ques.id}>
+                                        <Box
+                                            display={'flex'}
+                                            justifyContent={'start'}
+                                            alignItems={'start'}
+                                        >
+                                            <FormLabel>{ques.val} </FormLabel>
+                                            {ques.isRequired && (
+                                                <Text ml={-2} color="red">
+                                                    *
+                                                </Text>
+                                            )}
+                                        </Box>
+                                        <Flex gap="2" alignItems="center">
+                                            <Input
+                                                placeholder={ques.val}
+                                                w="md"
+                                                isRequired={ques.isRequired}
+                                                isReadOnly={
+                                                    ques.id === 3 ||
+                                                    ques.id == 2
+                                                }
+                                                defaultValue={
+                                                    ques.id == 2
+                                                        ? user?.email
+                                                        : ques.id == 3
+                                                        ? wallet?.address
+                                                        : ''
+                                                }
+                                                {...register(
+                                                    camelize(ques.val)
+                                                )}
+                                            />
+                                        </Flex>
+                                    </FormControl>
+                                ))}
+                                {formData?.data?.customQues?.map((ques) => (
+                                    <FormControl key={ques.id}>
+                                        <Box
+                                            display={'flex'}
+                                            justifyContent={'start'}
+                                        >
+                                            <FormLabel>{ques.val}</FormLabel>
+                                            {ques.isRequired && (
+                                                <Text ml={-2} color="red">
+                                                    *
+                                                </Text>
+                                            )}
+                                        </Box>
+                                        <Flex gap="2" alignItems="center">
+                                            <Input
+                                                placeholder={ques.val}
+                                                w="md"
+                                                isRequired={false}
+                                                {...register(
+                                                    camelize('Default Value')
+                                                )}
+                                            />
+                                        </Flex>
+                                    </FormControl>
+                                ))}
+                                {formData.datadrop?.map((q, index) => {
+                                    return (
+                                        <>
+                                            <Flex></Flex>
+                                            <QuestionComp
+                                                key={index}
+                                                question={q}
+                                                register={register}
+                                            />
+                                        </>
+                                    )
+                                })}
+                                <Button
+                                    bg={'brand.gradient'}
+                                    fontWeight="500"
+                                    _focus={{}}
+                                    _hover={{ bg: 'brand.gradient' }}
+                                    _active={{}}
+                                    w="28"
+                                    type="submit"
+                                    isLoading={isLoading}
+                                    textColor="white"
+                                >
+                                    Submit
+                                </Button>
+                            </Flex>
+                        </form>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+        </Box>
     )
 }
