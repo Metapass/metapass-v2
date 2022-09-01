@@ -45,7 +45,7 @@ const Event: NextPage = ({ event, og }: any) => {
                 <meta name="twitter:image" content={og} />
                 <meta
                     name="og:description"
-                    content={event.description.short_desc.subString(0, 62)}
+                    content={`Register for ${event.title}`}
                 />
                 <meta property="og:image" itemProp="image" content={og} />
                 <meta property="og:title" content={event.title} />
