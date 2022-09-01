@@ -45,7 +45,7 @@ const Event: NextPage = ({ event, og }: any) => {
                 <meta name="twitter:image" content={og} />
                 <meta
                     name="og:description"
-                    content={`Register for ${event.title}`}
+                    content={`Apply for ${event.title} on Metapass!`}
                 />
                 <meta property="og:image" itemProp="image" content={og} />
                 <meta property="og:title" content={event.title} />
@@ -54,6 +54,11 @@ const Event: NextPage = ({ event, og }: any) => {
                     content={'https://app.metapasshq.xyz/'}
                 />
                 <meta name="twitter:title" content={event.title} />
+                <meta
+                    name="twitter:description"
+                    content={`Apply for ${event.title} on Metapass!`}
+                />
+                <meta name="twitter:card" content="summary_large_image"></meta>
             </Head>
             <NavigationBar mode="white" />
             <Box p="4" />
