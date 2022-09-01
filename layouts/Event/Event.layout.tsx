@@ -1382,29 +1382,39 @@ export default function EventLayout({
                                     >
                                         {event.tickets_sold}
                                     </Text>
-                                    <Text fontSize="xx-small">/</Text>
-                                    <Text> {event.seats}</Text>
+                                    {event.seats >= 10000000 ? null : (
+                                        <>
+                                            <Text fontSize="xx-small">/</Text>
+                                            <Text> {event.seats}</Text>
+                                        </>
+                                    )}
                                 </Flex>
                             </Flex>
-                            <Flex
-                                w="full"
-                                h="5"
-                                bg="brand.gradient"
-                                rounded="full"
-                                mt="2"
-                                justify="end"
-                                overflow="hidden"
-                            >
-                                {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
-                                <Box
-                                    w={`${
-                                        100 -
-                                        (event.tickets_sold / event.seats) * 100
-                                    }%`}
-                                    h="full"
-                                    bg="gray.100"
-                                />
-                            </Flex>
+                            {event.seats >= 10000000 ? null : (
+                                <>
+                                    <Flex
+                                        w="full"
+                                        h="5"
+                                        bg="brand.gradient"
+                                        rounded="full"
+                                        mt="2"
+                                        justify="end"
+                                        overflow="hidden"
+                                    >
+                                        {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
+                                        <Box
+                                            w={`${
+                                                100 -
+                                                (event.tickets_sold /
+                                                    event.seats) *
+                                                    100
+                                            }%`}
+                                            h="full"
+                                            bg="gray.100"
+                                        />
+                                    </Flex>
+                                </>
+                            )}
                         </Box>
                         <Box
                             mt="3"
