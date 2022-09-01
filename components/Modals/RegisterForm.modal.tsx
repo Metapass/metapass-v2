@@ -146,7 +146,7 @@ export const RegisterFormModal = ({
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} isCentered size="lg">
+        <Modal isOpen={isOpen} onClose={onClose} size="lg">
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader textAlign="center">Register Form</ModalHeader>
