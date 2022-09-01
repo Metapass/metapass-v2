@@ -22,7 +22,7 @@ interface Props {
     register: any
 }
 export const QuestionComp = (props: Props) => {
-    console.log(props)
+    // console.log(props)
 
     if (props.question.type === 'CHECKBOX') {
         return (
