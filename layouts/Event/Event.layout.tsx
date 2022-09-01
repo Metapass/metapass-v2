@@ -1365,30 +1365,66 @@ export default function EventLayout({
                             borderColor="blackAlpha.100"
                             boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                             py="2"
+                            alignItems={'center'}
                         >
-                            <Flex justify="space-between" align="center">
-                                <Text color="blackAlpha.500" fontSize="xs">
-                                    Tickets Sold
-                                </Text>
-                                <Flex fontSize="xs" align="center">
-                                    <Text
-                                        fontWeight="bold"
-                                        style={{
-                                            background:
-                                                '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
-                                            WebkitBackgroundClip: 'text',
-                                            WebkitTextFillColor: 'transparent',
-                                        }}
+                            <Flex
+                                justify="space-between"
+                                align="center"
+                                justifyContent="center"
+                            >
+                                {event.seats >= 10000000 ? (
+                                    <Box
+                                        p="2"
+                                        border="1px"
+                                        borderColor="blackAlpha.100"
+                                        rounded="xl"
+                                        textAlign="center"
+                                        w={{ base: 'full', md: 'auto' }}
+                                        minW={{ base: 'auto', md: '100px' }}
+                                        boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                                     >
-                                        {event.tickets_sold}
-                                    </Text>
-                                    {event.seats >= 10000000 ? null : (
-                                        <>
+                                        <Text
+                                            fontSize="xs"
+                                            color="blackAlpha.700"
+                                        >
+                                            Tickets Bought
+                                        </Text>
+                                        <Divider my="2" />
+
+                                        <Text
+                                            fontSize="2xl"
+                                            fontWeight="semibold"
+                                        >
+                                            {event.tickets_sold}
+                                        </Text>
+                                    </Box>
+                                ) : (
+                                    <>
+                                        <Text
+                                            color="blackAlpha.500"
+                                            fontSize="xs"
+                                        >
+                                            Tickets Sold
+                                        </Text>
+                                        <Flex fontSize="xs" align="center">
+                                            <Text
+                                                fontWeight="bold"
+                                                style={{
+                                                    background:
+                                                        '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
+                                                    WebkitBackgroundClip:
+                                                        'text',
+                                                    WebkitTextFillColor:
+                                                        'transparent',
+                                                }}
+                                            >
+                                                {event.tickets_sold}
+                                            </Text>
                                             <Text fontSize="xx-small">/</Text>
                                             <Text> {event.seats}</Text>
-                                        </>
-                                    )}
-                                </Flex>
+                                        </Flex>
+                                    </>
+                                )}
                             </Flex>
                             {event.seats >= 10000000 ? null : (
                                 <>
