@@ -45,17 +45,15 @@ const Event: NextPage = ({ event, og }: any) => {
                 <meta name="twitter:image" content={og} />
                 <meta
                     name="og:description"
-                    content={
-                        event.description.long_desc ||
-                        event.description.short_desc
-                    }
+                    content={event.description.short_desc.subString(0, 62)}
                 />
-                <meta property="og:image" content={og} />
+                <meta property="og:image" itemProp="image" content={og} />
                 <meta property="og:title" content={event.title} />
                 <meta
                     property="og:site_name"
                     content={'https://app.metapasshq.xyz/'}
                 />
+                <meta name="twitter:title" content={event.title} />
             </Head>
             <NavigationBar mode="white" />
             <Box p="4" />
@@ -234,9 +232,7 @@ export async function getServerSideProps({ query }: any) {
     return {
         props: {
             event: parsedEvent,
-            og: img
-                ? img
-                : 'https://res.cloudinary.com/dev-connect/image/upload/v1645093690/img/embed_wqfswz.webp',
+            og: img ? img : `http://mp-og.vercel.app/${parsedEvent.title}`,
         },
     }
 }

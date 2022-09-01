@@ -50,34 +50,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 href="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css"
                 rel="stylesheet"
             />
-            <Head>
-                <title>MetaPass | Reimagining Events</title>
-                <meta
-                    name="description"
-                    content="Book NFT tickets for online and IRL events"
-                ></meta>
-                <meta
-                    property="og:title"
-                    content="MetaPass - Reimagining Events"
-                />
-                <meta property="og:url" content="https://app.metapasshq.xyz" />
-                <meta property="og:type" content="website" />
-                <meta name="twitter:site" content="@metapasshq" />
-                <meta
-                    name="twitter:title"
-                    content="MetaPass - Reimagining Events"
-                />
-                <meta name="twitter:creator" content="@metapasshq" />
-                <meta
-                    name="twitter:description"
-                    content="Book NFT tickets for online and IRL events"
-                />
-                <meta name="twitter:card" content="summary_large_image"></meta>
-                <meta
-                    property="og:description"
-                    content="Book NFT tickets for online and IRL events"
-                />
-            </Head>
+
             <RecoilRoot>
                 <Wallet>
                     <WagmiConfig client={client}>
