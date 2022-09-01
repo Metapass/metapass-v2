@@ -299,7 +299,9 @@ export default function EventCard({
                                         color="#EF24246E"
                                         noOfLines={1}
                                     >
-                                        {JSON.parse(event.venue as any).name}
+                                        {typeof event.venue === 'string'
+                                            ? JSON.parse(event.venue).name
+                                            : event.venue.name}
                                         {/* used any here but no option apart from changing api */}
                                     </Text>
                                 </>
