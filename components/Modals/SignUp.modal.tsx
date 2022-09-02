@@ -144,24 +144,6 @@ const SignUpModal: NextComponentType<NextPageContext, {}, ModalProps> = ({
                             <FcGoogle size={25} />
                             Continue with google
                         </Button>
-
-                        <Button
-                            w="72"
-                            variant="outline"
-                            gap="2"
-                            _focus={{}}
-                            onClick={() => signIn('twitter')}
-                            rounded="lg"
-                            shadow="sm"
-                        >
-                            <Image
-                                src="/assets/twitter.svg"
-                                alt="twtr icon"
-                                height="5"
-                                width="5"
-                            />
-                            Continue with Twitter
-                        </Button>
                     </ModalBody>
                 </ModalContent>
             </Modal>
