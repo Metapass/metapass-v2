@@ -41,7 +41,7 @@ const Event: NextPage = ({ event, og }: any) => {
     useEffect(() => {
         if (isMobile && window && !(address as string).startsWith('0x')) {
             router.push(
-                `https://phantom.app/ul/browse/${window?.location.href}`
+                `https://phantom.app/ul/browse/https://app.metapasshq.xyz/event/${address}`
             )
         }
     })
