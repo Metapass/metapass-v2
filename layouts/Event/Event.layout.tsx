@@ -594,7 +594,11 @@ export default function EventLayout({
                             wallet.address as string
                         )
                     } else {
-                        toast.error('Please connect your wallet for the chain')
+                        toast.error(
+                            `Please connect your ${
+                                event.isSolana ? 'Solana' : 'Polygon'
+                            } wallet!`
+                        )
                     }
                 }
                 if (formRes === 'Accepted') {
