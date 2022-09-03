@@ -18,7 +18,7 @@ import { useRouter } from 'next/router'
 import og from '../../OG.json'
 import Head from 'next/head'
 
-const Event: NextPage = ({ event, og }: any) => {
+const Event: NextPage = ({ event, og, isMobile }: any) => {
     const [featEvent, setFeatEvent] = useState<Event>(event)
     const [isInviteOnly, setInviteOnly] = useState<boolean>(false)
     const router = useRouter()
@@ -36,6 +36,14 @@ const Event: NextPage = ({ event, og }: any) => {
 
         fetchData()
     }, [address])
+
+    useEffect(() => {
+        if (isMobile && window) {
+            router.push(
+                `https://phantom.app/ul/browse/${window?.location.href}`
+            )
+        }
+    })
 
     return (
         <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
@@ -94,6 +102,11 @@ export default Event
 
 export async function getServerSideProps({ query }: any) {
     const address = query.address
+    let isMobileView = (
+        query.req ? query.req.headers['user-agent'] : navigator.userAgent
+    ).match(
+        /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
+    )
     let parsedEvent
 
     let img = (og as any)[address as string]
@@ -243,6 +256,7 @@ export async function getServerSideProps({ query }: any) {
                       desc: `Apply for ${parsedEvent.title} on Metapass now!`,
                       img: `http://mp-og.vercel.app/${parsedEvent.title}`,
                   },
+            isMobile: isMobileView,
         },
     }
 }
