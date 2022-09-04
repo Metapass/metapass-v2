@@ -473,6 +473,17 @@ const Create: NextPage = () => {
                         window.location.origin + '/event/' + eventPDA.toString()
                     )
                     setTxnId(signature)
+                    let roomLink
+                    if (event.isHuddle) {
+                        roomLink = await axios.post(
+                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                            {
+                                title: event.title,
+                                host: event.owner,
+                                contractAddress: eventPDA.toString(),
+                            }
+                        )
+                    }
                     try {
                         await axios.post(`/api/create`, {
                             id: nonce,
@@ -485,7 +496,7 @@ const Create: NextPage = () => {
                             description: JSON.stringify(event.description),
                             seats: event.seats,
                             type: event.category.event_type,
-                            link: event.link,
+                            link: roomLink || event.link,
                             fee: event.fee,
                             venue: JSON.stringify(event.venue),
                         })
@@ -600,6 +611,17 @@ const Create: NextPage = () => {
                                 eventPDA.toString()
                         )
                         setTxnId(txid)
+                        let roomLink
+                        if (event.isHuddle) {
+                            roomLink = await axios.post(
+                                process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                                {
+                                    title: event.title,
+                                    host: event.owner,
+                                    contractAddress: eventPDA.toString(),
+                                }
+                            )
+                        }
 
                         try {
                             await axios.post(`/api/create`, {
@@ -613,7 +635,7 @@ const Create: NextPage = () => {
                                 description: JSON.stringify(event.description),
                                 seats: event.seats,
                                 type: event.category.event_type,
-                                link: event.link,
+                                link: roomLink || event.link,
                                 fee: event.fee,
                                 venue: JSON.stringify(event.venue),
                             })
