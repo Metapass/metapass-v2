@@ -1419,7 +1419,7 @@ export default function EventLayout({
                                         </Flex>
                                     </Box>
                                 ) : (
-                                    <>
+                                    <Flex gap={4}>
                                         <Text
                                             color="blackAlpha.500"
                                             fontSize="xs"
@@ -1443,7 +1443,7 @@ export default function EventLayout({
                                             <Text fontSize="xx-small">/</Text>
                                             <Text> {event.seats}</Text>
                                         </Flex>
-                                    </>
+                                    </Flex>
                                 )}
                             </Flex>
                             {event.seats >= 10000000 ? null : (

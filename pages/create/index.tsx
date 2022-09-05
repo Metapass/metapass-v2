@@ -144,12 +144,6 @@ const Create: NextPage = () => {
         function b64EncodeUnicode(str: any) {
             return btoa(encodeURIComponent(str))
         }
-        console.log(event, 'event')
-        // const { data, error } = await supabase.from('events').insert({
-        //     contractAddress: '0x1',
-        //     inviteOnly: false,
-        //     Venue: JSON.stringify(event.venue),
-        // })
 
         if (!event.isHuddle) {
             try {
@@ -284,7 +278,7 @@ const Create: NextPage = () => {
                             },
                         })
                         let roomLink = await axios.post(
-                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                            '/api/createHuddleRoom',
                             {
                                 title: event.title,
                                 host: event.owner,
@@ -299,7 +293,7 @@ const Create: NextPage = () => {
                         } catch (e) {}
                     } else {
                         let roomLink = await axios.post(
-                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                            '/api/createHuddleRoom',
                             {
                                 title: event.title,
                                 host: event.owner,
@@ -475,14 +469,11 @@ const Create: NextPage = () => {
                     setTxnId(signature)
                     let roomLink
                     if (event.isHuddle) {
-                        roomLink = await axios.post(
-                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
-                            {
-                                title: event.title,
-                                host: event.owner,
-                                contractAddress: eventPDA.toString(),
-                            }
-                        )
+                        roomLink = await axios.post('/api/createHuddleRoom', {
+                            title: event.title,
+                            host: event.owner,
+                            contractAddress: eventPDA.toString(),
+                        })
                     }
                     try {
                         await axios.post(`/api/create`, {
@@ -614,7 +605,7 @@ const Create: NextPage = () => {
                         let roomLink
                         if (event.isHuddle) {
                             roomLink = await axios.post(
-                                process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                                '/api/createHuddleRoom',
                                 {
                                     title: event.title,
                                     host: event.owner,
