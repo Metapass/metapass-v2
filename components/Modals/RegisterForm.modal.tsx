@@ -41,6 +41,7 @@ export const RegisterFormModal = ({
     onClose,
     onOpen,
     event,
+    express,
 }: ModalProps) => {
     const [formData, setData] = useState<formNew>({
         id: 0,
@@ -51,7 +52,7 @@ export const RegisterFormModal = ({
     const [toUpdate, setToUpdate] = useRecoilState(updateOnce)
 
     const user = supabase.auth.user()
-    const [wallet, setWallet] = useContext(walletContext)
+    const [wallet, setWallet]: any = useContext(walletContext)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -71,7 +72,7 @@ export const RegisterFormModal = ({
                             preDefinedQues: data?.[0].data?.preDefinedQues,
                             customQues: data?.[0].data?.customQues!,
                         },
-                        datadrop: data?.[0]?.datadrop.ques,
+                        datadrop: data?.[0]?.datadrop?.ques,
                     })
                 console.log(data)
             }
@@ -104,7 +105,7 @@ export const RegisterFormModal = ({
                 response: res,
                 email: user?.email,
                 address: wallet.address,
-                accepted: null,
+                accepted: express ? true : null,
             })
             const { data: emails, error: e } = await supabase
                 .from('emails')
@@ -116,26 +117,47 @@ export const RegisterFormModal = ({
                 toast.error('Error Uploading Details')
             } else {
                 toast.success('Details Uploaded')
-                if (emails && emails.length > 0) {
-                    const date = event?.date as string
-                    const body = RegistrationTemplate(
-                        event?.title as string,
-                        new Date(Date.parse(date.split('T')[0])).toDateString(),
-                        `https://www.google.com/maps/search/?api=1&query=${
-                            event?.venue?.name as string
-                        }`,
-                        `https://app.metapasshq.xyz/event/${
-                            event?.childAddress as string
-                        }`,
-                        emails[0].body
-                    )
-                    await axios.post('/api/sendRegisteredEmail', {
-                        email: user?.email,
-                        message: body,
-                        subject: emails[0].subject,
-                    })
+                if (!express) {
+                    if (emails && emails.length > 0) {
+                        const date = event?.date as string
+                        const body = RegistrationTemplate(
+                            event?.title as string,
+                            new Date(
+                                Date.parse(date.split('T')[0])
+                            ).toDateString(),
+                            `https://www.google.com/maps/search/?api=1&query=${
+                                event?.venue?.name as string
+                            }`,
+                            `https://app.metapasshq.xyz/event/${
+                                event?.childAddress as string
+                            }`,
+                            emails[0].body
+                        )
+                        await axios.post('/api/sendRegisteredEmail', {
+                            email: user?.email,
+                            message: body,
+                            subject: emails[0].subject,
+                        })
+                    } else {
+                        console.log('no registration email')
+                    }
                 } else {
-                    console.log('no registration email')
+                    if (!a.startsWith('0x')) {
+                        await axios.post('/api/expressSolanaMint', {
+                            mintTasks: [
+                                {
+                                    wallet: res.walletAddress,
+                                    event: event,
+                                    childAddress: event?.childAddress,
+                                },
+                            ],
+                        })
+                        toast.success(
+                            'You got in! Check your email in a minute for your more info!'
+                        )
+                    } else {
+                        toast('No yet available for polygon events')
+                    }
                 }
                 setToUpdate(!toUpdate)
             }
@@ -180,7 +202,8 @@ export const RegisterFormModal = ({
                                             w="md"
                                             isRequired={ques.isRequired}
                                             isReadOnly={
-                                                ques.id === 3 || ques.id == 2
+                                                wallet.address &&
+                                                (ques.id === 3 || ques.id == 2)
                                             }
                                             defaultValue={
                                                 ques.id == 2
