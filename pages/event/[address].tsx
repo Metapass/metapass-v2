@@ -209,6 +209,7 @@ export async function getServerSideProps({ query }: any) {
             const data = event.data
             return {
                 ...data,
+                venue: JSON.parse(data.venue),
                 owner: data.eventHost,
                 childAddress: address as string,
                 category: JSON.parse(data.category),
