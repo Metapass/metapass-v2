@@ -92,89 +92,97 @@ export const RegisterFormModal = ({
     } = useForm()
 
     const onSubmit = async (res: any) => {
-        // console.log(res, 'here')
-        if (user) {
-            setIsLoading(true)
-            let a = event?.childAddress as string
-            if (event?.childAddress.startsWith('0x')) {
-                a = utils.getAddress(event.childAddress as string)
-            }
-            const { data, error } = await supabase.from('responses').insert({
-                event: a,
-                form: formData?.id,
-                response: res,
-                email: user?.email,
-                address: wallet.address,
-                accepted: express ? true : null,
-            })
-            const { data: emails, error: e } = await supabase
-                .from('emails')
-                .select('*')
-                .eq('event', a)
-                .eq('type', 'Registration')
-                .eq('On', true)
-            if (error) {
-                toast.error('Error Uploading Details')
-            } else {
-                toast.success('Details Uploaded')
-                if (!express) {
-                    if (emails && emails.length > 0) {
-                        const date = event?.date as string
-                        const body = RegistrationTemplate(
-                            event?.title as string,
-                            new Date(
-                                Date.parse(date.split('T')[0])
-                            ).toDateString(),
-                            `https://www.google.com/maps/search/?api=1&query=${
-                                event?.venue?.name as string
-                            }`,
-                            `https://app.metapasshq.xyz/event/${
-                                event?.childAddress as string
-                            }`,
-                            emails[0].body
-                        )
-                        await axios.post('/api/sendRegisteredEmail', {
-                            email: user?.email,
-                            message: body,
-                            subject: emails[0].subject,
-                        })
-                    } else {
-                        console.log('no registration email')
-                    }
-                } else {
-                    if (!a.startsWith('0x')) {
-                        await axios.post('/api/expressSolanaMint', {
-                            mintTasks: [
-                                {
-                                    wallet: res.walletAddress,
-                                    event: event,
-                                    childAddress: event?.childAddress,
-                                },
-                            ],
-                        })
-                        toast.success(
-                            'You got in! Check your email in a minute for your more info!'
-                        )
-                        const { data: count } = await supabase
-                            .from('express')
-                            .select('count')
-                            .eq('contractAddress', event?.childAddress)
-                        await supabase
-                            .from('express')
-                            .update({
-                                count: count?.[0].count + 1,
-                            })
-                            .match({ childAddress: event?.childAddress })
-                    } else {
-                        toast('No yet available for polygon events')
-                    }
-                }
-                setToUpdate(!toUpdate)
-            }
-            setIsLoading(false)
-            reset()
-            onClose()
+        // setIsLoading(true)
+        let a = event?.childAddress as string
+        if (event?.childAddress.startsWith('0x')) {
+            a = utils.getAddress(event.childAddress as string)
         }
+        const { data, error } = await supabase.from('responses').insert({
+            event: a,
+            form: formData?.id,
+            response: res,
+            email: user?.email,
+            address: wallet.address,
+            accepted: express ? true : null,
+        })
+        const { data: emails, error: e } = await supabase
+            .from('emails')
+            .select('*')
+            .eq('event', a)
+            .eq('type', 'Registration')
+            .eq('On', true)
+        if (error) {
+            toast.error('Error Uploading Details')
+        } else {
+            toast.success('Details Uploaded')
+            if (!express) {
+                if (emails && emails.length > 0) {
+                    const date = event?.date as string
+                    const body = RegistrationTemplate(
+                        event?.title as string,
+                        new Date(Date.parse(date.split('T')[0])).toDateString(),
+                        `https://www.google.com/maps/search/?api=1&query=${
+                            event?.venue?.name as string
+                        }`,
+                        `https://app.metapasshq.xyz/event/${
+                            event?.childAddress as string
+                        }`,
+                        emails[0].body
+                    )
+                    await axios.post('/api/sendRegisteredEmail', {
+                        email: user?.email,
+                        message: body,
+                        subject: emails[0].subject,
+                    })
+                } else {
+                    console.log('no registration email')
+                }
+            } else {
+                if (!a.startsWith('0x')) {
+                    let { data: user1 } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('address', res.walletAddress)
+                    console.log(user1)
+                    if (user1?.length == 0) {
+                        await supabase.from('users').insert({
+                            email: res.emailAddress,
+                            address: res.walletAddress,
+                            Name: res.name,
+                            type: 'attendee',
+                        })
+                    }
+                    await axios.post('/api/expressSolanaMint', {
+                        mintTasks: [
+                            {
+                                wallet: res.walletAddress,
+                                event: event,
+                                childAddress: event?.childAddress,
+                            },
+                        ],
+                    })
+                    const { data: count } = await supabase
+                        .from('express')
+                        .select('count')
+                        .eq('contractAddress', event?.childAddress)
+                    await supabase
+                        .from('express')
+                        .update({
+                            count: count?.[0].count + 1,
+                        })
+                        .match({ contractAddress: event?.childAddress })
+                    toast.success(
+                        'You got in! Check your email in a minute for your more info!'
+                    )
+                } else {
+                    toast('No yet available for polygon events')
+                }
+            }
+            setToUpdate(!toUpdate)
+        }
+        setIsLoading(false)
+        reset()
+        onClose()
     }
 
     return (
