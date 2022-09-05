@@ -155,6 +155,16 @@ export const RegisterFormModal = ({
                         toast.success(
                             'You got in! Check your email in a minute for your more info!'
                         )
+                        const { data: count } = await supabase
+                            .from('express')
+                            .select('count')
+                            .eq('contractAddress', event?.childAddress)
+                        await supabase
+                            .from('express')
+                            .update({
+                                count: count?.[0].count + 1,
+                            })
+                            .match({ childAddress: event?.childAddress })
                     } else {
                         toast('No yet available for polygon events')
                     }
