@@ -96,20 +96,60 @@ export default function Step1({
                     onOpen={onOpen1}
                     onClose={onClose1}
                 />
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault()
-                        if (submitting) {
-                            // console.log('submitting')
-                            onSubmit(formDetails)
-                        }
-                    }}
-                >
-                    <Box color="brand.black">
+               
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault()
+                    if (submitting) {
+                        // console.log('submitting')
+                        onSubmit(formDetails)
+                    }
+                }}
+            >
+                <Box color="brand.black">
+                    {isOpen && (
                         <DateModal
                             isOpen={isOpen}
                             onClose={onClose}
                             onSubmit={(date: any) => {
+                                setFormDetails({
+                                    ...formDetails,
+                                    date,
+                                })
+
+                                console.log(date)
+                            }}
+                        />
+                    )}
+                    <Text
+                        align="center"
+                        color="brand.black400"
+                        fontSize="4xl"
+                        fontWeight="semibold"
+                    >
+                        Tell us about your event
+                    </Text>
+                    <FormControl
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        fontFamily="body"
+                        mt="2"
+                        fontWeight="normal"
+                    >
+                        <FormLabel
+                            fontFamily="body"
+                            color="blackAlpha.700"
+                            fontWeight="normal"
+                            mb="0"
+                            htmlFor="price"
+                        >
+                            Is it a paid event?
+                        </FormLabel>
+
+                        <Switch
+                            onChange={(e) => {
+                                setIsPaid(e.target.checked)
                                 setFormDetails({
                                     ...formDetails,
                                     date,

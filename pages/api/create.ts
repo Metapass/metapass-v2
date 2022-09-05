@@ -19,22 +19,25 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
             venue,
         } = req.body
 
-        await axios.post(`${process.env.NEXT_PUBLIC_MONGO_API}/create`, {
-            id,
-            title,
-            category,
-            image,
-            eventPDA,
-            eventHost,
-            date,
-            description,
-            seats,
-            type,
-            link,
-            fee,
-            venue,
-        })
+        const r = await axios.post(
+            `${process.env.NEXT_PUBLIC_MONGO_API}/create`,
+            {
+                id,
+                title,
+                category,
+                image,
+                eventPDA,
+                eventHost,
+                date,
+                description,
+                seats,
+                type,
+                link,
+                fee,
+                venue,
+            }
+        )
 
-        res.status(200)
+        res.status(200).send(r)
     }
 }

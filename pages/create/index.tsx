@@ -48,6 +48,7 @@ import {
     formDetails,
     discordBased,
     discordEventDataAtom,
+    dropDownForm,
 } from '../../lib/recoil/atoms'
 import Step5 from '../../layouts/CreateEvent/Step5.layout'
 import EventCreatedModal from '../../components/Modals/EventCreated.modal'
@@ -70,6 +71,8 @@ const Create: NextPage = () => {
     const [discordEventData, setDiscordEventData] =
         useRecoilState(discordEventDataAtom)
 
+    const dropdownForm = useRecoilValue(dropDownForm)
+    const [dropdownForma, setDropDownForm] = useRecoilState(dropDownForm)
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
@@ -125,11 +128,18 @@ const Create: NextPage = () => {
         }
     }, [wallet, contractAddress, isConnected, multichainProvider])
 
-    const uploadFormDetails = async (form: formType, child: string) => {
+    const uploadFormDetails = async (
+        form: formType,
+        child: string,
+        dropQuestions: any[]
+    ) => {
         console.log('updating form details', form, child)
         const { data, error } = await supabase.from('forms').insert({
             event: child,
             data: form,
+            datadrop: {
+                ques: dropQuestions,
+            },
         })
 
         error ? console.log(error) : console.log(data)
@@ -230,7 +240,8 @@ const Create: NextPage = () => {
                     setInTxn(false)
                     setChild(child)
                     if (isInviteOnly) {
-                        await uploadFormDetails(formData, child)
+                        console.log('invite only')
+                        await uploadFormDetails(formData, child, dropdownForm)
                     }
                     if (isDiscordBased) {
                         await uploadDiscordEventData(discordEventData, child)
@@ -344,7 +355,8 @@ const Create: NextPage = () => {
                     setInTxn(false)
                     setChild(child)
                     if (isInviteOnly) {
-                        await uploadFormDetails(formData, child)
+                        console.log('invite only')
+                        await uploadFormDetails(formData, child, dropdownForm)
                     }
                     if (isDiscordBased) {
                         await uploadDiscordEventData(discordEventData, child)
@@ -527,7 +539,11 @@ const Create: NextPage = () => {
                     setIsPublished(true)
                     setInTxn(false)
                     if (isInviteOnly) {
-                        uploadFormDetails(formData, eventPDA.toString())
+                        uploadFormDetails(
+                            formData,
+                            eventPDA.toString(),
+                            dropDownForm as any
+                        )
                     }
                     if (isDiscordBased) {
                         await uploadDiscordEventData(discordEventData, child)
@@ -658,7 +674,11 @@ const Create: NextPage = () => {
                         setIsPublished(true)
                         setInTxn(false)
                         if (isInviteOnly) {
-                            uploadFormDetails(formData, eventPDA.toString())
+                            uploadFormDetails(
+                                formData,
+                                eventPDA.toString(),
+                                dropdownForm
+                            )
                         }
                         if (isDiscordBased) {
                             await uploadDiscordEventData(
@@ -696,6 +716,7 @@ const Create: NextPage = () => {
                 child={child}
                 eventLink={eventLink}
             />
+
             <Box
                 position="absolute"
                 minH="100vh"
@@ -785,6 +806,11 @@ const Create: NextPage = () => {
                                                 })
 
                                                 setStep(5)
+                                            }}
+                                            onSub={(a) => {
+                                                console.log(a, '---select')
+                                                setStep(5)
+                                                setDropDownForm([...a])
                                             }}
                                         />
                                     </Box>

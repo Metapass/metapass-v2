@@ -596,6 +596,11 @@ export default function EventLayout({
                             wallet.address as string
                         )
                     } else {
+                        toast.error(
+                            `Please connect your ${
+                                event.isSolana ? 'Solana' : 'Polygon'
+                            } wallet!`
+                        )
                     }
                 }
                 if (formRes === 'Accepted') {
@@ -727,12 +732,16 @@ export default function EventLayout({
                 />
             )}
             {isInviteOnly && (
-                <RegisterFormModal
-                    isOpen={isOpen2}
-                    onOpen={onOpen2}
-                    onClose={onClose2}
-                    event={event}
-                />
+                <>
+                    {isOpen2 && (
+                        <RegisterFormModal
+                            isOpen={isOpen2}
+                            onOpen={onOpen2}
+                            onClose={onClose2}
+                            event={event}
+                        />
+                    )}
+                </>
             )}
             {isDiscordBased && (
                 <DiscordRoleModal
@@ -1395,46 +1404,105 @@ export default function EventLayout({
                             borderColor="blackAlpha.100"
                             boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                             py="2"
+                            alignItems={'center'}
                         >
-                            <Flex justify="space-between" align="center">
-                                <Text color="blackAlpha.500" fontSize="xs">
-                                    Tickets Sold
-                                </Text>
-                                <Flex fontSize="xs" align="center">
-                                    <Text
-                                        fontWeight="bold"
-                                        style={{
-                                            background:
-                                                '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
-                                            WebkitBackgroundClip: 'text',
-                                            WebkitTextFillColor: 'transparent',
-                                        }}
-                                    >
-                                        {event.tickets_sold}
-                                    </Text>
-                                    <Text fontSize="xx-small">/</Text>
-                                    <Text> {event.seats}</Text>
-                                </Flex>
-                            </Flex>
                             <Flex
-                                w="full"
-                                h="5"
-                                bg="brand.gradient"
-                                rounded="full"
-                                mt="2"
-                                justify="end"
-                                overflow="hidden"
+                                justify="space-between"
+                                align="center"
+                                justifyContent="center"
+                                flexDirection="row"
                             >
-                                {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
-                                <Box
-                                    w={`${
-                                        100 -
-                                        (event.tickets_sold / event.seats) * 100
-                                    }%`}
-                                    h="full"
-                                    bg="gray.100"
-                                />
+                                {event.seats >= 10000000 ? (
+                                    <Box
+                                        p="2"
+                                        // border="1px"
+                                        // borderColor="blackAlpha.100"
+                                        display="flex"
+                                        flexDirection="column"
+                                        rounded="xl"
+                                        textAlign="center"
+                                        alignItems="center"
+                                        w={{ base: 'full', md: 'auto' }}
+                                        minW={{ base: 'auto', md: '100px' }}
+                                        // boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
+                                    >
+                                        <Text
+                                            fontSize="sm"
+                                            color="blackAlpha.700"
+                                        >
+                                            Tickets Sold
+                                        </Text>
+                                        <Divider my="2" />
+                                        <Flex gap={1}>
+                                            {' '}
+                                            <Image
+                                                src="/assets/ticketgradient.svg"
+                                                alt="ticket"
+                                                w="8"
+                                                transform="rotate(-45deg);"
+                                            ></Image>
+                                            <Divider my="2" />
+                                            <Text
+                                                fontSize="2xl"
+                                                fontWeight="semibold"
+                                            >
+                                                {event.tickets_sold}
+                                            </Text>
+                                        </Flex>
+                                    </Box>
+                                ) : (
+                                    <>
+                                        <Text
+                                            color="blackAlpha.500"
+                                            fontSize="xs"
+                                        >
+                                            Tickets Sold
+                                        </Text>
+                                        <Flex fontSize="xs" align="center">
+                                            <Text
+                                                fontWeight="bold"
+                                                style={{
+                                                    background:
+                                                        '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
+                                                    WebkitBackgroundClip:
+                                                        'text',
+                                                    WebkitTextFillColor:
+                                                        'transparent',
+                                                }}
+                                            >
+                                                {event.tickets_sold}
+                                            </Text>
+                                            <Text fontSize="xx-small">/</Text>
+                                            <Text> {event.seats}</Text>
+                                        </Flex>
+                                    </>
+                                )}
                             </Flex>
+                            {event.seats >= 10000000 ? null : (
+                                <>
+                                    <Flex
+                                        w="full"
+                                        h="5"
+                                        bg="brand.gradient"
+                                        rounded="full"
+                                        mt="2"
+                                        justify="end"
+                                        overflow="hidden"
+                                    >
+                                        {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
+                                        <Box
+                                            w={`${
+                                                100 -
+                                                (event.tickets_sold /
+                                                    event.seats) *
+                                                    100
+                                            }%`}
+                                            h="full"
+                                            bg="gray.100"
+                                        />
+                                    </Flex>
+                                </>
+                            )}
                         </Box>
                         <Box
                             mt="3"

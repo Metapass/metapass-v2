@@ -5,15 +5,19 @@ import { useState } from 'react'
 import { Question } from '../../types/registerForm.types'
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import { useRecoilValue } from 'recoil'
-import { formDetails } from '../../lib/recoil/atoms'
+import { dropDownForm, formDetails } from '../../lib/recoil/atoms'
 
 export default function Step5({
     onSubmit,
+    onSub,
 }: {
     onSubmit: (data: Question[]) => void
+    onSub: (a: any) => void
 }) {
     const formData = useRecoilValue(formDetails)
+
     const [questions, setQuestions] = useState<Question[]>(formData?.customQues)
+    const [quesdropdown, setQuesdropdown] = useState<any[]>([])
 
     return (
         <Box color="brand.black">
@@ -55,6 +59,8 @@ export default function Step5({
                     <CustomQues
                         questions={questions}
                         setQuestions={setQuestions}
+                        dropDownQuestion={quesdropdown}
+                        setdropDownQuestion={setQuesdropdown}
                     />
                 </Box>
             </Box>
@@ -66,7 +72,10 @@ export default function Step5({
                 mb="20"
             >
                 <Button
-                    onClick={() => onSubmit(questions)}
+                    onClick={() => {
+                        onSubmit(questions)
+                        onSub(quesdropdown)
+                    }}
                     size="lg"
                     rounded="full"
                     bg="brand.gradient"

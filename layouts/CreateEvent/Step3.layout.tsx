@@ -69,7 +69,7 @@ export default function Step3({
         <form
             onSubmit={(e) => {
                 e.preventDefault()
-                if (formDetails.image && formDetails.slides.length >= 2) {
+                if (formDetails.image && formDetails.slides.length >= 1) {
                     onSubmit({
                         image: {
                             image: formDetails.image,
@@ -91,25 +91,27 @@ export default function Step3({
 
                         duration: 5000,
                         description:
-                            'Add atleast 2 images in your event gallery',
+                            'Add atleast 1 images in your event gallery',
                         status: 'error',
                     })
                 }
             }}
         >
-            <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
+            {isOpen && (
+                <Modal isOpen={isOpen} onClose={onClose}>
+                    <ModalOverlay />
 
-                <ModalContent>
-                    <ModalCloseButton></ModalCloseButton>
-                    <ModalBody>
-                        <Text align={'center'} mt={4} fontWeight={'bold'}>
-                            This is how your NFT Ticket will look like:
-                        </Text>
-                        <Image src={ticket} alt="Ticket Image" />
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+                    <ModalContent>
+                        <ModalCloseButton></ModalCloseButton>
+                        <ModalBody>
+                            <Text align={'center'} mt={4} fontWeight={'bold'}>
+                                This is how your NFT Ticket will look like:
+                            </Text>
+                            <Image src={ticket} alt="Ticket Image" />
+                        </ModalBody>
+                    </ModalContent>
+                </Modal>
+            )}
             {loading && (
                 <Box position="fixed" top="5" left="5" zIndex={9}>
                     <Spinner w="6" h="6" />

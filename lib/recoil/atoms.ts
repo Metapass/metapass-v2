@@ -17,6 +17,10 @@ const formDetails = atom<formType>({
     key: 'registerFormDetails',
     default: defaultFormData,
 })
+const dropDownForm = atom<any[]>({
+    key: 'dropdownForm',
+    default: [],
+})
 
 const updateOnce = atom<boolean>({
     key: 'updateOnce',
@@ -43,4 +47,5 @@ export {
     updateOnce,
     discordBased,
     discordEventDataAtom,
+    dropDownForm
 }
