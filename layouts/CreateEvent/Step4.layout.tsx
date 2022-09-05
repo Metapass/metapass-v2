@@ -59,9 +59,9 @@ export default function Step4({
         resolve()
     }, [event.owner, wallet.chain])
 
-    useEffect(() => {
-        console.log('venueXY', venueXY)
-    }, [venueXY])
+    // useEffect(() => {
+    //     console.log('venueXY', venueXY)
+    // }, [venueXY])
 
     return (
         <>

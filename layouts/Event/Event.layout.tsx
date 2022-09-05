@@ -78,16 +78,19 @@ import { updateOnce } from '../../lib/recoil/atoms'
 import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
 import AcceptedModalComponent from '../../components/Modals/Accepted.modal'
-import { HiOutlineTicket } from 'react-icons/hi'
+import DiscordModal from '../../components/Modals/DiscordIntegration.modal'
+import DiscordRoleModal from '../../components/Modals/event/Discord.modal'
 
 declare const window: any
 
 export default function EventLayout({
     event,
     isInviteOnly,
+    isDiscordBased,
 }: {
     event: Event
     isInviteOnly: boolean
+    isDiscordBased: boolean
 }) {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
@@ -580,7 +583,6 @@ export default function EventLayout({
     const clickBuyTicket = async () => {
         if (wallet.address) {
             if (isInviteOnly) {
-                console.log('isInviteOnly')
                 if (formRes === 'Register') {
                     if (
                         (event.isSolana && wallet.chain === 'SOL') ||
@@ -603,8 +605,9 @@ export default function EventLayout({
                 }
                 if (formRes === 'Accepted') {
                     event.isSolana ? buySolanaTicket() : buyPolygonTicket()
-                } else {
                 }
+            } else if (isDiscordBased) {
+                onOpen3()
             } else {
                 if (event.isSolana) {
                     buySolanaTicket()
@@ -616,6 +619,15 @@ export default function EventLayout({
             toast.error('Please connect your solana wallet')
         }
     }
+
+    const handleTicketDiscord = () => {
+        if (event.isSolana) {
+            buySolanaTicket()
+        } else {
+            buyPolygonTicket()
+        }
+    }
+
     useEffect(() => {
         const resolve = async () => {
             const domain = await resolveDomains(
@@ -644,6 +656,12 @@ export default function EventLayout({
         isOpen: isOpen2,
         onOpen: onOpen2,
         onClose: onClose2,
+    } = useDisclosure()
+
+    const {
+        isOpen: isOpen3,
+        onOpen: onOpen3,
+        onClose: onClose3,
     } = useDisclosure()
 
     useEffect(() => {
@@ -713,12 +731,26 @@ export default function EventLayout({
                     }}
                 />
             )}
-            {isOpen2 && (
-                <RegisterFormModal
-                    isOpen={isOpen2}
-                    onOpen={onOpen2}
-                    onClose={onClose2}
+            {isInviteOnly && (
+                <>
+                    {isOpen2 && (
+                        <RegisterFormModal
+                            isOpen={isOpen2}
+                            onOpen={onOpen2}
+                            onClose={onClose2}
+                            event={event}
+                        />
+                    )}
+                </>
+            )}
+            {isDiscordBased && (
+                <DiscordRoleModal
+                    isOpen={isOpen3}
+                    onOpen={onOpen3}
+                    onClose={onClose3}
                     event={event}
+                    handleClick={handleTicketDiscord}
+                    isLoading={isLoading}
                 />
             )}
 

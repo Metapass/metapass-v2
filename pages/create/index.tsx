@@ -46,6 +46,8 @@ import {
     inviteOnlyAtom,
     stepAtom,
     formDetails,
+    discordBased,
+    discordEventDataAtom,
     dropDownForm,
 } from '../../lib/recoil/atoms'
 import Step5 from '../../layouts/CreateEvent/Step5.layout'
@@ -53,6 +55,7 @@ import EventCreatedModal from '../../components/Modals/EventCreated.modal'
 import { defaultFormData, eventData } from '../../lib/constants'
 import { polygonEventHandler } from '../../utils/helpers/onPolygonSubmit'
 import { formType } from '../../types/registerForm.types'
+import { IDiscordEvent } from '../../types/discordEveent.types'
 declare const window: any
 
 const Create: NextPage = () => {
@@ -64,6 +67,10 @@ const Create: NextPage = () => {
     const [event, setEvent] = useState<Event>(eventData)
 
     const [formData, setFormData] = useRecoilState(formDetails)
+    const [isDiscordBased, setIsDiscordBased] = useRecoilState(discordBased)
+    const [discordEventData, setDiscordEventData] =
+        useRecoilState(discordEventDataAtom)
+
     const dropdownForm = useRecoilValue(dropDownForm)
     const [dropdownForma, setDropDownForm] = useRecoilState(dropDownForm)
     const contractAddress =
@@ -133,6 +140,19 @@ const Create: NextPage = () => {
             datadrop: {
                 ques: dropQuestions,
             },
+        })
+
+        error ? console.log(error) : console.log(data)
+    }
+
+    const uploadDiscordEventData = async (
+        req: IDiscordEvent,
+        child: string
+    ) => {
+        const { data, error } = await supabase.from('discord_events').insert({
+            event: child,
+            guild: req.guild,
+            roles: req.roles,
         })
 
         error ? console.log(error) : console.log(data)
@@ -213,6 +233,7 @@ const Create: NextPage = () => {
                             inviteOnly: isInviteOnly,
                             Venue: JSON.stringify(event.venue),
                             IRL: event.category.event_type === 'In-Person',
+                            isDiscordBased: isDiscordBased,
                         })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
@@ -222,6 +243,13 @@ const Create: NextPage = () => {
                         console.log('invite only')
                         await uploadFormDetails(formData, child, dropdownForm)
                     }
+                    if (isDiscordBased) {
+                        await uploadDiscordEventData(discordEventData, child)
+                    }
+                    setDiscordEventData({
+                        guild: '',
+                        roles: [],
+                    })
                     setFormData(defaultFormData)
                 })
             } catch (err: any) {
@@ -320,6 +348,7 @@ const Create: NextPage = () => {
                             inviteOnly: isInviteOnly,
                             Venue: JSON.stringify(event.venue),
                             IRL: event.category.event_type === 'In-Person',
+                            isDiscordBased: isDiscordBased,
                         })
                     setEventLink(`${window.location.origin}/event/${child}`)
                     setIsPublished(true)
@@ -329,6 +358,13 @@ const Create: NextPage = () => {
                         console.log('invite only')
                         await uploadFormDetails(formData, child, dropdownForm)
                     }
+                    if (isDiscordBased) {
+                        await uploadDiscordEventData(discordEventData, child)
+                    }
+                    setDiscordEventData({
+                        guild: '',
+                        roles: [],
+                    })
                     setFormData(defaultFormData)
                 })
             } catch (err: any) {
@@ -362,7 +398,6 @@ const Create: NextPage = () => {
 
     const onSolanaSubmit = async () => {
         const wallet = solanaWallet
-        console.log(wallet.publicKey, program)
         const connection = new Connection(
             process.env.NEXT_PUBLIC_ENV == 'prod'
                 ? clusterApiUrl('mainnet-beta')
@@ -499,6 +534,7 @@ const Create: NextPage = () => {
                             inviteOnly: isInviteOnly,
                             Venue: JSON.stringify(event.venue),
                             IRL: event.category.event_type === 'In-Person',
+                            isDiscordBased: isDiscordBased,
                         })
                     setIsPublished(true)
                     setInTxn(false)
@@ -509,6 +545,13 @@ const Create: NextPage = () => {
                             dropDownForm as any
                         )
                     }
+                    if (isDiscordBased) {
+                        await uploadDiscordEventData(discordEventData, child)
+                    }
+                    setDiscordEventData({
+                        guild: '',
+                        roles: [],
+                    })
                     setFormData(defaultFormData)
                 } catch (error) {
                     console.log('error', error)
@@ -637,6 +680,16 @@ const Create: NextPage = () => {
                                 dropdownForm
                             )
                         }
+                        if (isDiscordBased) {
+                            await uploadDiscordEventData(
+                                discordEventData,
+                                child
+                            )
+                        }
+                        setDiscordEventData({
+                            guild: '',
+                            roles: [],
+                        })
                         setFormData(defaultFormData)
                     } else {
                         throw Error(
@@ -695,7 +748,6 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 1 ? 'block' : 'none'}>
                             {/* STEP2🔺 */}
-                            {console.log('step 2', event)}
                             <Step2
                                 event={event}
                                 onSubmit={(formDetails: any) => {
@@ -710,7 +762,6 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 2 ? 'block' : 'none'}>
                             {/* STEP3🔺 */}
-                            {console.log('step 3', event)}
                             <Step3
                                 event={event}
                                 onSubmit={(formDetails: any) => {
@@ -725,7 +776,6 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 3 ? 'block' : 'none'}>
                             {/* STEP4🔺 */}
-                            {console.log('step 4', event)}
                             <Step4
                                 event={event}
                                 onSubmit={(
@@ -747,7 +797,6 @@ const Create: NextPage = () => {
                             <>
                                 {step === 4 ? (
                                     <Box>
-                                        {console.log(event, formData, 'logui')}
                                         {/* STEP5🔺 */}
                                         <Step5
                                             onSubmit={(data) => {
@@ -769,7 +818,6 @@ const Create: NextPage = () => {
                                 {step === 5 ? (
                                     <Box>
                                         {/* STEP5🔺 */}
-                                        {console.log(event, 'logzp')}
                                         <SubmitStep
                                             event={event}
                                             inTxn={inTxn}
@@ -785,7 +833,6 @@ const Create: NextPage = () => {
                         ) : (
                             <Box display={step === 4 ? 'block' : 'none'}>
                                 {/* STEP5🔺 */}
-                                {console.log(event, 'logxy')}
                                 <SubmitStep
                                     event={event}
                                     inTxn={inTxn}

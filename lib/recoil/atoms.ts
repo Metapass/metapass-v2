@@ -1,4 +1,5 @@
 import { atom } from 'recoil'
+import { IDiscordEvent } from '../../types/discordEveent.types'
 import { formType } from '../../types/registerForm.types'
 import { defaultFormData } from '../constants'
 
@@ -26,4 +27,25 @@ const updateOnce = atom<boolean>({
     default: false,
 })
 
-export { stepAtom, inviteOnlyAtom, formDetails, updateOnce, dropDownForm }
+const discordBased = atom<boolean>({
+    key: 'disordBased',
+    default: false,
+})
+
+const discordEventDataAtom = atom<IDiscordEvent>({
+    key: 'discordEventData',
+    default: {
+        guild: '',
+        roles: [],
+    },
+})
+
+export {
+    stepAtom,
+    inviteOnlyAtom,
+    formDetails,
+    updateOnce,
+    discordBased,
+    discordEventDataAtom,
+    dropDownForm
+}
