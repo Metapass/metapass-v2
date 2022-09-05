@@ -18,21 +18,18 @@ const resolveDomains = async (chain: Chain | null, address: string | null) => {
                 if (!window.solana || !address) return
 
                 const { data } = await axios(
-                    `https://api.shyft.to/sol/v1/wallet/get_domains?network=mainnet-beta&wallet=${address}`,
+                    `https://api.helius.xyz/v0/addresses/${address}/names?api-key=74edbdf5-7aa8-4cf1-9ea2-c82cece42421`,
                     {
                         method: 'GET',
-                        headers: {
-                            'x-api-key': process.env
-                                .NEXT_PUBLIC_SHYFT_KEY as string,
-                        },
                     }
                 )
 
-                const accounts = data?.result
+                const accounts = data.domainNames
+
                 // console.log(accounts, 'address', data)
-                // console.log(accounts)
+                // console.log(accounts.length)
                 if (accounts.length > 0) {
-                    return { domain: accounts[0].name, loading: false }
+                    return { domain: accounts[0], loading: false }
                 } else {
                     return { domain: null, loading: false }
                 }
