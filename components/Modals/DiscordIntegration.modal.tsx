@@ -47,25 +47,28 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
             if (user) {
                 const allSvs = await getAllSvs(session?.access_token!)
                 let arr: any[] = []
-
+                // console.log(allSvs, user, 'check')
                 allSvs?.data.map(async (s: any) => {
                     const res = await isCommonSv(
                         s.id!,
                         user?.user_metadata.sub,
                         session?.access_token!
                     )
-
-                    if (res.isAdmin) {
-                        arr.push(s)
+                    // console.log(res, 'res')
+                    if (res && res.isAdmin) {
+                        setCommonSvs((prev) => [...prev, s])
                     }
                 })
-                setCommonSvs(arr)
             }
         }
 
-        fetchCommonSvs()
+        try {
+            fetchCommonSvs()
+        } catch (error) {
+            console.log('error', error)
+        }
     }, [session, user])
-
+    // console.log(commonSvs, 'commonSvs')
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered size="2xl">
             <ModalOverlay />
@@ -163,11 +166,13 @@ const DiscordModal = ({ isOpen, onOpen, onClose }: ModalProps) => {
                                 })
                             }}
                         >
-                            {commonSvs.map((s: any) => (
-                                <option value={s.id} key={s.id}>
-                                    {s.name}
-                                </option>
-                            ))}
+                            {commonSvs &&
+                                commonSvs.length > 0 &&
+                                commonSvs.map((s: any) => (
+                                    <option value={s.id} key={s.id}>
+                                        {s.name}
+                                    </option>
+                                ))}
                         </Select>
                     </Flex>
 
