@@ -672,6 +672,7 @@ export default function EventLayout({
         }
     }, [hasBought])
     useEffect(() => {
+        // console.log('event venue', JSON.parse(event.venue as any).name)
         if (
             event &&
             event.venue &&
@@ -1583,7 +1584,12 @@ export default function EventLayout({
                                     </Flex>
                                 </Flex>
                                 <Link
-                                    href={`https://maps.google.com/?q=${event.venue.name}`}
+                                    onClick={() => {
+                                        window.open(
+                                            `https://maps.google.com/?q=${event.venue?.name}`,
+                                            '_blank'
+                                        )
+                                    }}
                                 >
                                     <Text
                                         color="blackAlpha.600"
