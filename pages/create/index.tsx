@@ -487,7 +487,7 @@ const Create: NextPage = () => {
                             description: JSON.stringify(event.description),
                             seats: event.seats,
                             type: event.category.event_type,
-                            link: roomLink || event.link,
+                            link: roomLink?.data.meetingLink || event.link,
                             fee: event.fee,
                             venue: JSON.stringify(event.venue),
                         })
@@ -572,6 +572,16 @@ const Create: NextPage = () => {
                             customSplToken: CST,
                         },
                     }
+                    let roomLink
+                    if (event.isHuddle) {
+                        roomLink = await axios.post('/api/createHuddleRoom', {
+                            title: event.title,
+                            host: event.owner,
+                            contractAddress: eventPDA.toString(),
+                        })
+                        console.log(roomLink)
+                    }
+
                     console.log(transactionData)
                     const txnInstruction = createInitializeEventInstruction(
                         accounts,
@@ -602,17 +612,6 @@ const Create: NextPage = () => {
                                 eventPDA.toString()
                         )
                         setTxnId(txid)
-                        let roomLink
-                        if (event.isHuddle) {
-                            roomLink = await axios.post(
-                                '/api/createHuddleRoom',
-                                {
-                                    title: event.title,
-                                    host: event.owner,
-                                    contractAddress: eventPDA.toString(),
-                                }
-                            )
-                        }
 
                         try {
                             await axios.post(`/api/create`, {
@@ -626,7 +625,7 @@ const Create: NextPage = () => {
                                 description: JSON.stringify(event.description),
                                 seats: event.seats,
                                 type: event.category.event_type,
-                                link: roomLink || event.link,
+                                link: roomLink?.data.meetingLink || event.link,
                                 fee: event.fee,
                                 venue: JSON.stringify(event.venue),
                             })
@@ -708,7 +707,6 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 1 ? 'block' : 'none'}>
                             {/* STEP2🔺 */}
-                            {console.log('step 2', event)}
                             <Step2
                                 event={event}
                                 onSubmit={(formDetails: any) => {
@@ -723,7 +721,6 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 2 ? 'block' : 'none'}>
                             {/* STEP3🔺 */}
-                            {console.log('step 3', event)}
                             <Step3
                                 event={event}
                                 onSubmit={(formDetails: any) => {
@@ -738,7 +735,6 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 3 ? 'block' : 'none'}>
                             {/* STEP4🔺 */}
-                            {console.log('step 4', event)}
                             <Step4
                                 event={event}
                                 onSubmit={(
@@ -760,7 +756,6 @@ const Create: NextPage = () => {
                             <>
                                 {step === 4 ? (
                                     <Box>
-                                        {console.log(event, formData, 'logui')}
                                         {/* STEP5🔺 */}
                                         <Step5
                                             onSubmit={(data) => {
@@ -772,7 +767,6 @@ const Create: NextPage = () => {
                                                 setStep(5)
                                             }}
                                             onSub={(a) => {
-                                                console.log(a, '---select')
                                                 setStep(5)
                                                 setDropDownForm([...a])
                                             }}
@@ -782,7 +776,6 @@ const Create: NextPage = () => {
                                 {step === 5 ? (
                                     <Box>
                                         {/* STEP5🔺 */}
-                                        {console.log(event, 'logzp')}
                                         <SubmitStep
                                             event={event}
                                             inTxn={inTxn}
@@ -798,7 +791,6 @@ const Create: NextPage = () => {
                         ) : (
                             <Box display={step === 4 ? 'block' : 'none'}>
                                 {/* STEP5🔺 */}
-                                {console.log(event, 'logxy')}
                                 <SubmitStep
                                     event={event}
                                     inTxn={inTxn}
