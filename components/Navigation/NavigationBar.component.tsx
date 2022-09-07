@@ -544,7 +544,9 @@ export default function NavigationBar({ mode = 'dark' }) {
                                                     0,
                                                     4
                                                 )}{' '}
-                                                {wallet.chain}
+                                                {wallet.chain === 'POLYGON'
+                                                    ? 'MATIC'
+                                                    : wallet.chain}
                                             </Text>
                                         </Box>
                                     </Flex>
