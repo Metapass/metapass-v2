@@ -1378,7 +1378,9 @@ export default function EventLayout({
                                 justify="space-between"
                                 align="center"
                                 justifyContent="center"
-                                flexDirection="row"
+                                flexDirection={
+                                    event.seats >= 10000000 ? 'row' : 'column'
+                                }
                             >
                                 {event.seats >= 10000000 ? (
                                     <Box
