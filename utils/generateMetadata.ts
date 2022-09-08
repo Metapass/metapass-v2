@@ -57,8 +57,8 @@ export const generateMetadata = async (event: Event, ticketImage: string) => {
         file: JSON.stringify(SAMPLE_METADATA),
     })
 
-    await axios.post('/api/pin', {
-        hash: data.cid,
-    })
+    // await axios.post('/api/pin', {
+    //     hash: data.cid,
+    // })
     return `https://ipfs.io/ipfs/${data.cid.toString()}`
 }

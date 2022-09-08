@@ -503,7 +503,7 @@ export default function EventLayout({
                 const transaction = new web3.Transaction().add(
                     transactionInstruction
                 )
-                console.log('tx')
+                console.log('tx', uri, 'uri')
                 const { blockhash } = await connection.getLatestBlockhash()
                 transaction.recentBlockhash = blockhash
                 transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
