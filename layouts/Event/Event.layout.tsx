@@ -499,10 +499,14 @@ export default function EventLayout({
                             'https://cdukzux2wfzaaxbnissg6emgojrtdxzw5klsqnpmqhcusvi.arweave.net/EOis0vqxcg_BcLUSkbxGG-c_mMx3zbq-lyg17IHFSVU',
                     }
                 )
-
-                const transaction = new web3.Transaction().add(
-                    transactionInstruction
-                )
+                const additionalComputeBudgetInstruction =
+                    web3.ComputeBudgetProgram.requestUnits({
+                        units: 300000,
+                        additionalFee: 0,
+                    })
+                const transaction = new web3.Transaction()
+                    .add(additionalComputeBudgetInstruction)
+                    .add(transactionInstruction)
                 console.log('tx', uri, 'uri')
                 const { blockhash } = await connection.getLatestBlockhash()
                 transaction.recentBlockhash = blockhash
