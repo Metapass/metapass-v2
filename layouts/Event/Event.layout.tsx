@@ -218,7 +218,9 @@ export default function EventLayout({
                     {
                         apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
                         debug: process.env.NEXT_PUBLIC_ENV == 'dev',
-                        contractAddresses: [ethers.utils.getAddress()],
+                        contractAddresses: [
+                            ethers.utils.getAddress(event.childAddress),
+                        ],
                     }
                 )
                 await biconomy.init()
