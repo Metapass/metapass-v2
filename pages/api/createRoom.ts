@@ -6,22 +6,19 @@ export default function handler(
     res: NextApiResponse<any>
 ) {
     if (req.method === 'POST') {
-        const { title, child, host } = req.body
-        axios({
-            method: 'POST',
-            url: process.env.NEXT_PUBLIC_HUDDLE_API as string,
-            data: {
+        const { title, contractAddress, host } = req.body
+        axios
+            .post(process.env.NEXT_PUBLIC_HUDDLE_API as string, {
                 title: title,
-                contractAddress: child,
+                contractAddress,
                 host: host,
-            },
-        })
+            })
             .then((r) => {
                 res.status(200).send({ meetingLink: r.data.meetingLink })
             })
             .catch((e) => {
                 res.status(200)
-                res.json({ error: e })
+                res.send({ error: e })
             })
     } else {
         res.status(400).json({ msg: 'Incorrect Method' })

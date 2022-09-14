@@ -89,7 +89,7 @@ const Create: NextPage = () => {
             ...event,
             owner: wallet.address as string,
         })
-    }, [])
+    }, [wallet.address])
 
     const { isConnected } = useAccount()
 
@@ -291,7 +291,9 @@ const Create: NextPage = () => {
                                 child,
                                 roomLink.data.meetingLink
                             )
-                        } catch (e) {}
+                        } catch (e) {
+                            console.log(e)
+                        }
                     } else {
                         let roomLink = await axios.post(
                             '/api/createRoom' as string,
