@@ -279,7 +279,7 @@ const Create: NextPage = () => {
                             },
                         })
                         let roomLink = await axios.post(
-                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                            '/api/createRoom' as string,
                             {
                                 title: event.title,
                                 host: event.owner,
@@ -294,7 +294,7 @@ const Create: NextPage = () => {
                         } catch (e) {}
                     } else {
                         let roomLink = await axios.post(
-                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                            '/api/createRoom' as string,
                             {
                                 title: event.title,
                                 host: event.owner,
