@@ -145,11 +145,6 @@ const Create: NextPage = () => {
             return btoa(encodeURIComponent(str))
         }
         console.log(event, 'event')
-        // const { data, error } = await supabase.from('events').insert({
-        //     contractAddress: '0x1',
-        //     inviteOnly: false,
-        //     Venue: JSON.stringify(event.venue),
-        // })
 
         if (!event.isHuddle) {
             try {
@@ -335,6 +330,7 @@ const Create: NextPage = () => {
                 setInTxn(false)
                 setIsPublished(false)
                 toast.error('Oops! Couldnt create Event')
+                console.log(err)
             }
         }
     }

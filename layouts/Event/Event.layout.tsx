@@ -212,14 +212,17 @@ export default function EventLayout({
         const initBiconomy = async () => {
             console.log(wallet.address)
             console.log(WalletSigner?.provider)
-            biconomy = new Biconomy((WalletSigner?.provider as any).provider, {
-                apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
-                debug: process.env.NEXT_PUBLIC_ENV == 'dev',
-                contractAddresses: [
-                    ethers.utils.getAddress(event.childAddress),
-                ],
-            })
-            await biconomy.init()
+            if (event.childAddress) {
+                biconomy = new Biconomy(
+                    (WalletSigner?.provider as any).provider,
+                    {
+                        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
+                        debug: process.env.NEXT_PUBLIC_ENV == 'dev',
+                        contractAddresses: [ethers.utils.getAddress()],
+                    }
+                )
+                await biconomy.init()
+            }
         }
         if (wallet.address?.startsWith('0x') && WalletSigner?.provider) {
             initBiconomy()
