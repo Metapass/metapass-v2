@@ -89,7 +89,7 @@ const Create: NextPage = () => {
             ...event,
             owner: wallet.address as string,
         })
-    }, [])
+    }, [wallet.address])
 
     const { isConnected } = useAccount()
 
@@ -144,6 +144,7 @@ const Create: NextPage = () => {
         function b64EncodeUnicode(str: any) {
             return btoa(encodeURIComponent(str))
         }
+        console.log(event, 'event')
 
         if (!event.isHuddle) {
             try {
@@ -278,7 +279,8 @@ const Create: NextPage = () => {
                             },
                         })
                         let roomLink = await axios.post(
-                            '/api/createHuddleRoom',
+
+                            '/api/createRoom' as string,
                             {
                                 title: event.title,
                                 host: event.owner,
@@ -290,10 +292,12 @@ const Create: NextPage = () => {
                                 child,
                                 roomLink.data.meetingLink
                             )
-                        } catch (e) {}
+                        } catch (e) {
+                            console.log(e)
+                        }
                     } else {
                         let roomLink = await axios.post(
-                            '/api/createHuddleRoom',
+                            '/api/createRoom' as string,
                             {
                                 title: event.title,
                                 host: event.owner,
@@ -329,6 +333,7 @@ const Create: NextPage = () => {
                 setInTxn(false)
                 setIsPublished(false)
                 toast.error('Oops! Couldnt create Event')
+                console.log(err)
             }
         }
     }

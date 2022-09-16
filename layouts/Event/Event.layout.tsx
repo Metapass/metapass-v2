@@ -212,14 +212,19 @@ export default function EventLayout({
         const initBiconomy = async () => {
             console.log(wallet.address)
             console.log(WalletSigner?.provider)
-            biconomy = new Biconomy((WalletSigner?.provider as any).provider, {
-                apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
-                debug: process.env.NEXT_PUBLIC_ENV == 'dev',
-                contractAddresses: [
-                    ethers.utils.getAddress(event.childAddress),
-                ],
-            })
-            await biconomy.init()
+            if (event.childAddress) {
+                biconomy = new Biconomy(
+                    (WalletSigner?.provider as any).provider,
+                    {
+                        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
+                        debug: process.env.NEXT_PUBLIC_ENV == 'dev',
+                        contractAddresses: [
+                            ethers.utils.getAddress(event.childAddress),
+                        ],
+                    }
+                )
+                await biconomy.init()
+            }
         }
         if (wallet.address?.startsWith('0x') && WalletSigner?.provider) {
             initBiconomy()
@@ -658,6 +663,7 @@ export default function EventLayout({
         }
     }, [hasBought])
     useEffect(() => {
+        // console.log('event venue', JSON.parse(event.venue as any).name)
         if (
             event &&
             event.venue &&
@@ -1425,29 +1431,39 @@ export default function EventLayout({
                                         </Flex>
                                     </Box>
                                 ) : (
-                                    <Flex gap={4}>
-                                        <Text
-                                            color="blackAlpha.500"
+                                    <>
+                                        <Flex
                                             fontSize="xs"
+                                            align="center"
+                                            justifyContent={'space-between'}
+                                            gap={5}
                                         >
-                                            Tickets Sold
-                                        </Text>
-                                        <Flex fontSize="xs" align="center">
                                             <Text
-                                                fontWeight="bold"
-                                                style={{
-                                                    background:
-                                                        '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
-                                                    WebkitBackgroundClip:
-                                                        'text',
-                                                    WebkitTextFillColor:
-                                                        'transparent',
-                                                }}
+                                                color="blackAlpha.500"
+                                                fontSize="xs"
+                                                // mr="10?"
                                             >
-                                                {event.tickets_sold}
+                                                Tickets Sold
                                             </Text>
-                                            <Text fontSize="xx-small">/</Text>
-                                            <Text> {event.seats}</Text>
+                                            <Flex align={'center'}>
+                                                <Text
+                                                    fontWeight="bold"
+                                                    style={{
+                                                        background:
+                                                            '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
+                                                        WebkitBackgroundClip:
+                                                            'text',
+                                                        WebkitTextFillColor:
+                                                            'transparent',
+                                                    }}
+                                                >
+                                                    {event.tickets_sold}
+                                                </Text>
+                                                <Text fontSize="x-small">
+                                                    /
+                                                </Text>
+                                                <Text> {event.seats}</Text>
+                                            </Flex>
                                         </Flex>
                                     </Flex>
                                 )}
@@ -1557,7 +1573,12 @@ export default function EventLayout({
                                     </Flex>
                                 </Flex>
                                 <Link
-                                    href={`https://maps.google.com/?q=${event.venue.name}`}
+                                    onClick={() => {
+                                        window.open(
+                                            `https://maps.google.com/?q=${event.venue?.name}`,
+                                            '_blank'
+                                        )
+                                    }}
                                 >
                                     <Text
                                         color="blackAlpha.600"
