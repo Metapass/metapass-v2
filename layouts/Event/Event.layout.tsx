@@ -1431,7 +1431,7 @@ export default function EventLayout({
                                         </Flex>
                                     </Box>
                                 ) : (
-                                    <>
+                                    <Flex>
                                         <Flex
                                             fontSize="xs"
                                             align="center"
