@@ -504,11 +504,15 @@ export default function EventLayout({
                             'https://cdukzux2wfzaaxbnissg6emgojrtdxzw5klsqnpmqhcusvi.arweave.net/EOis0vqxcg_BcLUSkbxGG-c_mMx3zbq-lyg17IHFSVU',
                     }
                 )
-
-                const transaction = new web3.Transaction().add(
-                    transactionInstruction
-                )
-                console.log('tx')
+                const additionalComputeBudgetInstruction =
+                    web3.ComputeBudgetProgram.requestUnits({
+                        units: 300000,
+                        additionalFee: 0,
+                    })
+                const transaction = new web3.Transaction()
+                    .add(additionalComputeBudgetInstruction)
+                    .add(transactionInstruction)
+                console.log('tx', uri, 'uri')
                 const { blockhash } = await connection.getLatestBlockhash()
                 transaction.recentBlockhash = blockhash
                 transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
@@ -1384,7 +1388,9 @@ export default function EventLayout({
                                 justify="space-between"
                                 align="center"
                                 justifyContent="center"
-                                flexDirection="row"
+                                flexDirection={
+                                    event.seats >= 10000000 ? 'row' : 'column'
+                                }
                             >
                                 {event.seats >= 10000000 ? (
                                     <Box
@@ -1425,7 +1431,7 @@ export default function EventLayout({
                                         </Flex>
                                     </Box>
                                 ) : (
-                                    <>
+                                    <Flex>
                                         <Flex
                                             fontSize="xs"
                                             align="center"
@@ -1459,7 +1465,7 @@ export default function EventLayout({
                                                 <Text> {event.seats}</Text>
                                             </Flex>
                                         </Flex>
-                                    </>
+                                    </Flex>
                                 )}
                             </Flex>
                             {event.seats >= 10000000 ? null : (
