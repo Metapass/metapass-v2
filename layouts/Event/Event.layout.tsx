@@ -1426,28 +1426,38 @@ export default function EventLayout({
                                     </Box>
                                 ) : (
                                     <>
-                                        <Text
-                                            color="blackAlpha.500"
+                                        <Flex
                                             fontSize="xs"
+                                            align="center"
+                                            justifyContent={'space-between'}
+                                            gap={5}
                                         >
-                                            Tickets Sold
-                                        </Text>
-                                        <Flex fontSize="xs" align="center">
                                             <Text
-                                                fontWeight="bold"
-                                                style={{
-                                                    background:
-                                                        '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
-                                                    WebkitBackgroundClip:
-                                                        'text',
-                                                    WebkitTextFillColor:
-                                                        'transparent',
-                                                }}
+                                                color="blackAlpha.500"
+                                                fontSize="xs"
+                                                // mr="10?"
                                             >
-                                                {event.tickets_sold}
+                                                Tickets Sold
                                             </Text>
-                                            <Text fontSize="xx-small">/</Text>
-                                            <Text> {event.seats}</Text>
+                                            <Flex align={'center'}>
+                                                <Text
+                                                    fontWeight="bold"
+                                                    style={{
+                                                        background:
+                                                            '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
+                                                        WebkitBackgroundClip:
+                                                            'text',
+                                                        WebkitTextFillColor:
+                                                            'transparent',
+                                                    }}
+                                                >
+                                                    {event.tickets_sold}
+                                                </Text>
+                                                <Text fontSize="x-small">
+                                                    /
+                                                </Text>
+                                                <Text> {event.seats}</Text>
+                                            </Flex>
                                         </Flex>
                                     </>
                                 )}
