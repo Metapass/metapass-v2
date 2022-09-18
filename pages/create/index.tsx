@@ -11,14 +11,12 @@ import Step3 from '../../layouts/CreateEvent/Step3.layout'
 import Step4 from '../../layouts/CreateEvent/Step4.layout'
 import SubmitStep from '../../layouts/CreateEvent/SubmitStep.layout'
 import { walletContext, WalletType } from '../../utils/walletContext'
-
 import { Event, VenueType } from '../../types/Event.type'
 import { ethers } from 'ethers'
 import abi from '../../utils/MetapassFactory.json'
 import MetapassABI from '../../utils/Metapass.json'
 import axios from 'axios'
 import { supabase } from '../../lib/config/supabaseConfig'
-
 import { useMultichainProvider } from '../../hooks/useMultichainProvider'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import {
@@ -279,7 +277,6 @@ const Create: NextPage = () => {
                             },
                         })
                         let roomLink = await axios.post(
-
                             '/api/createRoom' as string,
                             {
                                 title: event.title,

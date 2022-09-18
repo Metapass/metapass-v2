@@ -22,6 +22,7 @@ import {
 import { useRouter } from 'next/router'
 import { AutoConnectProvider } from './AutoConnextProvider'
 import { clusterApiUrl } from '@solana/web3.js'
+import { Box } from '@chakra-ui/react'
 // import { AutoConnectProvider } from './AutoConnextProvider'
 
 // Default styles that can be overridden by your app
@@ -29,11 +30,13 @@ require('@solana/wallet-adapter-react-ui/styles.css')
 
 export const WalletContextProvider: FC = ({ children }) => {
     // If window exists and is on localhost, choose devnet, else choose mainnet
-    const network =
-        typeof window !== 'undefined' && process.env.NEXT_PUBLIC_ENV === 'dev'
-            ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
-            : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+    // const network =
+    //     typeof window !== 'undefined' && process.env.NEXT_PUBLIC_ENV === 'dev'
+    //         ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+    //         : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+    const network = clusterApiUrl('mainnet-beta')
     const endpoint = useMemo(() => network, [network])
+
     const wallets = useMemo(
         () => [
             new PhantomWalletAdapter(),
@@ -53,6 +56,7 @@ export const WalletContextProvider: FC = ({ children }) => {
                 <WalletModalProvider>{children}</WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>
+        // <Box>{children}</Box>
     )
 }
 
