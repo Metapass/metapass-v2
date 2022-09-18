@@ -60,7 +60,8 @@ export default function Step3({
         video: '',
     })
     const [image, setImage] = useState<any>(undefined)
-    const [loading, setLoading] = useState(false)
+    const [loading1, setLoading1] = useState(false)
+    const [loading2, setLoading2] = useState(false)
     const [ticket, setTicket] = useState<string>()
     const toast = useToast()
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -97,34 +98,15 @@ export default function Step3({
                 }
             }}
         >
-            {isOpen && (
-                <Modal isOpen={isOpen} onClose={onClose}>
-                    <ModalOverlay />
-
-                    <ModalContent>
-                        <ModalCloseButton></ModalCloseButton>
-                        <ModalBody>
-                            <Text align={'center'} mt={4} fontWeight={'bold'}>
-                                This is how your NFT Ticket will look like:
-                            </Text>
-                            <Image src={ticket} alt="Ticket Image" />
-                        </ModalBody>
-                    </ModalContent>
-                </Modal>
-            )}
-            {loading && (
-                <Box position="fixed" top="5" left="5" zIndex={9}>
-                    <Spinner w="6" h="6" />
-                </Box>
-            )}
             <Box color="brand.black">
                 <Text
                     align="center"
                     color="brand.black400"
                     fontSize="4xl"
                     fontWeight="semibold"
+                    mt="12"
                 >
-                    Add image/video to your event page
+                    Add Image/Video to your event page
                 </Text>
 
                 <Flex
@@ -154,90 +136,95 @@ export default function Step3({
                                 Add a logo/image for the ticket of your event’s
                                 NFT.
                             </FormLabel>
-                            <AspectRatio ratio={16 / 8} maxW="440px">
-                                <Dropzone
-                                    onDrop={async (acceptedFiles) => {
-                                        setFormDetails({
-                                            ...formDetails,
-                                            image: '',
-                                        })
-                                        setLoading(true)
-                                        let data = await getBuffer(
-                                            acceptedFiles[0]
-                                        )
-                                        let res: string =
-                                            await uploadToCloudinary(
+                            {loading1 && (
+                                <Box
+                                    position="relative"
+                                    top="10"
+                                    left="15"
+                                    zIndex={9}
+                                >
+                                    <Spinner w="6" h="6" />
+                                </Box>
+                            )}
+                            {ticket ? (
+                                <Flex>
+                                    <Image
+                                        src={ticket}
+                                        width="md"
+                                        alt="Ticket Image"
+                                    />
+                                    <Button
+                                        onClick={() => {
+                                            setTicket(undefined)
+                                            formDetails.image = ''
+                                        }}
+                                    >
+                                        <FaTrash size="12px" />
+                                    </Button>
+                                </Flex>
+                            ) : (
+                                <AspectRatio ratio={16 / 8} maxW="440px">
+                                    <Dropzone
+                                        onDrop={async (acceptedFiles) => {
+                                            setFormDetails({
+                                                ...formDetails,
+                                                image: '',
+                                            })
+                                            setLoading1(true)
+                                            let data = await getBuffer(
                                                 acceptedFiles[0]
                                             )
-                                        setFormDetails({
-                                            ...formDetails,
-                                            image: res,
-                                            slides: [...formDetails.slides],
-                                        })
-                                        let { fastimg } = await genTicket(
-                                            event.title,
-                                            1,
-                                            res,
-                                            event.date,
-                                            '[your wallet here]'
-                                        )
-                                        setTicket(fastimg)
-                                        onOpen()
-                                        setLoading(false)
-                                    }}
-                                >
-                                    {({ getRootProps, getInputProps }) => (
-                                        <Flex
-                                            {...getRootProps()}
-                                            w="full"
-                                            border="2px"
-                                            borderColor="gray.300"
-                                            borderStyle="dashed"
-                                            rounded="xl"
-                                            _hover={{ borderColor: 'blue.300' }}
-                                            _focus={{ borderColor: 'blue.300' }}
-                                            experimental_spaceY="4"
-                                            direction="column"
-                                            align="center"
-                                            justify="center"
-                                            position="relative"
-                                            style={{
-                                                backgroundImage: `url(${formDetails.image})`,
-                                                backgroundPosition: 'center',
-                                                backgroundSize: 'cover',
-                                            }}
-                                        >
-                                            <input
-                                                {...getInputProps()}
-                                                style={{ display: 'none' }}
-                                                accept="image/*"
-                                            />
-                                            {formDetails.image ? (
-                                                <Box
-                                                    position="relative"
-                                                    w="full"
-                                                    h="full"
-                                                >
-                                                    <Button
-                                                        _hover={{ bg: 'white' }}
-                                                        _focus={{}}
-                                                        _active={{}}
-                                                        border="2px"
-                                                        position="absolute"
-                                                        bottom="2"
-                                                        right="2"
-                                                        bg="whiteAlpha.900"
-                                                        fontWeight="medium"
-                                                        size="xs"
-                                                        px="4"
-                                                        py="3"
-                                                        borderColor="whiteAlpha.900"
-                                                        color="blackAlpha.900"
-                                                    >
-                                                        Change image
-                                                    </Button>
-                                                </Box>
-                                            ) : (
+                                            let res: string =
+                                                await uploadToCloudinary(
+                                                    acceptedFiles[0]
+                                                )
+                                            setFormDetails({
+                                                ...formDetails,
+                                                image: res,
+                                                slides: [...formDetails.slides],
+                                            })
+                                            let { fastimg } = await genTicket(
+                                                event.title,
+                                                1,
+                                                res,
+                                                event.date,
+                                                '[your wallet here]'
+                                            )
+                                            setTicket(fastimg)
+                                            onOpen()
+                                            setLoading1(false)
+                                        }}
+                                    >
+                                        {({ getRootProps, getInputProps }) => (
+                                            <Flex
+                                                {...getRootProps()}
+                                                w="full"
+                                                border="2px"
+                                                borderColor="gray.300"
+                                                borderStyle="dashed"
+                                                rounded="xl"
+                                                _hover={{
+                                                    borderColor: 'blue.300',
+                                                }}
+                                                _focus={{
+                                                    borderColor: 'blue.300',
+                                                }}
+                                                experimental_spaceY="4"
+                                                direction="column"
+                                                align="center"
+                                                justify="center"
+                                                position="relative"
+                                                style={{
+                                                    backgroundPosition:
+                                                        'center',
+                                                    backgroundSize: 'cover',
+                                                }}
+                                            >
+                                                <input
+                                                    {...getInputProps()}
+                                                    style={{ display: 'none' }}
+                                                    accept="image/*"
+                                                />
                                                 <>
                                                     <Image
                                                         src="/assets/elements/images.svg"
@@ -271,11 +258,11 @@ export default function Step3({
                                                         size: 2MB)
                                                     </Text>
                                                 </>
-                                            )}
-                                        </Flex>
-                                    )}
-                                </Dropzone>
-                            </AspectRatio>
+                                            </Flex>
+                                        )}
+                                    </Dropzone>
+                                </AspectRatio>
+                            )}
                         </FormControl>
 
                         <FormControl
@@ -350,6 +337,16 @@ export default function Step3({
                             >
                                 Add atleast 2 images to help explain your event
                             </FormLabel>
+                            {loading2 && (
+                                <Box
+                                    position="relative"
+                                    top="10"
+                                    left="15"
+                                    zIndex={9}
+                                >
+                                    <Spinner w="6" h="6" />
+                                </Box>
+                            )}
                             <Flex
                                 alignItems="end"
                                 experimental_spaceX="4"
@@ -375,7 +372,7 @@ export default function Step3({
 
                                                 acceptedFiles.forEach(
                                                     async (data, key) => {
-                                                        setLoading(true)
+                                                        setLoading2(true)
                                                         let bytedata =
                                                             await getBuffer(
                                                                 data
@@ -398,7 +395,7 @@ export default function Step3({
                                                         })
 
                                                         files.push(res)
-                                                        setLoading(false)
+                                                        setLoading2(false)
                                                     }
                                                 )
                                             }}
@@ -448,7 +445,7 @@ export default function Step3({
                                                 ]
                                                 acceptedFiles.forEach(
                                                     async (data, key) => {
-                                                        setLoading(true)
+                                                        setLoading2(true)
                                                         let bytedata =
                                                             await getBuffer(
                                                                 data
@@ -470,7 +467,7 @@ export default function Step3({
                                                             ],
                                                         })
                                                         files.push(res)
-                                                        setLoading(false)
+                                                        setLoading2(false)
                                                     }
                                                 )
                                             }}
@@ -667,7 +664,7 @@ export default function Step3({
                                                                     data,
                                                                     key
                                                                 ) => {
-                                                                    setLoading(
+                                                                    setLoading2(
                                                                         true
                                                                     )
                                                                     let bytedata =
@@ -698,7 +695,7 @@ export default function Step3({
                                                                     files.push(
                                                                         res
                                                                     )
-                                                                    setLoading(
+                                                                    setLoading2(
                                                                         false
                                                                     )
                                                                 }
