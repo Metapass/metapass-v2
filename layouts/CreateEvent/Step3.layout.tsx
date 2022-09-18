@@ -158,6 +158,9 @@ export default function Step3({
                                             setTicket(undefined)
                                             formDetails.image = ''
                                         }}
+                                        _hover={{
+                                            color: 'red.500',
+                                        }}
                                     >
                                         <FaTrash size="12px" />
                                     </Button>
