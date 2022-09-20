@@ -139,7 +139,7 @@ export default function EventLayout({
         'Register' | 'Awaiting Approval' | 'Accepted'
     >('Register')
     const toUpdate = useRecoilValue(updateOnce)
-
+    const [isWhiteListed, setIsWhiteListed] = useState<boolean>(false)
     const user = supabase.auth.user()
 
     useEffect(() => {
@@ -203,8 +203,41 @@ export default function EventLayout({
     const { isConnected } = useAccount()
 
     useEffect(() => {
+        const checkWhitelist = async () => {
+            try {
+                const { data } = await axios.get(
+                    'https://api.airtable.com/v0/appFKlGjyqgMD8xEW/whitelist?maxRecords=3&view=Grid%20view',
+                    {
+                        headers: {
+                            Authorization: `Bearer ${process.env.NEXT_PUBLIC_AIRTABLE_WHITELIST}`,
+                        },
+                    }
+                )
+                console.log('whitelist', data)
+                const wl = data.records.find((r: any) => {
+                    if (r.fields.event.startsWith('0x')) {
+                        return (
+                            utils.getAddress(r.fields.event) ===
+                                utils.getAddress(event.childAddress) &&
+                            utils.getAddress(r.fields.wallet) ===
+                                utils.getAddress(wallet.address!)
+                        )
+                    } else {
+                        return (
+                            r.fields.event === event.childAddress &&
+                            r.fields.wallet === wallet.address!
+                        )
+                    }
+                })
+                console.log('wl', wl)
+                wl && setIsWhiteListed(true)
+            } catch (error) {
+                console.log('error', (error as Error).message)
+            }
+        }
         if (wallet.address) {
             setHasTicket(event.buyers.includes(wallet.address))
+            checkWhitelist()
         }
     }, [wallet.address])
     let biconomy: any
@@ -588,38 +621,42 @@ export default function EventLayout({
 
     const clickBuyTicket = async () => {
         if (wallet.address) {
-            if (isInviteOnly) {
-                console.log('isInviteOnly')
-                if (formRes === 'Register') {
-                    if (
-                        (event.isSolana && wallet.chain === 'SOL') ||
-                        (!event.isSolana && wallet.chain === 'POLYGON')
-                    ) {
-                        await handleRegister(
-                            user,
-                            onOpen2,
-                            setToOpen,
-                            event.childAddress,
-                            wallet.address as string
-                        )
+            if (isWhiteListed) {
+                if (isInviteOnly) {
+                    console.log('isInviteOnly')
+                    if (formRes === 'Register') {
+                        if (
+                            (event.isSolana && wallet.chain === 'SOL') ||
+                            (!event.isSolana && wallet.chain === 'POLYGON')
+                        ) {
+                            await handleRegister(
+                                user,
+                                onOpen2,
+                                setToOpen,
+                                event.childAddress,
+                                wallet.address as string
+                            )
+                        } else {
+                            toast.error(
+                                `Please connect your ${
+                                    event.isSolana ? 'Solana' : 'Polygon'
+                                } wallet!`
+                            )
+                        }
+                    }
+                    if (formRes === 'Accepted') {
+                        event.isSolana ? buySolanaTicket() : buyPolygonTicket()
                     } else {
-                        toast.error(
-                            `Please connect your ${
-                                event.isSolana ? 'Solana' : 'Polygon'
-                            } wallet!`
-                        )
+                    }
+                } else {
+                    if (event.isSolana) {
+                        buySolanaTicket()
+                    } else {
+                        buyPolygonTicket()
                     }
                 }
-                if (formRes === 'Accepted') {
-                    event.isSolana ? buySolanaTicket() : buyPolygonTicket()
-                } else {
-                }
             } else {
-                if (event.isSolana) {
-                    buySolanaTicket()
-                } else {
-                    buyPolygonTicket()
-                }
+                toast.error('Sorry, you are not whitelisted for this event')
             }
         } else {
             toast.error('Please connect your solana wallet')
