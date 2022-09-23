@@ -11,6 +11,7 @@ import {
     SlideFade,
     Divider,
 } from '@chakra-ui/react'
+import React from 'react'
 import { FaWallet } from 'react-icons/fa'
 import { HiOutlineMail } from 'react-icons/hi'
 
@@ -18,14 +19,14 @@ interface props {
     isOpen: boolean
     onClose: () => void
     onOpen: () => void
-    handleRamper: () => void
+    handleEmail: () => void
     onWalletOpen: () => void
 }
 export default function WalletSignUpModal({
     isOpen,
     onClose,
     onOpen,
-    handleRamper,
+    handleEmail,
     onWalletOpen,
 }: props) {
     const items = [
@@ -34,7 +35,7 @@ export default function WalletSignUpModal({
             description: 'Sign up with email or google',
             connector: () => {
                 onClose()
-                handleRamper()
+                handleEmail()
             },
             image: '/assets/elements/email.svg',
             size: '2.5rem',
@@ -57,9 +58,8 @@ export default function WalletSignUpModal({
                 <ModalContent rounded="xl">
                     <ModalBody m={2} p={4}>
                         {items.map((item, index) => (
-                            <>
+                            <React.Fragment key={index}>
                                 <Flex
-                                    key={index}
                                     w="full"
                                     flexDirection="column"
                                     alignItems="center"
@@ -104,7 +104,7 @@ export default function WalletSignUpModal({
                                     </Flex>
                                 </Flex>
                                 {index !== items.length - 1 && <Divider />}
-                            </>
+                            </React.Fragment>
                         ))}
                     </ModalBody>
                 </ModalContent>
