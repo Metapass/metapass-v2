@@ -23,7 +23,7 @@
         "@solana/wallet-adapter-react": "^0.15.6",
         "@solana/wallet-adapter-react-ui": "^0.9.8",
         "@solana/wallet-adapter-wallets": "^0.16.6",
-        "@solana/web3.js": "^1.47.3",
+        "@solana/web3.js": "^1.63.0",
         "@splitbee/web": "^0.3.0",
         "@supabase/supabase-js": "^1.35.4",
         "@types/web3": "^1.2.2",
