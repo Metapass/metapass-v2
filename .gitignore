@@ -16,7 +16,7 @@ archives/
 /out/
 .vscode
 keys.json
-package-lock.json
+
 # production
 /build
 .env
