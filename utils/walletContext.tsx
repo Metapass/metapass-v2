@@ -5,7 +5,7 @@ export type WalletType = {
     balance: string | null
     address: string | null
     domain: string | null
-    type: 'mm' | 'wc' | 'sol' | 'ramper' | null
+    type: 'mm' | 'wc' | 'sol' | 'web3auth' | null
     chain: Chain | null
 }
 function Wallet({ children }: any) {

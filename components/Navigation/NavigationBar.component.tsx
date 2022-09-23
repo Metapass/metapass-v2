@@ -64,8 +64,10 @@ import resolveDomains from '../../hooks/useDomain'
 import { useRouter } from 'next/router'
 
 import WalletSignUpModal from '../Modals/WalletSignUp.modal'
-import SignUpModal from '../Modals/SignUp.modal'
-import { useUser } from '../../hooks/useUser'
+import { Web3Auth } from '@web3auth/web3auth'
+// @ts-ignore
+import * as Web3 from 'web3'
+import { ethers } from 'ethers'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
@@ -177,14 +179,31 @@ export default function NavigationBar({ mode = 'dark' }) {
     }
 
     const handleEmail = async () => {
-        if (user) {
-            console.log(user)
-            let userDoc = localStorage.getItem('supabase.auth.token')
-            let jwt = JSON.parse(userDoc as string).currentSession.access_token
-            console.log(jwt)
-        } else {
-            onOpen2()
-        }
+        const web3auth = new Web3Auth({
+            clientId:
+                'BNfJ2Y5bqm1t4C1lmMM2PbMVgazhO_sES4rNflxVFSWbNvrpPInAWf85wZ_H00rHH_X3LRuZXfvTHrZhiiN5mHo',
+            chainConfig: {
+                chainNamespace: 'eip155',
+                chainId: '0x1',
+                rpcTarget: 'https://rpc.ankr.com/eth',
+                displayName: 'Ethereum Mainnet',
+                blockExplorer: 'https://etherscan.io/',
+                ticker: 'ETH',
+                tickerName: 'Ethereum',
+            },
+        })
+        await web3auth.initModal()
+        const web3authProvider = await web3auth.connect()
+        const web3 = new Web3(web3authProvider)
+        const userAccounts = await web3.eth.getAccounts()
+        let bal = await web3.eth.getBalance(userAccounts[0])
+        setWallet({
+            balance: ethers.utils.formatEther(bal),
+            address: userAccounts[0],
+            type: 'web3auth',
+            chain: 'POLYGON',
+            domain: null,
+        })
     }
 
     const mdcontent = [
@@ -292,13 +311,13 @@ export default function NavigationBar({ mode = 'dark' }) {
                         setMyEvents(false)
                     }}
                 />
-                {isOpen2 && (
+                {/* {isOpen2 && (
                     <SignUpModal
                         isOpen={isOpen2}
                         onOpen={onOpen2}
                         onClose={onClose2}
                     />
-                )}
+                )} */}
                 {isOpen3 && (
                     <WalletSignUpModal
                         handleEmail={handleEmail}
