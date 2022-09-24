@@ -46,3 +46,6 @@ pages/events/
 /.github/
 
 yarn.lock
+
+# Sentry
+.sentryclirc
