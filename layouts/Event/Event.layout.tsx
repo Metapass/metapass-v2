@@ -74,7 +74,6 @@ import { FiCheckCircle } from 'react-icons/fi'
 import { handleRegister } from '../../utils/helpers/handleRegister'
 import { useRecoilValue } from 'recoil'
 import { updateOnce } from '../../lib/recoil/atoms'
-import { getBiconomyProvider } from '@ramper/ethereum'
 import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
 import AcceptedModalComponent from '../../components/Modals/Accepted.modal'
@@ -214,15 +213,7 @@ export default function EventLayout({
     let biconomy: any
     useEffect(() => {
         const initBiconomy = async () => {
-            if (wallet.type == 'ramper') {
-                biconomy = new Biconomy(await getBiconomyProvider(alchemy), {
-                    apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
-                    debug: process.env.NEXT_PUBLIC_ENV == 'dev',
-                    contractAddresses: [
-                        ethers.utils.getAddress(event.childAddress),
-                    ],
-                })
-                await biconomy.init()
+            if (wallet.type == 'web3auth') {
             } else {
                 biconomy = new Biconomy(
                     (WalletSigner?.provider as any).provider,
@@ -239,15 +230,15 @@ export default function EventLayout({
         }
         if (
             wallet.address?.startsWith('0x') &&
-            (WalletSigner?.provider || wallet.type == 'ramper')
+            (WalletSigner?.provider || wallet.type == 'web3auth')
         ) {
             initBiconomy()
-            console.log('init bico', wallet.address, WalletSigner.provider)
+            console.log('init bico', wallet.address, WalletSigner?.provider)
         }
     }, [wallet.type, WalletSigner?.provider])
 
     const buyPolygonTicket = async () => {
-        if ((isConnected || wallet.type == 'ramper') && biconomy) {
+        if ((isConnected || wallet.type == 'web3auth') && biconomy) {
             if (user === null) {
                 setToOpen(true)
             } else {
@@ -329,41 +320,11 @@ export default function EventLayout({
                                 })
                             }
                         })
-<<<<<<< HEAD
-                        biconomy.on('onError', (data: any) => {
-                            console.log(data)
-                            setIsLoading(false)
-                        })
-                    } else {
-                        try {
-                            let ethersProvider = biconomy.provider
-                            let metapass = new ethers.Contract(
-                                event.childAddress,
-                                abi.abi,
-                                biconomy.ethersProvider
-                            )
-                            let { data } =
-                                await metapass.populateTransaction.getTix(
-                                    JSON.stringify(metadata)
-                                )
-                            let txParams = {
-                                data: data,
-                                to: event.childAddress,
-                                from: wallet.address,
-                                signatureType: 'EIP712_SIGN',
-                            }
-                            await ethersProvider.send('eth_sendTransaction', [
-                                txParams,
-                            ])
-
-                            biconomy.on('txHashGenerated', (data: any) => {
-=======
                         biconomy.on(
                             'onError',
                             (data: { error: any; transactionId: string }) => {
                                 console.log(data)
                                 toast.error('Ooops! Failed to mint the ticket.')
->>>>>>> prod
                                 setIsLoading(false)
                                 if (
                                     data.error.reason ==
@@ -371,13 +332,6 @@ export default function EventLayout({
                                 ) {
                                     toast.error('Tickets Already Minted!')
                                 }
-<<<<<<< HEAD
-                            })
-                        } catch (e) {
-                            console.log(e)
-                            setIsLoading(false)
-                        }
-=======
                             }
                         )
                         setIsLoading(false)
@@ -424,7 +378,6 @@ export default function EventLayout({
                         console.log(e)
                         toast.error("Mint wasn't successful!")
                         setIsLoading(false)
->>>>>>> prod
                     }
                 }
             }
@@ -559,12 +512,6 @@ export default function EventLayout({
                             'https://cdukzux2wfzaaxbnissg6emgojrtdxzw5klsqnpmqhcusvi.arweave.net/EOis0vqxcg_BcLUSkbxGG-c_mMx3zbq-lyg17IHFSVU',
                     }
                 )
-<<<<<<< HEAD
-
-                const transaction = new web3.Transaction().add(
-                    transactionInstruction
-                )
-=======
                 const additionalComputeBudgetInstruction =
                     web3.ComputeBudgetProgram.requestUnits({
                         units: 300000,
@@ -574,7 +521,6 @@ export default function EventLayout({
                     .add(additionalComputeBudgetInstruction)
                     .add(transactionInstruction)
                 console.log('tx', uri, 'uri')
->>>>>>> prod
                 const { blockhash } = await connection.getLatestBlockhash()
                 transaction.recentBlockhash = blockhash
                 transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
@@ -1448,16 +1394,6 @@ export default function EventLayout({
                                     event.seats >= 10000000 ? 'row' : 'column'
                                 }
                             >
-<<<<<<< HEAD
-                                <Box
-                                    w={`${
-                                        100 -
-                                        (event.tickets_sold / event.seats) * 100
-                                    }%`}
-                                    h="full"
-                                    bg="gray.100"
-                                />
-=======
                                 {event.seats >= 10000000 ? (
                                     <Box
                                         p="2"
@@ -1533,7 +1469,6 @@ export default function EventLayout({
                                         </Flex>
                                     </Flex>
                                 )}
->>>>>>> prod
                             </Flex>
                             {event.seats >= 10000000 ? null : (
                                 <>
