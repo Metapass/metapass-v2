@@ -7,44 +7,24 @@ import {
     Flex,
     ModalCloseButton,
     ModalBody,
-    Select,
     Divider,
     ModalFooter,
     Box,
     Button,
+    Input,
+    InputGroup,
+    InputRightAddon,
+    FormControl,
 } from '@chakra-ui/react'
 import { MdCalendarToday as CalendarToday } from 'react-icons/md'
 import { useState } from 'react'
-import twoDigit from 'two-digit'
-// import { CalendarToday } from '@mui/icons-material';
 
 export default function DateModal({ isOpen, onClose, onSubmit }: any) {
-    const [date, setDate] = useState({
-        date: 0,
-        month: 0,
-        year: 0,
-    })
-
-    const [startTime, setStartTime] = useState({
-        hh: 1,
+    const [startDateTime, setStartDateTime] = useState<string>('')
+    const [endTimes, setEndTimes] = useState({
+        hh: 0,
         mm: 0,
-        ss: 0,
-        meridian: 'AM',
     })
-    const [endTime, setEndTime] = useState({
-        hh: 1,
-        mm: 0,
-        ss: 0,
-        meridian: 'AM',
-    })
-
-    function range(start: number, end: number, skip = 1) {
-        let k = []
-        for (let i = start; i <= end; i += skip) {
-            k.push(i)
-        }
-        return k
-    }
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -54,36 +34,12 @@ export default function DateModal({ isOpen, onClose, onSubmit }: any) {
                     onSubmit={(e) => {
                         e.preventDefault()
 
-                        let starttime = ''
-                        let endtime = ''
-
-                        if (startTime.meridian === 'PM') {
-                            starttime = `${twoDigit(
-                                startTime.hh + 12
-                            )}:${twoDigit(startTime.mm)}:${twoDigit(
-                                startTime.ss
-                            )}`
-                        } else {
-                            starttime = `${twoDigit(startTime.hh)}:${twoDigit(
-                                startTime.mm
-                            )}:${twoDigit(startTime.ss)}`
-                        }
-
-                        if (endTime.meridian === 'PM') {
-                            endtime = `${twoDigit(endTime.hh + 12)}:${twoDigit(
-                                endTime.mm
-                            )}:${twoDigit(endTime.ss)}`
-                        } else {
-                            endtime = `${twoDigit(endTime.hh)}:${twoDigit(
-                                endTime.mm
-                            )}:${twoDigit(endTime.ss)}`
-                        }
-
                         /* YYYY:MM:DDThh:mm:ss-hh:mm:ss */
+
                         onSubmit(
-                            `${date.year}-${twoDigit(
-                                date.month + 1
-                            )}-${twoDigit(date.date)}T${starttime}-${endtime}`
+                            `${startDateTime.replaceAll('-', ':')}-${
+                                endTimes.hh
+                            }:${endTimes.mm}:00`
                         )
                         onClose()
                     }}
@@ -96,201 +52,71 @@ export default function DateModal({ isOpen, onClose, onSubmit }: any) {
                         <ModalCloseButton _focus={{}} />
                     </ModalHeader>
                     <ModalBody>
-                        <Flex experimental_spaceX="2">
-                            <Select
-                                placeholder="Day"
-                                required
-                                onChange={(e) => {
-                                    setDate({
-                                        ...date,
-                                        date: Number(e.target.value),
-                                    })
-                                }}
-                            >
-                                {range(1, 31).map((data, key) => (
-                                    <option key={key} value={data}>
-                                        {data}
-                                    </option>
-                                ))}
-                            </Select>
-                            <Select
-                                placeholder="Month"
-                                minW="160px"
-                                required
-                                onChange={(e) => {
-                                    setDate({
-                                        ...date,
-                                        month: Number(e.target.value),
-                                    })
-                                }}
-                            >
-                                {[
-                                    'January',
-                                    'February',
-                                    'March',
-                                    'April',
-                                    'May',
-                                    'June',
-                                    'July',
-                                    'August',
-                                    'September',
-                                    'October',
-                                    'November',
-                                    'December',
-                                ].map((data, key) => (
-                                    <option key={key} value={key}>
-                                        {data}
-                                    </option>
-                                ))}
-                            </Select>
-                            <Select
-                                placeholder="Year"
-                                required
-                                onChange={(e) => {
-                                    setDate({
-                                        ...date,
-                                        year: Number(e.target.value),
-                                    })
-                                }}
-                            >
-                                {range(
-                                    new Date().getFullYear(),
-                                    new Date().getFullYear() + 1
-                                ).map((data, key) => (
-                                    <option key={key} value={data}>
-                                        {data}
-                                    </option>
-                                ))}
-                            </Select>
-                        </Flex>
-                        <Box mt="4">
+                        <FormControl isRequired>
                             <Text
                                 mb="2"
                                 fontSize="xs"
                                 ml="1"
                                 color="blackAlpha.700"
                             >
-                                Starting time
+                                Starting Date & Time
                             </Text>
-                            <Flex experimental_spaceX="2">
-                                <Select
-                                    placeholder="Hour"
-                                    required
-                                    onChange={(e) => {
-                                        setStartTime({
-                                            ...startTime,
-                                            hh: Number(
-                                                twoDigit(e.target.value)
-                                            ),
-                                        })
-                                    }}
-                                >
-                                    {range(1, 12).map((data, key) => (
-                                        <option key={key} value={data}>
-                                            {data}
-                                        </option>
-                                    ))}
-                                </Select>
-                                <Select
-                                    placeholder="Minute"
-                                    minW="160px"
-                                    required
-                                    onChange={(e) => {
-                                        setStartTime({
-                                            ...startTime,
-                                            mm: Number(
-                                                twoDigit(e.target.value)
-                                            ),
-                                        })
-                                    }}
-                                >
-                                    {range(0, 59, 5).map((data, key) => (
-                                        <option key={key} value={key}>
-                                            {twoDigit(data)}
-                                        </option>
-                                    ))}
-                                </Select>
-                                <Select
-                                    required
-                                    onChange={(e) => {
-                                        setStartTime({
-                                            ...startTime,
-                                            meridian: e.target.value,
-                                        })
-                                    }}
-                                >
-                                    {['AM', 'PM'].map((data, key) => (
-                                        <option key={key} value={data}>
-                                            {data}
-                                        </option>
-                                    ))}
-                                </Select>
+                            <Input
+                                placeholder="Select Date and Time"
+                                size="md"
+                                onChange={(e) => {
+                                    setStartDateTime(e.target.value)
+                                }}
+                                type="datetime-local"
+                            />
+                            <Flex mt={5} gap={4}>
+                                <InputGroup size="md">
+                                    <Input
+                                        onChange={(e) => {
+                                            const a =
+                                                parseInt(
+                                                    startDateTime
+                                                        .split('T')[1]
+                                                        .split(':')[0]
+                                                ) + e.target.valueAsNumber
+                                            if (a < 25) {
+                                                setEndTimes({
+                                                    ...endTimes,
+                                                    hh: a,
+                                                })
+                                            }
+                                        }}
+                                        type="number"
+                                        placeholder="1"
+                                    />
+                                    <InputRightAddon>Hours</InputRightAddon>
+                                </InputGroup>
+                                <InputGroup size="md">
+                                    <Input
+                                        onChange={(e) => {
+                                            const a =
+                                                parseInt(
+                                                    startDateTime
+                                                        .split('T')[1]
+                                                        .split(':')[1]
+                                                ) + e.target.valueAsNumber
+                                            if (a < 61) {
+                                                setEndTimes({
+                                                    ...endTimes,
+                                                    mm: a,
+                                                })
+                                            }
+                                        }}
+                                        placeholder="00"
+                                        type="number"
+                                    />
+                                    <InputRightAddon>Min</InputRightAddon>
+                                </InputGroup>
                             </Flex>
-                        </Box>
-                        <Box mt="4">
-                            <Text
-                                mb="2"
-                                fontSize="xs"
-                                ml="1"
-                                color="blackAlpha.700"
-                            >
-                                Ending time
-                            </Text>
-                            <Flex experimental_spaceX="2">
-                                <Select
-                                    placeholder="Hour"
-                                    required
-                                    onChange={(e) => {
-                                        setEndTime({
-                                            ...endTime,
-                                            hh: Number(
-                                                twoDigit(e.target.value)
-                                            ),
-                                        })
-                                    }}
-                                >
-                                    {range(1, 12).map((data, key) => (
-                                        <option key={key} value={data}>
-                                            {data}
-                                        </option>
-                                    ))}
-                                </Select>
-                                <Select
-                                    placeholder="Minute"
-                                    minW="160px"
-                                    required
-                                    onChange={(e) => {
-                                        setEndTime({
-                                            ...endTime,
-                                            mm: Number(
-                                                twoDigit(e.target.value)
-                                            ),
-                                        })
-                                    }}
-                                >
-                                    {range(0, 59, 5).map((data, key) => (
-                                        <option key={key} value={key}>
-                                            {twoDigit(data)}
-                                        </option>
-                                    ))}
-                                </Select>
-                                <Select
-                                    required
-                                    onChange={(e) => {
-                                        setEndTime({
-                                            ...endTime,
-                                            meridian: e.target.value,
-                                        })
-                                    }}
-                                >
-                                    {['AM', 'PM'].map((data, key) => (
-                                        <option key={key} value={data}>
-                                            {data}
-                                        </option>
-                                    ))}
-                                </Select>
-                            </Flex>
-                        </Box>
+                        </FormControl>
+                        <Text fontSize={'xs'} mt={2}>
+                            The end time will be {endTimes.hh}:{endTimes.mm}
+                        </Text>
                     </ModalBody>
                     <Divider mt="2" />
                     <ModalFooter bg="blackAlpha.50">
