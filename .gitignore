@@ -8,7 +8,7 @@ v2mp.code-workspace
 # testing
 /coverage
 archives/
-
+.sentryclirc
 .vscode
 
 # next.js
