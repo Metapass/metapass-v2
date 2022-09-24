@@ -1,8 +1,13 @@
 /** @type {import('next').NextConfig} */
+// const path = require('path')
 const removeImports = require('next-remove-imports')()
 const { withSentryConfig } = require('@sentry/nextjs')
+// const withBundleAnalyzer = require('@next/bundle-analyzer')({
+//     enabled: process.env.ANALYZE === 'true',
+// })
 const nextConfig = removeImports({
     reactStrictMode: true,
+
     sentry: {
         // Use `hidden-source-map` rather than `source-map` as the Webpack `devtool`
         // for client-side builds. (This will be the default starting in
@@ -27,6 +32,10 @@ const nextConfig = removeImports({
     images: {
         domains: ['lh3.googleusercontent.com'],
     },
+    // experimental: {
+    //     forceSwcTransforms: true,
+    // },
+    // swcMinify: true,
     webpack(config) {
         config.resolve.fallback = {
             ...config.resolve.fallback,
@@ -53,4 +62,5 @@ const sentryWebpackPluginOptions = {
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.
 }
-module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+const sentryExport = withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+module.exports = sentryExport
