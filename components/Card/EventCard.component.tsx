@@ -249,7 +249,6 @@ export default function EventCard({
                                     Date.parse(event.date.split('T')[0])
                                 ).getDate()
                             )}
-                            {/* event.date.date */}
                         </Text>
                     </Box>
                     <Box>
@@ -278,13 +277,13 @@ export default function EventCard({
                                 fontSize="11.6px"
                                 _hover={{ color: 'brand.black600' }}
                             >
-                                {(event.owner.length > 20
-                                    ? event.owner.substring(0, 6) +
+                                {(event.owner?.length > 20
+                                    ? event.owner?.substring(0, 6) +
                                       '...' +
-                                      event.owner.substring(
-                                          event.owner.length - 6
+                                      event.owner?.substring(
+                                          event.owner?.length - 6
                                       )
-                                    : event.owner) || 'Anonymous'}
+                                    : event?.owner) || 'Anonymous'}
                             </Link>
 
                             {event.venue && (
@@ -300,7 +299,10 @@ export default function EventCard({
                                         color="#EF24246E"
                                         noOfLines={1}
                                     >
-                                        {event.venue?.name}
+                                        {typeof event.venue === 'string'
+                                            ? JSON.parse(event.venue).name
+                                            : event.venue.name}
+                                        {/* used any here but no option apart from changing api */}
                                     </Text>
                                 </>
                             )}
@@ -331,20 +333,27 @@ export default function EventCard({
                         >
                             {event.seats - event.tickets_sold > 0 ? (
                                 <Flex experimental_spaceX="1">
-                                    <Text
-                                        fontWeight="bold"
-                                        style={{
-                                            background:
-                                                '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
-                                            WebkitBackgroundClip: 'text',
-                                            WebkitTextFillColor: 'transparent',
-                                        }}
-                                    >
-                                        {event.tickets_sold}/{event.seats}
-                                    </Text>
-                                    <Text color="blackAlpha.500">
-                                        Tickets Sold
-                                    </Text>
+                                    {event.seats >= 10000000 ? null : (
+                                        <>
+                                            <Text
+                                                fontWeight="bold"
+                                                style={{
+                                                    background:
+                                                        '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
+                                                    WebkitBackgroundClip:
+                                                        'text',
+                                                    WebkitTextFillColor:
+                                                        'transparent',
+                                                }}
+                                            >
+                                                {event.tickets_sold}/
+                                                {event.seats}
+                                            </Text>
+                                            <Text color="blackAlpha.500">
+                                                Tickets Sold
+                                            </Text>
+                                        </>
+                                    )}
                                 </Flex>
                             ) : (
                                 <Flex align="center" experimental_spaceX="1">
@@ -375,22 +384,24 @@ export default function EventCard({
                             )}
                         </Box>
                     </Flex>
-                    <Flex
-                        w="full"
-                        h="5"
-                        bg="brand.gradient"
-                        mt="-4"
-                        justify="end"
-                    >
-                        {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
-                        <Box
-                            w={`${
-                                100 - (event.tickets_sold / event.seats) * 100
-                            }%`}
-                            h="full"
-                            bg="gray.50"
-                        />
-                    </Flex>
+                    {event.seats >= 10000000 ? null : (
+                        <Flex
+                            w="full"
+                            h="5"
+                            bg="brand.gradient"
+                            mt="-4"
+                            justify="end"
+                        >
+                            <Box
+                                w={`${
+                                    100 -
+                                    (event.tickets_sold / event.seats) * 100
+                                }%`}
+                                h="full"
+                                bg="gray.50"
+                            />
+                        </Flex>
+                    )}
                 </Box>
             </Flex>
         </Flex>

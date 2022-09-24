@@ -41,8 +41,24 @@ const Event: NextPage = ({ event, og }: any) => {
         <Box minH="100vh" h="full" overflow="hidden" bg="blackAlpha.50">
             <Head>
                 {' '}
-                <meta name="twitter:image" content={og} />
-                <meta property="og:image" content={og} />
+                <title>{event.title}</title>
+                <meta name="twitter:image" content={og.img} />
+                <meta name="og:description" content={og.desc} />
+                <meta property="og:image" itemProp="image" content={og.img} />
+                <meta
+                    property="og:title"
+                    content={`Apply for the ${event.title} on Metapass!`}
+                />
+                <meta
+                    property="og:site_name"
+                    content={'https://app.metapasshq.xyz/'}
+                />
+                <meta
+                    name="twitter:title"
+                    content={`Apply for the ${event.title} on Metapass!`}
+                />
+                <meta name="twitter:description" content={og.desc} />
+                <meta name="twitter:card" content="summary_large_image"></meta>
             </Head>
             <NavigationBar mode="white" />
             <Box p="4" />
@@ -186,14 +202,20 @@ export async function getServerSideProps({ query }: any) {
         }
     }
     const getSolanaEvents = async () => {
-        console.log(`${process.env.NEXT_PUBLIC_MONGO_API}/getEvent/${address}`)
         const event = await axios.get(
             `${process.env.NEXT_PUBLIC_MONGO_API}/getEvent/${address}`
         )
         if (event.data) {
             const data = event.data
+            let venue
+            try {
+                venue = JSON.parse(data.venue)
+            } catch (e) {
+                venue = null
+            }
             return {
                 ...data,
+                venue: venue,
                 owner: data.eventHost,
                 childAddress: address as string,
                 category: JSON.parse(data.category),
@@ -224,7 +246,10 @@ export async function getServerSideProps({ query }: any) {
             event: parsedEvent,
             og: img
                 ? img
-                : 'https://res.cloudinary.com/dev-connect/image/upload/v1645093690/img/embed_wqfswz.webp',
+                : {
+                      desc: `Apply for ${parsedEvent.title} on Metapass now!`,
+                      img: `http://mp-og.vercel.app/${parsedEvent.title}`,
+                  },
         },
     }
 }

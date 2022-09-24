@@ -78,6 +78,7 @@ import { getBiconomyProvider } from '@ramper/ethereum'
 import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
 import AcceptedModalComponent from '../../components/Modals/Accepted.modal'
+import { HiOutlineTicket } from 'react-icons/hi'
 
 declare const window: any
 
@@ -241,6 +242,7 @@ export default function EventLayout({
             (WalletSigner?.provider || wallet.type == 'ramper')
         ) {
             initBiconomy()
+            console.log('init bico', wallet.address, WalletSigner.provider)
         }
     }, [wallet.type, WalletSigner?.provider])
 
@@ -275,8 +277,8 @@ export default function EventLayout({
                     },
                 }
 
-                try {
-                    if (event.fee === 0) {
+                if (event.fee === 0) {
+                    try {
                         let ethersProvider = biconomy.provider
                         let metapass = new ethers.Contract(
                             event.childAddress,
@@ -327,6 +329,7 @@ export default function EventLayout({
                                 })
                             }
                         })
+<<<<<<< HEAD
                         biconomy.on('onError', (data: any) => {
                             console.log(data)
                             setIsLoading(false)
@@ -354,37 +357,75 @@ export default function EventLayout({
                             ])
 
                             biconomy.on('txHashGenerated', (data: any) => {
+=======
+                        biconomy.on(
+                            'onError',
+                            (data: { error: any; transactionId: string }) => {
+                                console.log(data)
+                                toast.error('Ooops! Failed to mint the ticket.')
+>>>>>>> prod
                                 setIsLoading(false)
-                                if (event.category.event_type == 'In-Person') {
-                                    generateAndSendUUID(
-                                        ethers.utils.getAddress(
-                                            event.childAddress
-                                        ),
-                                        wallet.address as string,
-                                        event.tickets_sold + 1,
-                                        fastimg
-                                    ).then((uuid) => {
-                                        setQrId(String(uuid))
-                                    })
-                                    setHasBought(true)
-                                    let link =
-                                        opensea +
-                                        '/' +
-                                        event.childAddress +
-                                        '/' +
-                                        event.tickets_sold
-
-                                    setToOpenseaLink(link)
+                                if (
+                                    data.error.reason ==
+                                    'execution reverted: Already minted tickets'
+                                ) {
+                                    toast.error('Tickets Already Minted!')
                                 }
+<<<<<<< HEAD
                             })
                         } catch (e) {
                             console.log(e)
                             setIsLoading(false)
                         }
+=======
+                            }
+                        )
+                        setIsLoading(false)
+                    } catch (e: any) {
+                        console.log(e)
                     }
-                } catch (e: any) {
-                    toast.error('Ooops! Failed to mint the ticket.')
-                    setIsLoading(false)
+                } else {
+                    try {
+                        let metapass = new ethers.Contract(
+                            event.childAddress,
+                            abi.abi,
+                            WalletSigner?.provider
+                        )
+                        let txn = await metapass.getTix(
+                            JSON.stringify(metadata),
+                            {
+                                value: ethers.utils.parseEther(
+                                    event.fee.toString()
+                                ),
+                            }
+                        )
+                        console.log(txn.hash)
+                        setIsLoading(false)
+                        if (event.category.event_type == 'In-Person') {
+                            generateAndSendUUID(
+                                ethers.utils.getAddress(event.childAddress),
+                                wallet.address as string,
+                                event.tickets_sold + 1,
+                                fastimg
+                            ).then((uuid) => {
+                                setQrId(String(uuid))
+                            })
+                            setHasBought(true)
+                            let link =
+                                opensea +
+                                '/' +
+                                event.childAddress +
+                                '/' +
+                                event.tickets_sold
+
+                            setToOpenseaLink(link)
+                        }
+                    } catch (e) {
+                        console.log(e)
+                        toast.error("Mint wasn't successful!")
+                        setIsLoading(false)
+>>>>>>> prod
+                    }
                 }
             }
         } else {
@@ -518,10 +559,22 @@ export default function EventLayout({
                             'https://cdukzux2wfzaaxbnissg6emgojrtdxzw5klsqnpmqhcusvi.arweave.net/EOis0vqxcg_BcLUSkbxGG-c_mMx3zbq-lyg17IHFSVU',
                     }
                 )
+<<<<<<< HEAD
 
                 const transaction = new web3.Transaction().add(
                     transactionInstruction
                 )
+=======
+                const additionalComputeBudgetInstruction =
+                    web3.ComputeBudgetProgram.requestUnits({
+                        units: 300000,
+                        additionalFee: 0,
+                    })
+                const transaction = new web3.Transaction()
+                    .add(additionalComputeBudgetInstruction)
+                    .add(transactionInstruction)
+                console.log('tx', uri, 'uri')
+>>>>>>> prod
                 const { blockhash } = await connection.getLatestBlockhash()
                 transaction.recentBlockhash = blockhash
                 transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
@@ -608,7 +661,11 @@ export default function EventLayout({
                             wallet.address as string
                         )
                     } else {
-                        toast.error('Please connect your wallet for the chain')
+                        toast.error(
+                            `Please connect your ${
+                                event.isSolana ? 'Solana' : 'Polygon'
+                            } wallet!`
+                        )
                     }
                 }
                 if (formRes === 'Accepted') {
@@ -663,6 +720,7 @@ export default function EventLayout({
         }
     }, [hasBought])
     useEffect(() => {
+        // console.log('event venue', JSON.parse(event.venue as any).name)
         if (
             event &&
             event.venue &&
@@ -722,12 +780,14 @@ export default function EventLayout({
                     }}
                 />
             )}
-            <RegisterFormModal
-                isOpen={isOpen2}
-                onOpen={onOpen2}
-                onClose={onClose2}
-                event={event}
-            />
+            {isOpen2 && (
+                <RegisterFormModal
+                    isOpen={isOpen2}
+                    onOpen={onOpen2}
+                    onClose={onClose2}
+                    event={event}
+                />
+            )}
 
             {hasBought && <Confetti />}
             {formRes === 'Accepted' && <Confetti />}
@@ -1378,36 +1438,17 @@ export default function EventLayout({
                             borderColor="blackAlpha.100"
                             boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                             py="2"
+                            alignItems={'center'}
                         >
-                            <Flex justify="space-between" align="center">
-                                <Text color="blackAlpha.500" fontSize="xs">
-                                    Tickets Sold
-                                </Text>
-                                <Flex fontSize="xs" align="center">
-                                    <Text
-                                        fontWeight="bold"
-                                        style={{
-                                            background:
-                                                '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
-                                            WebkitBackgroundClip: 'text',
-                                            WebkitTextFillColor: 'transparent',
-                                        }}
-                                    >
-                                        {event.tickets_sold}
-                                    </Text>
-                                    <Text fontSize="xx-small">/</Text>
-                                    <Text> {event.seats}</Text>
-                                </Flex>
-                            </Flex>
                             <Flex
-                                w="full"
-                                h="5"
-                                bg="brand.gradient"
-                                rounded="full"
-                                mt="2"
-                                justify="end"
-                                overflow="hidden"
+                                justify="space-between"
+                                align="center"
+                                justifyContent="center"
+                                flexDirection={
+                                    event.seats >= 10000000 ? 'row' : 'column'
+                                }
                             >
+<<<<<<< HEAD
                                 <Box
                                     w={`${
                                         100 -
@@ -1416,7 +1457,109 @@ export default function EventLayout({
                                     h="full"
                                     bg="gray.100"
                                 />
+=======
+                                {event.seats >= 10000000 ? (
+                                    <Box
+                                        p="2"
+                                        // border="1px"
+                                        // borderColor="blackAlpha.100"
+                                        display="flex"
+                                        flexDirection="column"
+                                        rounded="xl"
+                                        textAlign="center"
+                                        alignItems="center"
+                                        w={{ base: 'full', md: 'auto' }}
+                                        minW={{ base: 'auto', md: '100px' }}
+                                        // boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
+                                    >
+                                        <Text
+                                            fontSize="sm"
+                                            color="blackAlpha.700"
+                                        >
+                                            Tickets Sold
+                                        </Text>
+                                        <Divider my="2" />
+                                        <Flex gap={1}>
+                                            {' '}
+                                            <Image
+                                                src="/assets/ticketgradient.svg"
+                                                alt="ticket"
+                                                w="8"
+                                                transform="rotate(-45deg);"
+                                            ></Image>
+                                            <Divider my="2" />
+                                            <Text
+                                                fontSize="2xl"
+                                                fontWeight="semibold"
+                                            >
+                                                {event.tickets_sold}
+                                            </Text>
+                                        </Flex>
+                                    </Box>
+                                ) : (
+                                    <Flex>
+                                        <Flex
+                                            fontSize="xs"
+                                            align="center"
+                                            justifyContent={'space-between'}
+                                            gap={5}
+                                        >
+                                            <Text
+                                                color="blackAlpha.500"
+                                                fontSize="xs"
+                                                // mr="10?"
+                                            >
+                                                Tickets Sold
+                                            </Text>
+                                            <Flex align={'center'}>
+                                                <Text
+                                                    fontWeight="bold"
+                                                    style={{
+                                                        background:
+                                                            '-webkit-linear-gradient(360deg, #95E1FF 0%, #E7B0FF 51.58%, #FFD27B 111.28%)',
+                                                        WebkitBackgroundClip:
+                                                            'text',
+                                                        WebkitTextFillColor:
+                                                            'transparent',
+                                                    }}
+                                                >
+                                                    {event.tickets_sold}
+                                                </Text>
+                                                <Text fontSize="x-small">
+                                                    /
+                                                </Text>
+                                                <Text> {event.seats}</Text>
+                                            </Flex>
+                                        </Flex>
+                                    </Flex>
+                                )}
+>>>>>>> prod
                             </Flex>
+                            {event.seats >= 10000000 ? null : (
+                                <>
+                                    <Flex
+                                        w="full"
+                                        h="5"
+                                        bg="brand.gradient"
+                                        rounded="full"
+                                        mt="2"
+                                        justify="end"
+                                        overflow="hidden"
+                                    >
+                                        {/* {console.log((event.tickets_sold / event.seats) * 100, event.seats,event.title,event.tickets_sold,"perc")} */}
+                                        <Box
+                                            w={`${
+                                                100 -
+                                                (event.tickets_sold /
+                                                    event.seats) *
+                                                    100
+                                            }%`}
+                                            h="full"
+                                            bg="gray.100"
+                                        />
+                                    </Flex>
+                                </>
+                            )}
                         </Box>
                         <Box
                             mt="3"
@@ -1497,7 +1640,12 @@ export default function EventLayout({
                                     </Flex>
                                 </Flex>
                                 <Link
-                                    href={`https://maps.google.com/?q=${event.venue.name}`}
+                                    onClick={() => {
+                                        window.open(
+                                            `https://maps.google.com/?q=${event.venue?.name}`,
+                                            '_blank'
+                                        )
+                                    }}
                                 >
                                     <Text
                                         color="blackAlpha.600"

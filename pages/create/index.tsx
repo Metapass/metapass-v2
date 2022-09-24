@@ -42,7 +42,12 @@ import toast from 'react-hot-toast'
 import { MetapassProgram } from '../../types/MetapassProgram.types'
 import { useAccount } from 'wagmi'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { inviteOnlyAtom, stepAtom, formDetails } from '../../lib/recoil/atoms'
+import {
+    inviteOnlyAtom,
+    stepAtom,
+    formDetails,
+    dropDownForm,
+} from '../../lib/recoil/atoms'
 import Step5 from '../../layouts/CreateEvent/Step5.layout'
 import EventCreatedModal from '../../components/Modals/EventCreated.modal'
 import { defaultFormData, eventData } from '../../lib/constants'
@@ -59,7 +64,8 @@ const Create: NextPage = () => {
     const [event, setEvent] = useState<Event>(eventData)
 
     const [formData, setFormData] = useRecoilState(formDetails)
-
+    const dropdownForm = useRecoilValue(dropDownForm)
+    const [dropdownForma, setDropDownForm] = useRecoilState(dropDownForm)
     const contractAddress =
         process.env.NEXT_PUBLIC_ENV === 'dev'
             ? process.env.NEXT_PUBLIC_FACTORY_ADDRESS
@@ -83,7 +89,7 @@ const Create: NextPage = () => {
             ...event,
             owner: wallet.address as string,
         })
-    }, [])
+    }, [wallet.address])
 
     const { isConnected } = useAccount()
 
@@ -115,11 +121,18 @@ const Create: NextPage = () => {
         }
     }, [wallet, contractAddress, isConnected, multichainProvider])
 
-    const uploadFormDetails = async (form: formType, child: string) => {
+    const uploadFormDetails = async (
+        form: formType,
+        child: string,
+        dropQuestions: any[]
+    ) => {
         console.log('updating form details', form, child)
         const { data, error } = await supabase.from('forms').insert({
             event: child,
             data: form,
+            datadrop: {
+                ques: dropQuestions,
+            },
         })
 
         error ? console.log(error) : console.log(data)
@@ -132,11 +145,6 @@ const Create: NextPage = () => {
             return btoa(encodeURIComponent(str))
         }
         console.log(event, 'event')
-        // const { data, error } = await supabase.from('events').insert({
-        //     contractAddress: '0x1',
-        //     inviteOnly: false,
-        //     Venue: JSON.stringify(event.venue),
-        // })
 
         if (!event.isHuddle) {
             try {
@@ -207,7 +215,7 @@ const Create: NextPage = () => {
                     setChild(child)
                     if (isInviteOnly) {
                         console.log('invite only')
-                        await uploadFormDetails(formData, child)
+                        await uploadFormDetails(formData, child, dropdownForm)
                     }
                     setFormData(defaultFormData)
                 })
@@ -271,7 +279,8 @@ const Create: NextPage = () => {
                             },
                         })
                         let roomLink = await axios.post(
-                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+
+                            '/api/createRoom' as string,
                             {
                                 title: event.title,
                                 host: event.owner,
@@ -283,10 +292,12 @@ const Create: NextPage = () => {
                                 child,
                                 roomLink.data.meetingLink
                             )
-                        } catch (e) {}
+                        } catch (e) {
+                            console.log(e)
+                        }
                     } else {
                         let roomLink = await axios.post(
-                            process.env.NEXT_PUBLIC_HUDDLE_API as string,
+                            '/api/createRoom' as string,
                             {
                                 title: event.title,
                                 host: event.owner,
@@ -314,7 +325,7 @@ const Create: NextPage = () => {
                     setChild(child)
                     if (isInviteOnly) {
                         console.log('invite only')
-                        await uploadFormDetails(formData, child)
+                        await uploadFormDetails(formData, child, dropdownForm)
                     }
                     setFormData(defaultFormData)
                 })
@@ -322,6 +333,7 @@ const Create: NextPage = () => {
                 setInTxn(false)
                 setIsPublished(false)
                 toast.error('Oops! Couldnt create Event')
+                console.log(err)
             }
         }
     }
@@ -460,6 +472,14 @@ const Create: NextPage = () => {
                         window.location.origin + '/event/' + eventPDA.toString()
                     )
                     setTxnId(signature)
+                    let roomLink
+                    if (event.isHuddle) {
+                        roomLink = await axios.post('/api/createHuddleRoom', {
+                            title: event.title,
+                            host: event.owner,
+                            contractAddress: eventPDA.toString(),
+                        })
+                    }
                     try {
                         await axios.post(`/api/create`, {
                             id: nonce,
@@ -472,7 +492,7 @@ const Create: NextPage = () => {
                             description: JSON.stringify(event.description),
                             seats: event.seats,
                             type: event.category.event_type,
-                            link: event.link,
+                            link: roomLink?.data.meetingLink || event.link,
                             fee: event.fee,
                             venue: JSON.stringify(event.venue),
                         })
@@ -490,7 +510,11 @@ const Create: NextPage = () => {
                     setIsPublished(true)
                     setInTxn(false)
                     if (isInviteOnly) {
-                        uploadFormDetails(formData, eventPDA.toString())
+                        uploadFormDetails(
+                            formData,
+                            eventPDA.toString(),
+                            dropDownForm as any
+                        )
                     }
                     setFormData(defaultFormData)
                 } catch (error) {
@@ -553,6 +577,16 @@ const Create: NextPage = () => {
                             customSplToken: CST,
                         },
                     }
+                    let roomLink
+                    if (event.isHuddle) {
+                        roomLink = await axios.post('/api/createHuddleRoom', {
+                            title: event.title,
+                            host: event.owner,
+                            contractAddress: eventPDA.toString(),
+                        })
+                        console.log(roomLink)
+                    }
+
                     console.log(transactionData)
                     const txnInstruction = createInitializeEventInstruction(
                         accounts,
@@ -596,7 +630,7 @@ const Create: NextPage = () => {
                                 description: JSON.stringify(event.description),
                                 seats: event.seats,
                                 type: event.category.event_type,
-                                link: event.link,
+                                link: roomLink?.data.meetingLink || event.link,
                                 fee: event.fee,
                                 venue: JSON.stringify(event.venue),
                             })
@@ -614,7 +648,11 @@ const Create: NextPage = () => {
                         setIsPublished(true)
                         setInTxn(false)
                         if (isInviteOnly) {
-                            uploadFormDetails(formData, eventPDA.toString())
+                            uploadFormDetails(
+                                formData,
+                                eventPDA.toString(),
+                                dropdownForm
+                            )
                         }
                         setFormData(defaultFormData)
                     } else {
@@ -642,6 +680,7 @@ const Create: NextPage = () => {
                 child={child}
                 eventLink={eventLink}
             />
+
             <Box
                 position="absolute"
                 minH="100vh"
@@ -673,7 +712,6 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 1 ? 'block' : 'none'}>
                             {/* STEP2🔺 */}
-                            {console.log('step 2', event)}
                             <Step2
                                 event={event}
                                 onSubmit={(formDetails: any) => {
@@ -688,7 +726,6 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 2 ? 'block' : 'none'}>
                             {/* STEP3🔺 */}
-                            {console.log('step 3', event)}
                             <Step3
                                 event={event}
                                 onSubmit={(formDetails: any) => {
@@ -703,7 +740,6 @@ const Create: NextPage = () => {
                         </Box>
                         <Box display={step === 3 ? 'block' : 'none'}>
                             {/* STEP4🔺 */}
-                            {console.log('step 4', event)}
                             <Step4
                                 event={event}
                                 onSubmit={(
@@ -725,7 +761,6 @@ const Create: NextPage = () => {
                             <>
                                 {step === 4 ? (
                                     <Box>
-                                        {console.log(event, formData, 'logui')}
                                         {/* STEP5🔺 */}
                                         <Step5
                                             onSubmit={(data) => {
@@ -736,13 +771,16 @@ const Create: NextPage = () => {
 
                                                 setStep(5)
                                             }}
+                                            onSub={(a) => {
+                                                setStep(5)
+                                                setDropDownForm([...a])
+                                            }}
                                         />
                                     </Box>
                                 ) : null}
                                 {step === 5 ? (
                                     <Box>
                                         {/* STEP5🔺 */}
-                                        {console.log(event, 'logzp')}
                                         <SubmitStep
                                             event={event}
                                             inTxn={inTxn}
@@ -758,7 +796,6 @@ const Create: NextPage = () => {
                         ) : (
                             <Box display={step === 4 ? 'block' : 'none'}>
                                 {/* STEP5🔺 */}
-                                {console.log(event, 'logxy')}
                                 <SubmitStep
                                     event={event}
                                     inTxn={inTxn}

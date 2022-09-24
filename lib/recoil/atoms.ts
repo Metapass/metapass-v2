@@ -16,10 +16,14 @@ const formDetails = atom<formType>({
     key: 'registerFormDetails',
     default: defaultFormData,
 })
+const dropDownForm = atom<any[]>({
+    key: 'dropdownForm',
+    default: [],
+})
 
 const updateOnce = atom<boolean>({
     key: 'updateOnce',
     default: false,
 })
 
-export { stepAtom, inviteOnlyAtom, formDetails, updateOnce }
+export { stepAtom, inviteOnlyAtom, formDetails, updateOnce, dropDownForm }
