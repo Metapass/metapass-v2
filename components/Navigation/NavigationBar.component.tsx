@@ -180,8 +180,7 @@ export default function NavigationBar({ mode = 'dark' }) {
 
     const handleEmail = async () => {
         const web3auth = new Web3Auth({
-            clientId:
-                'BNfJ2Y5bqm1t4C1lmMM2PbMVgazhO_sES4rNflxVFSWbNvrpPInAWf85wZ_H00rHH_X3LRuZXfvTHrZhiiN5mHo',
+            clientId: process.env.WEB3AUTH_CLIENTID!,
             chainConfig: {
                 chainNamespace: 'eip155',
                 chainId: '0x1',
