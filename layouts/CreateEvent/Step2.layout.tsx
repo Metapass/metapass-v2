@@ -34,12 +34,34 @@ export default function Step2({
         <form
             onSubmit={(e) => {
                 e.preventDefault()
-                onSubmit({
-                    description: {
-                        short_desc: description,
-                        long_desc: longDescription,
-                    },
-                })
+                if (
+                    localStorage.getItem('desShort') === undefined &&
+                    localStorage.getItem('longDes') != undefined
+                ) {
+                    onSubmit({
+                        description: {
+                            short_desc: description,
+                            long_desc: localStorage.getItem('longDes'),
+                        },
+                    })
+                } else if (
+                    localStorage.getItem('desShort') != undefined &&
+                    localStorage.getItem('longDes') === undefined
+                ) {
+                    onSubmit({
+                        description: {
+                            short_desc: localStorage.getItem('desShort'),
+                            long_desc: longDescription,
+                        },
+                    })
+                } else {
+                    onSubmit({
+                        description: {
+                            short_desc: description,
+                            long_desc: longDescription,
+                        },
+                    })
+                }
             }}
         >
             <Box color="brand.black">
@@ -77,10 +99,21 @@ export default function Step2({
 
                             <Input
                                 onChange={(e) => {
+                                    localStorage.setItem(
+                                        'desShort',
+                                        e.target.value
+                                    )
                                     setDescription(e.target.value)
                                 }}
                                 fontSize="sm"
-                                value={description}
+                                value={
+                                    localStorage.getItem('desShort') ===
+                                    undefined
+                                        ? description
+                                        : (localStorage.getItem(
+                                              'desShort'
+                                          ) as string)
+                                }
                                 required
                                 px="0"
                                 _placeholder={{ color: 'gray.300' }}
@@ -109,8 +142,16 @@ export default function Step2({
 
                             <MDEditor
                                 preview="edit"
-                                value={longDescription}
+                                value={
+                                    localStorage.getItem('longDes') ===
+                                    undefined
+                                        ? longDescription
+                                        : (localStorage.getItem(
+                                              'longDes'
+                                          ) as string)
+                                }
                                 onChange={(e: any) => {
+                                    localStorage.setItem('longDes', String(e))
                                     setLongDescription(String(e))
                                 }}
                             />

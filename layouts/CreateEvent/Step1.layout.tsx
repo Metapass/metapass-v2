@@ -93,6 +93,7 @@ export default function Step1({
                             isOpen={isOpen}
                             onClose={onClose}
                             onSubmit={(date: any) => {
+                                localStorage.setItem('date', date)
                                 setFormDetails({
                                     ...formDetails,
                                     date,
@@ -130,13 +131,25 @@ export default function Step1({
 
                         <Switch
                             onChange={(e) => {
+                                localStorage.setItem(
+                                    'price',
+                                    JSON.stringify(e.target.checked)
+                                )
                                 setIsPaid(e.target.checked)
                                 setFormDetails({
                                     ...formDetails,
                                     fee: 0,
                                 })
                             }}
-                            isChecked={isPaid}
+                            isChecked={
+                                localStorage.getItem('price') === undefined
+                                    ? isPaid
+                                    : JSON.parse(
+                                          localStorage.getItem(
+                                              'price'
+                                          ) as string
+                                      )
+                            }
                             id="price"
                             colorScheme="linkedin"
                         />
@@ -162,6 +175,10 @@ export default function Step1({
 
                         <Switch
                             onChange={(e) => {
+                                localStorage.setItem(
+                                    'InviteOnly',
+                                    JSON.stringify(e.target.checked)
+                                )
                                 setIsInviteOnly(e.target.checked)
                                 setFormDetails({
                                     ...formDetails,
@@ -171,7 +188,15 @@ export default function Step1({
                                     },
                                 })
                             }}
-                            isChecked={isInviteOnly}
+                            isChecked={
+                                localStorage.getItem('InviteOnly') === undefined
+                                    ? isInviteOnly
+                                    : JSON.parse(
+                                          localStorage.getItem(
+                                              'InviteOnly'
+                                          ) as string
+                                      )
+                            }
                             id="price"
                             colorScheme="linkedin"
                         />
@@ -202,13 +227,24 @@ export default function Step1({
 
                                 <Input
                                     onChange={(e) => {
+                                        localStorage.setItem(
+                                            'title',
+                                            e.target.value
+                                        )
                                         setFormDetails({
                                             ...formDetails,
                                             title: e.target.value,
                                         })
                                     }}
                                     fontSize="sm"
-                                    value={formDetails.title}
+                                    value={
+                                        localStorage.getItem('title') ===
+                                        undefined
+                                            ? formDetails.title
+                                            : (localStorage.getItem(
+                                                  'title'
+                                              ) as string)
+                                    }
                                     required
                                     px="0"
                                     _placeholder={{ color: 'gray.300' }}
@@ -244,8 +280,15 @@ export default function Step1({
                                                     required
                                                     px="0"
                                                     value={
-                                                        formDetails.category
-                                                            .event_type
+                                                        localStorage.getItem(
+                                                            'EventType'
+                                                        ) === undefined
+                                                            ? formDetails
+                                                                  .category
+                                                                  .event_type
+                                                            : (localStorage.getItem(
+                                                                  'EventType'
+                                                              ) as string)
                                                     }
                                                     _placeholder={{
                                                         color: 'gray.300',
@@ -273,6 +316,10 @@ export default function Step1({
                                         >
                                             <MenuItem
                                                 onClick={(e) => {
+                                                    localStorage.setItem(
+                                                        'EventType',
+                                                        'Online'
+                                                    )
                                                     setFormDetails({
                                                         ...formDetails,
                                                         category: {
@@ -287,6 +334,10 @@ export default function Step1({
                                             </MenuItem>
                                             <MenuItem
                                                 onClick={(e) => {
+                                                    localStorage.setItem(
+                                                        'EventType',
+                                                        'In-Person'
+                                                    )
                                                     setFormDetails({
                                                         ...formDetails,
                                                         category: {
@@ -322,8 +373,15 @@ export default function Step1({
                                                 <Input
                                                     fontSize="sm"
                                                     value={
-                                                        formDetails.category
-                                                            .category[0]
+                                                        localStorage.getItem(
+                                                            'category'
+                                                        ) === undefined
+                                                            ? formDetails
+                                                                  .category
+                                                                  .category[0]
+                                                            : (localStorage.getItem(
+                                                                  'category'
+                                                              ) as string)
                                                     }
                                                     required
                                                     px="0"
@@ -353,6 +411,10 @@ export default function Step1({
                                         >
                                             <MenuItem
                                                 onClick={(e) => {
+                                                    localStorage.setItem(
+                                                        'category',
+                                                        'Meetup'
+                                                    )
                                                     setFormDetails({
                                                         ...formDetails,
                                                         category: {
@@ -368,6 +430,10 @@ export default function Step1({
                                             </MenuItem>
                                             <MenuItem
                                                 onClick={(e) => {
+                                                    localStorage.setItem(
+                                                        'category',
+                                                        'Party'
+                                                    )
                                                     setFormDetails({
                                                         ...formDetails,
                                                         category: {
@@ -403,8 +469,20 @@ export default function Step1({
                                     </FormLabel>
                                     <InputGroup>
                                         <Input
-                                            isRequired={isPaid}
+                                            isRequired={
+                                                JSON.parse(
+                                                    localStorage.getItem(
+                                                        'price'
+                                                    ) as string
+                                                ) || isPaid
+                                            }
                                             onChange={(e) => {
+                                                localStorage.setItem(
+                                                    'fee',
+                                                    JSON.stringify(
+                                                        e.target.value
+                                                    )
+                                                )
                                                 setFormDetails({
                                                     ...formDetails,
                                                     fee: Number(e.target.value),
@@ -425,9 +503,14 @@ export default function Step1({
                                             _focus={{}}
                                             _active={{}}
                                             value={
-                                                formDetails.fee === 0
-                                                    ? ''
-                                                    : formDetails.fee
+                                                localStorage.getItem('fee') ===
+                                                undefined
+                                                    ? formDetails.fee
+                                                    : JSON.parse(
+                                                          localStorage.getItem(
+                                                              'fee'
+                                                          ) as string
+                                                      )
                                             }
                                         />
                                         <InputRightElement>
@@ -578,7 +661,14 @@ export default function Step1({
                                             isRequired
                                             cursor="pointer"
                                             value={
-                                                formDetails.date.split('T')[0]
+                                                localStorage.getItem('date') ===
+                                                undefined
+                                                    ? formDetails.date.split(
+                                                          'T'
+                                                      )[0]
+                                                    : (localStorage.getItem(
+                                                          'date'
+                                                      ) as string)
                                             }
                                             px="0"
                                             placeholder="When will the event take place?"
@@ -616,6 +706,10 @@ export default function Step1({
                                     <InputGroup>
                                         <Input
                                             onChange={(e) => {
+                                                localStorage.setItem(
+                                                    'seat',
+                                                    e.target.value
+                                                )
                                                 setFormDetails({
                                                     ...formDetails,
                                                     seats: Number(
@@ -638,9 +732,16 @@ export default function Step1({
                                             _focus={{}}
                                             _active={{}}
                                             value={
-                                                formDetails.seats === 0
+                                                localStorage.getItem('seat') ===
+                                                undefined
+                                                    ? formDetails.seats
+                                                    : (localStorage.getItem(
+                                                          'seat'
+                                                      ) as string) === '0'
                                                     ? ''
-                                                    : formDetails.seats
+                                                    : (localStorage.getItem(
+                                                          'seat'
+                                                      ) as string)
                                             }
                                         />
                                     </InputGroup>
@@ -668,6 +769,10 @@ export default function Step1({
                                         <InputGroup>
                                             <Input
                                                 onChange={(e) => {
+                                                    localStorage.setItem(
+                                                        'Name',
+                                                        e.target.value
+                                                    )
                                                     setFormDetails({
                                                         ...formDetails,
                                                         displayName:
@@ -690,7 +795,13 @@ export default function Step1({
                                                 _hover={{}}
                                                 _focus={{}}
                                                 _active={{}}
-                                                value={formDetails.displayName}
+                                                value={
+                                                    localStorage.getItem('Name')
+                                                        ? formDetails.displayName
+                                                        : (localStorage.getItem(
+                                                              'Name'
+                                                          ) as string)
+                                                }
                                             />
                                         </InputGroup>
                                     </FormControl>
@@ -721,6 +832,10 @@ export default function Step1({
                                             <InputGroup>
                                                 <Input
                                                     onChange={(e) => {
+                                                        localStorage.setItem(
+                                                            'Profile',
+                                                            e.target.value
+                                                        )
                                                         setFormDetails({
                                                             ...formDetails,
                                                             profileImage:
@@ -744,13 +859,25 @@ export default function Step1({
                                                     _focus={{}}
                                                     _active={{}}
                                                     value={
-                                                        formDetails.profileImage
+                                                        localStorage.getItem(
+                                                            'Profile'
+                                                        )
+                                                            ? formDetails.profileImage
+                                                            : (localStorage.getItem(
+                                                                  'Profile'
+                                                              ) as string)
                                                     }
                                                 />
                                                 <InputRightElement>
                                                     <Avatar
                                                         src={
-                                                            formDetails.profileImage
+                                                            localStorage.getItem(
+                                                                'Profile'
+                                                            )
+                                                                ? formDetails.profileImage
+                                                                : (localStorage.getItem(
+                                                                      'Profile'
+                                                                  ) as string)
                                                         }
                                                         maxW="6"
                                                         maxH="6"
@@ -919,6 +1046,58 @@ export default function Step1({
                                     formDetails.category.event_type &&
                                     formDetails.date
                                 ) {
+                                    setSubmitting(true)
+                                } else if (
+                                    localStorage.getItem('title') &&
+                                    localStorage.getItem('category') &&
+                                    localStorage.getItem('fee') &&
+                                    localStorage.getItem('EventType') &&
+                                    localStorage.getItem('date')
+                                ) {
+                                    setFormDetails({
+                                        ...formDetails,
+                                        title: localStorage.getItem(
+                                            'title'
+                                        ) as string,
+                                        type: localStorage.getItem(
+                                            'type'
+                                        ) as string,
+                                        category: {
+                                            category: [
+                                                localStorage.getItem(
+                                                    'category'
+                                                ) as string,
+                                            ],
+                                            event_type: localStorage.getItem(
+                                                'EventType'
+                                            ) as string,
+                                            inviteOnly: JSON.parse(
+                                                localStorage.getItem(
+                                                    'InviteOnly'
+                                                ) as string
+                                            ),
+                                        },
+                                        fee: JSON.parse(
+                                            localStorage.getItem(
+                                                'fee'
+                                            ) as string
+                                        ),
+                                        date: localStorage.getItem(
+                                            'date'
+                                        ) as string,
+                                        seats: JSON.parse(
+                                            localStorage.getItem(
+                                                'seat'
+                                            ) as string
+                                        ),
+                                        tickets_sold: 0,
+                                        profileImage: localStorage.getItem(
+                                            'Profile'
+                                        ) as string,
+                                        displayName: localStorage.getItem(
+                                            'Name'
+                                        ) as string,
+                                    })
                                     setSubmitting(true)
                                 }
                             }}
