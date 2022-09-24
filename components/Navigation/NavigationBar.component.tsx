@@ -180,7 +180,7 @@ export default function NavigationBar({ mode = 'dark' }) {
 
     const handleEmail = async () => {
         const web3auth = new Web3Auth({
-            clientId: process.env.WEB3AUTH_CLIENTID!,
+            clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!,
             chainConfig: {
                 chainNamespace: 'eip155',
                 chainId: '0x1',
@@ -192,6 +192,7 @@ export default function NavigationBar({ mode = 'dark' }) {
             },
         })
         await web3auth.initModal()
+        onClose3()
         const web3authProvider = await web3auth.connect()
         // @ts-ignore
         const web3 = new Web3(web3authProvider)
