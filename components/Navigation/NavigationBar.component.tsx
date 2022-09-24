@@ -194,6 +194,7 @@ export default function NavigationBar({ mode = 'dark' }) {
         })
         await web3auth.initModal()
         const web3authProvider = await web3auth.connect()
+        // @ts-ignore
         const web3 = new Web3(web3authProvider)
         const userAccounts = await web3.eth.getAccounts()
         let bal = await web3.eth.getBalance(userAccounts[0])
