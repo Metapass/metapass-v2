@@ -210,9 +210,7 @@ export default function EventLayout({
     let biconomy: any
     useEffect(() => {
         const initBiconomy = async () => {
-            console.log(wallet.address)
-            console.log(WalletSigner?.provider)
-            if (event.childAddress) {
+            if (event.childAddress && event.childAddress.startsWith('0x')) {
                 biconomy = new Biconomy(
                     (WalletSigner?.provider as any).provider,
                     {
@@ -228,7 +226,6 @@ export default function EventLayout({
         }
         if (wallet.address?.startsWith('0x') && WalletSigner?.provider) {
             initBiconomy()
-            console.log('init bico', wallet.address, WalletSigner.provider)
         }
     }, [wallet.address, WalletSigner?.provider])
 
