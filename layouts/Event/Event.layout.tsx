@@ -108,6 +108,7 @@ export default function EventLayout({
     const [openseaLink, setToOpenseaLink] = useState<string>('')
     const [hasTicket, setHasTicket] = useState<boolean>(false)
     const [qrId, setQrId] = useState<string>('')
+    const [isMapCompatible, setIsMapCompatible] = useState<boolean>(true)
     const { isOpen, onOpen } = useDisclosure()
     const [wallet] = useContext<WalletType[]>(walletContext)
     const solanaWallet = useWallet()
@@ -660,52 +661,55 @@ export default function EventLayout({
         }
     }, [hasBought])
     useEffect(() => {
-        // console.log('event venue', JSON.parse(event.venue as any).name)
-        if (
-            event &&
-            event.venue &&
-            event.venue.x &&
-            event.venue.y &&
-            mapContainerRef.current
-        ) {
-            const map = new mapboxgl.Map({
-                container: mapContainerRef.current, // container ID
-                style: 'mapbox://styles/mapbox/streets-v11', // style URL
-                center: [event.venue.x, event.venue.y], // starting position
-                zoom: 15, // starting zoom
-            })
+        try {
+            if (
+                event &&
+                event.venue &&
+                event.venue.x &&
+                event.venue.y &&
+                mapContainerRef.current
+            ) {
+                const map = new mapboxgl.Map({
+                    container: mapContainerRef.current, // container ID
+                    style: 'mapbox://styles/mapbox/streets-v11', // style URL
+                    center: [event.venue.x, event.venue.y], // starting position
+                    zoom: 14, // starting zoom
+                })
 
-            // const markerNode = document.createElement('div')
-            // add navigation control (the +/- zoom buttons)
+                // const markerNode = document.createElement('div')
+                // add navigation control (the +/- zoom buttons)
 
-            if (map) {
-                map.addControl(
-                    new mapboxgl.GeolocateControl({
-                        positionOptions: {
-                            enableHighAccuracy: true,
-                        },
-                        // When active the map will receive updates to the device's location as it changes.
-                        trackUserLocation: false,
+                if (map) {
+                    map.addControl(
+                        new mapboxgl.GeolocateControl({
+                            positionOptions: {
+                                enableHighAccuracy: true,
+                            },
+                            // When active the map will receive updates to the device's location as it changes.
+                            trackUserLocation: false,
 
-                        // Draw an arrow next to the location dot to indicate which direction the device is heading.
-                        showUserLocation: false,
-                    })
-                )
-                map.addControl(
-                    new mapboxgl.NavigationControl({
-                        showCompass: false,
-                        showZoom: false,
-                        visualizePitch: true,
-                    }),
-                    'bottom-left'
-                )
-                const marker = new mapboxgl.Marker({
-                    draggable: false,
-                }) // initialize a new marker
-                    .setLngLat([event?.venue?.x, event?.venue?.y]) // Marker [lng, lat] coordinates
-                    .addTo(map)
-                return () => map.remove()
+                            // Draw an arrow next to the location dot to indicate which direction the device is heading.
+                            showUserLocation: false,
+                        })
+                    )
+                    map.addControl(
+                        new mapboxgl.NavigationControl({
+                            showCompass: false,
+                            showZoom: false,
+                            visualizePitch: true,
+                        }),
+                        'bottom-left'
+                    )
+                    const marker = new mapboxgl.Marker({
+                        draggable: false,
+                    }) // initialize a new marker
+                        .setLngLat([event?.venue?.x, event?.venue?.y]) // Marker [lng, lat] coordinates
+                        .addTo(map)
+                    return () => map.remove()
+                }
             }
+        } catch (error) {
+            setIsMapCompatible(false)
         }
     }, [event?.venue])
 
@@ -1591,13 +1595,24 @@ export default function EventLayout({
                                         ) || event.venue.name}
                                     </Text>
                                 </Link>
-                                <Box
-                                    className="map-container"
-                                    w="100%"
-                                    h="10vh"
-                                    borderRadius="lg"
-                                    ref={mapContainerRef}
-                                ></Box>
+                                {isMapCompatible ? (
+                                    <Box
+                                        className="map-container"
+                                        w="100%"
+                                        h="10vh"
+                                        borderRadius="lg"
+                                        ref={mapContainerRef}
+                                    ></Box>
+                                ) : (
+                                    <Box
+                                        w="100%"
+                                        h="10vh"
+                                        borderRadius="lg"
+                                        bgImage="https://res.cloudinary.com/dev-connect/image/upload/v1664118651/img/Screenshot_2022-09-25_at_8.34.45_PM_noeivg.png"
+                                        bgSize="cover"
+                                        bgRepeat="no-repeat"
+                                    ></Box>
+                                )}
                             </Box>
                         )}
                         <Box
