@@ -22,7 +22,7 @@ keys.json
 .env
 # misc
 .DS_Store
-
+.sentryclirc
 *.pem
 .gitignore
 # debug

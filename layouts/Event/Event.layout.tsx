@@ -206,7 +206,7 @@ export default function EventLayout({
         const checkWhitelist = async () => {
             try {
                 const { data } = await axios.get(
-                    'https://api.airtable.com/v0/appFKlGjyqgMD8xEW/whitelist?maxRecords=3&view=Grid%20view',
+                    'https://api.airtable.com/v0/appFKlGjyqgMD8xEW/whitelist?view=Grid%20view',
                     {
                         headers: {
                             Authorization: `Bearer ${process.env.NEXT_PUBLIC_AIRTABLE_WHITELIST}`,
@@ -239,7 +239,7 @@ export default function EventLayout({
             setHasTicket(event.buyers.includes(wallet.address))
             checkWhitelist()
         }
-    }, [wallet.address])
+    }, [wallet])
     let biconomy: any
     useEffect(() => {
         const initBiconomy = async () => {
