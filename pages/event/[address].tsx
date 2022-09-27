@@ -47,7 +47,7 @@ const Event: NextPage = ({ event, og }: any) => {
                 <meta property="og:image" itemProp="image" content={og.img} />
                 <meta
                     property="og:title"
-                    content={`Apply for the ${event.title} on Metapass!`}
+                    content={`Apply for ${event.title} on Metapass!`}
                 />
                 <meta
                     property="og:site_name"
@@ -55,7 +55,7 @@ const Event: NextPage = ({ event, og }: any) => {
                 />
                 <meta
                     name="twitter:title"
-                    content={`Apply for the ${event.title} on Metapass!`}
+                    content={`Apply for ${event.title} on Metapass!`}
                 />
                 <meta name="twitter:description" content={og.desc} />
                 <meta name="twitter:card" content="summary_large_image"></meta>
