@@ -91,7 +91,7 @@ import {
 import * as anchor from '@project-serum/anchor'
 import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes'
 import { OpenLoginUserWithMetadata, useUser } from '../../hooks/useUser'
-
+import resolveBalance from '../../hooks/useSolBalance'
 declare const window: any
 interface SolanaWalletWithPublicKey extends SolanaWallet {
     publicKey: PublicKey
@@ -161,7 +161,10 @@ export default function EventLayout({
 
     useEffect(() => {
         ;(async function () {
-            if (wallet.type == 'web3auth') {
+            if (
+                !event.childAddress.startsWith('0x') &&
+                wallet.type == 'web3auth'
+            ) {
                 // @ts-ignore
                 const privateKey: string = await web3.request({
                     method: 'eth_private_key',
@@ -189,6 +192,7 @@ export default function EventLayout({
                 )
 
                 const solana_address = await solWallet.requestAccounts()
+                let balance = await resolveBalance(solana_address[0])
 
                 if (wallet) {
                     console.log('wallet', solWallet.signTransaction)
@@ -197,12 +201,14 @@ export default function EventLayout({
                         publicKey: new PublicKey(solana_address[0]),
                         signTransaction: solWallet.signTransaction,
                     } as SolanaWalletWithPublicKey)
-
-                    // solanaWallet.publicKey = new PublicKey(solana_address[0])
-                    // console.log(
-                    //     'solanaWallet',
-                    //     solanaWallet.publicKey.toString()
-                    // )
+                    console.log('balance here', balance)
+                    setWallet({
+                        address: solana_address[0],
+                        balance: balance?.toString(),
+                        domain: null,
+                        type: 'web3auth',
+                        chain: 'SOL',
+                    })
                 }
             }
         })()
@@ -240,7 +246,7 @@ export default function EventLayout({
                         .select('*')
                         .eq('address', wallet.address)
                     if (data && data?.length > 0) {
-                        console.log('user already exists', data)
+                        console.log('User already exists')
                     } else {
                         const { data, error } = await supabase
                             .from('users')
@@ -680,7 +686,7 @@ export default function EventLayout({
             if (isInviteOnly) {
                 if (formRes === 'Register') {
                     if (
-                        (event.isSolana && wallet.chain === 'SOL') ||
+                        event.isSolana ||
                         (!event.isSolana && wallet.chain === 'POLYGON')
                     ) {
                         await handleRegister(
