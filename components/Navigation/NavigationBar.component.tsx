@@ -24,7 +24,7 @@ import NextLink from 'next/link'
 import { Modal } from '@chakra-ui/react'
 import { walletContext, WalletType } from '../../utils/walletContext'
 import { web3Context } from '../../utils/web3Context'
-
+import { WALLET_ADAPTERS } from '@web3auth/base'
 import {
     useState,
     useContext,
@@ -82,7 +82,7 @@ export default function NavigationBar({ mode = 'dark' }) {
             walletContext
         )
 
-    const [_, setWeb3]: any = useContext(web3Context)
+    const [_, setWeb3, web3auth, setWeb3auth]: any = useContext(web3Context)
     const [walletType, setWalletType] = useState<'mm' | 'wc' | 'sol' | null>(
         null
     )
@@ -187,9 +187,77 @@ export default function NavigationBar({ mode = 'dark' }) {
                 chainId: '0x89',
                 rpcTarget: endpoint,
             },
+            uiConfig: {
+                theme: 'light',
+                loginMethodsOrder: ['google'],
+                appLogo:
+                    'https://res.cloudinary.com/dev-connect/image/upload/v1664263385/img/mplogocircle_pve27h.png', // Your App Logo Here
+            },
         })
-        await web3auth.initModal()
+        await web3auth.initModal({
+            modalConfig: {
+                [WALLET_ADAPTERS.OPENLOGIN]: {
+                    label: 'openlogin',
+                    loginMethods: {
+                        google: {
+                            name: 'google login',
+                        },
+                        facebook: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        reddit: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        discord: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        twitch: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        apple: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        github: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        line: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        wechat: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        weibo: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        kakao: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        linkedin: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        twitter: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                    },
+                    // setting it to false will hide all social login methods from modal.
+                    showOnModal: true,
+                },
+            },
+        })
         onClose3()
+        setWeb3auth(web3auth)
         const web3authProvider = await web3auth.connect()
         // @ts-ignore
         const web3 = new Web3(web3auth.provider)

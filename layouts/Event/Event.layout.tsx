@@ -90,6 +90,7 @@ import {
 } from '@web3auth/solana-provider'
 import * as anchor from '@project-serum/anchor'
 import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes'
+import { OpenLoginUserWithMetadata, useUser } from '../../hooks/useUser'
 
 declare const window: any
 interface SolanaWalletWithPublicKey extends SolanaWallet {
@@ -127,7 +128,7 @@ export default function EventLayout({
         SolanaWalletWithPublicKey | WalletContextState | null
     >(useWallet())
     const mapContainerRef = useRef(null)
-    const [web3, setWeb3] = useContext(web3Context)
+    const [web3, setWeb3, web3auth, setWeb3auth] = useContext(web3Context)
 
     const [explorerLink, setExplorerLink] = useState<string>('')
     let opensea =
@@ -156,7 +157,7 @@ export default function EventLayout({
     >('Register')
     const toUpdate = useRecoilValue(updateOnce)
 
-    const user = supabase.auth.user()
+    const { user } = useUser()
 
     useEffect(() => {
         ;(async function () {
@@ -190,9 +191,11 @@ export default function EventLayout({
                 const solana_address = await solWallet.requestAccounts()
 
                 if (wallet) {
+                    console.log('wallet', solWallet.signTransaction)
                     setSolanaWallet({
-                        publicKey: new PublicKey(solana_address[0]),
                         ...solWallet,
+                        publicKey: new PublicKey(solana_address[0]),
+                        signTransaction: solWallet.signTransaction,
                     } as SolanaWalletWithPublicKey)
 
                     // solanaWallet.publicKey = new PublicKey(solana_address[0])
@@ -464,8 +467,11 @@ export default function EventLayout({
         }
     }
     const buySolanaTicket = async () => {
-        console.log(solanaWallet)
-        if (user === null) {
+        console.log(
+            'buying solana ticket',
+            (solanaWallet as SolanaWalletWithPublicKey).signTransaction
+        )
+        if (!user) {
             setToOpen(true)
         } else {
             if (solanaWallet && solanaWallet.publicKey) {
@@ -600,6 +606,7 @@ export default function EventLayout({
                 const { blockhash } = await connection.getLatestBlockhash()
                 transaction.recentBlockhash = blockhash
                 transaction.feePayer = solanaWallet.publicKey as PublicKey
+                console.log('w', solanaWallet)
                 if (solanaWallet.signTransaction) {
                     try {
                         transaction.sign(mint)
@@ -656,7 +663,7 @@ export default function EventLayout({
                     }
                 } else {
                     throw Error(
-                        'signTransaction is undefined, line 205 create/index.tsx'
+                        'signTransaction is undefined, event.layout.tsx'
                     )
                 }
             } else {
@@ -669,7 +676,7 @@ export default function EventLayout({
     }
 
     const clickBuyTicket = async () => {
-        if (wallet.address) {
+        if (wallet.address && user) {
             if (isInviteOnly) {
                 if (formRes === 'Register') {
                     if (
@@ -677,7 +684,7 @@ export default function EventLayout({
                         (!event.isSolana && wallet.chain === 'POLYGON')
                     ) {
                         await handleRegister(
-                            user,
+                            user as OpenLoginUserWithMetadata,
                             onOpen2,
                             setToOpen,
                             event.childAddress,
