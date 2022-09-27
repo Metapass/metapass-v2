@@ -740,11 +740,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                             )
                                         )
                                     }
-                                    rightIcon={
-                                        isWalletLoading === false && (
-                                            <HiOutlineChevronDown />
-                                        )
-                                    }
+                                    rightIcon={<HiOutlineChevronDown />}
                                 >
                                     {isWalletLoading
                                         ? 'Loading Wallet'

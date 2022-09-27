@@ -72,7 +72,7 @@ export const RegisterFormModal = ({
                             preDefinedQues: data?.[0].data?.preDefinedQues,
                             customQues: data?.[0].data?.customQues!,
                         },
-                        datadrop: data?.[0]?.datadrop.ques,
+                        datadrop: data?.[0]?.datadrop?.ques,
                     })
                 console.log(data)
             }
@@ -94,7 +94,7 @@ export const RegisterFormModal = ({
     const onSubmit = async (res: any) => {
         console.log(res, 'response')
 
-        if (user) {
+        if (false) {
             setIsLoading(true)
             let a = event?.childAddress as string
             if (event?.childAddress.startsWith('0x')) {
@@ -196,7 +196,7 @@ export const RegisterFormModal = ({
                                                     ? user?.email
                                                     : ques.id == 3
                                                     ? wallet?.address
-                                                    : ''
+                                                    : null
                                             }
                                             {...register(camelize(ques.val))}
                                         />

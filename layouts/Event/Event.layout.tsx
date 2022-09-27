@@ -124,7 +124,7 @@ export default function EventLayout({
     const [hasTicket, setHasTicket] = useState<boolean>(false)
     const [qrId, setQrId] = useState<string>('')
     const [isMapCompatible, setIsMapCompatible] = useState<boolean>(true)
-    const { isOpen, onOpen } = useDisclosure()
+    const { isOpen, onOpen, onClose } = useDisclosure()
     const [wallet, setWallet] = useContext<any>(walletContext)
     const [solanaWallet, setSolanaWallet] = useState<
         SolanaWalletWithPublicKey | WalletContextState | null
@@ -681,45 +681,50 @@ export default function EventLayout({
     }
 
     const clickBuyTicket = async () => {
-        if (wallet.address && user) {
-            if (isInviteOnly) {
-                if (formRes === 'Register') {
-                    // setFormLoading(true)
-                    if (
-                        event.isSolana ||
-                        (!event.isSolana && wallet.chain === 'POLYGON')
-                    ) {
-                        await handleRegister(
-                            user as OpenLoginUserWithMetadata,
-                            onOpen2,
-                            setToOpen,
-                            event.childAddress,
-                            wallet.address as string
-                        )
-                    } else {
-                        !(wallet.type === 'web3auth') &&
-                            toast.error(
-                                `Please connect your ${
-                                    event.isSolana ? 'Solana' : 'Polygon'
-                                } wallet!`
+        if (user) {
+            if (wallet.address) {
+                if (isInviteOnly) {
+                    if (formRes === 'Register') {
+                        // setFormLoading(true)
+                        console.log('registering')
+                        if (
+                            event.isSolana ||
+                            (!event.isSolana && wallet.chain === 'POLYGON')
+                        ) {
+                            await handleRegister(
+                                user as OpenLoginUserWithMetadata,
+                                onOpen2,
+                                setToOpen,
+                                event.childAddress,
+                                wallet.address as string
                             )
+                        } else {
+                            !(wallet.type === 'web3auth') &&
+                                toast.error(
+                                    `Please connect your ${
+                                        event.isSolana ? 'Solana' : 'Polygon'
+                                    } wallet!`
+                                )
+                        }
+                    }
+                    if (formRes === 'Accepted') {
+                        event.isSolana ? buySolanaTicket() : buyPolygonTicket()
+                    }
+                } else {
+                    if (event.isSolana) {
+                        buySolanaTicket()
+                    } else {
+                        buyPolygonTicket()
                     }
                 }
-                if (formRes === 'Accepted') {
-                    event.isSolana ? buySolanaTicket() : buyPolygonTicket()
-                }
             } else {
-                if (event.isSolana) {
-                    buySolanaTicket()
-                } else {
-                    buyPolygonTicket()
-                }
+                wallet.type === null &&
+                    toast.error(
+                        'Please make sure your wallet has loaded or is connected'
+                    )
             }
         } else {
-            wallet.type === null &&
-                toast.error(
-                    'Please make sure your wallet has loaded or is connected'
-                )
+            onOpen()
         }
     }
     useEffect(() => {
@@ -810,12 +815,13 @@ export default function EventLayout({
 
     return (
         <>
-            {toOpen && (
+            {isOpen && (
                 <SignUpModal
                     isOpen={isOpen}
                     onOpen={onOpen}
                     onClose={() => {
                         setToOpen(false)
+                        onClose()
                     }}
                 />
             )}

@@ -14,14 +14,17 @@ export interface OpenLoginUserWithMetadata extends UserInfo {
 }
 const useUser = () => {
     const [wallet] = useContext(walletContext)
-    const [user, setUser] = useState<
-        User | null | undefined | OpenLoginUserWithMetadata
-    >(undefined)
+    const [user, setUser] = useState<User | null | OpenLoginUserWithMetadata>(
+        null
+    )
     const [web3, setWeb3, web3auth, setWeb3auth] = useContext(web3Context)
+    // console.log('web3auth', user)
     supabase.auth.onAuthStateChange((event, session) => {
-        setUser(supabase.auth.user)
+        setUser(supabase.auth.user())
+        // console.log('event', event, supabase.auth.user())
     })
     useEffect(() => {
+        !user && supabase.auth.user() && setUser(supabase.auth.user())
         async function init() {
             // console.log(web3auth, 'web3auth')
             if (!user && web3auth) {
