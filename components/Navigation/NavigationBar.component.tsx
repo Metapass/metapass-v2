@@ -184,7 +184,7 @@ export default function NavigationBar({ mode = 'dark' }) {
             clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!,
             chainConfig: {
                 chainNamespace: 'eip155',
-                chainId: '0x89',
+                chainId: '0x13881',
                 rpcTarget: endpoint,
             },
         })
