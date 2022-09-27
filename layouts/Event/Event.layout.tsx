@@ -195,7 +195,6 @@ export default function EventLayout({
                 let balance = await resolveBalance(solana_address[0])
 
                 if (wallet) {
-                    console.log('wallet', solWallet.signTransaction)
                     setSolanaWallet({
                         ...solWallet,
                         publicKey: new PublicKey(solana_address[0]),
@@ -656,9 +655,13 @@ export default function EventLayout({
                         const e = error as Error
                         if (e.message.includes('0x1')) {
                             toast.error("You don't have enough funds")
-                        } else {
+                        } else if (
+                            e.message.includes(
+                                'Attempt to debit an account but found no record of a prior credit.'
+                            )
+                        ) {
                             toast.error(
-                                'Something went wrong, can you reach out to us in our discord(https://discord.gg/7QDkBT39r8)?'
+                                "You don't have enough funds in your wallet"
                             )
                         }
                         console.log(
