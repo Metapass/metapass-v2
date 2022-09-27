@@ -94,7 +94,7 @@ export const RegisterFormModal = ({
     const onSubmit = async (res: any) => {
         console.log(res, 'response')
 
-        if (false) {
+        if (user) {
             setIsLoading(true)
             let a = event?.childAddress as string
             if (event?.childAddress.startsWith('0x')) {
