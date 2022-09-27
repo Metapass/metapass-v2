@@ -17,6 +17,7 @@ import {
     MenuItem,
     MenuDivider,
     Heading,
+    Spinner,
 } from '@chakra-ui/react'
 import { MdAccountBalanceWallet, MdClose } from 'react-icons/md'
 import { IoIosAdd, IoIosLogOut } from 'react-icons/io'
@@ -69,13 +70,15 @@ import { Web3Auth } from '@web3auth/web3auth'
 // @ts-ignore
 import * as Web3 from 'web3'
 import { ethers } from 'ethers'
+import { useUser } from '../../hooks/useUser'
 
 export default function NavigationBar({ mode = 'dark' }) {
     const [address, setAddress] = useState<string>('')
 
     const [balance, setBalance] = useState<string>('')
-
-    const user = supabase.auth.user()
+    const [isWalletLoading, setIsWalletLoading] = useState<boolean | null>(null)
+    const { user: commonUser } = useUser()
+    const user = supabase.auth.user() || commonUser
 
     const [wallet, setWallet] =
         useContext<[WalletType, Dispatch<SetStateAction<WalletType>>]>(
@@ -180,6 +183,9 @@ export default function NavigationBar({ mode = 'dark' }) {
     }
 
     const handleEmail = async () => {
+        onClose3()
+
+        setIsWalletLoading(true)
         const web3auth = new Web3Auth({
             clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!,
             chainConfig: {
@@ -195,6 +201,7 @@ export default function NavigationBar({ mode = 'dark' }) {
             },
         })
         await web3auth.initModal({
+            // @ts-ignore
             modalConfig: {
                 [WALLET_ADAPTERS.OPENLOGIN]: {
                     label: 'openlogin',
@@ -256,7 +263,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                 },
             },
         })
-        onClose3()
+        // onClose3()
         setWeb3auth(web3auth)
         const web3authProvider = await web3auth.connect()
         // @ts-ignore
@@ -272,6 +279,7 @@ export default function NavigationBar({ mode = 'dark' }) {
             chain: 'POLYGON',
             domain: null,
         })
+        setIsWalletLoading(false)
     }
 
     const mdcontent = [
@@ -701,7 +709,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                         >
                             Create Event
                         </Button>
-                        {wallet.address ? (
+                        {wallet.address || isWalletLoading ? (
                             <Menu>
                                 <MenuButton
                                     as={Button}
@@ -714,7 +722,9 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     _focus={{}}
                                     fontWeight="normal"
                                     leftIcon={
-                                        user?.user_metadata?.avatar_url ? (
+                                        isWalletLoading ? (
+                                            <Spinner size="sm" ml="2" />
+                                        ) : user?.user_metadata?.avatar_url ? (
                                             <Avatar
                                                 size="sm"
                                                 src={
@@ -723,19 +733,27 @@ export default function NavigationBar({ mode = 'dark' }) {
                                                 }
                                             />
                                         ) : (
-                                            <BoringAva
-                                                address={wallet.address}
-                                            />
+                                            wallet.address && (
+                                                <BoringAva
+                                                    address={wallet.address}
+                                                />
+                                            )
                                         )
                                     }
-                                    rightIcon={<HiOutlineChevronDown />}
+                                    rightIcon={
+                                        isWalletLoading === false && (
+                                            <HiOutlineChevronDown />
+                                        )
+                                    }
                                 >
-                                    {wallet.domain ||
-                                        wallet.address.substring(0, 4) +
-                                            '...' +
-                                            wallet.address.substring(
-                                                wallet.address.length - 4
-                                            )}
+                                    {isWalletLoading
+                                        ? 'Loading Wallet'
+                                        : wallet.domain ||
+                                          wallet?.address?.substring(0, 4) +
+                                              '...' +
+                                              wallet?.address?.substring(
+                                                  wallet?.address?.length - 4
+                                              )}
                                 </MenuButton>
                                 <MenuList
                                     shadow="none"

@@ -35,7 +35,7 @@ export default function WalletSignUpModal({
             description: 'Sign up with email or google',
             connector: async () => {
                 await handleEmail()
-                onClose()
+                // onClose()
             },
             image: '/assets/elements/email.svg',
             size: '2.5rem',

@@ -118,10 +118,12 @@ export default function EventLayout({
     const { hasCopied, value, onCopy } = useClipboard(eventLink as string)
     const [hasBought, setHasBought] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    // const [formLoading, setFormLoading] = useState<boolean>(false)
     const [ensName, setEnsName] = useState<string | null>(null)
     const [openseaLink, setToOpenseaLink] = useState<string>('')
     const [hasTicket, setHasTicket] = useState<boolean>(false)
     const [qrId, setQrId] = useState<string>('')
+    const [isMapCompatible, setIsMapCompatible] = useState<boolean>(true)
     const { isOpen, onOpen } = useDisclosure()
     const [wallet, setWallet] = useContext<any>(walletContext)
     const [solanaWallet, setSolanaWallet] = useState<
@@ -161,11 +163,8 @@ export default function EventLayout({
 
     useEffect(() => {
         ;(async function () {
-            if (
-                !event.childAddress.startsWith('0x') &&
-                wallet.type == 'web3auth'
-            ) {
-                // @ts-ignore
+            if (event.isSolana && wallet.type == 'web3auth') {
+                // setFormLoading(true)
                 const privateKey: string = await web3.request({
                     method: 'eth_private_key',
                 })
@@ -209,6 +208,7 @@ export default function EventLayout({
                         chain: 'SOL',
                     })
                 }
+                // setFormLoading(false)
             }
         })()
     }, [wallet.type])
@@ -688,6 +688,7 @@ export default function EventLayout({
         if (wallet.address && user) {
             if (isInviteOnly) {
                 if (formRes === 'Register') {
+                    // setFormLoading(true)
                     if (
                         event.isSolana ||
                         (!event.isSolana && wallet.chain === 'POLYGON')
@@ -700,11 +701,12 @@ export default function EventLayout({
                             wallet.address as string
                         )
                     } else {
-                        toast.error(
-                            `Please connect your ${
-                                event.isSolana ? 'Solana' : 'Polygon'
-                            } wallet!`
-                        )
+                        !(wallet.type === 'web3auth') &&
+                            toast.error(
+                                `Please connect your ${
+                                    event.isSolana ? 'Solana' : 'Polygon'
+                                } wallet!`
+                            )
                     }
                 }
                 if (formRes === 'Accepted') {
@@ -718,7 +720,10 @@ export default function EventLayout({
                 }
             }
         } else {
-            toast.error('Please connect your solana wallet')
+            wallet.type === null &&
+                toast.error(
+                    'Please make sure your wallet has loaded or is connected'
+                )
         }
     }
     useEffect(() => {
@@ -758,52 +763,51 @@ export default function EventLayout({
         }
     }, [hasBought])
     useEffect(() => {
-        // console.log('event venue', JSON.parse(event.venue as any).name)
-        if (
-            event &&
-            event.venue &&
-            event.venue.x &&
-            event.venue.y &&
-            mapContainerRef.current
-        ) {
-            const map = new mapboxgl.Map({
-                container: mapContainerRef.current, // container ID
-                style: 'mapbox://styles/mapbox/streets-v11', // style URL
-                center: [event.venue.x, event.venue.y], // starting position
-                zoom: 15, // starting zoom
-            })
+        try {
+            if (
+                event &&
+                event.venue &&
+                event.venue.x &&
+                event.venue.y &&
+                mapContainerRef.current
+            ) {
+                const map = new mapboxgl.Map({
+                    container: mapContainerRef.current, // container ID
+                    style: 'mapbox://styles/mapbox/streets-v11', // style URL
+                    center: [event.venue.x, event.venue.y], // starting position
+                    zoom: 15, // starting zoom
+                })
 
-            // const markerNode = document.createElement('div')
-            // add navigation control (the +/- zoom buttons)
+                // const markerNode = document.createElement('div')
+                // add navigation control (the +/- zoom buttons)
 
-            if (map) {
-                map.addControl(
-                    new mapboxgl.GeolocateControl({
-                        positionOptions: {
-                            enableHighAccuracy: true,
-                        },
-                        // When active the map will receive updates to the device's location as it changes.
-                        trackUserLocation: false,
+                if (map) {
+                    map.addControl(
+                        new mapboxgl.GeolocateControl({
+                            positionOptions: {
+                                enableHighAccuracy: true,
+                            },
+                            // When active the map will receive updates to the device's location as it changes.
+                            trackUserLocation: false,
 
-                        // Draw an arrow next to the location dot to indicate which direction the device is heading.
-                        showUserLocation: false,
-                    })
-                )
-                map.addControl(
-                    new mapboxgl.NavigationControl({
-                        showCompass: false,
-                        showZoom: false,
-                        visualizePitch: true,
-                    }),
-                    'bottom-left'
-                )
-                const marker = new mapboxgl.Marker({
-                    draggable: false,
-                }) // initialize a new marker
-                    .setLngLat([event?.venue?.x, event?.venue?.y]) // Marker [lng, lat] coordinates
-                    .addTo(map)
-                return () => map.remove()
+                            // Draw an arrow next to the location dot to indicate which direction the device is heading.
+                            showUserLocation: false,
+                        })
+                    )
+                    map.addControl(
+                        new mapboxgl.NavigationControl({
+                            showCompass: false,
+                            showZoom: false,
+                            visualizePitch: true,
+                        }),
+                        'bottom-left'
+                    )
+
+                    return () => map.remove()
+                }
             }
+        } catch (error) {
+            setIsMapCompatible(false)
         }
     }, [event?.venue])
 
@@ -1103,7 +1107,7 @@ export default function EventLayout({
                         bg="brand.gradient"
                         fontWeight="medium"
                         role="group"
-                        loadingText="Minting"
+                        loadingText={'Minting'}
                         isLoading={isLoading}
                         boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
                         color="white"
@@ -1342,7 +1346,7 @@ export default function EventLayout({
                                 bg="brand.gradient"
                                 fontWeight="medium"
                                 role="group"
-                                loadingText="Minting"
+                                loadingText={'Minting'}
                                 isLoading={isLoading}
                                 boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
                                 color="white"
@@ -1688,13 +1692,24 @@ export default function EventLayout({
                                         ) || event.venue.name}
                                     </Text>
                                 </Link>
-                                <Box
-                                    className="map-container"
-                                    w="100%"
-                                    h="10vh"
-                                    borderRadius="lg"
-                                    ref={mapContainerRef}
-                                ></Box>
+                                {isMapCompatible ? (
+                                    <Box
+                                        className="map-container"
+                                        w="100%"
+                                        h="10vh"
+                                        borderRadius="lg"
+                                        ref={mapContainerRef}
+                                    ></Box>
+                                ) : (
+                                    <Box
+                                        w="100%"
+                                        h="10vh"
+                                        borderRadius="lg"
+                                        bgImage="https://res.cloudinary.com/dev-connect/image/upload/v1664118651/img/Screenshot_2022-09-25_at_8.34.45_PM_noeivg.png"
+                                        bgSize="cover"
+                                        bgRepeat="no-repeat"
+                                    ></Box>
+                                )}
                             </Box>
                         )}
                         <Box

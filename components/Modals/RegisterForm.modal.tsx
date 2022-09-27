@@ -79,7 +79,7 @@ export const RegisterFormModal = ({
         }
 
         fetchData()
-    }, [event])
+    }, [event, wallet.address])
 
     // console.log(formData?.data, 'form data')
 
@@ -92,7 +92,8 @@ export const RegisterFormModal = ({
     } = useForm()
 
     const onSubmit = async (res: any) => {
-        // console.log(res, 'here')
+        console.log(res, 'response')
+
         if (user) {
             setIsLoading(true)
             let a = event?.childAddress as string
@@ -182,6 +183,13 @@ export const RegisterFormModal = ({
                                             isRequired={ques.isRequired}
                                             isReadOnly={
                                                 ques.id === 3 || ques.id == 2
+                                            }
+                                            value={
+                                                ques.id == 2
+                                                    ? user?.email
+                                                    : ques.id == 3
+                                                    ? wallet?.address
+                                                    : null
                                             }
                                             defaultValue={
                                                 ques.id == 2
