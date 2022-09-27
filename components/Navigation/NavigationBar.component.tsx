@@ -65,10 +65,6 @@ import { useRouter } from 'next/router'
 
 import WalletSignUpModal from '../Modals/WalletSignUp.modal'
 import { Web3Auth } from '@web3auth/web3auth'
-import {
-    SolanaPrivateKeyProvider,
-    SolanaWallet,
-} from '@web3auth/solana-provider'
 
 // @ts-ignore
 import * as Web3 from 'web3'
@@ -315,13 +311,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                         setMyEvents(false)
                     }}
                 />
-                {/* {isOpen2 && (
-                    <SignUpModal
-                        isOpen={isOpen2}
-                        onOpen={onOpen2}
-                        onClose={onClose2}
-                    />
-                )} */}
+
                 {isOpen3 && (
                     <WalletSignUpModal
                         handleEmail={handleEmail}

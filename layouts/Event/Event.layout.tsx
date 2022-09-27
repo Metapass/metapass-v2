@@ -62,7 +62,7 @@ import {
     getAssociatedTokenAddress,
     TOKEN_PROGRAM_ID,
 } from '@solana/spl-token'
-import { Connection } from '@solana/web3.js'
+import { Connection, Keypair } from '@solana/web3.js'
 import SignUpModal from '../../components/Modals/SignUp.modal'
 import resolveDomains from '../../hooks/useDomain'
 import axios from 'axios'
@@ -77,8 +77,13 @@ import { updateOnce } from '../../lib/recoil/atoms'
 import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
 import AcceptedModalComponent from '../../components/Modals/Accepted.modal'
-import { HiOutlineTicket } from 'react-icons/hi'
 import { web3Context } from '../../utils/web3Context'
+import {
+    SolanaPrivateKeyProvider,
+    SolanaWallet,
+} from '@web3auth/solana-provider'
+import * as anchor from '@project-serum/anchor'
+import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes'
 
 declare const window: any
 
@@ -89,6 +94,7 @@ export default function EventLayout({
     event: Event
     isInviteOnly: boolean
 }) {
+    let solanaWallet: any
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
         process.env.NEXT_PUBLIC_ENV === 'prod'
@@ -109,8 +115,8 @@ export default function EventLayout({
     const [hasTicket, setHasTicket] = useState<boolean>(false)
     const [qrId, setQrId] = useState<string>('')
     const { isOpen, onOpen } = useDisclosure()
-    const [wallet] = useContext<WalletType[]>(walletContext)
-    const solanaWallet = useWallet()
+    const [wallet, setWallet] = useContext<any>(walletContext)
+    solanaWallet = useWallet()
     const mapContainerRef = useRef(null)
     const [web3, setWeb3]: any = useContext(web3Context)
 
@@ -142,6 +148,45 @@ export default function EventLayout({
     const toUpdate = useRecoilValue(updateOnce)
 
     const user = supabase.auth.user()
+
+    useEffect(() => {
+        ;(async function () {
+            if (wallet.type == 'web3auth') {
+                // @ts-ignore
+                const privateKey: string = await web3.request({
+                    method: 'eth_private_key',
+                })
+                const { getED25519Key } = await import(
+                    '@toruslabs/openlogin-ed25519'
+                )
+                const ed25519key = getED25519Key(privateKey).sk.toString('hex')
+
+                const solanaPrivateKeyProvider = new SolanaPrivateKeyProvider({
+                    config: {
+                        chainConfig: {
+                            chainId: '0x3',
+                            rpcTarget: 'https://ssc-dao.genesysgo.net',
+                            displayName: 'Solana Mainnet',
+                            blockExplorer: 'https://explorer.solana.com/',
+                            ticker: 'SOL',
+                            tickerName: 'Solana',
+                        },
+                    },
+                })
+                await solanaPrivateKeyProvider.setupProvider(ed25519key)
+                const solWallet = new SolanaWallet(
+                    solanaPrivateKeyProvider.provider as any
+                )
+
+                const solana_address = await solWallet.requestAccounts()
+
+                if (wallet) {
+                    solanaWallet = solWallet
+                    solanaWallet.publicKey = solana_address
+                }
+            }
+        })()
+    }, [wallet.type])
 
     useEffect(() => {
         async function getData() {
@@ -215,7 +260,10 @@ export default function EventLayout({
     let biconomy: any
     useEffect(() => {
         const initBiconomy = async () => {
-            if (wallet.type == 'web3auth') {
+            if (
+                wallet.type == 'web3auth' &&
+                event.childAddress.startsWith('0x')
+            ) {
                 console.log(web3)
                 biconomy = new Biconomy(web3, {
                     apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
@@ -240,7 +288,7 @@ export default function EventLayout({
             }
         }
         if (
-            wallet.address?.startsWith('0x') &&
+            event.childAddress.startsWith('0x') &&
             (WalletSigner?.provider || wallet.type == 'web3auth')
         ) {
             initBiconomy()
@@ -399,10 +447,11 @@ export default function EventLayout({
         }
     }
     const buySolanaTicket = async () => {
+        console.log(solanaWallet)
         if (user === null) {
             setToOpen(true)
         } else {
-            if (solanaWallet.publicKey && wallet.address) {
+            if (solanaWallet && solanaWallet.publicKey) {
                 setIsLoading(true)
                 const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey(
                     'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
@@ -595,6 +644,7 @@ export default function EventLayout({
                     )
                 }
             } else {
+                console.log(solanaWallet.publicKey)
                 toast.error('Please connect your Solana Wallet', {
                     id: 'connect-sol-wal',
                 })
