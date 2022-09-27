@@ -29,10 +29,8 @@ require('@solana/wallet-adapter-react-ui/styles.css')
 
 export const WalletContextProvider: FC = ({ children }) => {
     // If window exists and is on localhost, choose devnet, else choose mainnet
-    const network =
-        typeof window !== 'undefined' && process.env.NEXT_PUBLIC_ENV === 'dev'
-            ? (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
-            : (process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string)
+    const network = clusterApiUrl('mainnet-beta')
+
     const endpoint = useMemo(() => network, [network])
     const wallets = useMemo(
         () => [

@@ -220,7 +220,7 @@ export const RegisterFormModal = ({
                                         <Input
                                             placeholder={ques.val}
                                             w="md"
-                                            isRequired={false}
+                                            isRequired={ques.isRequired}
                                             {...register(camelize(ques.val))}
                                         />
                                     </Flex>
