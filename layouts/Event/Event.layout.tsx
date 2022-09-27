@@ -78,6 +78,7 @@ import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
 import AcceptedModalComponent from '../../components/Modals/Accepted.modal'
 import { HiOutlineTicket } from 'react-icons/hi'
+import { web3Context } from '../../utils/web3Context'
 
 declare const window: any
 
@@ -111,6 +112,7 @@ export default function EventLayout({
     const [wallet] = useContext<WalletType[]>(walletContext)
     const solanaWallet = useWallet()
     const mapContainerRef = useRef(null)
+    const [web3, setWeb3]: any = useContext(web3Context)
 
     const [explorerLink, setExplorerLink] = useState<string>('')
     let opensea =
@@ -214,6 +216,15 @@ export default function EventLayout({
     useEffect(() => {
         const initBiconomy = async () => {
             if (wallet.type == 'web3auth') {
+                console.log(web3)
+                biconomy = new Biconomy(web3, {
+                    apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
+                    debug: process.env.NEXT_PUBLIC_ENV == 'dev',
+                    contractAddresses: [
+                        ethers.utils.getAddress(event.childAddress),
+                    ],
+                })
+                await biconomy.init()
             } else {
                 biconomy = new Biconomy(
                     (WalletSigner?.provider as any).provider,

@@ -48,7 +48,7 @@
         "mapbox-gl": "^2.9.2",
         "metapass-sdk": "^0.2.7",
         "moment": "^2.29.1",
-        "next": "^12.2.3",
+        "next": "^12.3.1",
         "next-remove-imports": "^1.0.6",
         "next-transpile-modules": "^9.0.0",
         "nextjs-progressbar": "^0.0.14",

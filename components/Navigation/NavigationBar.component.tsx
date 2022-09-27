@@ -188,40 +188,17 @@ export default function NavigationBar({ mode = 'dark' }) {
             clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!,
             chainConfig: {
                 chainNamespace: 'eip155',
-                chainId: '0x3',
+                chainId: '0x13881',
+                rpcTarget: endpoint,
             },
         })
         await web3auth.initModal()
         onClose3()
         const web3authProvider = await web3auth.connect()
         // @ts-ignore
-        const web3 = new Web3(web3authProvider)
-        setWeb3(web3auth.provider)
-        // @ts-ignore
-        const privateKey: string = await web3auth.provider.request({
-            method: 'eth_private_key',
-        })
-        const { getED25519Key } = await import('@toruslabs/openlogin-ed25519')
-        const ed25519key = getED25519Key(privateKey).sk.toString('hex')
-        const solanaPrivateKeyProvider = new SolanaPrivateKeyProvider({
-            config: {
-                chainConfig: {
-                    chainId: '0x3',
-                    rpcTarget: 'https://ssc-dao.genesysgo.net',
-                    displayName: 'Solana Mainnet',
-                    blockExplorer: 'https://explorer.solana.com/',
-                    ticker: 'SOL',
-                    tickerName: 'Solana',
-                },
-            },
-        })
-        await solanaPrivateKeyProvider.setupProvider(ed25519key)
-        const solanaWallet = new SolanaWallet(
-            solanaPrivateKeyProvider.provider as any
-        )
-        const solana_address = await solanaWallet.requestAccounts()
+        const web3 = new Web3(web3auth.provider)
+        setWeb3(web3authProvider)
 
-        console.log(solana_address[0])
         const userAccounts = await web3.eth.getAccounts()
         let bal = await web3.eth.getBalance(userAccounts[0])
         setWallet({
