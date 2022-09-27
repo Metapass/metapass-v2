@@ -31,6 +31,7 @@ import { walletContext } from '../../utils/walletContext'
 import axios from 'axios'
 import { QuestionComp } from '../Misc/question.component'
 import { RegistrationTemplate } from '../../utils/registrationtemplate'
+import { useUser } from '../../hooks/useUser'
 interface formNew {
     id: number
     data: formType
@@ -50,7 +51,7 @@ export const RegisterFormModal = ({
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [toUpdate, setToUpdate] = useRecoilState(updateOnce)
 
-    const user = supabase.auth.user()
+    const { user } = useUser()
     const [wallet, setWallet] = useContext(walletContext)
 
     useEffect(() => {

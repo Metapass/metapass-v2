@@ -36,7 +36,6 @@ const useUser = () => {
                         },
                     }
                     setUser(userwithmetadata as OpenLoginUserWithMetadata)
-                    console.log(userwithmetadata, 'userwithmetadata')
                 } catch (error) {
                     if (
                         (error as Error).message.includes(

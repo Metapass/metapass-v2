@@ -706,7 +706,6 @@ export default function EventLayout({
                 }
                 if (formRes === 'Accepted') {
                     event.isSolana ? buySolanaTicket() : buyPolygonTicket()
-                } else {
                 }
             } else {
                 if (event.isSolana) {
