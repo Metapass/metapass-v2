@@ -49,8 +49,8 @@ import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import { Biconomy } from '@biconomy/mexa'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-import * as web3 from '@solana/web3.js'
+import { useWallet, WalletContextState } from '@solana/wallet-adapter-react'
+// import * as web3 from '@solana/web3.js'
 import {
     getHostPDA,
     getAdminPDA,
@@ -62,7 +62,13 @@ import {
     getAssociatedTokenAddress,
     TOKEN_PROGRAM_ID,
 } from '@solana/spl-token'
-import { Connection, Keypair } from '@solana/web3.js'
+import {
+    ComputeBudgetProgram,
+    Connection,
+    Keypair,
+    PublicKey,
+    Transaction,
+} from '@solana/web3.js'
 import SignUpModal from '../../components/Modals/SignUp.modal'
 import resolveDomains from '../../hooks/useDomain'
 import axios from 'axios'
@@ -86,7 +92,9 @@ import * as anchor from '@project-serum/anchor'
 import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes'
 
 declare const window: any
-
+interface SolanaWalletWithPublicKey extends SolanaWallet {
+    publicKey: PublicKey
+}
 export default function EventLayout({
     event,
     isInviteOnly,
@@ -94,7 +102,6 @@ export default function EventLayout({
     event: Event
     isInviteOnly: boolean
 }) {
-    let solanaWallet: any
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
         process.env.NEXT_PUBLIC_ENV === 'prod'
@@ -116,9 +123,11 @@ export default function EventLayout({
     const [qrId, setQrId] = useState<string>('')
     const { isOpen, onOpen } = useDisclosure()
     const [wallet, setWallet] = useContext<any>(walletContext)
-    solanaWallet = useWallet()
+    const [solanaWallet, setSolanaWallet] = useState<
+        SolanaWalletWithPublicKey | WalletContextState | null
+    >(useWallet())
     const mapContainerRef = useRef(null)
-    const [web3, setWeb3]: any = useContext(web3Context)
+    const [web3, setWeb3] = useContext(web3Context)
 
     const [explorerLink, setExplorerLink] = useState<string>('')
     let opensea =
@@ -181,8 +190,16 @@ export default function EventLayout({
                 const solana_address = await solWallet.requestAccounts()
 
                 if (wallet) {
-                    solanaWallet = solWallet
-                    solanaWallet.publicKey = solana_address
+                    setSolanaWallet({
+                        publicKey: new PublicKey(solana_address[0]),
+                        ...solWallet,
+                    } as SolanaWalletWithPublicKey)
+
+                    // solanaWallet.publicKey = new PublicKey(solana_address[0])
+                    // console.log(
+                    //     'solanaWallet',
+                    //     solanaWallet.publicKey.toString()
+                    // )
                 }
             }
         })()
@@ -453,23 +470,22 @@ export default function EventLayout({
         } else {
             if (solanaWallet && solanaWallet.publicKey) {
                 setIsLoading(true)
-                const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey(
+                const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
                     'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
                 )
-                const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID =
-                    new web3.PublicKey(
-                        'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-                    )
+                const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID = new PublicKey(
+                    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+                )
                 // event.customSPLToken =
                 //     'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-                const customSPL = new web3.PublicKey(
+                const customSPL = new PublicKey(
                     'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
                 )
                 const getMetadata = async (
-                    mint: web3.PublicKey
-                ): Promise<web3.PublicKey> => {
+                    mint: PublicKey
+                ): Promise<PublicKey> => {
                     return (
-                        await web3.PublicKey.findProgramAddress(
+                        await PublicKey.findProgramAddress(
                             [
                                 Buffer.from('metadata'),
                                 TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -481,10 +497,10 @@ export default function EventLayout({
                 }
 
                 const getMasterEdition = async (
-                    mint: web3.PublicKey
-                ): Promise<web3.PublicKey> => {
+                    mint: PublicKey
+                ): Promise<PublicKey> => {
                     return (
-                        await web3.PublicKey.findProgramAddress(
+                        await PublicKey.findProgramAddress(
                             [
                                 Buffer.from('metadata'),
                                 TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -496,48 +512,48 @@ export default function EventLayout({
                     )[0]
                 }
 
-                const mint = web3.Keypair.generate()
+                const mint = Keypair.generate()
                 const metadataAddress = await getMetadata(mint.publicKey)
                 const masterEdition = await getMasterEdition(mint.publicKey)
-                const NftTokenAccount: web3.PublicKey =
+                const NftTokenAccount: PublicKey =
                     await getAssociatedTokenAddress(
                         mint.publicKey,
-                        solanaWallet.publicKey as web3.PublicKey
+                        solanaWallet.publicKey as PublicKey
                     )
-                const hostPDA: web3.PublicKey = await getHostPDA(
-                    new web3.PublicKey(event.eventHost)
+                const hostPDA: PublicKey = await getHostPDA(
+                    new PublicKey(event.eventHost)
                 )
-                const adminPDA: web3.PublicKey = await getAdminPDA()
+                const adminPDA: PublicKey = await getAdminPDA()
 
                 const hostCustomSplTokenAta = await getAssociatedTokenAddress(
                     customSPL,
-                    new web3.PublicKey(event.eventHost) // the receiver
+                    new PublicKey(event.eventHost) // the receiver
                 )
                 const adminCustomSplTokenATA = await getAssociatedTokenAddress(
                     customSPL,
-                    new web3.PublicKey(
+                    new PublicKey(
                         '4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw'
                     )
                 )
-                const senderCustomTokenATA: web3.PublicKey =
+                const senderCustomTokenATA: PublicKey =
                     await getAssociatedTokenAddress(
                         customSPL,
-                        solanaWallet.publicKey as web3.PublicKey
+                        solanaWallet.publicKey as PublicKey
                     )
                 const accounts: MintTicketInstructionAccounts = {
-                    mintAuthority: solanaWallet.publicKey as web3.PublicKey,
-                    eventAccount: new web3.PublicKey(event.childAddress),
+                    mintAuthority: solanaWallet.publicKey as PublicKey,
+                    eventAccount: new PublicKey(event.childAddress),
                     mint: mint.publicKey,
                     metadata: metadataAddress,
                     tokenAccount: NftTokenAccount,
                     tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-                    payer: solanaWallet.publicKey as web3.PublicKey,
+                    payer: solanaWallet.publicKey as PublicKey,
                     masterEdition: masterEdition,
                     eventHost: hostPDA,
 
-                    eventHostKey: new web3.PublicKey(event.eventHost),
+                    eventHostKey: new PublicKey(event.eventHost),
                     adminAccount: adminPDA,
-                    adminKey: new web3.PublicKey(
+                    adminKey: new PublicKey(
                         '4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw'
                     ),
                     customSplToken: customSPL,
@@ -573,17 +589,17 @@ export default function EventLayout({
                     }
                 )
                 const additionalComputeBudgetInstruction =
-                    web3.ComputeBudgetProgram.requestUnits({
+                    ComputeBudgetProgram.requestUnits({
                         units: 300000,
                         additionalFee: 0,
                     })
-                const transaction = new web3.Transaction()
+                const transaction = new Transaction()
                     .add(additionalComputeBudgetInstruction)
                     .add(transactionInstruction)
                 console.log('tx', uri, 'uri')
                 const { blockhash } = await connection.getLatestBlockhash()
                 transaction.recentBlockhash = blockhash
-                transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
+                transaction.feePayer = solanaWallet.publicKey as PublicKey
                 if (solanaWallet.signTransaction) {
                     try {
                         transaction.sign(mint)
@@ -644,7 +660,7 @@ export default function EventLayout({
                     )
                 }
             } else {
-                console.log(solanaWallet.publicKey)
+                console.log(solanaWallet?.publicKey)
                 toast.error('Please connect your Solana Wallet', {
                     id: 'connect-sol-wal',
                 })
