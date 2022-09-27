@@ -637,11 +637,7 @@ export default function EventLayout({
                         setMintedImage(fastimg)
                         setHasBought(true)
                         setIsLoading(false)
-                        // await updateEventData(
-                        //     event.childAddress,
-                        //     wallet.publicKey?.toString() as string,
-                        //     event.tickets_sold + 1
-                        // )
+
                         event.category.event_type == 'In-Person' &&
                             generateAndSendUUID(
                                 event.childAddress,
@@ -757,6 +753,7 @@ export default function EventLayout({
             }, 5000)
         }
     }, [hasBought])
+
     useEffect(() => {
         // console.log('event venue', JSON.parse(event.venue as any).name)
         if (
