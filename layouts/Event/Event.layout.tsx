@@ -130,7 +130,7 @@ export default function EventLayout({
         SolanaWalletWithPublicKey | WalletContextState | null
     >(useWallet())
     const mapContainerRef = useRef(null)
-    const [web3, setWeb3, web3auth, setWeb3auth] = useContext(web3Context)
+    const [web3, setWeb3, web3auth, setWeb3auth]: any = useContext(web3Context)
 
     const [explorerLink, setExplorerLink] = useState<string>('')
     let opensea =
