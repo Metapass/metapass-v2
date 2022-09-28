@@ -2,11 +2,15 @@ import { Box, Flex, Text, Image } from '@chakra-ui/react'
 import SearchBar from '../../components/Elements/SearchBar.component'
 import NavigationBar from '../../components/Navigation/NavigationBar.component'
 
-export default function HeroCTA() {
+export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
     return (
         <>
             {' '}
-            <NavigationBar />
+            <NavigationBar
+                isOpen3={isOpen3}
+                onOpen3={onOpen3}
+                onClose3={onClose3}
+            />
             <Box
                 backgroundImage={`url("/assets/gradient.png")`}
                 backgroundSize="cover"

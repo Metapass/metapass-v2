@@ -1,16 +1,4 @@
-import {
-    AspectRatio,
-    Box,
-    Flex,
-    Image,
-    Link,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalOverlay,
-    Text,
-} from '@chakra-ui/react'
+import { AspectRatio, Box, Flex, Image, Link, Text } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
@@ -71,7 +59,7 @@ export default function EventCard({
             h={['18rem', '20rem']}
             borderColor="blackAlpha.200"
         >
-            {!previewOnly && showEventModal && (
+            {/* {!previewOnly && showEventModal && (
                 <Modal
                     isCentered
                     size="5xl"
@@ -94,11 +82,16 @@ export default function EventCard({
                             right="-6"
                         />
                         <ModalBody>
-                            <EventLayout event={event} />
+                            <EventLayout
+                                isOpen3={isOpen3}
+                                onOpen3={onOpen3}
+                                onClose3={onClose3}
+                                event={event}
+                            />
                         </ModalBody>
                     </ModalContent>
                 </Modal>
-            )}
+            )} */}
             <Flex position="absolute" top="2" left="2" zIndex={2}>
                 {isFeatured && (
                     <Flex

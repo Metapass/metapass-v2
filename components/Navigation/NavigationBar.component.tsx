@@ -71,13 +71,18 @@ import { Web3Auth } from '@web3auth/web3auth'
 import * as Web3 from 'web3'
 import { ethers } from 'ethers'
 import { useUser } from '../../hooks/useUser'
-
+interface Props {
+    mode?: string
+    isOpen3: boolean
+    onClose3: () => void
+    onOpen3: () => void
+}
 export default function NavigationBar({
     mode = 'dark',
     isOpen3,
     onOpen3,
     onClose3,
-}: any) {
+}: Props) {
     const [address, setAddress] = useState<string>('')
 
     const [balance, setBalance] = useState<string>('')
@@ -281,6 +286,9 @@ export default function NavigationBar({
             domain: null,
         })
         setIsWalletLoading(false)
+        toast.success('Logged in with Wallet', {
+            id: 'web3authwallet',
+        })
     }
 
     const mdcontent = [
@@ -325,9 +333,10 @@ export default function NavigationBar({
         if (
             isConnected ||
             window?.solana?.isConnected ||
-            window?.solana?.isPhantom
+            window?.solana?.isPhantom ||
+            web3auth?.status === 'connected'
         ) {
-            multichainDisconnector()
+            await multichainDisconnector()
             setBalance('')
             setAddress('')
             setWallet({
@@ -338,6 +347,7 @@ export default function NavigationBar({
                 chain: null,
             })
             onClose1()
+            setIsWalletLoading(null)
         }
     }
 
@@ -569,7 +579,7 @@ export default function NavigationBar({
                                         <Image
                                             src={
                                                 wallet.chain === 'SOL'
-                                                    ? 'assets/solana-logo.png'
+                                                    ? '/assets/solana-logo.png'
                                                     : '/assets/matic_circle.svg'
                                             }
                                             alt={wallet.chain as string}
@@ -648,14 +658,20 @@ export default function NavigationBar({
                                 fontSize="sm"
                                 fontWeight="normal"
                                 leftIcon={
-                                    <MdAccountBalanceWallet size="25px" />
+                                    isWalletLoading ? (
+                                        <Spinner size="sm" ml="2" />
+                                    ) : (
+                                        <MdAccountBalanceWallet size="25px" />
+                                    )
                                 }
                                 onClick={() => {
                                     disconnectWallet()
                                     onOpen3()
                                 }}
                             >
-                                Connect Wallet
+                                {isWalletLoading
+                                    ? 'Loading Wallet'
+                                    : 'Connect Wallet'}
                             </Button>
                         </>
                     )}
