@@ -201,10 +201,11 @@ export const RegisterFormModal = ({
                                             }
                                             {...register(camelize(ques.val), {
                                                 onChange: (e) => {
-                                                    reset({
-                                                        [ques.val]:
-                                                            wallet.address,
-                                                    })
+                                                    ques.id === 3 &&
+                                                        reset({
+                                                            [ques.val]:
+                                                                wallet.address,
+                                                        })
                                                 },
                                             })}
                                         />
