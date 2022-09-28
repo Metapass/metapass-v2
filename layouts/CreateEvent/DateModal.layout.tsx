@@ -34,7 +34,7 @@ export default function DateModal({ isOpen, onClose, onSubmit }: any) {
                     onSubmit={(e) => {
                         e.preventDefault()
 
-                        /* YYYY:MM:DDThh:mm:ss-hh:mm:ss */
+                        /* YYYY:MM:DDThh:mm:ss-hh:mm:ss */ //
 
                         onSubmit(
                             `${startDateTime.replaceAll('-', ':')}-${
