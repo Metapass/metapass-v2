@@ -99,9 +99,15 @@ interface SolanaWalletWithPublicKey extends SolanaWallet {
 export default function EventLayout({
     event,
     isInviteOnly,
+    isOpen3,
+    onOpen3,
+    onClose3,
 }: {
     event: Event
     isInviteOnly: boolean
+    isOpen3: boolean
+    onOpen3: () => void
+    onClose3: () => void
 }) {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
@@ -724,7 +730,7 @@ export default function EventLayout({
                     )
             }
         } else {
-            onOpen()
+            onOpen3()
         }
     }
     useEffect(() => {

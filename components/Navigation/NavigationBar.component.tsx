@@ -72,7 +72,12 @@ import * as Web3 from 'web3'
 import { ethers } from 'ethers'
 import { useUser } from '../../hooks/useUser'
 
-export default function NavigationBar({ mode = 'dark' }) {
+export default function NavigationBar({
+    mode = 'dark',
+    isOpen3,
+    onOpen3,
+    onClose3,
+}: any) {
     const [address, setAddress] = useState<string>('')
 
     const [balance, setBalance] = useState<string>('')
@@ -121,11 +126,7 @@ export default function NavigationBar({ mode = 'dark' }) {
         onOpen: onOpen2,
         onClose: onClose2,
     } = useDisclosure()
-    const {
-        isOpen: isOpen3,
-        onOpen: onOpen3,
-        onClose: onClose3,
-    } = useDisclosure()
+
     const chainid: any = env ? 137 : 80001
     const endpoint: any = env
         ? process.env.NEXT_PUBLIC_ENDPOINT_POLYGON
