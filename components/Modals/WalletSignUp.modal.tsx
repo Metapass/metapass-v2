@@ -31,8 +31,8 @@ export default function WalletSignUpModal({
 }: props) {
     const items = [
         {
-            title: 'Sign Up With Email',
-            description: 'Sign up with email or google',
+            title: 'Sign In With Email',
+            description: 'Sign in with email or google',
             connector: async () => {
                 await handleEmail()
                 // onClose()

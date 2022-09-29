@@ -669,9 +669,7 @@ export default function NavigationBar({
                                     onOpen3()
                                 }}
                             >
-                                {isWalletLoading
-                                    ? 'Loading Wallet'
-                                    : 'Connect Wallet'}
+                                {isWalletLoading ? 'Loading' : 'Sign In'}
                             </Button>
                         </>
                     )}
@@ -760,7 +758,7 @@ export default function NavigationBar({
                                     rightIcon={<HiOutlineChevronDown />}
                                 >
                                     {isWalletLoading
-                                        ? 'Loading Wallet'
+                                        ? 'Loading'
                                         : wallet.domain ||
                                           wallet?.address?.substring(0, 4) +
                                               '...' +
@@ -856,16 +854,17 @@ export default function NavigationBar({
                                     _focus={{}}
                                     _active={{ bg: 'blackAlpha.700' }}
                                     py="5"
+                                    // minW="40%"
                                     fontWeight="normal"
-                                    leftIcon={
-                                        <MdAccountBalanceWallet size="25px" />
-                                    }
+                                    // leftIcon={
+                                    //     <MdAccountBalanceWallet size="25px" />
+                                    // }
                                     onClick={() => {
                                         disconnectWallet()
                                         onOpen3()
                                     }}
                                 >
-                                    Connect Wallet
+                                    Sign In
                                 </Button>
                             </>
                         )}
