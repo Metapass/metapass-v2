@@ -42,7 +42,7 @@ const env: any = process.env.NEXT_PUBLIC_ENV === 'prod'
 const polygon = require(env
     ? '../../utils/polygon.json'
     : '../../utils/mumbai.json')
-
+import { OpenloginAdapter } from '@web3auth/openlogin-adapter'
 declare const window: any
 import BoringAva from '../../utils/BoringAva'
 import { ConnectWallet } from './ConnectWallet'
@@ -202,6 +202,7 @@ export default function NavigationBar({
                 chainId: '0x89',
                 rpcTarget: endpoint,
             },
+
             uiConfig: {
                 theme: 'light',
                 loginMethodsOrder: ['google'],
@@ -209,11 +210,18 @@ export default function NavigationBar({
                     'https://res.cloudinary.com/dev-connect/image/upload/v1664263385/img/mplogocircle_pve27h.png', // Your App Logo Here
             },
         })
+        const openloginAdapter = new OpenloginAdapter({
+            loginSettings: {
+                mfaLevel: 'none',
+            },
+        })
+        web3auth.configureAdapter(openloginAdapter)
         await web3auth.initModal({
             // @ts-ignore
             modalConfig: {
                 [WALLET_ADAPTERS.OPENLOGIN]: {
                     label: 'openlogin',
+
                     loginMethods: {
                         google: {
                             name: 'google login',
@@ -273,6 +281,7 @@ export default function NavigationBar({
             },
         })
         // onClose3()
+
         setWeb3auth(web3auth)
         const web3authProvider = await web3auth.connect()
         // @ts-ignore
