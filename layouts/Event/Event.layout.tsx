@@ -3,6 +3,7 @@ import {
     Box,
     Flex,
     Text,
+    Link as ChakraLink,
     Image,
     Button,
     Divider,
@@ -10,7 +11,6 @@ import {
     Modal,
     ModalBody,
     ModalContent,
-    Link,
     InputGroup,
     InputRightElement,
     InputLeftElement,
@@ -92,6 +92,7 @@ import * as anchor from '@project-serum/anchor'
 import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes'
 import { OpenLoginUserWithMetadata, useUser } from '../../hooks/useUser'
 import resolveBalance from '../../hooks/useSolBalance'
+import Link from 'next/link'
 declare const window: any
 interface SolanaWalletWithPublicKey extends SolanaWallet {
     publicKey: PublicKey
@@ -1051,12 +1052,13 @@ export default function EventLayout({
                                 </Flex>
                             )}
                             <Box mt="2" mb="4">
-                                <Link
-                                    fontSize="sm"
-                                    href="/"
-                                    color="blackAlpha.600"
-                                >
-                                    Back to home
+                                <Link href="/" passHref>
+                                    <ChakraLink
+                                        fontSize="sm"
+                                        color="blackAlpha.600"
+                                    >
+                                        Back to home
+                                    </ChakraLink>
                                 </Link>
                             </Box>
                         </ModalBody>
@@ -1679,7 +1681,7 @@ export default function EventLayout({
                                         <MapPinLine />
                                     </Flex>
                                 </Flex>
-                                <Link
+                                <ChakraLink
                                     onClick={() => {
                                         window.open(
                                             `https://maps.google.com/?q=${event.venue?.name}`,
@@ -1700,7 +1702,7 @@ export default function EventLayout({
                                             event.venue.name.indexOf(',')
                                         ) || event.venue.name}
                                     </Text>
-                                </Link>
+                                </ChakraLink>
                                 {isMapCompatible ? (
                                     <Box
                                         className="map-container"
