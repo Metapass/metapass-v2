@@ -117,7 +117,10 @@ export default function NavigationBar({
     const { data } = useBalance({
         addressOrName: addy,
     })
-    const { multichainDisconnector } = useMultichainDisconnect(wallet.chain)
+    const { multichainDisconnector } = useMultichainDisconnect(
+        wallet.chain,
+        wallet.type
+    )
     const [domain, setDomain] = useState<string | null>(null)
     const [showMyEvents, setMyEvents] = useState(false)
     const router = useRouter()
@@ -286,7 +289,7 @@ export default function NavigationBar({
             domain: null,
         })
         setIsWalletLoading(false)
-        toast.success('Logged in with Wallet', {
+        toast.success('Welcome', {
             id: 'web3authwallet',
         })
     }
