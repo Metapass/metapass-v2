@@ -55,7 +55,7 @@ export default function WalletSignUpModal({
         <SlideFade in={isOpen}>
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
-                <ModalContent rounded="xl">
+                <ModalContent rounded="xl" mx={{ base: '1rem', md: 'auto' }}>
                     <ModalBody m={2} p={4}>
                         {items.map((item, index) => (
                             <React.Fragment key={index}>

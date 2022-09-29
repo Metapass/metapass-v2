@@ -27,7 +27,7 @@ const client = createClient({
     provider,
     webSocketProvider,
 })
-
+declare const window: any
 function MyApp({ Component, pageProps }: AppProps) {
     return (
         <>
@@ -59,7 +59,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                                 <Contract>
                                     <Toaster />
                                     <ChakraProvider theme={theme}>
-                                        <ChatwootWidget />
+                                        {<ChatwootWidget />}
                                         <NextNProgress color="#6451FB" />
 
                                         <Component {...pageProps} />

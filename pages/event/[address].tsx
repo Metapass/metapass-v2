@@ -17,7 +17,7 @@ import { supabase } from '../../lib/config/supabaseConfig'
 import { useRouter } from 'next/router'
 import og from '../../OG.json'
 import Head from 'next/head'
-
+declare const window: any
 const Event: NextPage = ({ event, og }: any) => {
     const [featEvent, setFeatEvent] = useState<Event>(event)
     const [isInviteOnly, setInviteOnly] = useState<boolean>(false)

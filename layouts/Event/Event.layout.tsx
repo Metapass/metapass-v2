@@ -1196,13 +1196,14 @@ export default function EventLayout({
                 >
                     <Box w="full">
                         <Box
+                            mb={{ base: '8', md: '0' }}
                             w="full"
                             overflow="clip"
                             border="1px"
                             borderColor="blackAlpha.100"
                             boxShadow="0px 4.25554px 93.6219px rgba(0, 0, 0, 0.08)"
                             rounded="xl"
-                            p="3"
+                            p={{ base: '0', md: '3' }}
                         >
                             <Flex
                                 alignItems={{
@@ -1238,6 +1239,7 @@ export default function EventLayout({
                                     )}
                                 </AspectRatio>
                                 <Box
+                                    display={{ base: 'none', md: 'block' }}
                                     maxH={{ base: '26vw', xl: '300px' }}
                                     minW={{
                                         md: '100px',
@@ -1334,7 +1336,6 @@ export default function EventLayout({
                         </Box>
                         <Box
                             w="full"
-                            mt="2"
                             mb={{ base: '10px', md: '0' }}
                             noOfLines={6}
                             border="1px"
@@ -1349,12 +1350,13 @@ export default function EventLayout({
                             // minH={{ base: '28', xl: '28' }}
                             // maxW="10%"
                             // h="10rem"
+                            display={{ base: 'none', md: 'block' }}
                             minH={{ base: '4rem', md: 'auto' }}
                             maxH={{ base: '14rem', md: 'auto' }}
                             maxW="740px"
                             overflow="auto"
                         >
-                            <Box>
+                            <Box display={{ base: 'none', md: 'block' }}>
                                 <MarkdownPreview
                                     style={{
                                         fontSize: event.description.long_desc
@@ -1373,7 +1375,49 @@ export default function EventLayout({
                         <Flex
                             justify="center"
                             display={{ base: 'flex', md: 'none' }}
+                            backgroundColor="white"
+                            w="100%"
+                            flexDirection="column"
+                            position="fixed"
+                            bottom="0"
+                            align="center"
+                            zIndex={10}
+                            pb="1"
+                            pt="8"
+                            borderTopRightRadius={20}
+                            borderTopLeftRadius={20}
+                            left="0"
                         >
+                            {/* <Flex align="center">
+                                <Text
+                                    fontSize={event.fee === 0 ? 'xl' : '2xl'}
+                                    fontWeight="semibold"
+                                    // mt={event.fee === 0 ? '1.5' : '0'}
+                                    mb="2"
+                                >
+                                    {event.fee > 0 ? event.fee : 'FREE'}
+                                </Text>
+                                <Box w="fit-content" mb="2" ml="4">
+                                    {event.fee > 0 && (
+                                        <Image
+                                            src={
+                                                event.isSolana
+                                                    ? event.customSPLToken
+                                                        ? event.customSPLToken.startsWith(
+                                                              'EPjFWdd5Auf'
+                                                          )
+                                                            ? '/assets/tokens/USDC.svg'
+                                                            : '/assets/tokens/USDT.svg'
+                                                        : '/assets/tokens/SOL.svg'
+                                                    : '/assets/matic.png'
+                                            }
+                                            alt="matic"
+                                            w="20px"
+                                            h="20px"
+                                        />
+                                    )}
+                                </Box>
+                            </Flex> */}
                             <Button
                                 rounded="full"
                                 bg="brand.gradient"
@@ -1432,47 +1476,52 @@ export default function EventLayout({
                         <Flex
                             experimental_spaceX="2.5"
                             w={{ base: 'full', md: 'auto' }}
+                            flexDirection={{ base: 'row', md: 'row' }}
                         >
-                            <Box
-                                p="2"
-                                border="1px"
-                                borderColor="blackAlpha.100"
-                                rounded="xl"
-                                textAlign="center"
-                                w={{ base: 'full', md: 'auto' }}
-                                minW={{ base: 'auto', md: '100px' }}
-                                boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
-                            >
-                                <Text fontSize="xs" color="blackAlpha.700">
-                                    Ticket Price
-                                </Text>
-                                <Divider my="2" />
-                                <Box w="fit-content" mx="auto">
-                                    <Image
-                                        src={
-                                            event.isSolana
-                                                ? event.customSPLToken
-                                                    ? event.customSPLToken.startsWith(
-                                                          'EPjFWdd5Auf'
-                                                      )
-                                                        ? '/assets/tokens/USDC.svg'
-                                                        : '/assets/tokens/USDT.svg'
-                                                    : '/assets/tokens/SOL.svg'
-                                                : '/assets/matic.png'
-                                        }
-                                        alt="matic"
-                                        w="6"
-                                        h="6"
-                                    />
-                                </Box>
-                                <Text
-                                    fontSize={event.fee === 0 ? 'lg' : '2xl'}
-                                    fontWeight="semibold"
-                                    mt={event.fee === 0 ? '1.5' : '0'}
+                            {
+                                <Box
+                                    p="2"
+                                    border="1px"
+                                    borderColor="blackAlpha.100"
+                                    rounded="xl"
+                                    textAlign="center"
+                                    w={{ base: 'full', md: 'auto' }}
+                                    minW={{ base: 'auto', md: '100px' }}
+                                    boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                                 >
-                                    {event.fee === 0 ? 'FREE' : event.fee}
-                                </Text>
-                            </Box>
+                                    <Text fontSize="xs" color="blackAlpha.700">
+                                        Ticket Price
+                                    </Text>
+                                    <Divider my="2" />
+                                    <Box w="fit-content" mx="auto">
+                                        <Image
+                                            src={
+                                                event.isSolana
+                                                    ? event.customSPLToken
+                                                        ? event.customSPLToken.startsWith(
+                                                              'EPjFWdd5Auf'
+                                                          )
+                                                            ? '/assets/tokens/USDC.svg'
+                                                            : '/assets/tokens/USDT.svg'
+                                                        : '/assets/tokens/SOL.svg'
+                                                    : '/assets/matic.png'
+                                            }
+                                            alt="matic"
+                                            w="6"
+                                            h="6"
+                                        />
+                                    </Box>
+                                    <Text
+                                        fontSize={
+                                            event.fee === 0 ? 'lg' : '2xl'
+                                        }
+                                        fontWeight="semibold"
+                                        mt={event.fee === 0 ? '1.5' : '0'}
+                                    >
+                                        {event.fee === 0 ? 'FREE' : event.fee}
+                                    </Text>
+                                </Box>
+                            }
                             <Box
                                 p="2"
                                 border="1px"
@@ -1682,7 +1731,7 @@ export default function EventLayout({
                                 borderColor="blackAlpha.100"
                                 boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                                 py="2"
-                                maxW="18rem"
+                                maxW={{ base: 'auto', md: '"18rem"' }}
                             >
                                 <Flex
                                     justify="flex-end"
@@ -1746,6 +1795,7 @@ export default function EventLayout({
                             </Box>
                         )}
                         <Box
+                            mb={{ base: '40%', md: '0' }}
                             mt="3"
                             rounded="xl"
                             px="4"

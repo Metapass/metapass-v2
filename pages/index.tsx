@@ -3,13 +3,15 @@ import type { NextPage } from 'next'
 import FeaturedEvents from '../layouts/LandingPage/FeaturedEvents.layout'
 import HeroCTA from '../layouts/LandingPage/HeroCTA.layout'
 import Head from 'next/head'
-
+import { useEffect } from 'react'
+declare const window: any
 const Home: NextPage = () => {
     const {
         isOpen: isOpen3,
         onOpen: onOpen3,
         onClose: onClose3,
     } = useDisclosure()
+
     return (
         <Box h="100vh" overflow="scroll">
             <Head>
