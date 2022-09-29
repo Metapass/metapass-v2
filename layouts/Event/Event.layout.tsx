@@ -93,6 +93,7 @@ import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes'
 import { OpenLoginUserWithMetadata, useUser } from '../../hooks/useUser'
 import resolveBalance from '../../hooks/useSolBalance'
 import Link from 'next/link'
+import Web3 from 'web3'
 declare const window: any
 interface SolanaWalletWithPublicKey extends SolanaWallet {
     publicKey: PublicKey
@@ -170,51 +171,72 @@ export default function EventLayout({
 
     useEffect(() => {
         ;(async function () {
-            if (event.isSolana && wallet.type == 'web3auth') {
+            if (wallet.type == 'web3auth') {
                 // setFormLoading(true)
+
                 const privateKey: string = await web3.request({
                     method: 'eth_private_key',
                 })
-                const { getED25519Key } = await import(
-                    '@toruslabs/openlogin-ed25519'
-                )
-                const ed25519key = getED25519Key(privateKey).sk.toString('hex')
 
-                const solanaPrivateKeyProvider = new SolanaPrivateKeyProvider({
-                    config: {
-                        chainConfig: {
-                            chainId: '0x3',
-                            rpcTarget: 'https://ssc-dao.genesysgo.net',
-                            displayName: 'Solana Mainnet',
-                            blockExplorer: 'https://explorer.solana.com/',
-                            ticker: 'SOL',
-                            tickerName: 'Solana',
-                        },
-                    },
-                })
-                await solanaPrivateKeyProvider.setupProvider(ed25519key)
-                const solWallet = new SolanaWallet(
-                    solanaPrivateKeyProvider.provider as any
-                )
+                if (event.isSolana && wallet.address.startsWith('0x')) {
+                    const { getED25519Key } = await import(
+                        '@toruslabs/openlogin-ed25519'
+                    )
+                    const ed25519key =
+                        getED25519Key(privateKey).sk.toString('hex')
+                    const solanaPrivateKeyProvider =
+                        new SolanaPrivateKeyProvider({
+                            config: {
+                                chainConfig: {
+                                    chainId: '0x3',
+                                    rpcTarget: 'https://ssc-dao.genesysgo.net',
+                                    displayName: 'Solana Mainnet',
+                                    blockExplorer:
+                                        'https://explorer.solana.com/',
+                                    ticker: 'SOL',
+                                    tickerName: 'Solana',
+                                },
+                            },
+                        })
+                    await solanaPrivateKeyProvider.setupProvider(ed25519key)
+                    const solWallet = new SolanaWallet(
+                        solanaPrivateKeyProvider.provider as any
+                    )
 
-                const solana_address = await solWallet.requestAccounts()
-                let balance = await resolveBalance(solana_address[0])
+                    const solana_address = await solWallet.requestAccounts()
+                    let balance = await resolveBalance(solana_address[0])
 
-                if (wallet) {
-                    setSolanaWallet({
-                        ...solWallet,
-                        publicKey: new PublicKey(solana_address[0]),
-                        signTransaction: solWallet.signTransaction,
-                    } as SolanaWalletWithPublicKey)
-                    console.log('balance here', balance)
+                    if (wallet) {
+                        setSolanaWallet({
+                            ...solWallet,
+                            publicKey: new PublicKey(solana_address[0]),
+                            signTransaction: solWallet.signTransaction,
+                        } as SolanaWalletWithPublicKey)
+                        console.log('balance here', balance)
+                        setWallet({
+                            address: solana_address[0],
+                            balance: balance?.toString(),
+                            domain: null,
+                            type: 'web3auth',
+                            chain: 'SOL',
+                        })
+                    }
+                } else if (
+                    !event.isSolana &&
+                    !wallet.address.startsWith('0x')
+                ) {
+                    const w3 = new Web3(web3)
+                    const userAccounts = await w3.eth.getAccounts()
+                    let bal = await w3.eth.getBalance(userAccounts[0])
                     setWallet({
-                        address: solana_address[0],
-                        balance: balance?.toString(),
-                        domain: null,
+                        balance: ethers.utils.formatEther(bal),
+                        address: userAccounts[0],
                         type: 'web3auth',
-                        chain: 'SOL',
+                        chain: 'POLYGON',
+                        domain: null,
                     })
                 }
+
                 // setFormLoading(false)
             }
         })()
