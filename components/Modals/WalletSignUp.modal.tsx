@@ -32,7 +32,7 @@ export default function WalletSignUpModal({
     const items = [
         {
             title: 'Sign In With Email',
-            description: 'Sign in with email or google',
+            description: 'Sign in with email or google. Powered by Web3Auth',
             connector: async () => {
                 await handleEmail()
                 // onClose()
