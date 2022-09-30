@@ -76,7 +76,7 @@ import { generateMetadata } from '../../utils/generateMetadata'
 import { useAccount, useProvider, useSigner } from 'wagmi'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { RegisterFormModal } from '../../components/Modals/RegisterForm.modal'
-import { FiCheckCircle } from 'react-icons/fi'
+import { FiCheckCircle, FiShare } from 'react-icons/fi'
 import { handleRegister } from '../../utils/helpers/handleRegister'
 import { useRecoilValue } from 'recoil'
 import { updateOnce } from '../../lib/recoil/atoms'
@@ -124,6 +124,7 @@ export default function EventLayout({
     const [mintedImage, setMintedImage] = useState<string>('')
     const [eventLink, setEventLink] = useState<string>('')
     const { hasCopied, value, onCopy } = useClipboard(eventLink as string)
+
     const [hasBought, setHasBought] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     // const [formLoading, setFormLoading] = useState<boolean>(false)
@@ -138,6 +139,11 @@ export default function EventLayout({
         SolanaWalletWithPublicKey | WalletContextState | null
     >(useWallet())
     const router = useRouter()
+    const {
+        hasCopied: hasCopied1,
+        value: value1,
+        onCopy: onCopy1,
+    } = useClipboard(`https://app.metapassh1.xyz/event/${router.query.address}`)
     const mapContainerRef = useRef(null)
     const [web3, setWeb3, web3auth, setWeb3auth]: any = useContext(web3Context)
 
@@ -1115,49 +1121,52 @@ export default function EventLayout({
                     justify="space-between"
                     align={{ md: 'center' }}
                     flexDir={{ base: 'column', md: 'row' }}
-                    //   border="1px solid red"
                 >
-                    <Box pl={{ md: '2' }}>
-                        <Text fontSize="2xl" fontWeight="semibold">
-                            {event.title}
-                        </Text>
+                    <Flex gap={3}>
+                        <Box pl={{ md: '2' }}>
+                            <Text fontSize="2xl" fontWeight="semibold">
+                                {event.title}
+                            </Text>
 
-                        {/* <Flex mt="1" flexDirection="column"> */}
-                        <Flex
-                            experimental_spaceX="2"
-                            color="blackAlpha.600"
-                            mt="1"
-                            mr="4"
-                        >
-                            <Box
-                                boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
-                                rounded="full"
-                                fontSize="10px"
-                                fontWeight="semibold"
-                                border="1px"
-                                borderColor="blackAlpha.200"
-                                px="2"
-                                py="0.5"
-                                bg="white"
+                            {/* <Flex mt="1" flexDirection="column"> */}
+                            <Flex
+                                experimental_spaceX="2"
+                                color="blackAlpha.600"
+                                mt="1"
+                                mr="4"
                             >
-                                {event.type || event.category.event_type}
-                            </Box>
-                            <Box
-                                boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
-                                rounded="full"
-                                fontSize="10px"
-                                fontWeight="semibold"
-                                border="1px"
-                                borderColor="blackAlpha.200"
-                                px="2"
-                                py="0.5"
-                                bg="white"
-                            >
-                                {Array(event.category.category).join(' & ')}
-                            </Box>
-                        </Flex>
-                    </Box>
-
+                                <Box
+                                    boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
+                                    rounded="full"
+                                    fontSize="10px"
+                                    fontWeight="semibold"
+                                    border="1px"
+                                    borderColor="blackAlpha.200"
+                                    px="2"
+                                    py="0.5"
+                                    bg="white"
+                                >
+                                    {event.type || event.category.event_type}
+                                </Box>
+                                <Box
+                                    boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
+                                    rounded="full"
+                                    fontSize="10px"
+                                    fontWeight="semibold"
+                                    border="1px"
+                                    borderColor="blackAlpha.200"
+                                    px="2"
+                                    py="0.5"
+                                    bg="white"
+                                >
+                                    {Array(event.category.category).join(' & ')}
+                                </Box>
+                            </Flex>
+                        </Box>
+                        <Button onClick={onCopy1} variant={'unstyled'}>
+                            <FiShare />
+                        </Button>
+                    </Flex>
                     <Button
                         display={{ base: 'none', md: 'flex' }}
                         rounded="full"
@@ -1359,6 +1368,7 @@ export default function EventLayout({
                                 </Box>
                             </Flex>
                         </Box>
+
                         <Box
                             w="full"
                             mt={2}
