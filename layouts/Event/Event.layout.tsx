@@ -88,12 +88,12 @@ import {
     SolanaPrivateKeyProvider,
     SolanaWallet,
 } from '@web3auth/solana-provider'
-import * as anchor from '@project-serum/anchor'
-import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes'
+import { IoShareOutline } from 'react-icons/io5'
 import { OpenLoginUserWithMetadata, useUser } from '../../hooks/useUser'
 import resolveBalance from '../../hooks/useSolBalance'
 import Link from 'next/link'
 import Web3 from 'web3'
+import { useRouter } from 'next/router'
 declare const window: any
 interface SolanaWalletWithPublicKey extends SolanaWallet {
     publicKey: PublicKey
@@ -137,6 +137,7 @@ export default function EventLayout({
     const [solanaWallet, setSolanaWallet] = useState<
         SolanaWalletWithPublicKey | WalletContextState | null
     >(useWallet())
+    const router = useRouter()
     const mapContainerRef = useRef(null)
     const [web3, setWeb3, web3auth, setWeb3auth]: any = useContext(web3Context)
 
@@ -1098,6 +1099,7 @@ export default function EventLayout({
                         <Text fontSize="2xl" fontWeight="semibold">
                             {event.title}
                         </Text>
+
                         {/* <Flex mt="1" flexDirection="column"> */}
                         <Flex
                             experimental_spaceX="2"
@@ -1383,41 +1385,54 @@ export default function EventLayout({
                             align="center"
                             zIndex={10}
                             pb="1"
-                            pt="8"
+                            pt="4"
                             borderTopRightRadius={20}
                             borderTopLeftRadius={20}
                             left="0"
                         >
-                            {/* <Flex align="center">
-                                <Text
-                                    fontSize={event.fee === 0 ? 'xl' : '2xl'}
-                                    fontWeight="semibold"
-                                    // mt={event.fee === 0 ? '1.5' : '0'}
-                                    mb="2"
-                                >
-                                    {event.fee > 0 ? event.fee : 'FREE'}
+                            <Flex align="center" gap="2">
+                                <Text color="blackAlpha.500" fontSize="xs">
+                                    Hosted By
                                 </Text>
-                                <Box w="fit-content" mb="2" ml="4">
-                                    {event.fee > 0 && (
-                                        <Image
-                                            src={
-                                                event.isSolana
-                                                    ? event.customSPLToken
-                                                        ? event.customSPLToken.startsWith(
-                                                              'EPjFWdd5Auf'
-                                                          )
-                                                            ? '/assets/tokens/USDC.svg'
-                                                            : '/assets/tokens/USDT.svg'
-                                                        : '/assets/tokens/SOL.svg'
-                                                    : '/assets/matic.png'
-                                            }
-                                            alt="matic"
-                                            w="20px"
-                                            h="20px"
-                                        />
-                                    )}
-                                </Box>
-                            </Flex> */}
+                                <Flex mt="2" direction="column" mb="1">
+                                    <Flex
+                                        experimental_spaceX="2"
+                                        align="center"
+                                        _hover={{ bg: 'blackAlpha.50' }}
+                                        mx="-4"
+                                        px="4"
+                                        py="2"
+                                        cursor="pointer"
+                                        transitionDuration="100ms"
+                                    >
+                                        <BoringAva address={event.owner} />
+                                        <Box>
+                                            <Text fontSize="14px" w="32">
+                                                {ensName
+                                                    ? ensName?.length > 15
+                                                        ? ensName?.slice(0, 6) +
+                                                          '...' +
+                                                          ensName?.slice(-6)
+                                                        : ensName ||
+                                                          event?.owner?.slice(
+                                                              0,
+                                                              6
+                                                          ) +
+                                                              '...' +
+                                                              event?.owner?.slice(
+                                                                  -6
+                                                              )
+                                                    : event?.owner?.slice(
+                                                          0,
+                                                          6
+                                                      ) +
+                                                      '...' +
+                                                      event?.owner?.slice(-6)}
+                                            </Text>
+                                        </Box>
+                                    </Flex>
+                                </Flex>
+                            </Flex>
                             <Button
                                 rounded="full"
                                 bg="brand.gradient"
@@ -1674,10 +1689,87 @@ export default function EventLayout({
                                 </>
                             )}
                         </Box>
+
+                        {event.venue?.name && (
+                            <Box
+                                mt="3"
+                                rounded="xl"
+                                px="4"
+                                border="1px"
+                                borderColor="blackAlpha.100"
+                                boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
+                                py="2"
+                                maxW={{ base: 'auto', md: '"18rem"' }}
+                            >
+                                <Flex
+                                    justify="flex-end"
+                                    align="center"
+                                    flexDirection="row-reverse"
+                                    gap="2"
+                                >
+                                    <Text
+                                        color="blackAlpha.700"
+                                        fontSize="16px"
+                                        fontFamily="Poppins"
+                                        fontWeight="700"
+                                        lineHeight="24px"
+                                    >
+                                        Location
+                                    </Text>
+                                    <Flex fontSize="xs" align="center">
+                                        <MapPinLine />
+                                    </Flex>
+                                </Flex>
+                                <ChakraLink
+                                    textDecoration="underline"
+                                    color="blackAlpha.600"
+                                    onClick={() => {
+                                        window.open(
+                                            `https://maps.google.com/?q=${event.venue?.name}`,
+                                            '_blank'
+                                        )
+                                    }}
+                                >
+                                    <Text
+                                        color="blackAlpha.600"
+                                        // as="u"
+                                        fontSize="16px"
+                                        fontFamily="Poppins"
+                                        fontWeight="500"
+                                        lineHeight="24px"
+                                    >
+                                        {event.venue.name.substring(
+                                            0,
+                                            event.venue.name.indexOf(',')
+                                        ) || event.venue.name}
+                                        ↗
+                                    </Text>
+                                </ChakraLink>
+                                {isMapCompatible ? (
+                                    <Box
+                                        className="map-container"
+                                        w="100%"
+                                        h={{ base: '20vh', md: '10vh' }}
+                                        borderRadius="lg"
+                                        ref={mapContainerRef}
+                                    ></Box>
+                                ) : (
+                                    <Box
+                                        w="100%"
+                                        h="10vh"
+                                        borderRadius="lg"
+                                        bgImage="https://res.cloudinary.com/dev-connect/image/upload/v1664118651/img/Screenshot_2022-09-25_at_8.34.45_PM_noeivg.png"
+                                        bgSize="cover"
+                                        bgRepeat="no-repeat"
+                                    ></Box>
+                                )}
+                            </Box>
+                        )}
                         <Box
                             mt="3"
                             rounded="xl"
                             px="4"
+                            display={{ base: 'none', md: 'block' }}
                             border="1px"
                             borderColor="blackAlpha.100"
                             boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
@@ -1722,78 +1814,6 @@ export default function EventLayout({
                                 </Flex>
                             </Flex>
                         </Box>
-                        {event.venue?.name && (
-                            <Box
-                                mt="3"
-                                rounded="xl"
-                                px="4"
-                                border="1px"
-                                borderColor="blackAlpha.100"
-                                boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
-                                py="2"
-                                maxW={{ base: 'auto', md: '"18rem"' }}
-                            >
-                                <Flex
-                                    justify="flex-end"
-                                    align="center"
-                                    flexDirection="row-reverse"
-                                    gap="2"
-                                >
-                                    <Text
-                                        color="blackAlpha.700"
-                                        fontSize="16px"
-                                        fontFamily="Poppins"
-                                        fontWeight="700"
-                                        lineHeight="24px"
-                                    >
-                                        Location
-                                    </Text>
-                                    <Flex fontSize="xs" align="center">
-                                        <MapPinLine />
-                                    </Flex>
-                                </Flex>
-                                <ChakraLink
-                                    onClick={() => {
-                                        window.open(
-                                            `https://maps.google.com/?q=${event.venue?.name}`,
-                                            '_blank'
-                                        )
-                                    }}
-                                >
-                                    <Text
-                                        color="blackAlpha.600"
-                                        // as="u"
-                                        fontSize="16px"
-                                        fontFamily="Poppins"
-                                        fontWeight="500"
-                                        lineHeight="24px"
-                                    >
-                                        {event.venue.name.substring(
-                                            0,
-                                            event.venue.name.indexOf(',')
-                                        ) || event.venue.name}
-                                    </Text>
-                                </ChakraLink>
-                                {isMapCompatible ? (
-                                    <Box
-                                        className="map-container"
-                                        w="100%"
-                                        h="10vh"
-                                        borderRadius="lg"
-                                        ref={mapContainerRef}
-                                    ></Box>
-                                ) : (
-                                    <Box
-                                        w="100%"
-                                        h="10vh"
-                                        borderRadius="lg"
-                                        bgImage="https://res.cloudinary.com/dev-connect/image/upload/v1664118651/img/Screenshot_2022-09-25_at_8.34.45_PM_noeivg.png"
-                                        bgSize="cover"
-                                        bgRepeat="no-repeat"
-                                    ></Box>
-                                )}
-                            </Box>
-                        )}
                         <Box
                             mb={{ base: '40%', md: '0' }}
                             mt="3"

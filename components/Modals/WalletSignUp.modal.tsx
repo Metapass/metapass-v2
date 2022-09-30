@@ -47,7 +47,7 @@ export default function WalletSignUpModal({
                 onClose()
                 onWalletOpen()
             },
-            image: '/assets/elements/walletline.svg',
+            image: 'https://res.cloudinary.com/dev-connect/image/upload/v1664521612/img/walletline_bjuq9f.svg',
             size: '10rem',
         },
     ]

@@ -214,6 +214,14 @@ export default function NavigationBar({
             loginSettings: {
                 mfaLevel: 'none',
             },
+            adapterSettings: {
+                network: 'cyan',
+                whiteLabel: {
+                    name: 'Metapass',
+                    logoLight:
+                        'https://res.cloudinary.com/dev-connect/image/upload/v1664263385/img/mplogocircle_pve27h.png',
+                },
+            },
         })
         web3auth.configureAdapter(openloginAdapter)
         await web3auth.initModal({
