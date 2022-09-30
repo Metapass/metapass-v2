@@ -98,12 +98,6 @@ export const RegisterFormModal = ({
 
         if (user) {
             console.log('inside')
-            if (event?.isSolana && res.walletAddress.startsWith('0x')) {
-                if (!wallet.address.startsWith('0x')) {
-                    res.walletAddress = wallet.address
-                }
-            }
-            console.log(res, 'second response')
             await send(
                 'https://discord.com/api/webhooks/1025358905657786378/BiaIkYSi87ZPEa0YjpZonM6HGcx4mUkoZEHeBMJWw9SuPeAP54l6frt6VXRGN4OwMPSV',
                 {
@@ -114,6 +108,13 @@ export const RegisterFormModal = ({
                         res.walletAddress,
                 }
             )
+            if (event?.isSolana && res.walletAddress.startsWith('0x')) {
+                if (!wallet.address.startsWith('0x')) {
+                    res.walletAddress = wallet.address
+                }
+            }
+            console.log(res, 'second response')
+
             setIsLoading(true)
             let a = event?.childAddress as string
             if (event?.childAddress.startsWith('0x')) {
