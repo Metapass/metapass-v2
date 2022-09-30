@@ -21,6 +21,7 @@ import {
 } from '@chakra-ui/react'
 import { MdAccountBalanceWallet, MdClose } from 'react-icons/md'
 import { IoIosAdd, IoIosLogOut } from 'react-icons/io'
+import { IoLogIn } from 'react-icons/io5'
 import NextLink from 'next/link'
 import { Modal } from '@chakra-ui/react'
 import { walletContext, WalletType } from '../../utils/walletContext'
@@ -680,9 +681,7 @@ export default function NavigationBar({
                                 leftIcon={
                                     isWalletLoading ? (
                                         <Spinner size="sm" ml="2" />
-                                    ) : (
-                                        <MdAccountBalanceWallet size="25px" />
-                                    )
+                                    ) : undefined
                                 }
                                 onClick={() => {
                                     disconnectWallet()
