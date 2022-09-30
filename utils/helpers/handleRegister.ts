@@ -1,9 +1,10 @@
 import { User } from '@supabase/supabase-js'
 import toast from 'react-hot-toast'
+import { OpenLoginUserWithMetadata } from '../../hooks/useUser'
 import { supabase } from '../../lib/config/supabaseConfig'
 
 const handleRegister = async (
-    user: User | null,
+    user: User | null | OpenLoginUserWithMetadata,
     onOpen: () => void,
     setToOpen: any,
     event: string,

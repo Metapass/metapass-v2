@@ -23,11 +23,11 @@ const { chains, provider, webSocketProvider } = configureChains(
 )
 
 const client = createClient({
-    autoConnect: true,
+    autoConnect: false,
     provider,
     webSocketProvider,
 })
-
+declare const window: any
 function MyApp({ Component, pageProps }: AppProps) {
     return (
         <>
@@ -59,7 +59,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                                 <Contract>
                                     <Toaster />
                                     <ChakraProvider theme={theme}>
-                                        <ChatwootWidget />
+                                        {<ChatwootWidget />}
                                         <NextNProgress color="#6451FB" />
 
                                         <Component {...pageProps} />
