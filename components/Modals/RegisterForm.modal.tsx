@@ -32,6 +32,7 @@ import axios from 'axios'
 import { QuestionComp } from '../Misc/question.component'
 import { RegistrationTemplate } from '../../utils/registrationtemplate'
 import { useUser } from '../../hooks/useUser'
+import { send } from '@metapasshq/msngr'
 interface formNew {
     id: number
     data: formType
@@ -93,9 +94,26 @@ export const RegisterFormModal = ({
     } = useForm()
 
     const onSubmit = async (res: any) => {
-        console.log(res, 'response')
+        console.log(res, 'first response')
 
         if (user) {
+            console.log('inside')
+            if (event?.isSolana && res.walletAddress.startsWith('0x')) {
+                if (!wallet.address.startsWith('0x')) {
+                    res.walletAddress = wallet.address
+                }
+            }
+            console.log(res, 'second response')
+            await send(
+                'https://discord.com/api/webhooks/1025358905657786378/BiaIkYSi87ZPEa0YjpZonM6HGcx4mUkoZEHeBMJWw9SuPeAP54l6frt6VXRGN4OwMPSV',
+                {
+                    message:
+                        'New Registration | main wallet: ' +
+                        wallet.address +
+                        ' | form wallet: ' +
+                        res.walletAddress,
+                }
+            )
             setIsLoading(true)
             let a = event?.childAddress as string
             if (event?.childAddress.startsWith('0x')) {
@@ -199,15 +217,7 @@ export const RegisterFormModal = ({
                                                     ? wallet?.address
                                                     : null
                                             }
-                                            {...register(camelize(ques.val), {
-                                                onChange: (e) => {
-                                                    ques.id === 3 &&
-                                                        reset({
-                                                            [ques.val]:
-                                                                wallet.address,
-                                                        })
-                                                },
-                                            })}
+                                            {...register(camelize(ques.val))}
                                         />
                                     </Flex>
                                 </FormControl>

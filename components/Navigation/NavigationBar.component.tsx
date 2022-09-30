@@ -660,7 +660,7 @@ export default function NavigationBar({
                                     icon={<IoIosLogOut size="20px" />}
                                     color="red.500"
                                 >
-                                    Disconnect Wallet
+                                    Logout
                                 </MenuItem>
                             </MenuList>
                         </Menu>
