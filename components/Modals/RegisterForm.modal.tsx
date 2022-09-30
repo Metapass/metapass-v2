@@ -108,11 +108,7 @@ export const RegisterFormModal = ({
                         res.walletAddress,
                 }
             )
-            if (event?.isSolana && res.walletAddress.startsWith('0x')) {
-                if (!wallet.address.startsWith('0x')) {
-                    res.walletAddress = wallet.address
-                }
-            }
+            res.walletAddress = wallet.address
             console.log(res, 'second response')
 
             setIsLoading(true)
