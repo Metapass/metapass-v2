@@ -309,7 +309,22 @@ export default function EventLayout({
 
     useEffect(() => {
         if (wallet.address) {
-            setHasTicket(event.buyers.includes(wallet.address))
+            if (
+                event.buyers.find(
+                    (buyer: any) =>
+                        String(buyer?.id).toLowerCase() ===
+                        String(wallet.address).toLowerCase()
+                ) ||
+                event.buyers.find(
+                    (buyer) =>
+                        String(buyer).toLowerCase() ===
+                        String(wallet?.address).toLowerCase()
+                )
+            ) {
+                setHasTicket(true)
+            }
+        } else {
+            setHasTicket(false)
         }
     }, [wallet.address])
 
@@ -1162,7 +1177,8 @@ export default function EventLayout({
                         disabled={
                             event.tickets_available === 0 ||
                             formRes === 'Awaiting Approval' ||
-                            formRes === 'Accepted'
+                            formRes === 'Accepted' ||
+                            hasTicket
                         }
                         _focus={{}}
                         _active={{}}
@@ -1876,16 +1892,7 @@ export default function EventLayout({
                                 </Text>
                             )}
                         </Box>
-                        {(event.buyers.find(
-                            (buyer: any) =>
-                                String(buyer?.id).toLowerCase() ===
-                                String(wallet.address).toLowerCase()
-                        ) ||
-                            event.buyers.find(
-                                (buyer) =>
-                                    String(buyer).toLowerCase() ===
-                                    String(wallet?.address).toLowerCase()
-                            )) && (
+                        {hasTicket && (
                             <Flex align="center" justify="space-evenly">
                                 {event.category.event_type == 'Online' ? (
                                     <Box
