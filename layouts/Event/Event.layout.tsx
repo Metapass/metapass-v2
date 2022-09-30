@@ -1742,7 +1742,7 @@ export default function EventLayout({
                                             0,
                                             event.venue.name.indexOf(',')
                                         ) || event.venue.name}
-                                        ↗
+                                        {' - Open in Maps↗'}
                                     </Text>
                                 </ChakraLink>
                                 {isMapCompatible ? (
