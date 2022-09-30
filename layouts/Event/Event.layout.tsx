@@ -312,47 +312,48 @@ export default function EventLayout({
             setHasTicket(event.buyers.includes(wallet.address))
         }
     }, [wallet.address])
+
     let biconomy: any
-    useEffect(() => {
-        const initBiconomy = async () => {
-            if (
-                wallet.type == 'web3auth' &&
-                event.childAddress.startsWith('0x')
-            ) {
-                console.log(web3)
-                biconomy = new Biconomy(web3, {
-                    apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
-                    debug: process.env.NEXT_PUBLIC_ENV == 'dev',
-                    contractAddresses: [
-                        ethers.utils.getAddress(event.childAddress),
-                    ],
-                })
-                await biconomy.init()
-            } else {
-                biconomy = new Biconomy(
-                    (WalletSigner?.provider as any).provider,
-                    {
-                        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
-                        debug: process.env.NEXT_PUBLIC_ENV == 'dev',
-                        contractAddresses: [
-                            ethers.utils.getAddress(event.childAddress),
-                        ],
-                    }
-                )
-                await biconomy.init()
-            }
+
+    const initBiconomy = async () => {
+        if (wallet.type == 'web3auth' && event.childAddress.startsWith('0x')) {
+            biconomy = new Biconomy(web3auth.provider, {
+                apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
+                debug: process.env.NEXT_PUBLIC_ENV == 'dev',
+                contractAddresses: [
+                    ethers.utils.getAddress(event.childAddress),
+                ],
+            })
+            await biconomy.init()
+        } else {
+            biconomy = new Biconomy((WalletSigner?.provider as any).provider, {
+                apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
+                debug: process.env.NEXT_PUBLIC_ENV == 'dev',
+                contractAddresses: [
+                    ethers.utils.getAddress(event.childAddress),
+                ],
+            })
+            await biconomy.init()
         }
+    }
+
+    useEffect(() => {
         if (
             event.childAddress.startsWith('0x') &&
-            (WalletSigner?.provider || wallet.type == 'web3auth')
+            (WalletSigner?.provider ||
+                (wallet.address && wallet.address.startsWith('0x')))
         ) {
             initBiconomy()
             console.log('init bico', wallet.address, WalletSigner?.provider)
         }
-    }, [wallet.type, WalletSigner?.provider])
+    }, [wallet.address])
 
     const buyPolygonTicket = async () => {
-        if ((isConnected || wallet.type == 'web3auth') && biconomy) {
+        if (
+            (isConnected ||
+                (wallet.address && wallet.address.startsWith('0x'))) &&
+            biconomy
+        ) {
             if (user === null) {
                 setToOpen(true)
             } else {
@@ -401,7 +402,6 @@ export default function EventLayout({
                                     gasLimit: 900000,
                                 }
                             )
-                        console.log(data)
                         let txParams = {
                             data: data,
                             to: event.childAddress,
@@ -437,7 +437,6 @@ export default function EventLayout({
                         biconomy.on(
                             'onError',
                             (data: { error: any; transactionId: string }) => {
-                                console.log(data)
                                 toast.error('Ooops! Failed to mint the ticket.')
                                 setIsLoading(false)
                                 if (
@@ -450,7 +449,7 @@ export default function EventLayout({
                         )
                         setIsLoading(false)
                     } catch (e: any) {
-                        console.log(e)
+                        console.log(e, 'error')
                     }
                 } else {
                     try {
@@ -467,7 +466,6 @@ export default function EventLayout({
                                 ),
                             }
                         )
-                        console.log(txn.hash)
                         setIsLoading(false)
                         if (event.category.event_type == 'In-Person') {
                             generateAndSendUUID(
@@ -495,6 +493,15 @@ export default function EventLayout({
                     }
                 }
             }
+        } else if (
+            wallet.address &&
+            wallet.address.startsWith('0x') &&
+            !biconomy
+        ) {
+            setIsLoading(true)
+
+            await initBiconomy()
+            await buyPolygonTicket()
         } else {
             toast.error('Please connect your Polygon wallet', {
                 id: 'con-polygon',
@@ -1338,6 +1345,7 @@ export default function EventLayout({
                         </Box>
                         <Box
                             w="full"
+                            mt={2}
                             mb={{ base: '10px', md: '0' }}
                             noOfLines={6}
                             border="1px"
@@ -1349,15 +1357,19 @@ export default function EventLayout({
                             px="4"
                             color="blackAlpha.700"
                             fontSize={{ base: 'sm', lg: 'md' }}
-                            // minH={{ base: '28', xl: '28' }}
-                            // maxW="10%"
-                            // h="10rem"
                             display={{ base: 'none', md: 'block' }}
                             minH={{ base: '4rem', md: 'auto' }}
                             maxH={{ base: '14rem', md: 'auto' }}
                             maxW="740px"
                             overflow="auto"
                         >
+                            <Text
+                                fontWeight={'semibold'}
+                                decoration="underline"
+                                mb={2}
+                            >
+                                Description:
+                            </Text>
                             <Box display={{ base: 'none', md: 'block' }}>
                                 <MarkdownPreview
                                     style={{
@@ -1737,12 +1749,13 @@ export default function EventLayout({
                                         fontFamily="Poppins"
                                         fontWeight="500"
                                         lineHeight="24px"
+                                        my={2}
                                     >
                                         {event.venue.name.substring(
                                             0,
                                             event.venue.name.indexOf(',')
                                         ) || event.venue.name}
-                                        {' - Open in Maps↗'}
+                                        {' - Open in Maps ↗'}
                                     </Text>
                                 </ChakraLink>
                                 {isMapCompatible ? (
