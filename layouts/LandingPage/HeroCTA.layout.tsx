@@ -9,6 +9,7 @@ export default function HeroCTA() {
             {' '}
             <NavigationBar />
             <Box
+                backgroundImage={`url("https://d1fz5nl2y5xg38.cloudfront.net/assets/gradient.png")`}
                 backgroundSize="cover"
                 backgroundRepeat="no-repeat"
                 position="relative"
