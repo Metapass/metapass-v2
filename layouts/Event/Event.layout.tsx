@@ -1164,7 +1164,6 @@ export default function EventLayout({
                                                 />
                                             </AspectRatio>
                                         )}
-                                        {/* {console.log(image.hero_image,"hero_image")} */}
                                         {event.image.gallery?.map(
                                             (data, key) => (
                                                 <AspectRatio
