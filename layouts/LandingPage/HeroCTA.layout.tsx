@@ -1,6 +1,7 @@
 import { Box, Flex, Text, Image } from '@chakra-ui/react'
 import SearchBar from '../../components/Elements/SearchBar.component'
 import NavigationBar from '../../components/Navigation/NavigationBar.component'
+import dynamic from 'next/dynamic'
 
 export default function HeroCTA() {
     return (
@@ -8,7 +9,6 @@ export default function HeroCTA() {
             {' '}
             <NavigationBar />
             <Box
-                backgroundImage={`url("/assets/gradient.png")`}
                 backgroundSize="cover"
                 backgroundRepeat="no-repeat"
                 position="relative"
@@ -29,7 +29,10 @@ export default function HeroCTA() {
                             minWidth: '100%',
                         }}
                     >
-                        <source src="/assets/gradient.mp4" type="video/mp4" />
+                        <source
+                            src="https://d1fz5nl2y5xg38.cloudfront.net/assets/gradient.mp4"
+                            type="video/mp4"
+                        />
                     </video>
                 </Box>
 
@@ -59,7 +62,7 @@ export default function HeroCTA() {
                             w={{ base: '5', lg: '10' }}
                             ml={{ base: '0', lg: '1' }}
                             mt={{ base: '-12', lg: '-20' }}
-                            src="/assets/elements/sparkle.svg"
+                            src="https://d1fz5nl2y5xg38.cloudfront.net/assets/elements/sparkle.svg"
                             alt="element"
                         />
                     </Flex>
