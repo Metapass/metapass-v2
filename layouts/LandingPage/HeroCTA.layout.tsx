@@ -9,7 +9,7 @@ export default function HeroCTA() {
             {' '}
             <NavigationBar />
             <Box
-                backgroundImage={`url("https://d1fz5nl2y5xg38.cloudfront.net/assets/gradient.png")`}
+                backgroundImage={`url("https://res.cloudinary.com/dev-connect/image/upload/v1664709904/img/gradient_txqbjd.png")`}
                 backgroundSize="cover"
                 backgroundRepeat="no-repeat"
                 position="relative"
@@ -31,7 +31,8 @@ export default function HeroCTA() {
                         }}
                     >
                         <source
-                            src="https://d1fz5nl2y5xg38.cloudfront.net/assets/gradient.mp4"
+
+                            src="https://res.cloudinary.com/dev-connect/video/upload/v1664708693/img/gradient_ioikdd.mp4"
                             type="video/mp4"
                         />
                     </video>
