@@ -203,52 +203,31 @@ export async function getServerSideProps({ query }: any) {
     }
     const getSolanaEvents = async () => {
         const event = await axios.get(
-            `${process.env.NEXT_PUBLIC_MONGO_API}/getEvent/${address}`
+            `https://web-caching-test.up.railway.app/test/getEvent/${address}`
         )
-        if (event.data) {
-            const data = event.data
-            let venue
-            try {
-                venue = JSON.parse(data.venue)
-            } catch (e) {
-                venue = null
-            }
-            return {
-                ...data,
-                venue: venue,
-                owner: data.eventHost,
-                childAddress: address as string,
-                category: JSON.parse(data.category),
-                image: JSON.parse(data.image),
-                description: JSON.parse(data.description),
-                isSolana: true,
-            }
-        } else {
-            return null
-        }
+        return event.data
     }
 
+    let event = null
     if (address) {
         const isEtherAddress = ethers.utils.isAddress(address)
 
         if (isEtherAddress) {
-            const event = await getFeaturedEvents()
-            parsedEvent = parseFeaturedEvents(
-                event.data.childCreatedEntities[0]
-            )
+            event = await getFeaturedEvents()
+            event = parseFeaturedEvents(event.data.childCreatedEntities[0])
         } else {
-            parsedEvent = await getSolanaEvents()
+            event = await getSolanaEvents()
         }
     }
 
     return {
         props: {
-            event: parsedEvent,
+            event: event,
             og: img
                 ? img
                 : {
-                      desc: `Apply for ${parsedEvent.title} on Metapass now!`,
-                      img: `http://mp-og.vercel.app/${parsedEvent.title}`,
+                      desc: `Apply for ${event?.title} on Metapass now!`,
+                      img: `http://mp-og.vercel.app/${event.title}`,
                   },
         },
     }
