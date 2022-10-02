@@ -15,27 +15,29 @@ const resolveDomains = async (chain: Chain | null, address: string | null) => {
                 const ethdomain = await provider.lookupAddress(address)
                 return { domain: ethdomain, loading: false }
             } else if (chain === 'SOL') {
-                if (!window.solana || !address) return
+                // if (!window.solana || !address) return
 
-                const { data } = await axios(
-                    `https://api.shyft.to/sol/v1/wallet/get_domains?network=mainnet-beta&wallet=${address}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            'x-api-key': process.env
-                                .NEXT_PUBLIC_SHYFT_KEY as string,
-                        },
-                    }
-                )
+                // const { data } = await axios(
+                //     `https://api.shyft.to/sol/v1/wallet/get_domains?network=mainnet-beta&wallet=${address}`,
+                //     {
+                //         method: 'GET',
+                //         headers: {
+                //             'x-api-key': process.env
+                //                 .NEXT_PUBLIC_SHYFT_KEY as string,
+                //         },
+                //     }
+                // )
 
-                const accounts = data?.result
-                // console.log(accounts, 'address', data)
-                // console.log(accounts)
-                if (accounts.length > 0) {
-                    return { domain: accounts[0].name, loading: false }
-                } else {
-                    return { domain: null, loading: false }
-                }
+                // const accounts = data?.result
+                // // console.log(accounts, 'address', data)
+                // // console.log(accounts)
+                // if (accounts.length > 0) {
+                //     return { domain: accounts[0].name, loading: false }
+                // } else {
+                //     return { domain: null, loading: false }
+                // }
+
+                return { domain: null, loading: false }
             }
         } else {
             return { domain: null, loading: false }
