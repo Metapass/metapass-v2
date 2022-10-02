@@ -36,7 +36,10 @@ export default function CreateEventCTA({
                         minWidth: '100%',
                     }}
                 >
-                    <source src="/assets/gradient.mp4" type="video/mp4" />
+                    <source
+                        src="https://res.cloudinary.com/dev-connect/video/upload/v1664708693/img/gradient_ioikdd.mp4"
+                        type="video/mp4"
+                    />
                 </video>
                 <NavigationBar />
                 <Box
