@@ -217,10 +217,8 @@ export default function MyEvents({ isOpen, onClose }: any) {
         return data
     }
 
-    const { isConnected } = useAccount()
-
     useEffect(() => {
-        if (isConnected || wallet.type == 'web3auth') {
+        if (wallet.address && wallet.address.startsWith('0x')) {
             if (wallet?.address) {
                 getMyTickets()
                     .then((res) => {
@@ -230,7 +228,9 @@ export default function MyEvents({ isOpen, onClose }: any) {
                         setStore(data)
                         setMyTickets(data)
                     })
-                    .catch((err) => {})
+                    .catch((err) => {
+                        console.log(err)
+                    })
             }
         } else {
             if (wallet.address) {
@@ -244,291 +244,324 @@ export default function MyEvents({ isOpen, onClose }: any) {
     }, [wallet.address])
 
     return (
-        <Modal size="6xl" isOpen={isOpen} onClose={onClose}>
-            <ModalOverlay />
-            <ModalContent rounded="2xl">
-                <ModalBody>
-                    <Flex
-                        justify="center"
-                        w="full"
-                        textAlign="center"
-                        mt="8"
-                        mb="8"
-                        direction="column"
-                    >
-                        <Flex justify="center" mb="4">
-                            <Text
-                                fontWeight="medium"
-                                color="brand.black"
-                                fontSize="xl"
-                                position="relative"
-                            >
-                                My Events
-                            </Text>
-                            <Image
-                                w="4"
-                                mt="-8"
-                                src="/assets/elements/sparkle_dark.svg"
-                                alt="element"
-                            />
-                        </Flex>
-                        <Flex w="full" justify="center">
-                            <Tabs
-                                mt="4"
-                                align="start"
-                                w="fit-content"
-                                variant="unstyled"
-                            >
-                                <TabList
-                                    px="2"
-                                    bg="white"
-                                    mx="auto"
-                                    w="fit-content"
-                                    boxShadow="0px 13px 101px rgba(0, 0, 0, 0.08)"
-                                    rounded="full"
-                                    border="1px"
-                                    borderColor="blackAlpha.100"
+        isOpen && (
+            <Modal size="6xl" isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent rounded="2xl">
+                    <ModalBody>
+                        <Flex
+                            justify="center"
+                            w="full"
+                            textAlign="center"
+                            mt="8"
+                            mb="8"
+                            direction="column"
+                        >
+                            <Flex justify="center" mb="4">
+                                <Text
+                                    fontWeight="medium"
+                                    color="brand.black"
+                                    fontSize="xl"
+                                    position="relative"
                                 >
-                                    <Tab
-                                        pb="0"
-                                        display="flex"
-                                        flexDirection="column"
-                                        _focus={{}}
-                                        onFocus={() => {
-                                            setTab('upcoming')
-                                            if (store) {
-                                                let filter = store.filter(
-                                                    (tix: any) => {
-                                                        const date =
-                                                            tix.event.date
-                                                        let parsedDate =
-                                                            date.split('T')[0]
-                                                        let time = date
-                                                            .split('T')[1]
-                                                            .split('-')[0]
-                                                        return (
-                                                            new Date(
-                                                                parsedDate +
-                                                                    ' ' +
-                                                                    time
-                                                            ) > new Date()
-                                                        )
-                                                    }
-                                                )
-                                                setMyTickets(filter)
-                                            }
-                                        }}
-                                        _hover={{
-                                            color:
-                                                tab !== 'upcoming' &&
-                                                'blackAlpha.600',
-                                        }}
-                                        _active={{}}
-                                        fontWeight={
-                                            tab === 'upcoming'
-                                                ? 'medium'
-                                                : 'normal'
-                                        }
-                                        color={
-                                            tab === 'upcoming'
-                                                ? 'brand.black600'
-                                                : 'blackAlpha.500'
-                                        }
+                                    My Events
+                                </Text>
+                                <Image
+                                    w="4"
+                                    mt="-8"
+                                    src="/assets/elements/sparkle_dark.svg"
+                                    alt="element"
+                                />
+                            </Flex>
+                            <Flex w="full" justify="center">
+                                <Tabs
+                                    mt="4"
+                                    align="start"
+                                    w="fit-content"
+                                    variant="unstyled"
+                                >
+                                    <TabList
+                                        px="2"
+                                        bg="white"
+                                        mx="auto"
+                                        w="fit-content"
+                                        boxShadow="0px 13px 101px rgba(0, 0, 0, 0.08)"
+                                        rounded="full"
+                                        border="1px"
+                                        borderColor="blackAlpha.100"
                                     >
-                                        <Text mb="2">Upcoming Events</Text>
-                                        {tab === 'upcoming' && (
-                                            <Box
-                                                w="full"
-                                                h="1"
-                                                bg="brand.gradient"
-                                            />
-                                        )}
-                                    </Tab>
-                                    <Tab
-                                        pb="0"
-                                        display="flex"
-                                        flexDirection="column"
-                                        _focus={{}}
-                                        _active={{}}
-                                        onFocus={() => {
-                                            setTab('past')
-                                            if (store) {
-                                                let filter = store.filter(
-                                                    (tix: any) => {
-                                                        const date =
-                                                            tix.event.date
-                                                        let parsedDate =
-                                                            date.split('T')[0]
-                                                        let time = date
-                                                            .split('T')[1]
-                                                            .split('-')[0]
-                                                        return (
-                                                            new Date(
-                                                                parsedDate +
-                                                                    ' ' +
-                                                                    time
-                                                            ) < new Date()
-                                                        )
-                                                    }
-                                                )
-                                                setMyTickets(filter)
+                                        <Tab
+                                            pb="0"
+                                            display="flex"
+                                            flexDirection="column"
+                                            _focus={{}}
+                                            onFocus={() => {
+                                                setTab('upcoming')
+                                                if (store) {
+                                                    let filter = store.filter(
+                                                        (tix: any) => {
+                                                            const date =
+                                                                tix.event.date
+                                                            let parsedDate =
+                                                                date.split(
+                                                                    'T'
+                                                                )[0]
+                                                            let time = date
+                                                                .split('T')[1]
+                                                                .split('-')[0]
+                                                            return (
+                                                                new Date(
+                                                                    parsedDate +
+                                                                        ' ' +
+                                                                        time
+                                                                ) > new Date()
+                                                            )
+                                                        }
+                                                    )
+                                                    setMyTickets(filter)
+                                                }
+                                            }}
+                                            _hover={{
+                                                color:
+                                                    tab !== 'upcoming' &&
+                                                    'blackAlpha.600',
+                                            }}
+                                            _active={{}}
+                                            fontWeight={
+                                                tab === 'upcoming'
+                                                    ? 'medium'
+                                                    : 'normal'
                                             }
-                                        }}
-                                        fontWeight={
-                                            tab === 'past' ? 'medium' : 'normal'
-                                        }
-                                        _hover={{
-                                            color:
-                                                tab !== 'past' &&
-                                                'blackAlpha.600',
-                                        }}
-                                        color={
-                                            tab === 'past'
-                                                ? 'brand.black600'
-                                                : 'blackAlpha.500'
-                                        }
-                                    >
-                                        <Text mb="2">Past Events</Text>
-                                        {tab === 'past' && (
-                                            <Box
-                                                w="full"
-                                                h="1"
-                                                bg="brand.gradient"
-                                            />
-                                        )}
-                                    </Tab>
-                                </TabList>
-                                <TabPanels mt="10">
-                                    <TabPanel>
-                                        <Grid
-                                            templateColumns={{
-                                                md: 'repeat(1, 1fr)',
-                                                lg: 'repeat(1, 1fr)',
-                                                xl: 'repeat(1, 1fr)',
-                                            }}
-                                            px={{ base: '6', md: '10' }}
-                                            gap={6}
+                                            color={
+                                                tab === 'upcoming'
+                                                    ? 'brand.black600'
+                                                    : 'blackAlpha.500'
+                                            }
                                         >
-                                            {myTickets.length > 0 ? (
-                                                myTickets.map((data, key) => (
-                                                    <Box key={key}>
-                                                        <TicketLayout
-                                                            image={
-                                                                data.event.image
-                                                                    .gallery[
-                                                                    data.event
-                                                                        .image
-                                                                        .gallery
-                                                                        .length -
-                                                                        1
-                                                                ]
-                                                            }
-                                                            wallet={wallet}
-                                                            ticket={data}
-                                                            contractAddress={
-                                                                data.event
-                                                                    .childAddress
-                                                            }
-                                                            eventLink={
-                                                                data.event
-                                                                    .link as string
-                                                            }
-                                                            eventType={
-                                                                data.event
-                                                                    .category
-                                                                    .event_type
-                                                            }
-                                                        />
-                                                    </Box>
-                                                ))
-                                            ) : (
+                                            <Text mb="2">Upcoming Events</Text>
+                                            {tab === 'upcoming' && (
                                                 <Box
-                                                    maxW={{ xl: '390px' }}
-                                                    minW={{ xl: '390px' }}
-                                                    ml="300px"
-                                                >
-                                                    <Heading
-                                                        textAlign="center"
-                                                        fontWeight="semibold"
-                                                        fontFamily="subheading"
-                                                        color="gray.300"
-                                                        fontSize={{
-                                                            md: '23.2px',
-                                                            lg: '23.2px',
-                                                            xl: '28',
-                                                        }}
-                                                    >
-                                                        No events here :(
-                                                    </Heading>
-                                                </Box>
+                                                    w="full"
+                                                    h="1"
+                                                    bg="brand.gradient"
+                                                />
                                             )}
-                                        </Grid>
-                                    </TabPanel>
-                                    <TabPanel>
-                                        <Grid
-                                            templateColumns={{
-                                                md: 'repeat(1, 1fr)',
-                                                lg: 'repeat(1, 1fr)',
-                                                xl: 'repeat(1, 1fr)',
+                                        </Tab>
+                                        <Tab
+                                            pb="0"
+                                            display="flex"
+                                            flexDirection="column"
+                                            _focus={{}}
+                                            _active={{}}
+                                            onFocus={() => {
+                                                setTab('past')
+                                                if (store) {
+                                                    let filter = store.filter(
+                                                        (tix: any) => {
+                                                            const date =
+                                                                tix.event.date
+                                                            let parsedDate =
+                                                                date.split(
+                                                                    'T'
+                                                                )[0]
+                                                            let time = date
+                                                                .split('T')[1]
+                                                                .split('-')[0]
+                                                            return (
+                                                                new Date(
+                                                                    parsedDate +
+                                                                        ' ' +
+                                                                        time
+                                                                ) < new Date()
+                                                            )
+                                                        }
+                                                    )
+                                                    setMyTickets(filter)
+                                                }
                                             }}
-                                            px={{ base: '6', md: '10' }}
-                                            gap={6}
+                                            fontWeight={
+                                                tab === 'past'
+                                                    ? 'medium'
+                                                    : 'normal'
+                                            }
+                                            _hover={{
+                                                color:
+                                                    tab !== 'past' &&
+                                                    'blackAlpha.600',
+                                            }}
+                                            color={
+                                                tab === 'past'
+                                                    ? 'brand.black600'
+                                                    : 'blackAlpha.500'
+                                            }
                                         >
-                                            {myTickets.length > 0 ? (
-                                                myTickets.map((data, key) => (
-                                                    <Box w="full" key={key}>
-                                                        <TicketLayout
-                                                            image={
-                                                                data.event.image
-                                                                    .image
-                                                            }
-                                                            wallet={wallet}
-                                                            ticket={data}
-                                                            contractAddress={
-                                                                data.event
-                                                                    .childAddress
-                                                            }
-                                                            eventLink={
-                                                                data.event
-                                                                    .link as string
-                                                            }
-                                                            eventType={
-                                                                data.event
-                                                                    .category
-                                                                    .event_type
-                                                            }
-                                                        />
-                                                    </Box>
-                                                ))
-                                            ) : (
+                                            <Text mb="2">Past Events</Text>
+                                            {tab === 'past' && (
                                                 <Box
-                                                    maxW={{ xl: '390px' }}
-                                                    minW={{ xl: '390px' }}
-                                                    ml="300px"
-                                                >
-                                                    <Heading
-                                                        textAlign="center"
-                                                        fontWeight="semibold"
-                                                        fontFamily="subheading"
-                                                        color="gray.300"
-                                                        fontSize={{
-                                                            md: '23.2px',
-                                                            lg: '23.2px',
-                                                            xl: '28',
-                                                        }}
-                                                    >
-                                                        No events here :(
-                                                    </Heading>
-                                                </Box>
+                                                    w="full"
+                                                    h="1"
+                                                    bg="brand.gradient"
+                                                />
                                             )}
-                                        </Grid>
-                                    </TabPanel>
-                                </TabPanels>
-                            </Tabs>
+                                        </Tab>
+                                    </TabList>
+                                    <TabPanels mt="10">
+                                        <TabPanel>
+                                            <Grid
+                                                templateColumns={{
+                                                    md: 'repeat(1, 1fr)',
+                                                    lg: 'repeat(1, 1fr)',
+                                                    xl: 'repeat(1, 1fr)',
+                                                }}
+                                                px={{ base: '6', md: '10' }}
+                                                gap={6}
+                                            >
+                                                {myTickets.length > 0 ? (
+                                                    myTickets.map(
+                                                        (data, key) => (
+                                                            <Box key={key}>
+                                                                <TicketLayout
+                                                                    image={
+                                                                        data
+                                                                            .event
+                                                                            .image
+                                                                            .gallery[
+                                                                            data
+                                                                                .event
+                                                                                .image
+                                                                                .gallery
+                                                                                .length -
+                                                                                1
+                                                                        ]
+                                                                    }
+                                                                    wallet={
+                                                                        wallet
+                                                                    }
+                                                                    ticket={
+                                                                        data
+                                                                    }
+                                                                    contractAddress={
+                                                                        data
+                                                                            .event
+                                                                            .childAddress
+                                                                    }
+                                                                    eventLink={
+                                                                        data
+                                                                            .event
+                                                                            .link as string
+                                                                    }
+                                                                    eventType={
+                                                                        data
+                                                                            .event
+                                                                            .category
+                                                                            .event_type
+                                                                    }
+                                                                />
+                                                            </Box>
+                                                        )
+                                                    )
+                                                ) : (
+                                                    <Box
+                                                        maxW={{ xl: '390px' }}
+                                                        minW={{ xl: '390px' }}
+                                                    >
+                                                        <Heading
+                                                            textAlign="center"
+                                                            fontWeight="semibold"
+                                                            fontFamily="subheading"
+                                                            color="gray.300"
+                                                            fontSize={{
+                                                                md: '23.2px',
+                                                                lg: '23.2px',
+                                                                xl: '28',
+                                                            }}
+                                                        >
+                                                            No events here :(
+                                                        </Heading>
+                                                    </Box>
+                                                )}
+                                            </Grid>
+                                        </TabPanel>
+                                        <TabPanel>
+                                            <Grid
+                                                templateColumns={{
+                                                    md: 'repeat(1, 1fr)',
+                                                    lg: 'repeat(1, 1fr)',
+                                                    xl: 'repeat(1, 1fr)',
+                                                }}
+                                                px={{ base: '6', md: '10' }}
+                                                gap={6}
+                                            >
+                                                {myTickets.length > 0 ? (
+                                                    myTickets.map(
+                                                        (data, key) => (
+                                                            <Box
+                                                                w="full"
+                                                                key={key}
+                                                            >
+                                                                <TicketLayout
+                                                                    image={
+                                                                        data
+                                                                            .event
+                                                                            .image
+                                                                            .image
+                                                                    }
+                                                                    wallet={
+                                                                        wallet
+                                                                    }
+                                                                    ticket={
+                                                                        data
+                                                                    }
+                                                                    contractAddress={
+                                                                        data
+                                                                            .event
+                                                                            .childAddress
+                                                                    }
+                                                                    eventLink={
+                                                                        data
+                                                                            .event
+                                                                            .link as string
+                                                                    }
+                                                                    eventType={
+                                                                        data
+                                                                            .event
+                                                                            .category
+                                                                            .event_type
+                                                                    }
+                                                                />
+                                                            </Box>
+                                                        )
+                                                    )
+                                                ) : (
+                                                    <Box
+                                                        maxW={{ xl: '390px' }}
+                                                        minW={{ xl: '390px' }}
+                                                        ml="300px"
+                                                    >
+                                                        <Heading
+                                                            textAlign="center"
+                                                            fontWeight="semibold"
+                                                            fontFamily="subheading"
+                                                            color="gray.300"
+                                                            fontSize={{
+                                                                md: '23.2px',
+                                                                lg: '23.2px',
+                                                                xl: '28',
+                                                            }}
+                                                        >
+                                                            No events here :(
+                                                        </Heading>
+                                                    </Box>
+                                                )}
+                                            </Grid>
+                                        </TabPanel>
+                                    </TabPanels>
+                                </Tabs>
+                            </Flex>
                         </Flex>
-                    </Flex>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+        )
     )
 }
