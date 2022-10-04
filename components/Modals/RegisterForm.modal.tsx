@@ -99,7 +99,7 @@ export const RegisterFormModal = ({
         if (user) {
             console.log('inside')
             await send(
-                'https://discord.com/api/webhooks/1025358905657786378/BiaIkYSi87ZPEa0YjpZonM6HGcx4mUkoZEHeBMJWw9SuPeAP54l6frt6VXRGN4OwMPSV',
+                process.env.NEXT_PUBLIC_SWITCH_HOOK!,
                 {
                     message:
                         'New Registration | main wallet: ' +
