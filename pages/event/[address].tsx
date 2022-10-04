@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import type { GetServerSideProps, NextPage } from 'next'
 import {
     CategoryType,
@@ -18,13 +18,17 @@ import og from '../../OG.json'
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
 const EventLayout = dynamic(() => import('../../layouts/Event/Event.layout'))
-
+declare const window: any
 const Event: NextPage = ({ event, og }: any) => {
     const [featEvent, setFeatEvent] = useState<Event>(event)
     const [isInviteOnly, setInviteOnly] = useState<boolean>(false)
     const router = useRouter()
     const { address } = router.query
-
+    const {
+        isOpen: isOpen3,
+        onOpen: onOpen3,
+        onClose: onClose3,
+    } = useDisclosure()
     useEffect(() => {
         async function fetchData() {
             const { data, error } = await supabase
@@ -61,7 +65,12 @@ const Event: NextPage = ({ event, og }: any) => {
                 <meta name="twitter:description" content={og.desc} />
                 <meta name="twitter:card" content="summary_large_image"></meta>
             </Head>
-            <NavigationBar mode="white" />
+            <NavigationBar
+                isOpen3={isOpen3}
+                onOpen3={onOpen3}
+                onClose3={onClose3}
+                mode="white"
+            />
             <Box p="4" />
             <Flex
                 justify="center"
@@ -76,6 +85,9 @@ const Event: NextPage = ({ event, og }: any) => {
                     {featEvent ? (
                         <Skeleton isLoaded={featEvent.id !== ''}>
                             <EventLayout
+                                isOpen3={isOpen3}
+                                onOpen3={onOpen3}
+                                onClose3={onClose3}
                                 event={featEvent}
                                 isInviteOnly={isInviteOnly}
                             />

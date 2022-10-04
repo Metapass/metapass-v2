@@ -10,12 +10,13 @@ import {
     ModalContent,
     ModalOverlay,
     Text,
+    useDisclosure,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import EventLayout from '../../layouts/Event/Event.layout'
 import { Event } from '../../types/Event.type'
-import { users } from '../../utils/testData'
+// import { users } from '../../utils/testData'
 
 export default function FeaturedEventCard({ event }: { event: Event }) {
     const months = [
@@ -34,7 +35,11 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
     ]
 
     const [showEventModal, setEventModal] = useState(false)
-
+    const {
+        isOpen: isOpen3,
+        onOpen: onOpen3,
+        onClose: onClose3,
+    } = useDisclosure()
     return (
         <Flex
             rounded="lg"
@@ -77,7 +82,12 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
                             right="-6"
                         />
                         <ModalBody>
-                            <EventLayout event={event} />
+                            <EventLayout
+                                isOpen3={isOpen3}
+                                onOpen3={onOpen3}
+                                onClose3={onClose3}
+                                event={event}
+                            />
                         </ModalBody>
                     </ModalContent>
                 </Modal>

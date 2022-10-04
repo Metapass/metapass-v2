@@ -3,11 +3,15 @@ import SearchBar from '../../components/Elements/SearchBar.component'
 import NavigationBar from '../../components/Navigation/NavigationBar.component'
 import dynamic from 'next/dynamic'
 
-export default function HeroCTA() {
+export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
     return (
         <>
             {' '}
-            <NavigationBar />
+            <NavigationBar
+                isOpen3={isOpen3}
+                onOpen3={onOpen3}
+                onClose3={onClose3}
+            />
             <Box
                 backgroundImage={`url("https://res.cloudinary.com/dev-connect/image/upload/v1664709904/img/gradient_txqbjd.png")`}
                 backgroundSize="cover"
@@ -25,7 +29,7 @@ export default function HeroCTA() {
                         style={{
                             position: 'absolute',
                             top: 0,
-                            zIndex: 0,
+                            zIndex: -999,
                             minHeight: '100%',
                             minWidth: '100%',
                         }}
@@ -44,7 +48,7 @@ export default function HeroCTA() {
                     pb="12"
                     mt={{ base: '5', md: '6' }}
                     mb={{ base: '6', md: '12' }}
-                    zIndex={2}
+                    zIndex={0}
                     position="relative"
                 >
                     <Flex justify="center" ml={{ lg: '12' }}>
@@ -85,7 +89,7 @@ export default function HeroCTA() {
                     </Text>
                 </Box>
             </Box>
-            <Flex justify="center" w="full" position="relative" zIndex={99}>
+            <Flex justify="center" w="full" position="relative" zIndex={0}>
                 <Box
                     mx={{ base: '2', md: '10', xl: '32' }}
                     maxW="1200px"

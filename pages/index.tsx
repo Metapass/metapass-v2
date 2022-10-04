@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react'
+import { Box, useDisclosure } from '@chakra-ui/react'
 import type { NextPage } from 'next'
 import HeroCTA from '../layouts/LandingPage/HeroCTA.layout'
 import Head from 'next/head'
@@ -10,8 +10,15 @@ const FeaturedEvents = dynamic(
         ssr: false,
     }
 )
-
+import { useEffect } from 'react'
+declare const window: any
 const Home: NextPage = () => {
+    const {
+        isOpen: isOpen3,
+        onOpen: onOpen3,
+        onClose: onClose3,
+    } = useDisclosure()
+
     return (
         <Box h="100vh" overflow="scroll">
             <Head>
@@ -49,7 +56,7 @@ const Home: NextPage = () => {
                     content="Book NFT tickets for online and IRL events"
                 />
             </Head>
-            <HeroCTA />
+            <HeroCTA isOpen3={isOpen3} onOpen3={onOpen3} onClose3={onClose3} />
             <Box p={{ md: '2' }} />
             <FeaturedEvents />
         </Box>

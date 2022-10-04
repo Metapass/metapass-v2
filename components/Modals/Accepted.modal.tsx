@@ -11,13 +11,14 @@ import {
     Image,
     Input,
     Box,
-    Link,
+    Link as ChakraLink,
     useClipboard,
     InputGroup,
     InputLeftElement,
     InputRightElement,
 } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import { FC } from 'react'
 import { IoIosLink } from 'react-icons/io'
 
@@ -246,8 +247,10 @@ const AcceptedModalComponent: FC<AcceptedModalComponentProps> = ({
                         </Button>
                     </Box> */}
                     <Box mt="2" mb="4">
-                        <Link fontSize="sm" href="/" color="blackAlpha.600">
-                            Back to home
+                        <Link href="/" passHref>
+                            <ChakraLink fontSize="sm" color="blackAlpha.600">
+                                Back to home
+                            </ChakraLink>
                         </Link>
                     </Box>
                 </ModalBody>

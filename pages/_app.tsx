@@ -10,6 +10,8 @@ import { configureChains, chain, createClient, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 import { RecoilRoot } from 'recoil'
 import dynamic from 'next/dynamic'
+import ChatwootWidget from '../components/Elements/Chatwoot.component'
+import NextNProgress from 'nextjs-progressbar'
 const Chakra = dynamic(() => import('../components/Root/Chakra.root'))
 
 const { chains, provider, webSocketProvider } = configureChains(
@@ -18,11 +20,11 @@ const { chains, provider, webSocketProvider } = configureChains(
 )
 
 const client = createClient({
-    autoConnect: true,
+    autoConnect: false,
     provider,
     webSocketProvider,
 })
-
+declare const window: any
 function MyApp({ Component, pageProps }: AppProps) {
     return (
         <>
@@ -56,7 +58,11 @@ function MyApp({ Component, pageProps }: AppProps) {
                                     <Chakra
                                         Component={Component}
                                         pageProps={pageProps}
-                                    />
+                                    >
+                                        {' '}
+                                        {<ChatwootWidget />}
+                                        <NextNProgress color="#6451FB" />
+                                    </Chakra>
                                 </Contract>
                             </ContextProvider>
                         </Web3Wrapper>

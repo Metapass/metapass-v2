@@ -68,3 +68,6 @@ body {
     bottom: 0;
     width: 100%;
   }
+.w3a-modal{
+    z-index: 3000 !important;
+}

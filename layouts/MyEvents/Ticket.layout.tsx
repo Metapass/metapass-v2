@@ -24,29 +24,34 @@ export default function TicketLayout({
 }) {
     const [qr, setQr] = useState<string>('')
     const [ticketimg, setTicketimg] = useState<string>('')
-    useEffect(() => {
-        async function getMeta(contract: any, tokenuri: string) {
-            console.log(image)
+
+    async function getMeta(contract: any, tokenuri: string) {
+        try {
             const metadata = await contract.tokenURI(tokenuri)
             const img = JSON.parse(metadata).image
             if (img) {
                 setTicketimg(img)
-            } else {
             }
+        } catch (error) {
+            console.log('error in getting image ', error)
         }
+    }
+
+    useEffect(() => {
         if (
             (window.ethereum || window.w3.currentProvider) &&
             contractAddress.startsWith('0x')
         ) {
-            const provider = new ethers.providers.Web3Provider(
-                window.ethereum || window.w3.currentProvider
+            const provider = new ethers.providers.JsonRpcProvider(
+                process.env.ENV == 'dev'
+                    ? process.env.NEXT_PUBLIC_ENDPOINT_MUMBAI
+                    : process.env.NEXT_PUBLIC_ENDPOINT_POLYGON
             )
-            const signer = provider.getSigner()
 
             const contract = new ethers.Contract(
-                contractAddress,
+                ethers.utils.getAddress(contractAddress),
                 abi.abi,
-                provider || signer
+                provider
             )
             if (ticket) {
                 getMeta(contract, ticket.ticketID)
@@ -100,7 +105,8 @@ export default function TicketLayout({
                 direction={{ base: 'column', md: 'row' }}
             >
                 <Image
-                    w="sm"
+                    maxW="sm"
+                    maxH={'sm'}
                     borderRadius="md"
                     src={ticketimg || image}
                     alt="ticket img"

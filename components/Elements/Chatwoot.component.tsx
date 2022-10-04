@@ -20,11 +20,12 @@ class ChatwootWidget extends React.Component {
             g.async = true
             s.parentNode.insertBefore(g, s)
             g.onload = function () {
-                window.chatwootSDK.run({
-                    websiteToken:
-                        process.env.NEXT_PUBLIC_CHATWOOT_WEBSITE_TOKEN,
-                    baseUrl: BASE_URL,
-                })
+                window.innerWidth > 720 &&
+                    window.chatwootSDK.run({
+                        websiteToken:
+                            process.env.NEXT_PUBLIC_CHATWOOT_WEBSITE_TOKEN,
+                        baseUrl: BASE_URL,
+                    })
             }
         })(document, 'script')
     }

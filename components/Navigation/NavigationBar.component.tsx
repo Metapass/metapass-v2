@@ -17,14 +17,16 @@ import {
     MenuItem,
     MenuDivider,
     Heading,
+    Spinner,
 } from '@chakra-ui/react'
 import { MdAccountBalanceWallet, MdClose } from 'react-icons/md'
 import { IoIosAdd, IoIosLogOut } from 'react-icons/io'
+import { IoLogIn } from 'react-icons/io5'
 import NextLink from 'next/link'
 import { Modal } from '@chakra-ui/react'
 import { walletContext, WalletType } from '../../utils/walletContext'
 import { web3Context } from '../../utils/web3Context'
-
+import { WALLET_ADAPTERS } from '@web3auth/base'
 import {
     useState,
     useContext,
@@ -41,7 +43,7 @@ const env: any = process.env.NEXT_PUBLIC_ENV === 'prod'
 const polygon = require(env
     ? '../../utils/polygon.json'
     : '../../utils/mumbai.json')
-
+import { OpenloginAdapter } from '@web3auth/openlogin-adapter'
 declare const window: any
 import BoringAva from '../../utils/BoringAva'
 import { ConnectWallet } from './ConnectWallet'
@@ -63,19 +65,38 @@ import { supabase } from '../../lib/config/supabaseConfig'
 import resolveDomains from '../../hooks/useDomain'
 import { useRouter } from 'next/router'
 
-export default function NavigationBar({ mode = 'dark' }) {
+import WalletSignUpModal from '../Modals/WalletSignUp.modal'
+import { Web3Auth } from '@web3auth/web3auth'
+
+// @ts-ignore
+import * as Web3 from 'web3'
+import { ethers } from 'ethers'
+import { useUser } from '../../hooks/useUser'
+interface Props {
+    mode?: string
+    isOpen3: boolean
+    onClose3: () => void
+    onOpen3: () => void
+}
+export default function NavigationBar({
+    mode = 'dark',
+    isOpen3,
+    onOpen3,
+    onClose3,
+}: Props) {
     const [address, setAddress] = useState<string>('')
 
     const [balance, setBalance] = useState<string>('')
-
-    const user = supabase.auth.user()
+    const [isWalletLoading, setIsWalletLoading] = useState<boolean | null>(null)
+    const { user: commonUser } = useUser()
+    const user = supabase.auth.user() || commonUser
 
     const [wallet, setWallet] =
         useContext<[WalletType, Dispatch<SetStateAction<WalletType>>]>(
             walletContext
         )
 
-    const [_, setWeb3] = useContext(web3Context)
+    const [_, setWeb3, web3auth, setWeb3auth]: any = useContext(web3Context)
     const [walletType, setWalletType] = useState<'mm' | 'wc' | 'sol' | null>(
         null
     )
@@ -97,7 +118,10 @@ export default function NavigationBar({ mode = 'dark' }) {
     const { data } = useBalance({
         addressOrName: addy,
     })
-    const { multichainDisconnector } = useMultichainDisconnect(wallet.chain)
+    const { multichainDisconnector } = useMultichainDisconnect(
+        wallet.chain,
+        wallet.type
+    )
     const [domain, setDomain] = useState<string | null>(null)
     const [showMyEvents, setMyEvents] = useState(false)
     const router = useRouter()
@@ -113,11 +137,9 @@ export default function NavigationBar({ mode = 'dark' }) {
     } = useDisclosure()
 
     const chainid: any = env ? 137 : 80001
-    // const endpoint: any = env
-    //     ? process.env.NEXT_PUBLIC_ENDPOINT_POLYGON
-    //     : process.env.NEXT_PUBLIC_ENDPOINT_MUMBAI
-    // const web3 = new Web3(endpoint as string)
-    // let wcProvider: any
+    const endpoint: any = env
+        ? process.env.NEXT_PUBLIC_ENDPOINT_POLYGON
+        : process.env.NEXT_PUBLIC_ENDPOINT_MUMBAI
 
     const handleMetamask = async () => {
         if (isConnected && addy) {
@@ -169,6 +191,127 @@ export default function NavigationBar({ mode = 'dark' }) {
             }
         }
     }
+
+    const handleEmail = async () => {
+        onClose3()
+
+        setIsWalletLoading(true)
+        const web3auth = new Web3Auth({
+            clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!,
+            chainConfig: {
+                chainNamespace: 'eip155',
+                chainId: env ? '0x89' : '0x13881',
+                rpcTarget: endpoint,
+            },
+
+            uiConfig: {
+                theme: 'light',
+                loginMethodsOrder: ['google'],
+                appLogo:
+                    'https://res.cloudinary.com/dev-connect/image/upload/v1664263385/img/mplogocircle_pve27h.png', // Your App Logo Here
+            },
+        })
+        const openloginAdapter = new OpenloginAdapter({
+            loginSettings: {
+                mfaLevel: 'none',
+            },
+            adapterSettings: {
+                network: 'cyan',
+                whiteLabel: {
+                    name: 'Metapass',
+                    logoLight:
+                        'https://res.cloudinary.com/dev-connect/image/upload/v1664263385/img/mplogocircle_pve27h.png',
+                },
+            },
+        })
+        web3auth.configureAdapter(openloginAdapter)
+        await web3auth.initModal({
+            // @ts-ignore
+            modalConfig: {
+                [WALLET_ADAPTERS.OPENLOGIN]: {
+                    label: 'openlogin',
+
+                    loginMethods: {
+                        google: {
+                            name: 'google login',
+                        },
+                        facebook: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        reddit: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        discord: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        twitch: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        apple: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        github: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        line: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        wechat: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        weibo: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        kakao: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        linkedin: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                        twitter: {
+                            // it will hide the facebook option from the Web3Auth modal.
+                            showOnModal: false,
+                        },
+                    },
+                    // setting it to false will hide all social login methods from modal.
+                    showOnModal: true,
+                },
+            },
+        })
+        // onClose3()
+
+        setWeb3auth(web3auth)
+        const web3authProvider = await web3auth.connect()
+        // @ts-ignore
+        const web3 = new Web3(web3auth.provider)
+        setWeb3(web3authProvider)
+
+        const userAccounts = await web3.eth.getAccounts()
+        let bal = await web3.eth.getBalance(userAccounts[0])
+        setWallet({
+            balance: ethers.utils.formatEther(bal),
+            address: userAccounts[0],
+            type: 'web3auth',
+            chain: 'POLYGON',
+            domain: null,
+        })
+        setIsWalletLoading(false)
+        toast.success('Welcome', {
+            id: 'web3authwallet',
+        })
+    }
+
     const mdcontent = [
         {
             title: 'Metamask',
@@ -208,13 +351,13 @@ export default function NavigationBar({ mode = 'dark' }) {
     }, [isConnected, chain])
 
     const disconnectWallet = async () => {
-        console.log('Disconnecting wallet')
         if (
             isConnected ||
             window?.solana?.isConnected ||
-            window?.solana?.isPhantom
+            window?.solana?.isPhantom ||
+            web3auth?.status === 'connected'
         ) {
-            multichainDisconnector()
+            await multichainDisconnector()
             setBalance('')
             setAddress('')
             setWallet({
@@ -225,6 +368,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                 chain: null,
             })
             onClose1()
+            setIsWalletLoading(null)
         }
     }
 
@@ -275,6 +419,16 @@ export default function NavigationBar({ mode = 'dark' }) {
                         setMyEvents(false)
                     }}
                 />
+
+                {isOpen3 && (
+                    <WalletSignUpModal
+                        handleEmail={handleEmail}
+                        isOpen={isOpen3}
+                        onClose={onClose3}
+                        onOpen={onOpen3}
+                        onWalletOpen={onOpen1}
+                    />
+                )}
                 {isOpen1 && (
                     <Modal isOpen={isOpen1} onClose={onClose1}>
                         <ModalOverlay />
@@ -446,7 +600,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                         <Image
                                             src={
                                                 wallet.chain === 'SOL'
-                                                    ? 'assets/solana-logo.png'
+                                                    ? '/assets/solana-logo.png'
                                                     : '/assets/matic_circle.svg'
                                             }
                                             alt={wallet.chain as string}
@@ -474,7 +628,9 @@ export default function NavigationBar({ mode = 'dark' }) {
                                                     0,
                                                     4
                                                 )}{' '}
-                                                {wallet.chain}
+                                                {wallet.chain === 'POLYGON'
+                                                    ? 'MATIC'
+                                                    : wallet.chain}
                                             </Text>
                                         </Box>
                                     </Flex>
@@ -504,7 +660,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     icon={<IoIosLogOut size="20px" />}
                                     color="red.500"
                                 >
-                                    Disconnect Wallet
+                                    Logout
                                 </MenuItem>
                             </MenuList>
                         </Menu>
@@ -523,14 +679,16 @@ export default function NavigationBar({ mode = 'dark' }) {
                                 fontSize="sm"
                                 fontWeight="normal"
                                 leftIcon={
-                                    <MdAccountBalanceWallet size="25px" />
+                                    isWalletLoading ? (
+                                        <Spinner size="sm" ml="2" />
+                                    ) : undefined
                                 }
                                 onClick={() => {
                                     disconnectWallet()
-                                    onOpen1()
+                                    onOpen3()
                                 }}
                             >
-                                Connect Wallet
+                                {isWalletLoading ? 'Loading' : 'Sign In'}
                             </Button>
                         </>
                     )}
@@ -585,7 +743,7 @@ export default function NavigationBar({ mode = 'dark' }) {
                         >
                             Create Event
                         </Button>
-                        {wallet.address ? (
+                        {wallet.address || isWalletLoading ? (
                             <Menu>
                                 <MenuButton
                                     as={Button}
@@ -598,7 +756,9 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     _focus={{}}
                                     fontWeight="normal"
                                     leftIcon={
-                                        user?.user_metadata?.avatar_url ? (
+                                        isWalletLoading ? (
+                                            <Spinner size="sm" ml="2" />
+                                        ) : user?.user_metadata?.avatar_url ? (
                                             <Avatar
                                                 size="sm"
                                                 src={
@@ -607,19 +767,23 @@ export default function NavigationBar({ mode = 'dark' }) {
                                                 }
                                             />
                                         ) : (
-                                            <BoringAva
-                                                address={wallet.address}
-                                            />
+                                            wallet.address && (
+                                                <BoringAva
+                                                    address={wallet.address}
+                                                />
+                                            )
                                         )
                                     }
                                     rightIcon={<HiOutlineChevronDown />}
                                 >
-                                    {wallet.domain ||
-                                        wallet.address.substring(0, 4) +
-                                            '...' +
-                                            wallet.address.substring(
-                                                wallet.address.length - 4
-                                            )}
+                                    {isWalletLoading
+                                        ? 'Loading'
+                                        : wallet.domain ||
+                                          wallet?.address?.substring(0, 4) +
+                                              '...' +
+                                              wallet?.address?.substring(
+                                                  wallet?.address?.length - 4
+                                              )}
                                 </MenuButton>
                                 <MenuList
                                     shadow="none"
@@ -709,16 +873,17 @@ export default function NavigationBar({ mode = 'dark' }) {
                                     _focus={{}}
                                     _active={{ bg: 'blackAlpha.700' }}
                                     py="5"
+                                    // minW="40%"
                                     fontWeight="normal"
-                                    leftIcon={
-                                        <MdAccountBalanceWallet size="25px" />
-                                    }
+                                    // leftIcon={
+                                    //     <MdAccountBalanceWallet size="25px" />
+                                    // }
                                     onClick={() => {
                                         disconnectWallet()
-                                        onOpen1()
+                                        onOpen3()
                                     }}
                                 >
-                                    Connect Wallet
+                                    Sign In
                                 </Button>
                             </>
                         )}

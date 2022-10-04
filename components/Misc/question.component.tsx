@@ -63,7 +63,6 @@ export const QuestionComp = (props: Props) => {
                             {...props.register(
                                 camelize(props.question.question)
                             )}
-                            w={'30rem'}
                         >
                             {props.question.options?.map((option, index) => (
                                 <option value={option} key={index}>
