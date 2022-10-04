@@ -63,6 +63,7 @@ import {
     TOKEN_PROGRAM_ID,
 } from '@solana/spl-token'
 import {
+    clusterApiUrl,
     ComputeBudgetProgram,
     Connection,
     Keypair,
@@ -177,6 +178,7 @@ export default function EventLayout({
     const { user } = useUser()
 
     useEffect(() => {
+        console.log('f1')
         ;(async function () {
             if (wallet.type == 'web3auth') {
                 // setFormLoading(true)
@@ -196,7 +198,7 @@ export default function EventLayout({
                             config: {
                                 chainConfig: {
                                     chainId: '0x3',
-                                    rpcTarget: 'https://ssc-dao.genesysgo.net',
+                                    rpcTarget: process.env.NEXT_PUBLIC_SOLANA!,
                                     displayName: 'Solana Mainnet',
                                     blockExplorer:
                                         'https://explorer.solana.com/',
@@ -205,7 +207,9 @@ export default function EventLayout({
                                 },
                             },
                         })
+
                     await solanaPrivateKeyProvider.setupProvider(ed25519key)
+
                     const solWallet = new SolanaWallet(
                         solanaPrivateKeyProvider.provider as any
                     )
