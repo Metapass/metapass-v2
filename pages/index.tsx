@@ -1,8 +1,15 @@
 import { Box, useDisclosure } from '@chakra-ui/react'
 import type { NextPage } from 'next'
-import FeaturedEvents from '../layouts/LandingPage/FeaturedEvents.layout'
 import HeroCTA from '../layouts/LandingPage/HeroCTA.layout'
 import Head from 'next/head'
+import dynamic from 'next/dynamic'
+
+const FeaturedEvents = dynamic(
+    () => import('../layouts/LandingPage/FeaturedEvents.layout'),
+    {
+        ssr: false,
+    }
+)
 import { useEffect } from 'react'
 declare const window: any
 const Home: NextPage = () => {

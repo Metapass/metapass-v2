@@ -36,6 +36,7 @@ const resolveDomains = async (chain: Chain | null, address: string | null) => {
                 } else {
                     return { domain: null, loading: false }
                 }
+
             }
         } else {
             return { domain: null, loading: false }

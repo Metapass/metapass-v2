@@ -8,7 +8,6 @@ import {
 } from '../../types/Event.type'
 import { useEffect, useState } from 'react'
 import NavigationBar from '../../components/Navigation/NavigationBar.component'
-import EventLayout from '../../layouts/Event/Event.layout'
 import { Skeleton } from '@chakra-ui/react'
 import axios from 'axios'
 import { gqlEndpoint } from '../../utils/subgraphApi'
@@ -17,6 +16,8 @@ import { supabase } from '../../lib/config/supabaseConfig'
 import { useRouter } from 'next/router'
 import og from '../../OG.json'
 import Head from 'next/head'
+import dynamic from 'next/dynamic'
+const EventLayout = dynamic(() => import('../../layouts/Event/Event.layout'))
 declare const window: any
 const Event: NextPage = ({ event, og }: any) => {
     const [featEvent, setFeatEvent] = useState<Event>(event)
