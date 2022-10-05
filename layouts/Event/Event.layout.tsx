@@ -750,7 +750,7 @@ export default function EventLayout({
                         // setFormLoading(true)
                         console.log('registering')
                         if (
-                            event.isSolana ||
+                            (event.isSolana && wallet.chain === 'SOL') ||
                             (!event.isSolana && wallet.chain === 'POLYGON')
                         ) {
                             await handleRegister(
