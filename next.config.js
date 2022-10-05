@@ -54,8 +54,4 @@ const sentryWebpackPluginOptions = {
     // https://github.com/getsentry/sentry-webpack-plugin#options.
 }
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-    enabled: process.env.ANALYZE === 'true',
-})
-
-module.exports = withSentryConfig(withBundleAnalyzer(nextConfig), sentryWebpackPluginOptions)
+module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions)
