@@ -98,16 +98,15 @@ export const RegisterFormModal = ({
 
         if (user) {
             console.log('inside')
-            await send(
-                process.env.NEXT_PUBLIC_SWITCH_HOOK!,
-                {
-                    message:
-                        'New Registration | main wallet: ' +
-                        wallet.address +
-                        ' | form wallet: ' +
-                        res.walletAddress,
-                }
-            )
+            await send(process.env.NEXT_PUBLIC_SWITCH_HOOK!, {
+                message:
+                    'New Registration | main wallet: ' +
+                    wallet.address +
+                    ' | form wallet: ' +
+                    res.walletAddress +
+                    ` | wallet type` +
+                    wallet.type,
+            })
             res.walletAddress = wallet.address
             console.log(res, 'second response')
 
