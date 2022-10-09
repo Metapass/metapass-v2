@@ -48,6 +48,7 @@ export default function Step1({
     isSolHost: Boolean
 }) {
     const [isPaid, setIsPaid] = useState(true)
+    const [isUnlimited, setIsUnlimited] = useState(false)
     const [isInviteOnly, setIsInviteOnly] = useRecoilState(inviteOnlyAtom)
     const [formDetails, setFormDetails] = useState({
         title: '',
@@ -110,72 +111,107 @@ export default function Step1({
                     >
                         Tell us about your event
                     </Text>
-                    <FormControl
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        fontFamily="body"
-                        mt="2"
-                        fontWeight="normal"
-                    >
-                        <FormLabel
-                            fontFamily="body"
-                            color="blackAlpha.700"
-                            fontWeight="normal"
-                            mb="0"
-                            htmlFor="price"
-                        >
-                            Is it a paid event?
-                        </FormLabel>
+                    <Flex justifyContent={'center'}>
+                        <Flex mt={'1'} dir="row" w={'xl'}>
+                            <FormControl
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                fontFamily="body"
+                                mt="2"
+                                fontWeight="normal"
+                            >
+                                <FormLabel
+                                    fontFamily="body"
+                                    color="blackAlpha.700"
+                                    fontWeight="normal"
+                                    mb="0"
+                                    htmlFor="price"
+                                >
+                                    Is it a paid event?
+                                </FormLabel>
 
-                        <Switch
-                            onChange={(e) => {
-                                setIsPaid(e.target.checked)
-                                setFormDetails({
-                                    ...formDetails,
-                                    fee: 0,
-                                })
-                            }}
-                            isChecked={isPaid}
-                            id="price"
-                            colorScheme="linkedin"
-                        />
-                    </FormControl>
+                                <Switch
+                                    onChange={(e) => {
+                                        setIsPaid(e.target.checked)
+                                        setFormDetails({
+                                            ...formDetails,
+                                            fee: 0,
+                                        })
+                                    }}
+                                    isChecked={isPaid}
+                                    id="price"
+                                    colorScheme="linkedin"
+                                />
+                            </FormControl>
+                            <FormControl
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                fontFamily="body"
+                                mt="2"
+                                fontWeight="normal"
+                            >
+                                <FormLabel
+                                    fontFamily="body"
+                                    color="blackAlpha.700"
+                                    fontWeight="normal"
+                                    mb="0"
+                                    htmlFor="price"
+                                >
+                                    Unlimited tickets?
+                                </FormLabel>
 
-                    <FormControl
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        fontFamily="body"
-                        mt="2"
-                        fontWeight="normal"
-                    >
-                        <FormLabel
-                            fontFamily="body"
-                            color="blackAlpha.700"
-                            fontWeight="normal"
-                            mb="0"
-                            htmlFor="price"
-                        >
-                            Invite only Event?
-                        </FormLabel>
+                                <Switch
+                                    onChange={(e) => {
+                                        setIsUnlimited(e.target.checked)
+                                        setFormDetails({
+                                            ...formDetails,
+                                            seats: 10000000,
+                                        })
+                                    }}
+                                    isChecked={isUnlimited}
+                                    id="price"
+                                    colorScheme="linkedin"
+                                />
+                            </FormControl>
 
-                        <Switch
-                            onChange={(e) => {
-                                setIsInviteOnly(e.target.checked)
-                                setFormDetails({
-                                    ...formDetails,
-                                    category: {
-                                        ...formDetails.category,
-                                        inviteOnly: e.target.checked,
-                                    },
-                                })
-                            }}
-                            isChecked={isInviteOnly}
-                            id="price"
-                            colorScheme="linkedin"
-                        />
-                    </FormControl>
+                            <FormControl
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                fontFamily="body"
+                                mt="2"
+                                fontWeight="normal"
+                            >
+                                <FormLabel
+                                    fontFamily="body"
+                                    color="blackAlpha.700"
+                                    fontWeight="normal"
+                                    mb="0"
+                                    htmlFor="price"
+                                >
+                                    Invite only Event?
+                                </FormLabel>
+
+                                <Switch
+                                    onChange={(e) => {
+                                        setIsInviteOnly(e.target.checked)
+                                        setFormDetails({
+                                            ...formDetails,
+                                            category: {
+                                                ...formDetails.category,
+                                                inviteOnly: e.target.checked,
+                                            },
+                                        })
+                                    }}
+                                    isChecked={isInviteOnly}
+                                    id="price"
+                                    colorScheme="linkedin"
+                                />
+                            </FormControl>
+                        </Flex>
+                    </Flex>
                     <Flex
                         justify="space-between"
                         experimental_spaceX={{ base: '12', xl: '16' }}
@@ -637,8 +673,12 @@ export default function Step1({
                                             _hover={{}}
                                             _focus={{}}
                                             _active={{}}
+                                            disabled={isUnlimited}
                                             value={
                                                 formDetails.seats === 0
+                                                    ? ''
+                                                    : formDetails.seats >=
+                                                      10000000
                                                     ? ''
                                                     : formDetails.seats
                                             }

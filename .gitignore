@@ -8,7 +8,7 @@ v2mp.code-workspace
 # testing
 /coverage
 archives/
-
+.sentryclirc
 .vscode
 
 # next.js
@@ -16,7 +16,7 @@ archives/
 /out/
 .vscode
 keys.json
-# package-lock.json
+# 
 # production
 .sentryclirc
 /build
@@ -47,3 +47,9 @@ pages/events/
 /.github/
 
 yarn.lock
+
+# Sentry
+.sentryclirc
+
+# Sentry
+.sentryclirc

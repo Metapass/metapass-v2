@@ -3,6 +3,7 @@ import {
     Box,
     Flex,
     Text,
+    Link as ChakraLink,
     Image,
     Button,
     Divider,
@@ -10,7 +11,6 @@ import {
     Modal,
     ModalBody,
     ModalContent,
-    Link,
     InputGroup,
     InputRightElement,
     InputLeftElement,
@@ -49,8 +49,8 @@ import generateAndSendUUID from '../../utils/generateAndSendUUID'
 import GenerateQR from '../../utils/generateQR'
 import { Biconomy } from '@biconomy/mexa'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-import * as web3 from '@solana/web3.js'
+import { useWallet, WalletContextState } from '@solana/wallet-adapter-react'
+// import * as web3 from '@solana/web3.js'
 import {
     getHostPDA,
     getAdminPDA,
@@ -62,7 +62,14 @@ import {
     getAssociatedTokenAddress,
     TOKEN_PROGRAM_ID,
 } from '@solana/spl-token'
-import { Connection } from '@solana/web3.js'
+import {
+    clusterApiUrl,
+    ComputeBudgetProgram,
+    Connection,
+    Keypair,
+    PublicKey,
+    Transaction,
+} from '@solana/web3.js'
 import SignUpModal from '../../components/Modals/SignUp.modal'
 import resolveDomains from '../../hooks/useDomain'
 import axios from 'axios'
@@ -70,24 +77,40 @@ import { generateMetadata } from '../../utils/generateMetadata'
 import { useAccount, useProvider, useSigner } from 'wagmi'
 import { supabase } from '../../lib/config/supabaseConfig'
 import { RegisterFormModal } from '../../components/Modals/RegisterForm.modal'
-import { FiCheckCircle } from 'react-icons/fi'
+import { FiCheckCircle, FiShare } from 'react-icons/fi'
 import { handleRegister } from '../../utils/helpers/handleRegister'
 import { useRecoilValue } from 'recoil'
 import { updateOnce } from '../../lib/recoil/atoms'
-
 import mapboxgl from 'mapbox-gl'
 import MapPinLine from '../../components/Misc/MapPinLine.component'
 import AcceptedModalComponent from '../../components/Modals/Accepted.modal'
-import { HiOutlineTicket } from 'react-icons/hi'
-
+import { web3Context } from '../../utils/web3Context'
+import {
+    SolanaPrivateKeyProvider,
+    SolanaWallet,
+} from '@web3auth/solana-provider'
+import { IoShareOutline } from 'react-icons/io5'
+import { OpenLoginUserWithMetadata, useUser } from '../../hooks/useUser'
+import resolveBalance from '../../hooks/useSolBalance'
+import Link from 'next/link'
+import Web3 from 'web3'
+import { useRouter } from 'next/router'
 declare const window: any
-
+interface SolanaWalletWithPublicKey extends SolanaWallet {
+    publicKey: PublicKey
+}
 export default function EventLayout({
     event,
     isInviteOnly,
+    isOpen3,
+    onOpen3,
+    onClose3,
 }: {
     event: Event
     isInviteOnly: boolean
+    isOpen3: boolean
+    onOpen3: () => void
+    onClose3: () => void
 }) {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX as string
     const network =
@@ -102,16 +125,28 @@ export default function EventLayout({
     const [mintedImage, setMintedImage] = useState<string>('')
     const [eventLink, setEventLink] = useState<string>('')
     const { hasCopied, value, onCopy } = useClipboard(eventLink as string)
+
     const [hasBought, setHasBought] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    // const [formLoading, setFormLoading] = useState<boolean>(false)
     const [ensName, setEnsName] = useState<string | null>(null)
     const [openseaLink, setToOpenseaLink] = useState<string>('')
     const [hasTicket, setHasTicket] = useState<boolean>(false)
     const [qrId, setQrId] = useState<string>('')
-    const { isOpen, onOpen } = useDisclosure()
-    const [wallet] = useContext<WalletType[]>(walletContext)
-    const solanaWallet = useWallet()
+    const [isMapCompatible, setIsMapCompatible] = useState<boolean>(true)
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [wallet, setWallet] = useContext<any>(walletContext)
+    const [solanaWallet, setSolanaWallet] = useState<
+        SolanaWalletWithPublicKey | WalletContextState | null
+    >(useWallet())
+    const router = useRouter()
+    const {
+        hasCopied: hasCopied1,
+        value: value1,
+        onCopy: onCopy1,
+    } = useClipboard(`https://app.metapassh1.xyz/event/${router.query.address}`)
     const mapContainerRef = useRef(null)
+    const [web3, setWeb3, web3auth, setWeb3auth]: any = useContext(web3Context)
 
     const [explorerLink, setExplorerLink] = useState<string>('')
     let opensea =
@@ -140,7 +175,83 @@ export default function EventLayout({
     >('Register')
     const toUpdate = useRecoilValue(updateOnce)
 
-    const user = supabase.auth.user()
+    const { user } = useUser()
+
+    useEffect(() => {
+        console.log('f1')
+        ;(async function () {
+            if (wallet.type == 'web3auth') {
+                // setFormLoading(true)
+
+                const privateKey: string = await web3.request({
+                    method: 'eth_private_key',
+                })
+
+                if (event.isSolana && wallet.address.startsWith('0x')) {
+                    const { getED25519Key } = await import(
+                        '@toruslabs/openlogin-ed25519'
+                    )
+                    const ed25519key =
+                        getED25519Key(privateKey).sk.toString('hex')
+                    const solanaPrivateKeyProvider =
+                        new SolanaPrivateKeyProvider({
+                            config: {
+                                chainConfig: {
+                                    chainId: '0x3',
+                                    rpcTarget: process.env.NEXT_PUBLIC_SOLANA!,
+                                    displayName: 'Solana Mainnet',
+                                    blockExplorer:
+                                        'https://explorer.solana.com/',
+                                    ticker: 'SOL',
+                                    tickerName: 'Solana',
+                                },
+                            },
+                        })
+
+                    await solanaPrivateKeyProvider.setupProvider(ed25519key)
+
+                    const solWallet = new SolanaWallet(
+                        solanaPrivateKeyProvider.provider as any
+                    )
+
+                    const solana_address = await solWallet.requestAccounts()
+                    let balance = await resolveBalance(solana_address[0])
+
+                    if (wallet) {
+                        setSolanaWallet({
+                            ...solWallet,
+                            publicKey: new PublicKey(solana_address[0]),
+                            signTransaction: solWallet.signTransaction,
+                        } as SolanaWalletWithPublicKey)
+                        console.log('balance here', balance)
+                        setWallet({
+                            address: solana_address[0],
+                            balance: balance?.toString(),
+                            domain: null,
+                            type: 'web3auth',
+                            chain: 'SOL',
+                        })
+                    }
+                } else if (
+                    !event.isSolana &&
+                    !wallet.address.startsWith('0x')
+                ) {
+                    const w3 = new Web3(web3)
+                    const userAccounts = await w3.eth.getAccounts()
+                    let bal = await w3.eth.getBalance(userAccounts[0])
+                    setWallet({
+                        balance: ethers.utils.formatEther(bal),
+                        address: userAccounts[0],
+                        type: 'web3auth',
+                        chain: 'POLYGON',
+                        domain: null,
+                    })
+                }
+
+                // setFormLoading(false)
+            }
+        })()
+    }, [wallet.type])
 
     useEffect(() => {
         async function getData() {
@@ -173,9 +284,8 @@ export default function EventLayout({
                         .from('users')
                         .select('*')
                         .eq('address', wallet.address)
-                    //  console.log('d', data, wallet.address)
                     if (data && data?.length > 0) {
-                        console.log('user already exists', data)
+                        console.log('User already exists')
                     } else {
                         const { data, error } = await supabase
                             .from('users')
@@ -202,39 +312,73 @@ export default function EventLayout({
     const { data: WalletSigner } = useSigner()
     const { isConnected } = useAccount()
 
+    const alchemy = new ethers.providers.AlchemyProvider(
+        process.env.NEXT_PUBLIC_ENV == 'dev' ? 80001 : 137,
+        'q5pM3qSVMij2Gh1L4nh3d443ZCAC7TZl'
+    )
+
     useEffect(() => {
         if (wallet.address) {
-            setHasTicket(event.buyers.includes(wallet.address))
+            if (
+                event.buyers.find(
+                    (buyer: any) =>
+                        String(buyer?.id).toLowerCase() ===
+                        String(wallet.address).toLowerCase()
+                ) ||
+                event.buyers.find(
+                    (buyer) =>
+                        String(buyer).toLowerCase() ===
+                        String(wallet?.address).toLowerCase()
+                )
+            ) {
+                setHasTicket(true)
+            }
+        } else {
+            setHasTicket(false)
         }
     }, [wallet.address])
+
     let biconomy: any
+
+    const initBiconomy = async () => {
+        if (wallet.type == 'web3auth' && event.childAddress.startsWith('0x')) {
+            biconomy = new Biconomy(web3auth.provider, {
+                apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
+                debug: process.env.NEXT_PUBLIC_ENV == 'dev',
+                contractAddresses: [
+                    ethers.utils.getAddress(event.childAddress),
+                ],
+            })
+            await biconomy.init()
+        } else {
+            biconomy = new Biconomy((WalletSigner?.provider as any).provider, {
+                apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
+                debug: process.env.NEXT_PUBLIC_ENV == 'dev',
+                contractAddresses: [
+                    ethers.utils.getAddress(event.childAddress),
+                ],
+            })
+            await biconomy.init()
+        }
+    }
+
     useEffect(() => {
-        const initBiconomy = async () => {
-            console.log(wallet.address)
-            console.log(WalletSigner?.provider)
-            if (event.childAddress) {
-                biconomy = new Biconomy(
-                    (WalletSigner?.provider as any).provider,
-                    {
-                        apiKey: process.env.NEXT_PUBLIC_BICONOMY_API as string,
-                        debug: process.env.NEXT_PUBLIC_ENV == 'dev',
-                        contractAddresses: [
-                            ethers.utils.getAddress(event.childAddress),
-                        ],
-                    }
-                )
-                await biconomy.init()
-            }
-        }
-        if (wallet.address?.startsWith('0x') && WalletSigner?.provider) {
+        if (
+            event.childAddress.startsWith('0x') &&
+            (WalletSigner?.provider ||
+                (wallet.address && wallet.address.startsWith('0x')))
+        ) {
             initBiconomy()
-            console.log('init bico', wallet.address, WalletSigner.provider)
+            console.log('init bico', wallet.address, WalletSigner?.provider)
         }
-    }, [wallet.address, WalletSigner?.provider])
+    }, [wallet.address])
 
     const buyPolygonTicket = async () => {
-        console.log(biconomy)
-        if (isConnected && biconomy.ethersProvider) {
+        if (
+            (isConnected ||
+                (wallet.address && wallet.address.startsWith('0x'))) &&
+            biconomy
+        ) {
             if (user === null) {
                 setToOpen(true)
             } else {
@@ -274,13 +418,20 @@ export default function EventLayout({
                         )
                         let { data } =
                             await metapass.populateTransaction.getTix(
-                                JSON.stringify(metadata)
+                                JSON.stringify(metadata),
+                                {
+                                    value: ethers.utils.parseEther(
+                                        event.fee.toString()
+                                    ),
+                                    gasPrice: 50,
+                                    gasLimit: 900000,
+                                }
                             )
                         let txParams = {
                             data: data,
                             to: event.childAddress,
                             from: wallet.address,
-                            signatureType: 'PERSONAL_SIGN',
+                            signatureType: 'EIP712_SIGN',
                         }
                         await ethersProvider.send('eth_sendTransaction', [
                             txParams,
@@ -311,7 +462,6 @@ export default function EventLayout({
                         biconomy.on(
                             'onError',
                             (data: { error: any; transactionId: string }) => {
-                                console.log(data)
                                 toast.error('Ooops! Failed to mint the ticket.')
                                 setIsLoading(false)
                                 if (
@@ -324,7 +474,7 @@ export default function EventLayout({
                         )
                         setIsLoading(false)
                     } catch (e: any) {
-                        console.log(e)
+                        console.log(e, 'error')
                     }
                 } else {
                     try {
@@ -341,7 +491,6 @@ export default function EventLayout({
                                 ),
                             }
                         )
-                        console.log(txn.hash)
                         setIsLoading(false)
                         if (event.category.event_type == 'In-Person') {
                             generateAndSendUUID(
@@ -369,6 +518,15 @@ export default function EventLayout({
                     }
                 }
             }
+        } else if (
+            wallet.address &&
+            wallet.address.startsWith('0x') &&
+            !biconomy
+        ) {
+            setIsLoading(true)
+
+            await initBiconomy()
+            await buyPolygonTicket()
         } else {
             toast.error('Please connect your Polygon wallet', {
                 id: 'con-polygon',
@@ -376,32 +534,31 @@ export default function EventLayout({
         }
     }
     const buySolanaTicket = async () => {
-        console.log('buySolanaTicket', user)
-
-        if (user === null) {
-            console.log('user is null')
+        console.log(
+            'buying solana ticket',
+            (solanaWallet as SolanaWalletWithPublicKey).signTransaction
+        )
+        if (!user) {
             setToOpen(true)
         } else {
-            if (solanaWallet.publicKey && wallet.address) {
-                console.log('solanaWallet')
+            if (solanaWallet && solanaWallet.publicKey) {
                 setIsLoading(true)
-                const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey(
+                const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
                     'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
                 )
-                const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID =
-                    new web3.PublicKey(
-                        'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-                    )
+                const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID = new PublicKey(
+                    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+                )
                 // event.customSPLToken =
                 //     'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-                const customSPL = new web3.PublicKey(
+                const customSPL = new PublicKey(
                     'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
                 )
                 const getMetadata = async (
-                    mint: web3.PublicKey
-                ): Promise<web3.PublicKey> => {
+                    mint: PublicKey
+                ): Promise<PublicKey> => {
                     return (
-                        await web3.PublicKey.findProgramAddress(
+                        await PublicKey.findProgramAddress(
                             [
                                 Buffer.from('metadata'),
                                 TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -413,10 +570,10 @@ export default function EventLayout({
                 }
 
                 const getMasterEdition = async (
-                    mint: web3.PublicKey
-                ): Promise<web3.PublicKey> => {
+                    mint: PublicKey
+                ): Promise<PublicKey> => {
                     return (
-                        await web3.PublicKey.findProgramAddress(
+                        await PublicKey.findProgramAddress(
                             [
                                 Buffer.from('metadata'),
                                 TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -428,48 +585,48 @@ export default function EventLayout({
                     )[0]
                 }
 
-                const mint = web3.Keypair.generate()
+                const mint = Keypair.generate()
                 const metadataAddress = await getMetadata(mint.publicKey)
                 const masterEdition = await getMasterEdition(mint.publicKey)
-                const NftTokenAccount: web3.PublicKey =
+                const NftTokenAccount: PublicKey =
                     await getAssociatedTokenAddress(
                         mint.publicKey,
-                        solanaWallet.publicKey as web3.PublicKey
+                        solanaWallet.publicKey as PublicKey
                     )
-                const hostPDA: web3.PublicKey = await getHostPDA(
-                    new web3.PublicKey(event.eventHost)
+                const hostPDA: PublicKey = await getHostPDA(
+                    new PublicKey(event.eventHost)
                 )
-                const adminPDA: web3.PublicKey = await getAdminPDA()
+                const adminPDA: PublicKey = await getAdminPDA()
 
                 const hostCustomSplTokenAta = await getAssociatedTokenAddress(
                     customSPL,
-                    new web3.PublicKey(event.eventHost) // the receiver
+                    new PublicKey(event.eventHost) // the receiver
                 )
                 const adminCustomSplTokenATA = await getAssociatedTokenAddress(
                     customSPL,
-                    new web3.PublicKey(
+                    new PublicKey(
                         '4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw'
                     )
                 )
-                const senderCustomTokenATA: web3.PublicKey =
+                const senderCustomTokenATA: PublicKey =
                     await getAssociatedTokenAddress(
                         customSPL,
-                        solanaWallet.publicKey as web3.PublicKey
+                        solanaWallet.publicKey as PublicKey
                     )
                 const accounts: MintTicketInstructionAccounts = {
-                    mintAuthority: solanaWallet.publicKey as web3.PublicKey,
-                    eventAccount: new web3.PublicKey(event.childAddress),
+                    mintAuthority: solanaWallet.publicKey as PublicKey,
+                    eventAccount: new PublicKey(event.childAddress),
                     mint: mint.publicKey,
                     metadata: metadataAddress,
                     tokenAccount: NftTokenAccount,
                     tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-                    payer: solanaWallet.publicKey as web3.PublicKey,
+                    payer: solanaWallet.publicKey as PublicKey,
                     masterEdition: masterEdition,
                     eventHost: hostPDA,
 
-                    eventHostKey: new web3.PublicKey(event.eventHost),
+                    eventHostKey: new PublicKey(event.eventHost),
                     adminAccount: adminPDA,
-                    adminKey: new web3.PublicKey(
+                    adminKey: new PublicKey(
                         '4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw'
                     ),
                     customSplToken: customSPL,
@@ -505,25 +662,24 @@ export default function EventLayout({
                     }
                 )
                 const additionalComputeBudgetInstruction =
-                    web3.ComputeBudgetProgram.requestUnits({
+                    ComputeBudgetProgram.requestUnits({
                         units: 300000,
                         additionalFee: 0,
                     })
-                const transaction = new web3.Transaction()
+                const transaction = new Transaction()
                     .add(additionalComputeBudgetInstruction)
                     .add(transactionInstruction)
                 console.log('tx', uri, 'uri')
                 const { blockhash } = await connection.getLatestBlockhash()
                 transaction.recentBlockhash = blockhash
-                transaction.feePayer = solanaWallet.publicKey as web3.PublicKey
-                console.log('hello')
+                transaction.feePayer = solanaWallet.publicKey as PublicKey
+                console.log('w', solanaWallet)
                 if (solanaWallet.signTransaction) {
                     try {
                         transaction.sign(mint)
                         const signedTx = await solanaWallet.signTransaction(
                             transaction
                         )
-                        console.log('signedTx', signedTx)
                         const txid = await connection.sendRawTransaction(
                             signedTx.serialize(),
                             {
@@ -531,7 +687,6 @@ export default function EventLayout({
                                 // skipPreflight: true,
                             }
                         )
-                        console.log(txid)
                         await axios.post(`/api/buyTicket`, {
                             eventPDA: event.childAddress,
                             publicKey: solanaWallet.publicKey?.toString(),
@@ -544,11 +699,7 @@ export default function EventLayout({
                         setMintedImage(fastimg)
                         setHasBought(true)
                         setIsLoading(false)
-                        // await updateEventData(
-                        //     event.childAddress,
-                        //     wallet.publicKey?.toString() as string,
-                        //     event.tickets_sold + 1
-                        // )
+
                         event.category.event_type == 'In-Person' &&
                             generateAndSendUUID(
                                 event.childAddress,
@@ -562,9 +713,13 @@ export default function EventLayout({
                         const e = error as Error
                         if (e.message.includes('0x1')) {
                             toast.error("You don't have enough funds")
-                        } else {
+                        } else if (
+                            e.message.includes(
+                                'Attempt to debit an account but found no record of a prior credit.'
+                            )
+                        ) {
                             toast.error(
-                                'Something went wrong, can you reach out to us in our discord(https://discord.gg/7QDkBT39r8)?'
+                                "You don't have enough funds in your wallet"
                             )
                         }
                         console.log(
@@ -575,10 +730,11 @@ export default function EventLayout({
                     }
                 } else {
                     throw Error(
-                        'signTransaction is undefined, line 205 create/index.tsx'
+                        'signTransaction is undefined, event.layout.tsx'
                     )
                 }
             } else {
+                console.log(solanaWallet?.publicKey)
                 toast.error('Please connect your Solana Wallet', {
                     id: 'connect-sol-wal',
                 })
@@ -587,42 +743,50 @@ export default function EventLayout({
     }
 
     const clickBuyTicket = async () => {
-        if (wallet.address) {
-            if (isInviteOnly) {
-                console.log('isInviteOnly')
-                if (formRes === 'Register') {
-                    if (
-                        (event.isSolana && wallet.chain === 'SOL') ||
-                        (!event.isSolana && wallet.chain === 'POLYGON')
-                    ) {
-                        await handleRegister(
-                            user,
-                            onOpen2,
-                            setToOpen,
-                            event.childAddress,
-                            wallet.address as string
-                        )
+        if (user) {
+            if (wallet.address) {
+                if (isInviteOnly) {
+                    if (formRes === 'Register') {
+                        // setFormLoading(true)
+                        console.log('registering')
+                        if (
+                            (event.isSolana && wallet.chain === 'SOL') ||
+                            (!event.isSolana && wallet.chain === 'POLYGON')
+                        ) {
+                            await handleRegister(
+                                user as OpenLoginUserWithMetadata,
+                                onOpen2,
+                                setToOpen,
+                                event.childAddress,
+                                wallet.address as string
+                            )
+                        } else {
+                            !(wallet.type === 'web3auth') &&
+                                toast.error(
+                                    `Please connect your ${
+                                        event.isSolana ? 'Solana' : 'Polygon'
+                                    } wallet!`
+                                )
+                        }
+                    }
+                    if (formRes === 'Accepted') {
+                        event.isSolana ? buySolanaTicket() : buyPolygonTicket()
+                    }
+                } else {
+                    if (event.isSolana) {
+                        buySolanaTicket()
                     } else {
-                        toast.error(
-                            `Please connect your ${
-                                event.isSolana ? 'Solana' : 'Polygon'
-                            } wallet!`
-                        )
+                        buyPolygonTicket()
                     }
                 }
-                if (formRes === 'Accepted') {
-                    event.isSolana ? buySolanaTicket() : buyPolygonTicket()
-                } else {
-                }
             } else {
-                if (event.isSolana) {
-                    buySolanaTicket()
-                } else {
-                    buyPolygonTicket()
-                }
+                wallet.type === null &&
+                    toast.error(
+                        'Please make sure your wallet has loaded or is connected'
+                    )
             }
         } else {
-            toast.error('Please connect your solana wallet')
+            onOpen3()
         }
     }
     useEffect(() => {
@@ -631,7 +795,6 @@ export default function EventLayout({
                 event.isSolana ? 'SOL' : 'POLYGON',
                 event.owner
             )
-            // console.log('domain', domain)
             domain && setEnsName(domain?.domain as string)
         }
         resolve()
@@ -662,64 +825,65 @@ export default function EventLayout({
             }, 5000)
         }
     }, [hasBought])
+
     useEffect(() => {
-        // console.log('event venue', JSON.parse(event.venue as any).name)
-        if (
-            event &&
-            event.venue &&
-            event.venue.x &&
-            event.venue.y &&
-            mapContainerRef.current
-        ) {
-            const map = new mapboxgl.Map({
-                container: mapContainerRef.current, // container ID
-                style: 'mapbox://styles/mapbox/streets-v11', // style URL
-                center: [event.venue.x, event.venue.y], // starting position
-                zoom: 15, // starting zoom
-            })
+        try {
+            if (
+                event &&
+                event.venue &&
+                event.venue.x &&
+                event.venue.y &&
+                mapContainerRef.current
+            ) {
+                const map = new mapboxgl.Map({
+                    container: mapContainerRef.current, // container ID
+                    style: 'mapbox://styles/mapbox/streets-v11', // style URL
+                    center: [event.venue.x, event.venue.y], // starting position
+                    zoom: 15, // starting zoom
+                })
 
-            // const markerNode = document.createElement('div')
-            // add navigation control (the +/- zoom buttons)
+                // const markerNode = document.createElement('div')
+                // add navigation control (the +/- zoom buttons)
 
-            if (map) {
-                map.addControl(
-                    new mapboxgl.GeolocateControl({
-                        positionOptions: {
-                            enableHighAccuracy: true,
-                        },
-                        // When active the map will receive updates to the device's location as it changes.
-                        trackUserLocation: false,
+                if (map) {
+                    map.addControl(
+                        new mapboxgl.GeolocateControl({
+                            positionOptions: {
+                                enableHighAccuracy: true,
+                            },
+                            // When active the map will receive updates to the device's location as it changes.
+                            trackUserLocation: false,
 
-                        // Draw an arrow next to the location dot to indicate which direction the device is heading.
-                        showUserLocation: false,
-                    })
-                )
-                map.addControl(
-                    new mapboxgl.NavigationControl({
-                        showCompass: false,
-                        showZoom: false,
-                        visualizePitch: true,
-                    }),
-                    'bottom-left'
-                )
-                const marker = new mapboxgl.Marker({
-                    draggable: false,
-                }) // initialize a new marker
-                    .setLngLat([event?.venue?.x, event?.venue?.y]) // Marker [lng, lat] coordinates
-                    .addTo(map)
-                return () => map.remove()
+                            // Draw an arrow next to the location dot to indicate which direction the device is heading.
+                            showUserLocation: false,
+                        })
+                    )
+                    map.addControl(
+                        new mapboxgl.NavigationControl({
+                            showCompass: false,
+                            showZoom: false,
+                            visualizePitch: true,
+                        }),
+                        'bottom-left'
+                    )
+
+                    return () => map.remove()
+                }
             }
+        } catch (error) {
+            setIsMapCompatible(false)
         }
     }, [event?.venue])
 
     return (
         <>
-            {toOpen && (
+            {isOpen && (
                 <SignUpModal
                     isOpen={isOpen}
                     onOpen={onOpen}
                     onClose={() => {
                         setToOpen(false)
+                        onClose()
                     }}
                 />
             )}
@@ -943,12 +1107,13 @@ export default function EventLayout({
                                 </Flex>
                             )}
                             <Box mt="2" mb="4">
-                                <Link
-                                    fontSize="sm"
-                                    href="/"
-                                    color="blackAlpha.600"
-                                >
-                                    Back to home
+                                <Link href="/" passHref>
+                                    <ChakraLink
+                                        fontSize="sm"
+                                        color="blackAlpha.600"
+                                    >
+                                        Back to home
+                                    </ChakraLink>
                                 </Link>
                             </Box>
                         </ModalBody>
@@ -960,55 +1125,59 @@ export default function EventLayout({
                     justify="space-between"
                     align={{ md: 'center' }}
                     flexDir={{ base: 'column', md: 'row' }}
-                    //   border="1px solid red"
                 >
-                    <Box pl={{ md: '2' }}>
-                        <Text fontSize="2xl" fontWeight="semibold">
-                            {event.title}
-                        </Text>
-                        {/* <Flex mt="1" flexDirection="column"> */}
-                        <Flex
-                            experimental_spaceX="2"
-                            color="blackAlpha.600"
-                            mt="1"
-                            mr="4"
-                        >
-                            <Box
-                                boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
-                                rounded="full"
-                                fontSize="10px"
-                                fontWeight="semibold"
-                                border="1px"
-                                borderColor="blackAlpha.200"
-                                px="2"
-                                py="0.5"
-                                bg="white"
-                            >
-                                {event.type || event.category.event_type}
-                            </Box>
-                            <Box
-                                boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
-                                rounded="full"
-                                fontSize="10px"
-                                fontWeight="semibold"
-                                border="1px"
-                                borderColor="blackAlpha.200"
-                                px="2"
-                                py="0.5"
-                                bg="white"
-                            >
-                                {Array(event.category.category).join(' & ')}
-                            </Box>
-                        </Flex>
-                    </Box>
+                    <Flex gap={3}>
+                        <Box pl={{ md: '2' }}>
+                            <Text fontSize="2xl" fontWeight="semibold">
+                                {event.title}
+                            </Text>
 
+                            {/* <Flex mt="1" flexDirection="column"> */}
+                            <Flex
+                                experimental_spaceX="2"
+                                color="blackAlpha.600"
+                                mt="1"
+                                mr="4"
+                            >
+                                <Box
+                                    boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
+                                    rounded="full"
+                                    fontSize="10px"
+                                    fontWeight="semibold"
+                                    border="1px"
+                                    borderColor="blackAlpha.200"
+                                    px="2"
+                                    py="0.5"
+                                    bg="white"
+                                >
+                                    {event.type || event.category.event_type}
+                                </Box>
+                                <Box
+                                    boxShadow="0px 0px 31.1248px rgba(0, 0, 0, 0.08)"
+                                    rounded="full"
+                                    fontSize="10px"
+                                    fontWeight="semibold"
+                                    border="1px"
+                                    borderColor="blackAlpha.200"
+                                    px="2"
+                                    py="0.5"
+                                    bg="white"
+                                >
+                                    {Array(event.category.category).join(' & ')}
+                                </Box>
+                            </Flex>
+                        </Box>
+                        <Button onClick={onCopy1} variant={'unstyled'}>
+                            <FiShare />
+                        </Button>
+                    </Flex>
                     <Button
                         display={{ base: 'none', md: 'flex' }}
                         rounded="full"
                         bg="brand.gradient"
                         fontWeight="medium"
                         role="group"
-                        loadingText="Minting"
+                        loadingText={'Minting'}
                         isLoading={isLoading}
                         boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
                         color="white"
@@ -1021,7 +1190,8 @@ export default function EventLayout({
                         disabled={
                             event.tickets_available === 0 ||
                             formRes === 'Awaiting Approval' ||
-                            formRes === 'Accepted'
+                            formRes === 'Accepted' ||
+                            hasTicket
                         }
                         _focus={{}}
                         _active={{}}
@@ -1064,13 +1234,14 @@ export default function EventLayout({
                 >
                     <Box w="full">
                         <Box
+                            mb={{ base: '8', md: '0' }}
                             w="full"
                             overflow="clip"
                             border="1px"
                             borderColor="blackAlpha.100"
                             boxShadow="0px 4.25554px 93.6219px rgba(0, 0, 0, 0.08)"
                             rounded="xl"
-                            p="3"
+                            p={{ base: '0', md: '3' }}
                         >
                             <Flex
                                 alignItems={{
@@ -1106,6 +1277,7 @@ export default function EventLayout({
                                     )}
                                 </AspectRatio>
                                 <Box
+                                    display={{ base: 'none', md: 'block' }}
                                     maxH={{ base: '26vw', xl: '300px' }}
                                     minW={{
                                         md: '100px',
@@ -1163,7 +1335,6 @@ export default function EventLayout({
                                                 />
                                             </AspectRatio>
                                         )}
-                                        {/* {console.log(image.hero_image,"hero_image")} */}
                                         {event.image.gallery?.map(
                                             (data, key) => (
                                                 <AspectRatio
@@ -1201,9 +1372,10 @@ export default function EventLayout({
                                 </Box>
                             </Flex>
                         </Box>
+
                         <Box
                             w="full"
-                            mt="2"
+                            mt={2}
                             mb={{ base: '10px', md: '0' }}
                             noOfLines={6}
                             border="1px"
@@ -1215,15 +1387,20 @@ export default function EventLayout({
                             px="4"
                             color="blackAlpha.700"
                             fontSize={{ base: 'sm', lg: 'md' }}
-                            // minH={{ base: '28', xl: '28' }}
-                            // maxW="10%"
-                            // h="10rem"
+                            display={{ base: 'none', md: 'block' }}
                             minH={{ base: '4rem', md: 'auto' }}
                             maxH={{ base: '14rem', md: 'auto' }}
                             maxW="740px"
                             overflow="auto"
                         >
-                            <Box>
+                            <Text
+                                fontWeight={'semibold'}
+                                decoration="underline"
+                                mb={2}
+                            >
+                                Description:
+                            </Text>
+                            <Box display={{ base: 'none', md: 'block' }}>
                                 <MarkdownPreview
                                     style={{
                                         fontSize: event.description.long_desc
@@ -1242,13 +1419,68 @@ export default function EventLayout({
                         <Flex
                             justify="center"
                             display={{ base: 'flex', md: 'none' }}
+                            backgroundColor="white"
+                            w="100%"
+                            flexDirection="column"
+                            position="fixed"
+                            bottom="0"
+                            align="center"
+                            zIndex={10}
+                            pb="1"
+                            pt="4"
+                            borderTopRightRadius={20}
+                            borderTopLeftRadius={20}
+                            left="0"
                         >
+                            <Flex align="center" gap="2">
+                                <Text color="blackAlpha.500" fontSize="xs">
+                                    Hosted By
+                                </Text>
+                                <Flex mt="2" direction="column" mb="1">
+                                    <Flex
+                                        experimental_spaceX="2"
+                                        align="center"
+                                        _hover={{ bg: 'blackAlpha.50' }}
+                                        mx="-4"
+                                        px="4"
+                                        py="2"
+                                        cursor="pointer"
+                                        transitionDuration="100ms"
+                                    >
+                                        <BoringAva address={event.owner} />
+                                        <Box>
+                                            <Text fontSize="14px" w="32">
+                                                {ensName
+                                                    ? ensName?.length > 15
+                                                        ? ensName?.slice(0, 6) +
+                                                          '...' +
+                                                          ensName?.slice(-6)
+                                                        : ensName ||
+                                                          event?.owner?.slice(
+                                                              0,
+                                                              6
+                                                          ) +
+                                                              '...' +
+                                                              event?.owner?.slice(
+                                                                  -6
+                                                              )
+                                                    : event?.owner?.slice(
+                                                          0,
+                                                          6
+                                                      ) +
+                                                      '...' +
+                                                      event?.owner?.slice(-6)}
+                                            </Text>
+                                        </Box>
+                                    </Flex>
+                                </Flex>
+                            </Flex>
                             <Button
                                 rounded="full"
                                 bg="brand.gradient"
                                 fontWeight="medium"
                                 role="group"
-                                loadingText="Minting"
+                                loadingText={'Minting'}
                                 isLoading={isLoading}
                                 boxShadow="0px 4px 32px rgba(0, 0, 0, 0.12)"
                                 color="white"
@@ -1301,47 +1533,52 @@ export default function EventLayout({
                         <Flex
                             experimental_spaceX="2.5"
                             w={{ base: 'full', md: 'auto' }}
+                            flexDirection={{ base: 'row', md: 'row' }}
                         >
-                            <Box
-                                p="2"
-                                border="1px"
-                                borderColor="blackAlpha.100"
-                                rounded="xl"
-                                textAlign="center"
-                                w={{ base: 'full', md: 'auto' }}
-                                minW={{ base: 'auto', md: '100px' }}
-                                boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
-                            >
-                                <Text fontSize="xs" color="blackAlpha.700">
-                                    Ticket Price
-                                </Text>
-                                <Divider my="2" />
-                                <Box w="fit-content" mx="auto">
-                                    <Image
-                                        src={
-                                            event.isSolana
-                                                ? event.customSPLToken
-                                                    ? event.customSPLToken.startsWith(
-                                                          'EPjFWdd5Auf'
-                                                      )
-                                                        ? '/assets/tokens/USDC.svg'
-                                                        : '/assets/tokens/USDT.svg'
-                                                    : '/assets/tokens/SOL.svg'
-                                                : '/assets/matic.png'
-                                        }
-                                        alt="matic"
-                                        w="6"
-                                        h="6"
-                                    />
-                                </Box>
-                                <Text
-                                    fontSize={event.fee === 0 ? 'lg' : '2xl'}
-                                    fontWeight="semibold"
-                                    mt={event.fee === 0 ? '1.5' : '0'}
+                            {
+                                <Box
+                                    p="2"
+                                    border="1px"
+                                    borderColor="blackAlpha.100"
+                                    rounded="xl"
+                                    textAlign="center"
+                                    w={{ base: 'full', md: 'auto' }}
+                                    minW={{ base: 'auto', md: '100px' }}
+                                    boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
                                 >
-                                    {event.fee === 0 ? 'FREE' : event.fee}
-                                </Text>
-                            </Box>
+                                    <Text fontSize="xs" color="blackAlpha.700">
+                                        Ticket Price
+                                    </Text>
+                                    <Divider my="2" />
+                                    <Box w="fit-content" mx="auto">
+                                        <Image
+                                            src={
+                                                event.isSolana
+                                                    ? event.customSPLToken
+                                                        ? event.customSPLToken.startsWith(
+                                                              'EPjFWdd5Auf'
+                                                          )
+                                                            ? '/assets/tokens/USDC.svg'
+                                                            : '/assets/tokens/USDT.svg'
+                                                        : '/assets/tokens/SOL.svg'
+                                                    : '/assets/matic.png'
+                                            }
+                                            alt="matic"
+                                            w="6"
+                                            h="6"
+                                        />
+                                    </Box>
+                                    <Text
+                                        fontSize={
+                                            event.fee === 0 ? 'lg' : '2xl'
+                                        }
+                                        fontWeight="semibold"
+                                        mt={event.fee === 0 ? '1.5' : '0'}
+                                    >
+                                        {event.fee === 0 ? 'FREE' : event.fee}
+                                    </Text>
+                                </Box>
+                            }
                             <Box
                                 p="2"
                                 border="1px"
@@ -1494,10 +1731,88 @@ export default function EventLayout({
                                 </>
                             )}
                         </Box>
+
+                        {event.venue?.name && (
+                            <Box
+                                mt="3"
+                                rounded="xl"
+                                px="4"
+                                border="1px"
+                                borderColor="blackAlpha.100"
+                                boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
+                                py="2"
+                                maxW={{ base: 'auto', md: '"18rem"' }}
+                            >
+                                <Flex
+                                    justify="flex-end"
+                                    align="center"
+                                    flexDirection="row-reverse"
+                                    gap="2"
+                                >
+                                    <Text
+                                        color="blackAlpha.700"
+                                        fontSize="16px"
+                                        fontFamily="Poppins"
+                                        fontWeight="700"
+                                        lineHeight="24px"
+                                    >
+                                        Location
+                                    </Text>
+                                    <Flex fontSize="xs" align="center">
+                                        <MapPinLine />
+                                    </Flex>
+                                </Flex>
+                                <ChakraLink
+                                    textDecoration="underline"
+                                    color="blackAlpha.600"
+                                    onClick={() => {
+                                        window.open(
+                                            `https://maps.google.com/?q=${event.venue?.name}`,
+                                            '_blank'
+                                        )
+                                    }}
+                                >
+                                    <Text
+                                        color="blackAlpha.600"
+                                        // as="u"
+                                        fontSize="16px"
+                                        fontFamily="Poppins"
+                                        fontWeight="500"
+                                        lineHeight="24px"
+                                        my={2}
+                                    >
+                                        {event.venue.name.substring(
+                                            0,
+                                            event.venue.name.indexOf(',')
+                                        ) || event.venue.name}
+                                        {' - Open in Maps ↗'}
+                                    </Text>
+                                </ChakraLink>
+                                {isMapCompatible ? (
+                                    <Box
+                                        className="map-container"
+                                        w="100%"
+                                        h={{ base: '20vh', md: '10vh' }}
+                                        borderRadius="lg"
+                                        ref={mapContainerRef}
+                                    ></Box>
+                                ) : (
+                                    <Box
+                                        w="100%"
+                                        h="10vh"
+                                        borderRadius="lg"
+                                        bgImage="https://res.cloudinary.com/dev-connect/image/upload/v1664118651/img/Screenshot_2022-09-25_at_8.34.45_PM_noeivg.png"
+                                        bgSize="cover"
+                                        bgRepeat="no-repeat"
+                                    ></Box>
+                                )}
+                            </Box>
+                        )}
                         <Box
                             mt="3"
                             rounded="xl"
                             px="4"
+                            display={{ base: 'none', md: 'block' }}
                             border="1px"
                             borderColor="blackAlpha.100"
                             boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
@@ -1542,68 +1857,8 @@ export default function EventLayout({
                                 </Flex>
                             </Flex>
                         </Box>
-                        {event.venue?.name && (
-                            <Box
-                                mt="3"
-                                rounded="xl"
-                                px="4"
-                                border="1px"
-                                borderColor="blackAlpha.100"
-                                boxShadow="0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)"
-                                py="2"
-                                maxW="18rem"
-                            >
-                                <Flex
-                                    justify="flex-end"
-                                    align="center"
-                                    flexDirection="row-reverse"
-                                    gap="2"
-                                >
-                                    <Text
-                                        color="blackAlpha.700"
-                                        fontSize="16px"
-                                        fontFamily="Poppins"
-                                        fontWeight="700"
-                                        lineHeight="24px"
-                                    >
-                                        Location
-                                    </Text>
-                                    <Flex fontSize="xs" align="center">
-                                        <MapPinLine />
-                                    </Flex>
-                                </Flex>
-                                <Link
-                                    onClick={() => {
-                                        window.open(
-                                            `https://maps.google.com/?q=${event.venue?.name}`,
-                                            '_blank'
-                                        )
-                                    }}
-                                >
-                                    <Text
-                                        color="blackAlpha.600"
-                                        // as="u"
-                                        fontSize="16px"
-                                        fontFamily="Poppins"
-                                        fontWeight="500"
-                                        lineHeight="24px"
-                                    >
-                                        {event.venue.name.substring(
-                                            0,
-                                            event.venue.name.indexOf(',')
-                                        ) || event.venue.name}
-                                    </Text>
-                                </Link>
-                                <Box
-                                    className="map-container"
-                                    w="100%"
-                                    h="10vh"
-                                    borderRadius="lg"
-                                    ref={mapContainerRef}
-                                ></Box>
-                            </Box>
-                        )}
                         <Box
+                            mb={{ base: '40%', md: '0' }}
                             mt="3"
                             rounded="xl"
                             px="4"
@@ -1651,17 +1906,7 @@ export default function EventLayout({
                                 </Text>
                             )}
                         </Box>
-                        {/* {console.log(event.buyers)} */}
-                        {(event.buyers.find(
-                            (buyer: any) =>
-                                String(buyer?.id).toLowerCase() ===
-                                String(wallet.address).toLowerCase()
-                        ) ||
-                            event.buyers.find(
-                                (buyer) =>
-                                    String(buyer).toLowerCase() ===
-                                    String(wallet?.address).toLowerCase()
-                            )) && (
+                        {hasTicket && (
                             <Flex align="center" justify="space-evenly">
                                 {event.category.event_type == 'Online' ? (
                                     <Box

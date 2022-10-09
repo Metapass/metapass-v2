@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, Text, useDisclosure } from '@chakra-ui/react'
 
 import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi'
 import '@uiw/react-md-editor/markdown-editor.css'
@@ -18,7 +18,11 @@ export default function SubmitStep({
     inTxn: boolean
 }) {
     const [wallet, setWallet] = useContext(walletContext)
-
+    const {
+        isOpen: isOpen3,
+        onOpen: onOpen3,
+        onClose: onClose3,
+    } = useDisclosure()
     return (
         <>
             {wallet.address && event.date && event.image?.gallery.length > 0 && (
@@ -65,7 +69,12 @@ export default function SubmitStep({
                                     boxShadow="0px -4.59297px 120.336px rgba(0, 0, 0, 0.06)"
                                     rounded="xl"
                                 >
-                                    <EventLayout event={event} />
+                                    <EventLayout
+                                        isOpen3={isOpen3}
+                                        onOpen3={onOpen3}
+                                        onClose3={onClose3}
+                                        event={event}
+                                    />
                                 </Box>
                             </Box>
                             <Box>

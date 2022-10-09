@@ -1,33 +1,30 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { ChakraProvider } from '@chakra-ui/react'
-import theme from './../styles/theme.chakra'
-import Head from 'next/head'
 import Wallet from '../utils/walletContext'
 import Web3Wrapper from '../utils/web3Context'
 import { Toaster } from 'react-hot-toast'
 import Contract from '../utils/contractContext'
 import Script from 'next/script'
-import ChatwootWidget from '../components/Elements/Chatwoot.component'
 import { ContextProvider } from '../contexts/ContextProvider'
 import { configureChains, chain, createClient, WagmiConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 import { RecoilRoot } from 'recoil'
-import og from '../OG.json'
+import dynamic from 'next/dynamic'
+import ChatwootWidget from '../components/Elements/Chatwoot.component'
 import NextNProgress from 'nextjs-progressbar'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+const Chakra = dynamic(() => import('../components/Root/Chakra.root'))
+
 const { chains, provider, webSocketProvider } = configureChains(
     [chain.polygon, chain.polygonMumbai],
     [publicProvider()]
 )
 
 const client = createClient({
-    autoConnect: true,
+    autoConnect: false,
     provider,
     webSocketProvider,
 })
-
+declare const window: any
 function MyApp({ Component, pageProps }: AppProps) {
     return (
         <>
@@ -58,12 +55,14 @@ function MyApp({ Component, pageProps }: AppProps) {
                             <ContextProvider>
                                 <Contract>
                                     <Toaster />
-                                    <ChakraProvider theme={theme}>
-                                        <ChatwootWidget />
+                                    <Chakra
+                                        Component={Component}
+                                        pageProps={pageProps}
+                                    >
+                                        {' '}
+                                        {<ChatwootWidget />}
                                         <NextNProgress color="#6451FB" />
-
-                                        <Component {...pageProps} />
-                                    </ChakraProvider>
+                                    </Chakra>
                                 </Contract>
                             </ContextProvider>
                         </Web3Wrapper>

@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import type { GetServerSideProps, NextPage } from 'next'
 import {
     CategoryType,
@@ -8,7 +8,6 @@ import {
 } from '../../types/Event.type'
 import { useEffect, useState } from 'react'
 import NavigationBar from '../../components/Navigation/NavigationBar.component'
-import EventLayout from '../../layouts/Event/Event.layout'
 import { Skeleton } from '@chakra-ui/react'
 import axios from 'axios'
 import { gqlEndpoint } from '../../utils/subgraphApi'
@@ -17,13 +16,19 @@ import { supabase } from '../../lib/config/supabaseConfig'
 import { useRouter } from 'next/router'
 import og from '../../OG.json'
 import Head from 'next/head'
-
+import dynamic from 'next/dynamic'
+const EventLayout = dynamic(() => import('../../layouts/Event/Event.layout'))
+declare const window: any
 const Event: NextPage = ({ event, og }: any) => {
     const [featEvent, setFeatEvent] = useState<Event>(event)
     const [isInviteOnly, setInviteOnly] = useState<boolean>(false)
     const router = useRouter()
     const { address } = router.query
-
+    const {
+        isOpen: isOpen3,
+        onOpen: onOpen3,
+        onClose: onClose3,
+    } = useDisclosure()
     useEffect(() => {
         async function fetchData() {
             const { data, error } = await supabase
@@ -47,7 +52,7 @@ const Event: NextPage = ({ event, og }: any) => {
                 <meta property="og:image" itemProp="image" content={og.img} />
                 <meta
                     property="og:title"
-                    content={`Apply for the ${event.title} on Metapass!`}
+                    content={`Apply for ${event.title} on Metapass!`}
                 />
                 <meta
                     property="og:site_name"
@@ -55,12 +60,17 @@ const Event: NextPage = ({ event, og }: any) => {
                 />
                 <meta
                     name="twitter:title"
-                    content={`Apply for the ${event.title} on Metapass!`}
+                    content={`Apply for ${event.title} on Metapass!`}
                 />
                 <meta name="twitter:description" content={og.desc} />
                 <meta name="twitter:card" content="summary_large_image"></meta>
             </Head>
-            <NavigationBar mode="white" />
+            <NavigationBar
+                isOpen3={isOpen3}
+                onOpen3={onOpen3}
+                onClose3={onClose3}
+                mode="white"
+            />
             <Box p="4" />
             <Flex
                 justify="center"
@@ -75,6 +85,9 @@ const Event: NextPage = ({ event, og }: any) => {
                     {featEvent ? (
                         <Skeleton isLoaded={featEvent.id !== ''}>
                             <EventLayout
+                                isOpen3={isOpen3}
+                                onOpen3={onOpen3}
+                                onClose3={onClose3}
                                 event={featEvent}
                                 isInviteOnly={isInviteOnly}
                             />

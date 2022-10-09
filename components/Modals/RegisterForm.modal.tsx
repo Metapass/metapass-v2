@@ -31,6 +31,8 @@ import { walletContext } from '../../utils/walletContext'
 import axios from 'axios'
 import { QuestionComp } from '../Misc/question.component'
 import { RegistrationTemplate } from '../../utils/registrationtemplate'
+import { useUser } from '../../hooks/useUser'
+import { send } from '@metapasshq/msngr'
 interface formNew {
     id: number
     data: formType
@@ -50,7 +52,7 @@ export const RegisterFormModal = ({
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [toUpdate, setToUpdate] = useRecoilState(updateOnce)
 
-    const user = supabase.auth.user()
+    const { user } = useUser()
     const [wallet, setWallet] = useContext(walletContext)
 
     useEffect(() => {
@@ -71,14 +73,14 @@ export const RegisterFormModal = ({
                             preDefinedQues: data?.[0].data?.preDefinedQues,
                             customQues: data?.[0].data?.customQues!,
                         },
-                        datadrop: data?.[0]?.datadrop.ques,
+                        datadrop: data?.[0]?.datadrop?.ques,
                     })
                 console.log(data)
             }
         }
 
         fetchData()
-    }, [event])
+    }, [event, wallet.address])
 
     // console.log(formData?.data, 'form data')
 
@@ -86,13 +88,28 @@ export const RegisterFormModal = ({
         register,
         handleSubmit,
         watch,
+        resetField,
         reset,
         formState: { errors },
     } = useForm()
 
     const onSubmit = async (res: any) => {
-        // console.log(res, 'here')
+        console.log(res, 'first response')
+
         if (user) {
+            console.log('inside')
+            await send(process.env.NEXT_PUBLIC_SWITCH_HOOK!, {
+                message:
+                    'New Registration | main wallet: ' +
+                    wallet.address +
+                    ' | form wallet: ' +
+                    res.walletAddress +
+                    ` | wallet type` +
+                    wallet.type,
+            })
+            res.walletAddress = wallet.address
+            console.log(res, 'second response')
+
             setIsLoading(true)
             let a = event?.childAddress as string
             if (event?.childAddress.startsWith('0x')) {
@@ -182,12 +199,19 @@ export const RegisterFormModal = ({
                                             isReadOnly={
                                                 ques.id === 3 || ques.id == 2
                                             }
+                                            value={
+                                                ques.id == 2
+                                                    ? user?.email
+                                                    : ques.id == 3
+                                                    ? wallet?.address
+                                                    : null
+                                            }
                                             defaultValue={
                                                 ques.id == 2
                                                     ? user?.email
                                                     : ques.id == 3
                                                     ? wallet?.address
-                                                    : ''
+                                                    : null
                                             }
                                             {...register(camelize(ques.val))}
                                         />
@@ -211,7 +235,7 @@ export const RegisterFormModal = ({
                                         <Input
                                             placeholder={ques.val}
                                             w="md"
-                                            isRequired={false}
+                                            isRequired={ques.isRequired}
                                             {...register(camelize(ques.val))}
                                         />
                                     </Flex>

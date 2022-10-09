@@ -1,14 +1,19 @@
 import { Box, Flex, Text, Image } from '@chakra-ui/react'
 import SearchBar from '../../components/Elements/SearchBar.component'
 import NavigationBar from '../../components/Navigation/NavigationBar.component'
+import dynamic from 'next/dynamic'
 
-export default function HeroCTA() {
+export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
     return (
         <>
             {' '}
-            <NavigationBar />
+            <NavigationBar
+                isOpen3={isOpen3}
+                onOpen3={onOpen3}
+                onClose3={onClose3}
+            />
             <Box
-                backgroundImage={`url("/assets/gradient.png")`}
+                backgroundImage={`url("https://res.cloudinary.com/dev-connect/image/upload/v1664709904/img/gradient_txqbjd.png")`}
                 backgroundSize="cover"
                 backgroundRepeat="no-repeat"
                 position="relative"
@@ -24,12 +29,16 @@ export default function HeroCTA() {
                         style={{
                             position: 'absolute',
                             top: 0,
-                            zIndex: 0,
+                            zIndex: -999,
                             minHeight: '100%',
                             minWidth: '100%',
                         }}
                     >
-                        <source src="/assets/gradient.mp4" type="video/mp4" />
+                        <source
+
+                            src="https://res.cloudinary.com/dev-connect/video/upload/v1664708693/img/gradient_ioikdd.mp4"
+                            type="video/mp4"
+                        />
                     </video>
                 </Box>
 
@@ -39,7 +48,7 @@ export default function HeroCTA() {
                     pb="12"
                     mt={{ base: '5', md: '6' }}
                     mb={{ base: '6', md: '12' }}
-                    zIndex={2}
+                    zIndex={0}
                     position="relative"
                 >
                     <Flex justify="center" ml={{ lg: '12' }}>
@@ -59,7 +68,7 @@ export default function HeroCTA() {
                             w={{ base: '5', lg: '10' }}
                             ml={{ base: '0', lg: '1' }}
                             mt={{ base: '-12', lg: '-20' }}
-                            src="/assets/elements/sparkle.svg"
+                            src="https://d1fz5nl2y5xg38.cloudfront.net/assets/elements/sparkle.svg"
                             alt="element"
                         />
                     </Flex>
@@ -80,7 +89,7 @@ export default function HeroCTA() {
                     </Text>
                 </Box>
             </Box>
-            <Flex justify="center" w="full" position="relative" zIndex={99}>
+            <Flex justify="center" w="full" position="relative" zIndex={0}>
                 <Box
                     mx={{ base: '2', md: '10', xl: '32' }}
                     maxW="1200px"
