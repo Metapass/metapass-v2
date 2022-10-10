@@ -1,4 +1,5 @@
 import '../styles/globals.css'
+import 'mapbox-gl/dist/mapbox-gl.css'
 import type { AppProps } from 'next/app'
 import Wallet from '../utils/walletContext'
 import Web3Wrapper from '../utils/web3Context'
@@ -42,12 +43,6 @@ function MyApp({ Component, pageProps }: AppProps) {
                 data-website-id={process.env.NEXT_PUBLIC_UMAMI_ID}
                 src="https://analytics.metapasshq.xyz/umami.js"
             />
-            <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js"></script>
-            <link
-                href="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css"
-                rel="stylesheet"
-            />
-
             <RecoilRoot>
                 <Wallet>
                     <WagmiConfig client={client}>

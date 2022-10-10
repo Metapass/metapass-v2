@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const removeImports = require('next-remove-imports')()
 const { withSentryConfig } = require('@sentry/nextjs')
+
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+    enabled: process.env.ANALYZE === 'true',
+})
+
 const nextConfig = removeImports({
     reactStrictMode: true,
     sentry: {
@@ -54,4 +59,6 @@ const sentryWebpackPluginOptions = {
     // https://github.com/getsentry/sentry-webpack-plugin#options.
 }
 
-module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+module.exports = withBundleAnalyzer(
+    withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+)

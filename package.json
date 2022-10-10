@@ -6,7 +6,8 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "analyze": "cross-env ANALYZE=true next build"
     },
     "dependencies": {
         "@biconomy/mexa": "^3.0.2",
@@ -16,6 +17,7 @@
         "@choc-ui/chakra-autocomplete": "^4.22.0",
         "@emotion/react": "^11.9.3",
         "@emotion/styled": "^11.9.3",
+        "@next/bundle-analyzer": "^12.3.1",
         "@pinata/sdk": "^1.1.23",
         "@project-serum/anchor": "^0.25.0-beta.1",
         "@ramper/ethereum": "^0.0.21",
@@ -38,6 +40,7 @@
         "axios": "^0.25.0",
         "boring-avatars": "^1.6.1",
         "cors": "^2.8.5",
+        "cross-env": "^7.0.3",
         "crypto-js": "^4.1.1",
         "eth-rpc-errors": "^4.0.3",
         "ethers": "^5.5.4",
