@@ -110,7 +110,7 @@ export default function FeaturedEvents() {
                 throw new Error('Error fetching featured events')
             }
             return res.data
-        } catch (error) {}
+        } catch (error) { }
     }
     function UnicodeDecodeB64(str: any) {
         return decodeURIComponent(atob(str))
@@ -164,7 +164,9 @@ export default function FeaturedEvents() {
             polygonEvents.data.featuredEntities
         )
         const solanaEvents: Event[] = await getSolanaFetauredEvents()
-        allEvents = [...polygonData, ...solanaEvents].reverse()
+        allEvents = [...polygonData, ...solanaEvents].sort((a, b) => {
+            return new Date(b.date.split("T")[0]).getTime() - new Date(a.date.split("T")[0]).getTime()
+        })
         setFeatEvents(allEvents)
     }
     useEffect(() => {
@@ -210,40 +212,28 @@ export default function FeaturedEvents() {
                         >
                             {featEvents.length > 1
                                 ? featEvents.map((data, key) => (
-                                      <Box
-                                          my="5px"
-                                          maxW={{
-                                              base: '330px',
-                                              xl: '390px',
-                                          }}
-                                          key={key}
-                                          h="full"
-                                          flex="1"
-                                          marginLeft="30px"
-                                          minW={{
-                                              base: '330px',
-                                              xl: '390px',
-                                          }}
-                                      >
-                                          {/* <Skeleton
-                                              maxW={{
-                                                  base: '330px',
-                                                  xl: '390px',
-                                              }}
-                                              key={key}
-                                              minW={{
-                                                  base: '330px',
-                                                  xl: '390px',
-                                              }}
-                                              isLoaded={data.id !== ''}
-                                          > */}
-                                          <EventCard event={data} />
-                                          {/* </Skeleton> */}
-                                      </Box>
-                                  ))
+                                    <Box
+                                        my="5px"
+                                        maxW={{
+                                            base: '330px',
+                                            xl: '390px',
+                                        }}
+                                        key={key}
+                                        h="full"
+                                        flex="1"
+                                        marginLeft="30px"
+                                        minW={{
+                                            base: '330px',
+                                            xl: '390px',
+                                        }}
+                                    >
+
+                                        <EventCard event={data} />
+                                    </Box>
+                                ))
                                 : [1, 2, 3, 4, 5, 6].map((data, key) => (
-                                      <EventsLoading key={key} />
-                                  ))}
+                                    <EventsLoading key={key} />
+                                ))}
 
                             <Box p="10" />
                         </Flex>
@@ -259,18 +249,18 @@ export default function FeaturedEvents() {
                 >
                     {featEvents.length > 1
                         ? featEvents.map((data, key) => (
-                              <Skeleton
-                                  key={key}
-                                  maxW={{ base: '330px', xl: '390px' }}
-                                  minW={{ base: '330px', xl: '390px' }}
-                                  isLoaded={data !== undefined && data !== null}
-                              >
-                                  <EventCard key={key} event={data} />
-                              </Skeleton>
-                          ))
+                            <Skeleton
+                                key={key}
+                                maxW={{ base: '330px', xl: '390px' }}
+                                minW={{ base: '330px', xl: '390px' }}
+                                isLoaded={data !== undefined && data !== null}
+                            >
+                                <EventCard key={key} event={data} />
+                            </Skeleton>
+                        ))
                         : [1, 2, 3, 4, 5, 6].map((data, key) => (
-                              <EventsLoading key={key} />
-                          ))}
+                            <EventsLoading key={key} />
+                        ))}
                 </Flex>
             </Box>
         </Flex>
