@@ -45,8 +45,8 @@ html {
 body {
     overflow: overlay;
 }
-.wallet-adapter-modal{
-    z-index: 20000!important;
+.wallet-adapter-modal {
+    z-index: 20000 !important;
 }
 /* Track */
 ::-webkit-scrollbar-track {
@@ -67,7 +67,7 @@ body {
     top: 0;
     bottom: 0;
     width: 100%;
-  }
-.w3a-modal{
+}
+.w3a-modal {
     z-index: 3000 !important;
 }

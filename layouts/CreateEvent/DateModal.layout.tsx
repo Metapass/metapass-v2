@@ -17,14 +17,38 @@ import {
     FormControl,
 } from '@chakra-ui/react'
 import { MdCalendarToday as CalendarToday } from 'react-icons/md'
-import { useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import moment from 'moment-timezone'
+import TimezoneSelect, { allTimezones } from 'react-timezone-select'
 
 export default function DateModal({ isOpen, onClose, onSubmit }: any) {
-    const [startDateTime, setStartDateTime] = useState<string>('')
+    const [startDateTime, setStartDateTime] = useState(moment())
     const [endTimes, setEndTimes] = useState({
         hh: 0,
         mm: 0,
     })
+    const [duration, setDuration] = useState({
+        hours: 0,
+        minutes: 0,
+    })
+    const [tz, setTz] = useState(
+        Intl.DateTimeFormat().resolvedOptions().timeZone
+    )
+    useMemo(() => {
+        const tzValue = tz.value || tz
+        setStartDateTime(moment(startDateTime.toString()).tz(tzValue))
+    }, [tz])
+
+    useEffect(() => {
+        const durationToAdd = moment.duration(duration)
+        const newDate = moment(startDateTime.toString())
+            .tz(tz.value || tz)
+            .add(durationToAdd)
+        setEndTimes({
+            hh: newDate.get('hours'),
+            mm: newDate.get('minutes'),
+        })
+    }, [duration, startDateTime, tz])
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -33,13 +57,24 @@ export default function DateModal({ isOpen, onClose, onSubmit }: any) {
                 <form
                     onSubmit={(e) => {
                         e.preventDefault()
-
+                        const durationToAdd = moment.duration(duration)
                         /* YYYY:MM:DDThh:mm:ss-hh:mm:ss */ //
+                        const endDateTime = moment(startDateTime.toString())
+                            .tz('UTC')
+                            .add(durationToAdd)
+
+                        const endHours = endDateTime.get('hours')
+                        const endMinutes = endDateTime.get('minutes')
 
                         onSubmit(
-                            `${startDateTime.replaceAll('-', ':')}-${
-                                endTimes.hh
-                            }:${endTimes.mm}:00`
+                            `${startDateTime
+                                .tz('UTC')
+                                .format(
+                                    'YYYY:MM:DDTHH:mm:ss'
+                                )}-${`${endHours}`.padStart(
+                                2,
+                                '0'
+                            )}:${`${endMinutes}`.padStart(2, '0')}:00`
                         )
                         onClose()
                     }}
@@ -64,48 +99,64 @@ export default function DateModal({ isOpen, onClose, onSubmit }: any) {
                             <Input
                                 placeholder="Select Date and Time"
                                 size="md"
+                                value={startDateTime.format('YYYY-MM-DDTHH:mm')}
                                 onChange={(e) => {
-                                    setStartDateTime(e.target.value)
+                                    setStartDateTime(
+                                        moment.tz(
+                                            e.target.value,
+                                            tz.value || tz
+                                        )
+                                    )
                                 }}
                                 type="datetime-local"
+                            />
+                            <Text
+                                my="2"
+                                fontSize="xs"
+                                ml="1"
+                                color="blackAlpha.700"
+                            >
+                                Select Timezone
+                            </Text>
+                            <TimezoneSelect
+                                maxMenuHeight="150px"
+                                value={tz}
+                                onChange={setTz}
+                                timezones={{
+                                    ...allTimezones,
+                                    'America/Lima': 'Pittsburgh',
+                                    'Europe/Berlin': 'Frankfurt',
+                                }}
                             />
                             <Flex mt={5} gap={4}>
                                 <InputGroup size="md">
                                     <Input
                                         onChange={(e) => {
-                                            const a =
-                                                parseInt(
-                                                    startDateTime
-                                                        .split('T')[1]
-                                                        .split(':')[0]
-                                                ) + e.target.valueAsNumber
-                                            if (a < 25) {
-                                                setEndTimes({
-                                                    ...endTimes,
-                                                    hh: a,
-                                                })
-                                            }
+                                            setDuration((prev) => ({
+                                                ...prev,
+                                                hours: !isNaN(
+                                                    e.target.valueAsNumber
+                                                )
+                                                    ? e.target.valueAsNumber
+                                                    : 0,
+                                            }))
                                         }}
                                         type="number"
-                                        placeholder="1"
+                                        placeholder="0"
                                     />
                                     <InputRightAddon>Hours</InputRightAddon>
                                 </InputGroup>
                                 <InputGroup size="md">
                                     <Input
                                         onChange={(e) => {
-                                            const a =
-                                                parseInt(
-                                                    startDateTime
-                                                        .split('T')[1]
-                                                        .split(':')[1]
-                                                ) + e.target.valueAsNumber
-                                            if (a < 61) {
-                                                setEndTimes({
-                                                    ...endTimes,
-                                                    mm: a,
-                                                })
-                                            }
+                                            setDuration((prev) => ({
+                                                ...prev,
+                                                minutes: !isNaN(
+                                                    e.target.valueAsNumber
+                                                )
+                                                    ? e.target.valueAsNumber
+                                                    : 0,
+                                            }))
                                         }}
                                         placeholder="00"
                                         type="number"
@@ -115,7 +166,14 @@ export default function DateModal({ isOpen, onClose, onSubmit }: any) {
                             </Flex>
                         </FormControl>
                         <Text fontSize={'xs'} mt={2}>
-                            The end time will be {endTimes.hh}:{endTimes.mm}
+                            The end time will be{' '}
+                            {`${
+                                endTimes.hh <= 12
+                                    ? endTimes.hh
+                                    : endTimes.hh - 12
+                            }`.padStart(2, '0')}
+                            :{`${endTimes.mm}`.padStart(2, '0')}{' '}
+                            {endTimes.hh < 12 ? 'AM' : 'PM'}
                         </Text>
                     </ModalBody>
                     <Divider mt="2" />
