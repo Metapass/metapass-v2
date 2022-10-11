@@ -1,1 +1,1 @@
-export type Chain = 'SOL' | 'ETH' | 'POLYGON'
+export type Chain = 'SOL' | 'ETH' | 'POLYGON';

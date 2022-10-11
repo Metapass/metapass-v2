@@ -1,19 +1,19 @@
 interface Question {
-    val: string
-    isRequired: boolean
-    id: number
+  val: string;
+  isRequired: boolean;
+  id: number;
 }
 
-type customQues = Question[]
+type customQues = Question[];
 
 interface formType {
-    preDefinedQues: Question[]
-    customQues: customQues
+  preDefinedQues: Question[];
+  customQues: customQues;
 }
 
 interface formDataType {
-    id: number
-    data: formType
+  id: number;
+  data: formType;
 }
 
-export type { Question, customQues, formType, formDataType }
+export type { Question, customQues, formType, formDataType };
