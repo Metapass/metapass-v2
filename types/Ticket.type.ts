@@ -1,7 +1,7 @@
-import { Event } from './Event.type'
+import { Event } from './Event.type';
 export type TicketType = {
-    id: string
-    ticketID: string
-    buyer: { id: string }
-    event: Event
-}
+  id: string;
+  ticketID: string;
+  buyer: { id: string };
+  event: Event;
+};

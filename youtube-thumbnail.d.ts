@@ -1,1 +1,1 @@
-declare module 'youtube-thumbnail'
+declare module 'youtube-thumbnail';

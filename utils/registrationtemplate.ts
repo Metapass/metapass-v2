@@ -1,12 +1,12 @@
 export const RegistrationTemplate = (
-    title: string,
-    date: string,
-    maplink: string,
-    eventpage: string,
-    body: string
+  title: string,
+  date: string,
+  maplink: string,
+  eventpage: string,
+  body: string,
 ) => {
-    // console.log(title, date, maplink, eventpage, body);
-    const template = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml" lang="en"><head>
+  // console.log(title, date, maplink, eventpage, body);
+  const template = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml" lang="en"><head>
       <title></title>
       <meta property="og:title" content="">
       <meta name="twitter:title" content="">
@@ -328,6 +328,6 @@ export const RegistrationTemplate = (
         </tbody></table>
       </div>
       
-      </body></html>`
-    return template
-}
+      </body></html>`;
+  return template;
+};
