@@ -14,7 +14,11 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
-import EventLayout from '../../layouts/Event/Event.layout';
+import dynamic from 'next/dynamic';
+const EventLayout = dynamic(() => import('../../layouts/Event/Event.layout'), {
+  ssr: false,
+});
+
 import { Event } from '../../types/Event.type';
 // import { users } from '../../utils/testData'
 

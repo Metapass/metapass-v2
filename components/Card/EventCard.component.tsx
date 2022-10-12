@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import twoDigit from 'two-digit';
-import EventLayout from '../../layouts/Event/Event.layout';
 import { Event } from '../../types/Event.type';
 import useMobileDetect from '../../utils/useMobileDetect';
 import LazyImage from '../Misc/LazyImage.component';

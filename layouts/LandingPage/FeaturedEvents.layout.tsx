@@ -220,20 +220,7 @@ export default function FeaturedEvents() {
                         xl: '390px',
                       }}
                     >
-                      {/* <Skeleton
-                                              maxW={{
-                                                  base: '330px',
-                                                  xl: '390px',
-                                              }}
-                                              key={key}
-                                              minW={{
-                                                  base: '330px',
-                                                  xl: '390px',
-                                              }}
-                                              isLoaded={data.id !== ''}
-                                          > */}
                       <EventCard event={data} />
-                      {/* </Skeleton> */}
                     </Box>
                   ))
                 : [1, 2, 3, 4, 5, 6].map((data, key) => (

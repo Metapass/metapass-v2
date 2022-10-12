@@ -6,7 +6,10 @@ import '@uiw/react-markdown-preview/markdown.css';
 import { useContext } from 'react';
 import EventCard from '../../components/Card/EventCard.component';
 import { walletContext } from '../../utils/walletContext';
-import EventLayout from '../Event/Event.layout';
+import dynamic from 'next/dynamic';
+const EventLayout = dynamic(() => import('../../layouts/Event/Event.layout'), {
+  ssr: false,
+});
 
 export default function SubmitStep({
   event,

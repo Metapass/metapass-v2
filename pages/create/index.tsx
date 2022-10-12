@@ -1,15 +1,28 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { Box, useClipboard } from '@chakra-ui/react';
 import type { NextPage } from 'next';
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { useContext, useEffect, useState } from 'react';
 import Confetti from '../../components/Misc/Confetti.component';
 import CreateEventCTA from '../../layouts/CreateEvent/CreateEventCTA.layout';
 import Step1 from '../../layouts/CreateEvent/Step1.layout';
-import Step2 from '../../layouts/CreateEvent/Step2.layout';
-import Step3 from '../../layouts/CreateEvent/Step3.layout';
-import Step4 from '../../layouts/CreateEvent/Step4.layout';
-import SubmitStep from '../../layouts/CreateEvent/SubmitStep.layout';
+const Step2 = dynamic(() => import('../../layouts/CreateEvent/Step2.layout'), {
+  ssr: false,
+});
+const Step3 = dynamic(() => import('../../layouts/CreateEvent/Step3.layout'), {
+  ssr: false,
+});
+const Step4 = dynamic(() => import('../../layouts/CreateEvent/Step4.layout'), {
+  ssr: false,
+});
+const SubmitStep = dynamic(
+  () => import('../../layouts/CreateEvent/SubmitStep.layout'),
+  {
+    ssr: false,
+  },
+);
+
 import { walletContext, WalletType } from '../../utils/walletContext';
 
 import { Event, VenueType } from '../../types/Event.type';
