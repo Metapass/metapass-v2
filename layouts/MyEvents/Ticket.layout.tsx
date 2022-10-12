@@ -7,6 +7,7 @@ import { TicketType } from '../../types/Ticket.type'
 import GenerateQR from '../../utils/generateQR'
 
 import { supabase } from '../../lib/config/supabaseConfig'
+import { useProvider } from 'wagmi'
 export default function TicketLayout({
     image,
     eventType,
@@ -37,9 +38,11 @@ export default function TicketLayout({
         }
     }
 
+    const connectedProvider = useProvider()
+
     useEffect(() => {
         if (
-            (window.ethereum || window.w3.currentProvider) &&
+            (connectedProvider) &&
             contractAddress.startsWith('0x')
         ) {
             const provider = new ethers.providers.JsonRpcProvider(
@@ -74,7 +77,7 @@ export default function TicketLayout({
                         .filter('event', 'in', `("${c}")`)
                     console.log(data, 'uuid data')
                     setQr(data?.[0]?.uuid)
-                } catch (error) {}
+                } catch (error) { }
             }
         }
         fetchDetails()
