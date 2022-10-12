@@ -1,7 +1,7 @@
-import type { NextComponentType } from "next";
+import type { NextComponentType } from 'next';
 
 const EventsSection: NextComponentType = () => {
-    return (<></>)
-}
+  return <></>;
+};
 
-export default EventsSection
+export default EventsSection;
