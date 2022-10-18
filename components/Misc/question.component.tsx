@@ -1,28 +1,24 @@
 import {
+    Badge,
     Box,
     Checkbox,
     Flex,
     FormControl,
     FormLabel,
+    Input,
     Select,
     Text,
+    Textarea,
 } from '@chakra-ui/react'
-import React from 'react'
+import { Questions } from '../../types/registerForm.types'
 import { camelize } from '../../utils/helpers/camelize'
-type quesType = 'DROPDOWN' | 'CHECKBOX'
-type Question = {
-    type: quesType
-    question: string
-    options?: string[]
-    requird: boolean
-    id: number
-}
+
 interface Props {
-    question: Question
+    question: Questions
     register: any
 }
 export const QuestionComp = (props: Props) => {
-    // console.log(props)
+    console.log(props.question.options, 'ques')
 
     if (props.question.type === 'CHECKBOX') {
         return (
@@ -30,14 +26,14 @@ export const QuestionComp = (props: Props) => {
                 <FormControl>
                     <Flex justify={'start'} gap={2}>
                         <Checkbox
-                            isRequired={props.question.requird}
+                            isRequired={props.question.required}
                             {...props.register(
                                 camelize(props.question.question)
                             )}
                         />
                         <Text>{props.question.question}</Text>
 
-                        {props.question.requird && (
+                        {props.question.required && (
                             <Text ml={-2} color="red">
                                 *
                             </Text>
@@ -46,31 +42,76 @@ export const QuestionComp = (props: Props) => {
                 </FormControl>
             </>
         )
-    } else {
+    } else if (props.question.type === 'INPUT') {
+        return (
+            <FormControl key={'2'}>
+                <Box display={'flex'} justifyContent={'start'}>
+                    <FormLabel>{props.question.question}</FormLabel>
+                    {props.question.required && (
+                        <Text ml={-2} color="red">
+                            *
+                        </Text>
+                    )}
+                </Box>
+                <Flex gap="2" alignItems="center">
+                    <Input
+                        placeholder={props.question.question}
+                        w="md"
+                        isRequired={props.question.required}
+                        {...props.register(camelize(props.question.question))}
+                    />
+                </Flex>
+            </FormControl>
+        )
+    } else if (props.question.type === 'LONGTEXT') {
+        return (
+            <FormControl key={'2'}>
+                <Box display={'flex'} justifyContent={'start'}>
+                    <FormLabel>{props.question.question}</FormLabel>
+                    {props.question.required && (
+                        <Text ml={-2} color="red">
+                            *
+                        </Text>
+                    )}
+                </Box>
+                <Flex gap="2" alignItems="center">
+                    <Textarea
+                        placeholder={props.question.question}
+                        w="md"
+                        isRequired={props.question.required}
+                        {...props.register(camelize(props.question.question))}
+                    />
+                </Flex>
+            </FormControl>
+        )
+    } else if (props.question.type === 'DROPDOWN') {
         return (
             <>
-                <Flex justify={'start'} flexDirection={'column'}>
+                <Flex justify={'start'} w={'full'} flexDirection={'column'}>
                     <Box display={'flex'} justifyContent={'start'} mx={3}>
                         <FormLabel>{props.question.question}</FormLabel>
-                        {props.question.requird && (
+                        {props.question.required && (
                             <Text ml={-2} color="red">
                                 *
                             </Text>
                         )}
                     </Box>
-                    <Flex justify={'start'}>
+                    <Box w={'full'}>
                         <Select
+                            w={'full'}
                             {...props.register(
                                 camelize(props.question.question)
                             )}
                         >
-                            {props.question.options?.map((option, index) => (
-                                <option value={option} key={index}>
-                                    {option}
-                                </option>
-                            ))}
+                            {props.question.options?.map((option, index) => {
+                                return (
+                                    <option value={option} key={index}>
+                                        {option}
+                                    </option>
+                                )
+                            })}
                         </Select>
-                    </Flex>
+                    </Box>
                 </Flex>
             </>
         )
