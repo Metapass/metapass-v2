@@ -1464,18 +1464,18 @@ export default function EventLayout({
                 </Text>
                 <Divider my='2' />
                 <Text color='brand.peach'>
-                  {event.date &&
+                  {
                     months[
                       moment(
-                        event.date.split('T')[0]?.replaceAll(':', '-'),
+                        event.date.split('T')[0]?.split(':').join('-'),
                       ).get('month')
-                    ]}
+                    ]
+                  }
                 </Text>
                 <Text fontSize='2xl' fontWeight='semibold'>
-                  {event.date &&
-                    moment(event.date.split('T')[0]?.replaceAll(':', '-')).get(
-                      'date',
-                    )}
+                  {moment(event.date.split('T')[0]?.split(':').join('-')).get(
+                    'date',
+                  )}
                 </Text>
               </Box>
             </Flex>
