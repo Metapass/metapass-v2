@@ -131,7 +131,9 @@ export const RegisterFormModal = ({
           const date = event?.date as string;
           const body = RegistrationTemplate(
             event?.title as string,
-            new Date(Date.parse(date.split('T')[0])).toDateString(),
+            new Date(
+              Date.parse(date.split('T')[0].split(':').join('/')),
+            ).toDateString(),
             `https://www.google.com/maps/search/?api=1&query=${
               event?.venue?.name as string
             }`,
