@@ -279,7 +279,6 @@ const Create: NextPage = () => {
                             },
                         })
                         let roomLink = await axios.post(
-
                             '/api/createRoom' as string,
                             {
                                 title: event.title,
@@ -757,56 +756,19 @@ const Create: NextPage = () => {
                                 }}
                             />
                         </Box>
-                        {isInviteOnly ? (
-                            <>
-                                {step === 4 ? (
-                                    <Box>
-                                        {/* STEP5🔺 */}
-                                        <Step5
-                                            onSubmit={(data) => {
-                                                setFormData({
-                                                    ...formData,
-                                                    customQues: data,
-                                                })
 
-                                                setStep(5)
-                                            }}
-                                            onSub={(a) => {
-                                                setStep(5)
-                                                setDropDownForm([...a])
-                                            }}
-                                        />
-                                    </Box>
-                                ) : null}
-                                {step === 5 ? (
-                                    <Box>
-                                        {/* STEP5🔺 */}
-                                        <SubmitStep
-                                            event={event}
-                                            inTxn={inTxn}
-                                            onSubmit={
-                                                wallet.chain === 'SOL'
-                                                    ? onSolanaSubmit
-                                                    : onPolygonSubmit
-                                            }
-                                        />
-                                    </Box>
-                                ) : null}
-                            </>
-                        ) : (
-                            <Box display={step === 4 ? 'block' : 'none'}>
-                                {/* STEP5🔺 */}
-                                <SubmitStep
-                                    event={event}
-                                    inTxn={inTxn}
-                                    onSubmit={
-                                        wallet.chain === 'SOL'
-                                            ? onSolanaSubmit
-                                            : onPolygonSubmit
-                                    }
-                                />
-                            </Box>
-                        )}
+                        <Box display={step === 4 ? 'block' : 'none'}>
+                            {/* STEP5🔺 */}
+                            <SubmitStep
+                                event={event}
+                                inTxn={inTxn}
+                                onSubmit={
+                                    wallet.chain === 'SOL'
+                                        ? onSolanaSubmit
+                                        : onPolygonSubmit
+                                }
+                            />
+                        </Box>
                     </Box>
                 ) : (
                     <Box textAlign={'center'}>
