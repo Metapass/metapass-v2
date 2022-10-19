@@ -111,5 +111,7 @@ export const QuestionComp = (props: Props) => {
         </Flex>
       </>
     );
+  } else {
+    return null;
   }
 };

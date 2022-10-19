@@ -86,7 +86,7 @@ export const RegisterFormModal = ({
 
   const onSubmit = async (res: any) => {
     console.log(res, 'first response');
-
+    // return;
     if (user) {
       console.log('inside');
       await send(process.env.NEXT_PUBLIC_SWITCH_HOOK!, {
@@ -99,13 +99,16 @@ export const RegisterFormModal = ({
           wallet.type,
       });
       res.walletAddress = wallet.address;
+      res.email = user.email;
       console.log(res, 'second response');
+      // return;
 
       setIsLoading(true);
       let a = event?.childAddress as string;
       if (event?.childAddress.startsWith('0x')) {
         a = utils.getAddress(event.childAddress as string);
       }
+
       const { data, error } = await supabase.from('responses').insert({
         event: a,
         response: res,
@@ -165,6 +168,22 @@ export const RegisterFormModal = ({
               direction='column'
               gap='3'
             >
+              <FormControl key={'2'}>
+                <Box display={'flex'} justifyContent={'start'}>
+                  <FormLabel>Name</FormLabel>
+                  <Text ml={-2} color='red'>
+                    *
+                  </Text>
+                </Box>
+                <Flex gap='2' alignItems='center'>
+                  <Input
+                    placeholder={'Your Name'}
+                    w='md'
+                    isRequired={true}
+                    {...register('name')}
+                  />
+                </Flex>
+              </FormControl>
               {formData?.map((q, index) => {
                 return (
                   <>
