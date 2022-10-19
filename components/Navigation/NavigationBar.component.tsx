@@ -90,7 +90,6 @@ export default function NavigationBar({
     const [isWalletLoading, setIsWalletLoading] = useState<boolean | null>(null)
     const { user: commonUser } = useUser()
     const user = supabase.auth.user() || commonUser
-
     const [wallet, setWallet] =
         useContext<[WalletType, Dispatch<SetStateAction<WalletType>>]>(
             walletContext

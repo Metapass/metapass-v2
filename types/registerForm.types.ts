@@ -15,5 +15,21 @@ interface formDataType {
     id: number
     data: formType
 }
+type questionType = 'DROPDOWN' | 'CHECKBOX' | 'INPUT' | 'LONGTEXT'
+type options = string[]
 
-export type { Question, customQues, formType, formDataType }
+interface Questions {
+    question: string
+    options?: options
+    type: questionType
+    defaultValue?: string
+    required: boolean
+}
+export type {
+    Question,
+    customQues,
+    formType,
+    formDataType,
+    Questions,
+    questionType,
+}

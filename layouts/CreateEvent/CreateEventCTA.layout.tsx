@@ -11,7 +11,7 @@ export default function CreateEventCTA({
     setStep: any
     isInviteOnly: boolean
 }) {
-    const steps = isInviteOnly ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5]
+    const steps = [1, 2, 3, 4, 5]
 
     return (
         <>
