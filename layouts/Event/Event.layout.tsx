@@ -1465,14 +1465,10 @@ export default function EventLayout({
                 </Text>
                 <Divider my='2' />
                 <Text color='brand.peach'>
-                  {
-                    months[
-                      new Date(Date.parse(event.date.split('T')[0])).getMonth()
-                    ]
-                  }
+                  {months[moment(event.date.split('T')[0]).get('month')]}
                 </Text>
                 <Text fontSize='2xl' fontWeight='semibold'>
-                  {new Date(Date.parse(event.date.split('T')[0])).getDate()}
+                  {moment(event.date.split('T')[0]).get('date')}
                 </Text>
               </Box>
             </Flex>

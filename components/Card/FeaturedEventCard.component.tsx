@@ -20,6 +20,7 @@ const EventLayout = dynamic(() => import('../../layouts/Event/Event.layout'), {
 });
 
 import { Event } from '../../types/Event.type';
+import moment from 'moment';
 // import { users } from '../../utils/testData'
 
 export default function FeaturedEventCard({ event }: { event: Event }) {
@@ -259,18 +260,14 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
               fontWeight='bold'
               color='brand.peach'
             >
-              {
-                months[
-                  new Date(Date.parse(event.date.split('T')[0])).getMonth()
-                ]
-              }
+              {months[moment(event.date.split('T')[0]).get('month')]}
             </Text>
             <Text
               fontSize={{ base: 'lg', xl: 'xl' }}
               color='brand.black600'
               fontWeight='medium'
             >
-              {new Date(Date.parse(event.date.split('T')[0])).getDate()}
+              {moment(event.date.split('T')[0]).get('date')}
             </Text>
           </Box>
         </Flex>

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { create, urlSource } from 'ipfs-http-client';
+import moment from 'moment';
 const projectId = process.env.NEXT_PUBLIC_IPFS_PROJECT;
 const projectSecret = process.env.NEXT_PUBLIC_IPFS_SECRET;
 const auth =
@@ -78,9 +79,9 @@ export const ticketToIPFS = async (
   const BASE_ENDPOINT = 'https://ticket-img-production-f075.up.railway.app';
   const res = await axios.get(
     `${BASE_ENDPOINT}/api/v2/2d/edit/hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${
-      months[new Date(parsedDate).getMonth()] +
+      months[moment(parsedDate).get('month')] +
       ' ' +
-      new Date(parsedDate).getDate()
+      moment(parsedDate).get('date')
     }?url=${url}`,
   );
 

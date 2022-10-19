@@ -33,6 +33,7 @@ import { QuestionComp } from '../Misc/question.component';
 import { RegistrationTemplate } from '../../utils/registrationtemplate';
 import { useUser } from '../../hooks/useUser';
 import { send } from '@metapasshq/msngr';
+import moment from 'moment';
 interface formNew {
   id: number;
   data: formType;
@@ -137,7 +138,7 @@ export const RegisterFormModal = ({
           const date = event?.date as string;
           const body = RegistrationTemplate(
             event?.title as string,
-            new Date(Date.parse(date.split('T')[0])).toDateString(),
+            moment(date.split('T')[0]).format('ddd MMM DD YYYY'),
             `https://www.google.com/maps/search/?api=1&query=${
               event?.venue?.name as string
             }`,

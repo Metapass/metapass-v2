@@ -1,4 +1,5 @@
 import { AspectRatio, Box, Flex, Image, Link, Text } from '@chakra-ui/react';
+import moment from 'moment';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
@@ -223,20 +224,14 @@ export default function EventCard({
               fontWeight='bold'
               color='brand.peach'
             >
-              {
-                months[
-                  new Date(Date.parse(event.date.split('T')[0])).getMonth()
-                ]
-              }
+              {months[moment(event.date.split('T')[0]).get('month')]}
             </Text>
             <Text
               fontSize={{ base: 'lg', xl: 'xl' }}
               color='brand.black600'
               fontWeight='medium'
             >
-              {twoDigit(
-                new Date(Date.parse(event.date.split('T')[0])).getDate(),
-              )}
+              {twoDigit(moment(event.date.split('T')[0]).get('date'))}
             </Text>
           </Box>
           <Box>
