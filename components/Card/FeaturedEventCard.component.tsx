@@ -260,14 +260,22 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
               fontWeight='bold'
               color='brand.peach'
             >
-              {months[moment(event.date.split('T')[0]).get('month')]}
+              {
+                months[
+                  moment(event.date.split('T')[0].split(':').join('/')).get(
+                    'month',
+                  )
+                ]
+              }
             </Text>
             <Text
               fontSize={{ base: 'lg', xl: 'xl' }}
               color='brand.black600'
               fontWeight='medium'
             >
-              {moment(event.date.split('T')[0]).get('date')}
+              {moment(event.date.split('T')[0].split(':').join('/')).get(
+                'date',
+              )}
             </Text>
           </Box>
         </Flex>

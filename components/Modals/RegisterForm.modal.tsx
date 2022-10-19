@@ -89,6 +89,10 @@ export const RegisterFormModal = ({
     // return;
     if (user) {
       console.log('inside');
+
+      res.walletAddress = wallet.address;
+      res.email = user.email;
+      console.log(res, 'second response');
       await send(process.env.NEXT_PUBLIC_SWITCH_HOOK!, {
         message:
           'New Registration | main wallet: ' +
@@ -98,9 +102,6 @@ export const RegisterFormModal = ({
           ` | wallet type` +
           wallet.type,
       });
-      res.walletAddress = wallet.address;
-      res.email = user.email;
-      console.log(res, 'second response');
       // return;
 
       setIsLoading(true);

@@ -224,14 +224,24 @@ export default function EventCard({
               fontWeight='bold'
               color='brand.peach'
             >
-              {months[moment(event.date.split('T')[0]).get('month')]}
+              {
+                months[
+                  moment(event.date.split('T')[0].split(':').join('/')).get(
+                    'month',
+                  )
+                ]
+              }
             </Text>
             <Text
               fontSize={{ base: 'lg', xl: 'xl' }}
               color='brand.black600'
               fontWeight='medium'
             >
-              {twoDigit(moment(event.date.split('T')[0]).get('date'))}
+              {twoDigit(
+                moment(event.date.split('T')[0].split(':').join('/')).get(
+                  'date',
+                ),
+              )}
             </Text>
           </Box>
           <Box>

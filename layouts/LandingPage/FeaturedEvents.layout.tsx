@@ -25,7 +25,6 @@ import {
 import sendToAirtable from '../../utils/sendToAirtable';
 import ScrollContainer from 'react-indiana-drag-scroll';
 import { gqlEndpoint } from '../../utils/subgraphApi';
-import { HiOutlineChevronRight as ChevronRight } from 'react-icons/hi';
 import axios from 'axios';
 import { AiOutlineSend } from 'react-icons/ai';
 import EventsLoading from '../../components/Misc/EventsLoading.component';
@@ -161,8 +160,8 @@ export default function FeaturedEvents() {
     const solanaEvents: Event[] = await getSolanaFetauredEvents();
     allEvents = [...polygonData, ...solanaEvents].sort((a, b) => {
       return (
-        new Date(b.date.split('T')[0]).getTime() -
-        new Date(a.date.split('T')[0]).getTime()
+        new Date(b.date.split('T')[0].split(':').join('/')).getTime() -
+        new Date(a.date.split('T')[0].split(':').join('/')).getTime()
       );
     });
     setFeatEvents(allEvents);
