@@ -10,7 +10,6 @@ const FeaturedEvents = dynamic(
     ssr: false,
   },
 );
-import { useEffect } from 'react';
 declare const window: any;
 const Home: NextPage = () => {
   const {

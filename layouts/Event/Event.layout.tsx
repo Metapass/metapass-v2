@@ -687,8 +687,8 @@ export default function EventLayout({
   };
 
   const clickBuyTicket = async () => {
-    if (user) {
-      if (wallet.address) {
+    if (wallet.address) {
+      if (user) {
         if (isInviteOnly) {
           if (formRes === 'Register') {
             // setFormLoading(true)
@@ -724,13 +724,12 @@ export default function EventLayout({
           }
         }
       } else {
-        wallet.type === null &&
-          toast.error(
-            'Please make sure your wallet has loaded or is connected',
-          );
+        console.log('no user');
+        wallet.type === 'web3auth' ? onOpen3() : onOpen();
       }
     } else {
-      onOpen3();
+      wallet.type === null &&
+        toast.error('Please make sure your wallet has loaded or is connected');
     }
   };
   useEffect(() => {

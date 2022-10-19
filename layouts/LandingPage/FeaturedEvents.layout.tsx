@@ -159,7 +159,12 @@ export default function FeaturedEvents() {
       polygonEvents.data.featuredEntities,
     );
     const solanaEvents: Event[] = await getSolanaFetauredEvents();
-    allEvents = [...polygonData, ...solanaEvents].reverse();
+    allEvents = [...polygonData, ...solanaEvents].sort((a, b) => {
+      return (
+        new Date(b.date.split('T')[0]).getTime() -
+        new Date(a.date.split('T')[0]).getTime()
+      );
+    });
     setFeatEvents(allEvents);
   };
   useEffect(() => {

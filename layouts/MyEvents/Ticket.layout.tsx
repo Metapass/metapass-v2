@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Image, Flex, Text, Button, Box, Skeleton } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 declare const window: any;
@@ -7,6 +7,9 @@ import { TicketType } from '../../types/Ticket.type';
 import GenerateQR from '../../utils/generateQR';
 
 import { supabase } from '../../lib/config/supabaseConfig';
+import { web3Context } from '../../utils/web3Context';
+import { Web3Auth } from '@web3auth/web3auth';
+import { useProvider } from 'wagmi';
 export default function TicketLayout({
   image,
   eventType,
@@ -24,7 +27,7 @@ export default function TicketLayout({
 }) {
   const [qr, setQr] = useState<string>('');
   const [ticketimg, setTicketimg] = useState<string>('');
-
+  const [web3, setWeb3, web3auth, setWeb3auth]: any = useContext(web3Context);
   async function getMeta(contract: any, tokenuri: string) {
     try {
       const metadata = await contract.tokenURI(tokenuri);
@@ -37,9 +40,11 @@ export default function TicketLayout({
     }
   }
 
+  const walletProvider = useProvider();
+
   useEffect(() => {
     if (
-      (window.ethereum || window.w3.currentProvider) &&
+      (walletProvider || (web3auth as Web3Auth)?.provider) &&
       contractAddress.startsWith('0x')
     ) {
       const provider = new ethers.providers.JsonRpcProvider(
@@ -57,6 +62,7 @@ export default function TicketLayout({
         getMeta(contract, ticket.ticketID);
       }
     } else {
+      console.log('no wallet provider');
     }
   }, [contractAddress, ticket]);
 

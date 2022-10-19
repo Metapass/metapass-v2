@@ -18,7 +18,11 @@ import { utils } from 'ethers';
 import { useContext, useEffect, useState } from 'react';
 import { supabase } from '../../lib/config/supabaseConfig';
 import { ModalProps } from '../../types/ModalProps.types';
-import type { formDataType, formType } from '../../types/registerForm.types';
+import type {
+  formDataType,
+  formType,
+  Questions,
+} from '../../types/registerForm.types';
 import { useForm } from 'react-hook-form';
 import { camelize } from '../../utils/helpers/camelize';
 import toast from 'react-hot-toast';
@@ -33,7 +37,6 @@ import { QuestionComp } from '../Misc/question.component';
 import { RegistrationTemplate } from '../../utils/registrationtemplate';
 import { useUser } from '../../hooks/useUser';
 import { send } from '@metapasshq/msngr';
-import moment from 'moment';
 interface formNew {
   id: number;
   data: formType;
@@ -45,11 +48,7 @@ export const RegisterFormModal = ({
   onOpen,
   event,
 }: ModalProps) => {
-  const [formData, setData] = useState<formNew>({
-    id: 0,
-    data: defaultFormData,
-    datadrop: [],
-  });
+  const [formData, setData] = useState<Questions[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [toUpdate, setToUpdate] = useRecoilState(updateOnce);
 
@@ -65,18 +64,9 @@ export const RegisterFormModal = ({
         }
         const { data, error } = await supabase
           .from('forms')
-          .select('id, event, data,datadrop')
+          .select('*')
           .eq('event', a);
-        data?.length !== 0 &&
-          setData({
-            id: data?.[0]?.id,
-            data: {
-              preDefinedQues: data?.[0].data?.preDefinedQues,
-              customQues: data?.[0].data?.customQues!,
-            },
-            datadrop: data?.[0]?.datadrop?.ques,
-          });
-        console.log(data);
+        setData(data![0].data.data);
       }
     };
 
@@ -118,7 +108,6 @@ export const RegisterFormModal = ({
       }
       const { data, error } = await supabase.from('responses').insert({
         event: a,
-        form: formData?.id,
         response: res,
         email: user?.email,
         address: wallet.address,
@@ -138,7 +127,7 @@ export const RegisterFormModal = ({
           const date = event?.date as string;
           const body = RegistrationTemplate(
             event?.title as string,
-            moment(date.split('T')[0]).format('ddd MMM DD YYYY'),
+            new Date(Date.parse(date.split('T')[0])).toDateString(),
             `https://www.google.com/maps/search/?api=1&query=${
               event?.venue?.name as string
             }`,
@@ -176,66 +165,7 @@ export const RegisterFormModal = ({
               direction='column'
               gap='3'
             >
-              {formData?.data?.preDefinedQues?.map((ques) => (
-                <FormControl key={ques.id}>
-                  <Box
-                    display={'flex'}
-                    justifyContent={'start'}
-                    alignItems={'start'}
-                  >
-                    <FormLabel>{ques.val} </FormLabel>
-                    {ques.isRequired && (
-                      <Text ml={-2} color='red'>
-                        *
-                      </Text>
-                    )}
-                  </Box>
-                  <Flex gap='2' alignItems='center'>
-                    <Input
-                      placeholder={ques.val}
-                      w='md'
-                      isRequired={ques.isRequired}
-                      isReadOnly={ques.id === 3 || ques.id == 2}
-                      value={
-                        ques.id == 2
-                          ? user?.email
-                          : ques.id == 3
-                          ? wallet?.address
-                          : null
-                      }
-                      defaultValue={
-                        ques.id == 2
-                          ? user?.email
-                          : ques.id == 3
-                          ? wallet?.address
-                          : null
-                      }
-                      {...register(camelize(ques.val))}
-                    />
-                  </Flex>
-                </FormControl>
-              ))}
-              {formData?.data?.customQues?.map((ques) => (
-                <FormControl key={ques.id}>
-                  <Box display={'flex'} justifyContent={'start'}>
-                    <FormLabel>{ques.val}</FormLabel>
-                    {ques.isRequired && (
-                      <Text ml={-2} color='red'>
-                        *
-                      </Text>
-                    )}
-                  </Box>
-                  <Flex gap='2' alignItems='center'>
-                    <Input
-                      placeholder={ques.val}
-                      w='md'
-                      isRequired={ques.isRequired}
-                      {...register(camelize(ques.val))}
-                    />
-                  </Flex>
-                </FormControl>
-              ))}
-              {formData.datadrop?.map((q, index) => {
+              {formData?.map((q, index) => {
                 return (
                   <>
                     <Flex></Flex>
