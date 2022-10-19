@@ -1466,14 +1466,14 @@ export default function EventLayout({
                 <Text color='brand.peach'>
                   {
                     months[
-                      moment(event.date.split('T')[0].replaceAll(':', '-')).get(
-                        'month',
-                      )
+                      moment(
+                        event.date.split('T')[0]?.replaceAll(':', '-'),
+                      ).get('month')
                     ]
                   }
                 </Text>
                 <Text fontSize='2xl' fontWeight='semibold'>
-                  {moment(event.date.split('T')[0].replaceAll(':', '-')).get(
+                  {moment(event.date.split('T')[0]?.replaceAll(':', '-')).get(
                     'date',
                   )}
                 </Text>
