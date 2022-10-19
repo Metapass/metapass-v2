@@ -1,10 +1,14 @@
 {
-    "E91icdcziQaxnzGHkUj1TVtFv6BBEBRL4BgeRefkr3sB": {
-        "desc": "Come party with the best founders and contributors — limited seats available!",
-        "img": "https://res.cloudinary.com/dev-connect/image/upload/v1662010804/img/1200_by_630._psd_frdn7c.png"
-    },
-    "Hbnc1rK1TCNhy4g9wT5C35Qu1MRbn4qtwghJ1VLnPDLk": {
-        "desc": "Supermeet is back with it's Mumbai edition! This time for Builders, Creators, Operators and those that are web3 curious.",
-        "img": "https://res.cloudinary.com/metapass/image/upload/v1664098631/erxck3csgtaum3gufutz.png"
-    }
+  "E91icdcziQaxnzGHkUj1TVtFv6BBEBRL4BgeRefkr3sB": {
+    "desc": "Come party with the best founders and contributors — limited seats available!",
+    "img": "https://res.cloudinary.com/dev-connect/image/upload/v1662010804/img/1200_by_630._psd_frdn7c.png"
+  },
+  "Hbnc1rK1TCNhy4g9wT5C35Qu1MRbn4qtwghJ1VLnPDLk": {
+    "desc": "Supermeet is back with it's Mumbai edition! This time for Builders, Creators, Operators and those that are web3 curious.",
+    "img": "https://res.cloudinary.com/metapass/image/upload/v1664098631/erxck3csgtaum3gufutz.png"
+  },
+  "5mfBjQBXS2YifUTVHcc287oey5hAeAAEms5DnsyaYr4t": {
+    "desc": "Supermeet is back with it's Pune edition! This time for Builders, Creators, Operators and those that are web3 curious.",
+    "img": "https://res.cloudinary.com/dev-connect/image/upload/v1666170374/img/Supermeet_Post_pune_i3aur4.png"
+  }
 }

@@ -1,75 +1,71 @@
 import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalCloseButton,
-    Button,
-    Text,
-    Flex,
-    Image,
-    Input,
-    Box,
-    Link as ChakraLink,
-    useClipboard,
-    InputGroup,
-    InputLeftElement,
-    InputRightElement,
-} from '@chakra-ui/react'
-import { motion } from 'framer-motion'
-import Link from 'next/link'
-import { FC } from 'react'
-import { IoIosLink } from 'react-icons/io'
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  Text,
+  Flex,
+  Image,
+  Input,
+  Box,
+  Link as ChakraLink,
+  useClipboard,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+} from '@chakra-ui/react';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { FC } from 'react';
+import { IoIosLink } from 'react-icons/io';
 
 interface AcceptedModalComponentProps {
-    isApproved: boolean
-    event: any
-    mail: string
+  isApproved: boolean;
+  event: any;
+  mail: string;
 }
 
 const AcceptedModalComponent: FC<AcceptedModalComponentProps> = ({
-    isApproved,
-    event,
-    mail,
+  isApproved,
+  event,
+  mail,
 }) => {
-    return (
-        <Modal isOpen={isApproved as boolean} onClose={() => {}}>
-            <ModalOverlay />
+  return (
+    <Modal isOpen={isApproved as boolean} onClose={() => {}}>
+      <ModalOverlay />
 
-            <ModalContent rounded="2xl">
-                <ModalBody textAlign="center">
-                    <Image
-                        src="/assets/elements/sparkle_3.svg"
-                        alt="sparkle"
-                        w="28"
-                        mx="auto"
-                        h="28"
-                    />
-                    <Text
-                        fontFamily="body"
-                        fontSize="xl"
-                        color="blackAlpha.800"
-                    >
-                        Radical! 🎊
-                    </Text>
-                    <Box mt="6">
-                        <Text mt="2" color="blackAlpha.700" fontSize="lg">
-                            You've been approved for
-                        </Text>
-                        <Text
-                            as="h3"
-                            fontSize="2xl"
-                            color="brand.black"
-                            fontWeight="semibold"
+      <ModalContent rounded='2xl'>
+        <ModalBody textAlign='center'>
+          <Image
+            src='/assets/elements/sparkle_3.svg'
+            alt='sparkle'
+            w='28'
+            mx='auto'
+            h='28'
+          />
+          <Text fontFamily='body' fontSize='xl' color='blackAlpha.800'>
+            Radical! 🎊
+          </Text>
+          <Box mt='6'>
+            <Text mt='2' color='blackAlpha.700' fontSize='lg'>
+              You've been approved for
+            </Text>
+            <Text
+              as='h3'
+              fontSize='2xl'
+              color='brand.black'
+              fontWeight='semibold'
 
-                            // letterSpacing="wide"
-                        >
-                            {event.title}
-                        </Text>
-                        <Text color="blackAlpha.700" fontSize="md" mt="4">
-                            We've sent an approval email with your QR code to{' '}
-                            {/* <Text
+              // letterSpacing="wide"
+            >
+              {event.title}
+            </Text>
+            <Text color='blackAlpha.700' fontSize='md' mt='4'>
+              We've sent an approval email with your QR code to{' '}
+              {/* <Text
                                 as="span"
                                 variant="none"
                                 background="brand.gradient"
@@ -88,19 +84,19 @@ const AcceptedModalComponent: FC<AcceptedModalComponentProps> = ({
                             >
                                 QR Code
                             </Text>{' '} */}
-                            <Text
-                                as="span"
-                                variant="none"
-                                background="brand.gradient"
-                                backgroundClip="text"
-                                fontWeight="semibold"
-                            >
-                                {mail}
-                            </Text>{' '}
-                            and you'll find the ticket in your wallet
-                        </Text>
-                    </Box>
-                    {/* <Flex
+              <Text
+                as='span'
+                variant='none'
+                background='brand.gradient'
+                backgroundClip='text'
+                fontWeight='semibold'
+              >
+                {mail}
+              </Text>{' '}
+              and you'll find the ticket in your wallet
+            </Text>
+          </Box>
+          {/* <Flex
                         mx="auto"
                         mt="2"
                         justify="center"
@@ -170,10 +166,10 @@ const AcceptedModalComponent: FC<AcceptedModalComponentProps> = ({
                             />
                         </Box>
                     </Flex> */}
-                    {/* <Text color="blackAlpha.700" fontSize="sm" mt="2">
+          {/* <Text color="blackAlpha.700" fontSize="sm" mt="2">
                         Or copy link
                     </Text> */}
-                    {/* <InputGroup mt="4">
+          {/* <InputGroup mt="4">
                         <InputLeftElement>
                             <IoIosLink />
                         </InputLeftElement>
@@ -201,7 +197,7 @@ const AcceptedModalComponent: FC<AcceptedModalComponentProps> = ({
                             </Button>
                         </InputRightElement>{' '}
                     </InputGroup> */}
-                    {/* <Box
+          {/* <Box
                         p="1.5px"
                         mx="auto"
                         mt="6"
@@ -246,17 +242,17 @@ const AcceptedModalComponent: FC<AcceptedModalComponentProps> = ({
                             Go to mail
                         </Button>
                     </Box> */}
-                    <Box mt="2" mb="4">
-                        <Link href="/" passHref>
-                            <ChakraLink fontSize="sm" color="blackAlpha.600">
-                                Back to home
-                            </ChakraLink>
-                        </Link>
-                    </Box>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
-    )
-}
+          <Box mt='2' mb='4'>
+            <Link href='/' passHref>
+              <ChakraLink fontSize='sm' color='blackAlpha.600'>
+                Back to home
+              </ChakraLink>
+            </Link>
+          </Box>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  );
+};
 
-export default AcceptedModalComponent
+export default AcceptedModalComponent;

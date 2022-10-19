@@ -1,35 +1,35 @@
 interface Question {
-    val: string
-    isRequired: boolean
-    id: number
+  val: string;
+  isRequired: boolean;
+  id: number;
 }
 
-type customQues = Question[]
+type customQues = Question[];
 
 interface formType {
-    preDefinedQues: Question[]
-    customQues: customQues
+  preDefinedQues: Question[];
+  customQues: customQues;
 }
 
 interface formDataType {
-    id: number
-    data: formType
+  id: number;
+  data: formType;
 }
-type questionType = 'DROPDOWN' | 'CHECKBOX' | 'INPUT' | 'LONGTEXT'
-type options = string[]
+type questionType = 'DROPDOWN' | 'CHECKBOX' | 'INPUT' | 'LONGTEXT';
+type options = string[];
 
 interface Questions {
-    question: string
-    options?: options
-    type: questionType
-    defaultValue?: string
-    required: boolean
+  question: string;
+  options?: options;
+  type: questionType;
+  defaultValue?: string;
+  required: boolean;
 }
 export type {
-    Question,
-    customQues,
-    formType,
-    formDataType,
-    Questions,
-    questionType,
-}
+  Question,
+  customQues,
+  formType,
+  formDataType,
+  Questions,
+  questionType,
+};
