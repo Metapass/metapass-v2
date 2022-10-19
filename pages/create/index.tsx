@@ -121,23 +121,6 @@ const Create: NextPage = () => {
         }
     }, [wallet, contractAddress, isConnected, multichainProvider])
 
-    const uploadFormDetails = async (
-        form: formType,
-        child: string,
-        dropQuestions: any[]
-    ) => {
-        console.log('updating form details', form, child)
-        const { data, error } = await supabase.from('forms').insert({
-            event: child,
-            data: form,
-            datadrop: {
-                ques: dropQuestions,
-            },
-        })
-
-        error ? console.log(error) : console.log(data)
-    }
-
     const onPolygonSubmit = async () => {
         setInTxn(true)
 
@@ -213,10 +196,6 @@ const Create: NextPage = () => {
                     setIsPublished(true)
                     setInTxn(false)
                     setChild(child)
-                    if (isInviteOnly) {
-                        console.log('invite only')
-                        await uploadFormDetails(formData, child, dropdownForm)
-                    }
                     setFormData(defaultFormData)
                 })
             } catch (err: any) {
@@ -322,10 +301,6 @@ const Create: NextPage = () => {
                     setIsPublished(true)
                     setInTxn(false)
                     setChild(child)
-                    if (isInviteOnly) {
-                        console.log('invite only')
-                        await uploadFormDetails(formData, child, dropdownForm)
-                    }
                     setFormData(defaultFormData)
                 })
             } catch (err: any) {
@@ -508,13 +483,6 @@ const Create: NextPage = () => {
                         })
                     setIsPublished(true)
                     setInTxn(false)
-                    if (isInviteOnly) {
-                        uploadFormDetails(
-                            formData,
-                            eventPDA.toString(),
-                            dropDownForm as any
-                        )
-                    }
                     setFormData(defaultFormData)
                 } catch (error) {
                     console.log('error', error)
@@ -646,13 +614,6 @@ const Create: NextPage = () => {
                             })
                         setIsPublished(true)
                         setInTxn(false)
-                        if (isInviteOnly) {
-                            uploadFormDetails(
-                                formData,
-                                eventPDA.toString(),
-                                dropdownForm
-                            )
-                        }
                         setFormData(defaultFormData)
                     } else {
                         throw Error(
