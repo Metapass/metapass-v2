@@ -85,6 +85,7 @@ export const RegisterFormModal = ({
   } = useForm();
 
   const onSubmit = async (res: any) => {
+    setIsLoading(true);
     console.log(res, 'first response');
     // return;
     if (user) {
@@ -104,7 +105,6 @@ export const RegisterFormModal = ({
       });
       // return;
 
-      setIsLoading(true);
       let a = event?.childAddress as string;
       if (event?.childAddress.startsWith('0x')) {
         a = utils.getAddress(event.childAddress as string);
