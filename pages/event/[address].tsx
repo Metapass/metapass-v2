@@ -243,7 +243,7 @@ export async function getServerSideProps({ query }: any) {
     }
   }
   let img = (og as any)[parsedEvent.childAddress || address];
-
+  console.log('img', img, parsedEvent.childAddress, address);
   return {
     props: {
       event: parsedEvent,
