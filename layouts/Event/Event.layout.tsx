@@ -304,10 +304,12 @@ export default function EventLayout({
   const { data: WalletSigner } = useSigner();
   const { isConnected } = useAccount();
 
-  const alchemy = new ethers.providers.AlchemyProvider(
-    process.env.NEXT_PUBLIC_ENV == 'dev' ? 80001 : 137,
-    'q5pM3qSVMij2Gh1L4nh3d443ZCAC7TZl',
-  );
+  const share = () => {
+    onCopy1();
+    toast.success('Event link copied to clipboard successfully!', {
+      duration: 4000,
+    });
+  };
 
   useEffect(() => {
     if (wallet.address) {
@@ -1080,7 +1082,7 @@ export default function EventLayout({
                 </Box>
               </Flex>
             </Box>
-            <Button onClick={onCopy1} variant={'unstyled'}>
+            <Button onClick={share} variant={'unstyled'}>
               <FiShare />
             </Button>
           </Flex>
