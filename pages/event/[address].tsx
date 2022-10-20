@@ -221,7 +221,7 @@ export async function getServerSideProps({ query }: any) {
         ...data,
         venue: venue,
         owner: data.eventHost,
-        childAddress: address as string,
+        childAddress: data.eventPDA as string,
         category: JSON.parse(data.category),
         image: JSON.parse(data.image),
         description: JSON.parse(data.description),
