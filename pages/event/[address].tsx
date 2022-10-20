@@ -104,8 +104,6 @@ export async function getServerSideProps({ query }: any) {
   const address = query.address;
   let parsedEvent;
 
-  let img = (og as any)[address as string];
-
   async function getFeaturedEvents() {
     const featuredQuery = {
       operationName: 'fetchFeaturedEvents',
@@ -244,6 +242,7 @@ export async function getServerSideProps({ query }: any) {
       parsedEvent = await getSolanaEvents();
     }
   }
+  let img = (og as any)[parsedEvent.childAddress || address];
 
   return {
     props: {
