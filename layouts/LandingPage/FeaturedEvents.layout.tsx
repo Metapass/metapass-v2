@@ -148,8 +148,25 @@ export default function FeaturedEvents() {
     });
   };
   const getSolanaFetauredEvents = async (): Promise<Event[]> => {
-    const { data } = await axios.get('/api/solFeat');
-    return data.events;
+    let data: Event[] = [];
+    const { data: event } = await axios.get(
+      'https://web-metapass-backend-pr-4.up.railway.app/api/featuredEvents',
+    );
+
+    let events = event;
+    console.log(events, 'events');
+    events.forEach((event: any) => {
+      data.push({
+        ...event,
+        category: JSON.parse(event.category),
+        image: JSON.parse(event.image),
+        description: JSON.parse(event.description),
+        owner: event.eventHost,
+        childAddress: event.eventPDA,
+        isSolana: true,
+      });
+    });
+    return data;
   };
   const getFeaturedEvents = async () => {
     let allEvents: Event[] = [];
