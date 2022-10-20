@@ -171,7 +171,7 @@ export default function FeaturedEvents() {
   const getFeaturedEvents = async () => {
     let allEvents: Event[] = [];
     let { data } = await axios.get(
-      'https://web-metapass-backend-pr-5.up.railway.app/api/getFeatEvents',
+      `${process.env.NEXT_PUBLIC_MONGO_API}/getFeatEvents`,
     );
     allEvents = data;
     console.log(allEvents, 'allEvents');
