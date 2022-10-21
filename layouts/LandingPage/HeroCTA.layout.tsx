@@ -9,14 +9,14 @@ export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
       {' '}
       <NavigationBar isOpen3={isOpen3} onOpen3={onOpen3} onClose3={onClose3} />
       <Box
-        backgroundImage={`url("https://res.cloudinary.com/dev-connect/image/upload/v1664709904/img/gradient_txqbjd.webp")`}
+        backgroundImage={`url("https://storage.googleapis.com/mp-cdn/gradient_txqbjd.webp")`}
         backgroundSize='cover'
         backgroundRepeat='no-repeat'
         position='relative'
         overflow='hidden'
       >
         <Box p={{ base: '8', md: '12' }} />
-        <Box display={{ base: 'none', md: 'block' }}>
+        {/* <Box display={{ base: 'none', md: 'block' }}>
           <video
             autoPlay
             muted
@@ -25,7 +25,7 @@ export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
             style={{
               position: 'absolute',
               top: 0,
-              zIndex: 0,
+              zIndex: ,
               minHeight: '100%',
               minWidth: '100%',
             }}
@@ -35,7 +35,7 @@ export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
               type='video/mp4'
             />
           </video>
-        </Box>
+        </Box> */}
 
         <Box
           textAlign='center'
