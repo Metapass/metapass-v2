@@ -8,7 +8,6 @@ import {
   Menu,
   MenuButton,
   MenuDivider,
-  MenuIcon,
   MenuItem,
   MenuList,
 } from '@chakra-ui/react';
@@ -17,15 +16,15 @@ import { IoMdApps } from 'react-icons/io';
 import { MdOutlineAttachMoney } from 'react-icons/md';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { MdTag } from 'react-icons/md';
-import { useState } from 'react';
+// import { useState } from 'react';
 
-export default function SearchBar({ noEffects = false }) {
-  const [searchQuery, setSearchQuery] = useState({
-    query: '',
-    type: '',
-    price: '',
-    category: '',
-  });
+export default function SearchBar() {
+  // const [searchQuery, setSearchQuery] = useState({
+  //   query: '',
+  //   type: '',
+  //   price: '',
+  //   category: '',
+  // });
 
   return (
     <Flex
@@ -46,13 +45,13 @@ export default function SearchBar({ noEffects = false }) {
             _focus={{}}
             fontSize={{ base: 'sm', md: 'md' }}
             _hover={{}}
-            value={searchQuery.query}
-            onChange={(e) => {
-              setSearchQuery({
-                ...searchQuery,
-                query: e.target.value,
-              });
-            }}
+            // value={searchQuery.query}
+            // onChange={(e) => {
+            //   setSearchQuery({
+            //     ...searchQuery,
+            //     query: e.target.value,
+            //   });
+            // }}
             rounded='none'
             placeholder='Search events by name or type ...'
           />
@@ -79,37 +78,37 @@ export default function SearchBar({ noEffects = false }) {
                 border='none'
                 _focus={{}}
                 _hover={{}}
-                value={searchQuery.type}
+                // value={searchQuery.type}
                 rounded='none'
                 placeholder='Event type'
-                onChange={(e) => {
-                  setSearchQuery({
-                    ...searchQuery,
-                    type: e.target.value,
-                  });
-                }}
+                // onChange={(e) => {
+                //   setSearchQuery({
+                //     ...searchQuery,
+                //     type: e.target.value,
+                //   });
+                // }}
               />
             </InputGroup>
           </MenuButton>
           <MenuList rounded='lg' shadow='none' fontSize='sm' mt='3'>
             <MenuItem
-              onClick={() => {
-                setSearchQuery({
-                  ...searchQuery,
-                  type: 'Online',
-                });
-              }}
+            // onClick={() => {
+            //   setSearchQuery({
+            //     ...searchQuery,
+            //     type: 'Online',
+            //   });
+            // }}
             >
               Online
             </MenuItem>
             <MenuDivider color='gray.400' />
             <MenuItem
-              onClick={() => {
-                setSearchQuery({
-                  ...searchQuery,
-                  type: 'In-person',
-                });
-              }}
+            // onClick={() => {
+            //   setSearchQuery({
+            //     ...searchQuery,
+            //     type: 'In-person',
+            //   });
+            // }}
             >
               In-person
             </MenuItem>
@@ -138,34 +137,34 @@ export default function SearchBar({ noEffects = false }) {
                 _hover={{}}
                 rounded='none'
                 placeholder='Price'
-                value={searchQuery.price}
-                onChange={(e) => {
-                  setSearchQuery({
-                    ...searchQuery,
-                    type: e.target.value,
-                  });
-                }}
+                // value={searchQuery.price}
+                // onChange={(e) => {
+                //   setSearchQuery({
+                //     ...searchQuery,
+                //     type: e.target.value,
+                //   });
+                // }}
               />
             </InputGroup>
           </MenuButton>
           <MenuList rounded='lg' shadow='none' fontSize='sm' mt='3'>
             <MenuItem
-              onClick={() => {
-                setSearchQuery({
-                  ...searchQuery,
-                  price: 'Paid',
-                });
-              }}
+            // onClick={() => {
+            //   setSearchQuery({
+            //     ...searchQuery,
+            //     price: 'Paid',
+            //   });
+            // }}
             >
               Paid
             </MenuItem>
             <MenuDivider color='gray.400' />
             <MenuItem
               onClick={() => {
-                setSearchQuery({
-                  ...searchQuery,
-                  price: 'Free',
-                });
+                // setSearchQuery({
+                //   ...searchQuery,
+                //   price: 'Free',
+                // });
               }}
             >
               Free
@@ -195,35 +194,35 @@ export default function SearchBar({ noEffects = false }) {
                 _hover={{}}
                 rounded='none'
                 placeholder='Category'
-                value={searchQuery.category}
-                onChange={(e) => {
-                  setSearchQuery({
-                    ...searchQuery,
-                    type: e.target.value,
-                  });
-                }}
+                // value={searchQuery.category}
+                // onChange={(e) => {
+                //   setSearchQuery({
+                //     ...searchQuery,
+                //     type: e.target.value,
+                //   });
+                // }}
               />
             </InputGroup>
           </MenuButton>
           <MenuList rounded='lg' shadow='none' fontSize='sm' mt='3'>
             <MenuItem
-              onClick={() => {
-                setSearchQuery({
-                  ...searchQuery,
-                  category: 'Meetup',
-                });
-              }}
+            // onClick={() => {
+            //   setSearchQuery({
+            //     ...searchQuery,
+            //     category: 'Meetup',
+            //   });
+            // }}
             >
               Meetup
             </MenuItem>
             <MenuDivider color='gray.400' />
             <MenuItem
-              onClick={() => {
-                setSearchQuery({
-                  ...searchQuery,
-                  category: 'Party',
-                });
-              }}
+            // onClick={() => {
+            //   setSearchQuery({
+            //     ...searchQuery,
+            //     category: 'Party',
+            //   });
+            // }}
             >
               Party
             </MenuItem>

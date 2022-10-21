@@ -11,10 +11,12 @@ import { configureChains, chain, createClient, WagmiConfig } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { RecoilRoot } from 'recoil';
 import dynamic from 'next/dynamic';
-import ChatwootWidget from '../components/Elements/Chatwoot.component';
+
 import NextNProgress from 'nextjs-progressbar';
 const Chakra = dynamic(() => import('../components/Root/Chakra.root'));
-
+const Chatwoot = dynamic(
+  () => import('../components/Elements/Chatwoot.component'),
+);
 const { chains, provider, webSocketProvider } = configureChains(
   [chain.polygon, chain.polygonMumbai],
   [publicProvider()],
@@ -31,14 +33,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     <>
       <Script
         async
-        src='https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.1/dist/umd/index.min.js'
-      />
-      <Script
-        async
-        src='https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js'
-      />
-      <Script
-        async
         defer
         data-website-id={process.env.NEXT_PUBLIC_UMAMI_ID}
         src='https://analytics.metapasshq.xyz/umami.js'
@@ -52,7 +46,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                   <Toaster />
                   <Chakra Component={Component} pageProps={pageProps}>
                     {' '}
-                    {<ChatwootWidget />}
+                    {<Chatwoot />}
                     <NextNProgress color='#6451FB' />
                   </Chakra>
                 </Contract>

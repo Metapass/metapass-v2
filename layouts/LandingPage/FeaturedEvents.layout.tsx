@@ -6,31 +6,20 @@ import {
   Button,
   Skeleton,
   useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
   InputGroup,
   Input,
-  Heading,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import EventCard from '../../components/Card/EventCard.component';
-import {
-  CategoryType,
-  DescriptionType,
-  Event,
-  ImageType,
-} from '../../types/Event.type';
+import { Event } from '../../types/Event.type';
 import sendToAirtable from '../../utils/sendToAirtable';
 import ScrollContainer from 'react-indiana-drag-scroll';
-import { gqlEndpoint } from '../../utils/subgraphApi';
+
 import axios from 'axios';
 import { AiOutlineSend } from 'react-icons/ai';
 import EventsLoading from '../../components/Misc/EventsLoading.component';
 
 export default function FeaturedEvents() {
-  const [email, setEmail] = useState<string>('');
   const [featEvents, setFeatEvents] = useState<Event[]>([
     {
       id: '',
@@ -63,7 +52,7 @@ export default function FeaturedEvents() {
       isSolana: false,
     },
   ]);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  // const { isOpen, onOpen, onClose } = useDisclosure();
   // async function getPolygonFeaturedEvents() {
   //   const featuredQuery = {
   //     operationName: 'fetchFeaturedEvents',
@@ -274,71 +263,71 @@ export default function FeaturedEvents() {
   );
 }
 
-export const EmailBar = ({ email, setEmail, onClose }: any) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  return (
-    <Flex
-      boxShadow='0px 18px 91px rgba(0, 0, 0, 0.07)'
-      bg='white'
-      rounded='full'
-      alignItems='center'
-      mt='6'
-      pl='6'
-      fontSize='lg'
-      w='85%'
-      justify='space-between'
-    >
-      <Flex w='full' alignItems='center'>
-        <InputGroup>
-          <Input
-            bg='transparent'
-            border='none'
-            _focus={{}}
-            _hover={{}}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            rounded='none'
-            placeholder='gm@metapasshq.xyz'
-          />
-        </InputGroup>
-      </Flex>
-      <Button
-        role='group'
-        leftIcon={
-          <Flex
-            justify='center'
-            alignItems='center'
-            _groupHover={{ transform: 'scale(1.1)' }}
-            transitionDuration='200ms'
-          >
-            {' '}
-            <AiOutlineSend
-              size='22px'
-              style={{
-                rotate: '-45deg',
-              }}
-            />
-          </Flex>
-        }
-        _hover={{}}
-        _focus={{}}
-        _active={{}}
-        rounded='full'
-        color='white'
-        bg='brand.gradient'
-        roundedBottomLeft='none'
-        py='8'
-        px='8'
-        fontSize='lg'
-        isLoading={isSubmitting}
-        // loadingText='Submitting'
-        onClick={() => {
-          // setIsSubmitting(true)
-          sendToAirtable(email, setIsSubmitting, onClose);
-        }}
-      >
-        Join
-      </Button>
-    </Flex>
-  );
-};
+// export const EmailBar = ({ email, setEmail, onClose }: any) => {
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   return (
+//     <Flex
+//       boxShadow='0px 18px 91px rgba(0, 0, 0, 0.07)'
+//       bg='white'
+//       rounded='full'
+//       alignItems='center'
+//       mt='6'
+//       pl='6'
+//       fontSize='lg'
+//       w='85%'
+//       justify='space-between'
+//     >
+//       <Flex w='full' alignItems='center'>
+//         <InputGroup>
+//           <Input
+//             bg='transparent'
+//             border='none'
+//             _focus={{}}
+//             _hover={{}}
+//             value={email}
+//             onChange={(e) => setEmail(e.target.value)}
+//             rounded='none'
+//             placeholder='gm@metapasshq.xyz'
+//           />
+//         </InputGroup>
+//       </Flex>
+//       <Button
+//         role='group'
+//         leftIcon={
+//           <Flex
+//             justify='center'
+//             alignItems='center'
+//             _groupHover={{ transform: 'scale(1.1)' }}
+//             transitionDuration='200ms'
+//           >
+//             {' '}
+//             <AiOutlineSend
+//               size='22px'
+//               style={{
+//                 rotate: '-45deg',
+//               }}
+//             />
+//           </Flex>
+//         }
+//         _hover={{}}
+//         _focus={{}}
+//         _active={{}}
+//         rounded='full'
+//         color='white'
+//         bg='brand.gradient'
+//         roundedBottomLeft='none'
+//         py='8'
+//         px='8'
+//         fontSize='lg'
+//         isLoading={isSubmitting}
+//         // loadingText='Submitting'
+//         onClick={() => {
+//           // setIsSubmitting(true)
+//           sendToAirtable(email, setIsSubmitting, onClose);
+//         }}
+//       >
+//         Join
+//       </Button>
+//     </Flex>
+//   );
+// };

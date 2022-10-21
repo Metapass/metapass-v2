@@ -1,28 +1,28 @@
 import { AspectRatio, Box, Flex, Image, Link, Text } from '@chakra-ui/react';
 import moment from 'moment';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+// import { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import twoDigit from 'two-digit';
 import { Event } from '../../types/Event.type';
-import useMobileDetect from '../../utils/useMobileDetect';
+// import useMobileDetect from '../../utils/useMobileDetect';
 import LazyImage from '../Misc/LazyImage.component';
 
-declare const window: any;
+// declare const window: any;
 
 export default function EventCard({
   event,
   isFeatured = false,
-  previewOnly = false,
-  props,
-}: {
+}: // previewOnly = false,
+// props,
+{
   event: Event;
   isFeatured?: boolean;
   previewOnly?: boolean;
   props?: {};
 }) {
-  const [showEventModal, setEventModal] = useState(false);
-  const currentDevice = useMobileDetect();
+  // const [showEventModal, setEventModal] = useState(false);
+  // const currentDevice = useMobileDetect();
   const router = useRouter();
   const months = [
     'JAN',
@@ -203,7 +203,10 @@ export default function EventCard({
   // @ts-ignore */}
         <LazyImage
           w='full'
-          src={event.image.gallery[0] || '/assets/gradient.png'}
+          src={
+            event.image.gallery[0].slice(0, -3).concat('webp') ||
+            '/assets/gradient.png'
+          }
           alt='event image'
         />
       </AspectRatio>

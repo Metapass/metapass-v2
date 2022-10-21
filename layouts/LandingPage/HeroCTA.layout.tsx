@@ -1,22 +1,25 @@
 import { Box, Flex, Text, Image } from '@chakra-ui/react';
-import SearchBar from '../../components/Elements/SearchBar.component';
+
 import NavigationBar from '../../components/Navigation/NavigationBar.component';
 import dynamic from 'next/dynamic';
-
+const SearchBar = dynamic(
+  () => import('../../components/Elements/SearchBar.component'),
+  { ssr: false },
+);
 export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
   return (
     <>
       {' '}
       <NavigationBar isOpen3={isOpen3} onOpen3={onOpen3} onClose3={onClose3} />
       <Box
-        backgroundImage={`url("https://res.cloudinary.com/dev-connect/image/upload/v1664709904/img/gradient_txqbjd.png")`}
+        backgroundImage={`url("https://storage.googleapis.com/mp-cdn/gradient_txqbjd.webp")`}
         backgroundSize='cover'
         backgroundRepeat='no-repeat'
         position='relative'
         overflow='hidden'
       >
         <Box p={{ base: '8', md: '12' }} />
-        <Box display={{ base: 'none', md: 'block' }}>
+        {/* <Box display={{ base: 'none', md: 'block' }}>
           <video
             autoPlay
             muted
@@ -25,17 +28,17 @@ export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
             style={{
               position: 'absolute',
               top: 0,
-              zIndex: -999,
+              zIndex: ,
               minHeight: '100%',
               minWidth: '100%',
             }}
           >
             <source
-              src='https://res.cloudinary.com/dev-connect/video/upload/v1664708693/img/gradient_ioikdd.mp4'
+              src='https://storage.googleapis.com/mp-cdn/gradient_ioikdd.mp4'
               type='video/mp4'
             />
           </video>
-        </Box>
+        </Box> */}
 
         <Box
           textAlign='center'

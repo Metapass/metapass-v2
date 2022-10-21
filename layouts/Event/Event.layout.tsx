@@ -89,7 +89,6 @@ import {
   SolanaPrivateKeyProvider,
   SolanaWallet,
 } from '@web3auth/solana-provider';
-import { IoShareOutline } from 'react-icons/io5';
 import { OpenLoginUserWithMetadata, useUser } from '../../hooks/useUser';
 import resolveBalance from '../../hooks/useSolBalance';
 import Link from 'next/link';
@@ -1258,7 +1257,18 @@ export default function EventLayout({
                         rounded='md'
                         overflow='hidden'
                       >
-                        <Image src={data} alt={data} />
+                        <Image
+                          src={
+                            data.slice(-4).includes('.')
+                              ? data.slice(0, -4).concat('.webp')
+                              : data.concat('.webp')
+                          }
+                          alt={
+                            data.slice(-4).includes('.')
+                              ? data.slice(0, -3).concat('.webp')
+                              : data.concat('.webp')
+                          }
+                        />
                       </AspectRatio>
                     ))}
                   </Flex>
