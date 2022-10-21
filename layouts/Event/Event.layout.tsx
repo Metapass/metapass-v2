@@ -1257,7 +1257,18 @@ export default function EventLayout({
                         rounded='md'
                         overflow='hidden'
                       >
-                        <Image src={data} alt={data} />
+                        <Image
+                          src={
+                            data.slice(-4).includes('.')
+                              ? data.slice(0, -4).concat('.webp')
+                              : data.concat('.webp')
+                          }
+                          alt={
+                            data.slice(-4).includes('.')
+                              ? data.slice(0, -3).concat('.webp')
+                              : data.concat('.webp')
+                          }
+                        />
                       </AspectRatio>
                     ))}
                   </Flex>

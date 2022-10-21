@@ -203,7 +203,10 @@ export default function EventCard({
   // @ts-ignore */}
         <LazyImage
           w='full'
-          src={event.image.gallery[0] || '/assets/gradient.png'}
+          src={
+            event.image.gallery[0].slice(0, -3).concat('webp') ||
+            '/assets/gradient.png'
+          }
           alt='event image'
         />
       </AspectRatio>

@@ -168,9 +168,9 @@ export default function FeaturedEventCard({ event }: { event: Event }) {
           w='full'
           src={
             // @ts-ignore
-            event.image.hero_image ||
-            event.image.image || // @ts-ignore
-            event.image.display
+            event.image.hero_image.slice(0, -3).concat('webp') ||
+            event.image.image.slice(0, -3).concat('webp') || // @ts-ignore
+            event.image.display.slice(0, -3).concat('webp')
           }
           alt='event image'
         />
