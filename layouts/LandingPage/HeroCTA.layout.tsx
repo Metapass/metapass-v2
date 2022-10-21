@@ -25,13 +25,13 @@ export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
             style={{
               position: 'absolute',
               top: 0,
-              zIndex: -999,
+              zIndex: 0,
               minHeight: '100%',
               minWidth: '100%',
             }}
           >
             <source
-              src='https://res.cloudinary.com/dev-connect/video/upload/v1664708693/img/gradient_ioikdd.mp4'
+              src='https://storage.googleapis.com/mp-cdn/gradient_ioikdd.mp4'
               type='video/mp4'
             />
           </video>
