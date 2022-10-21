@@ -31,14 +31,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     <>
       <Script
         async
-        src='https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.1/dist/umd/index.min.js'
-      />
-      <Script
-        async
-        src='https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js'
-      />
-      <Script
-        async
         defer
         data-website-id={process.env.NEXT_PUBLIC_UMAMI_ID}
         src='https://analytics.metapasshq.xyz/umami.js'
