@@ -30,7 +30,7 @@ const nextConfig = removeImports({
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ['lh3.googleusercontent.com'],
+    domains: ['lh3.googleusercontent.com', 'res.cloudinary.com'],
   },
   webpack(config) {
     config.resolve.fallback = {

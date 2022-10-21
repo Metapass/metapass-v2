@@ -8,6 +8,7 @@ export default function LazyImage({ ...otherProps }) {
   const skeletonRef = React.createRef<HTMLDivElement>();
   return (
     <Image
+      loading='lazy'
       w='full'
       {...otherProps}
       alt={otherProps?.alt}
