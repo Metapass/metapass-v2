@@ -9,7 +9,7 @@ export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
       {' '}
       <NavigationBar isOpen3={isOpen3} onOpen3={onOpen3} onClose3={onClose3} />
       <Box
-        backgroundImage={`url("https://res.cloudinary.com/dev-connect/image/upload/v1664709904/img/gradient_txqbjd.png")`}
+        backgroundImage={`url("https://res.cloudinary.com/dev-connect/image/upload/v1664709904/img/gradient_txqbjd.webp")`}
         backgroundSize='cover'
         backgroundRepeat='no-repeat'
         position='relative'
@@ -25,7 +25,7 @@ export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
             style={{
               position: 'absolute',
               top: 0,
-              zIndex: 0,
+              zIndex: -100,
               minHeight: '100%',
               minWidth: '100%',
             }}
