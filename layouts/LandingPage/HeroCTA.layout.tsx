@@ -1,8 +1,11 @@
 import { Box, Flex, Text, Image } from '@chakra-ui/react';
-import SearchBar from '../../components/Elements/SearchBar.component';
+
 import NavigationBar from '../../components/Navigation/NavigationBar.component';
 import dynamic from 'next/dynamic';
-
+const SearchBar = dynamic(
+  () => import('../../components/Elements/SearchBar.component'),
+  { ssr: false },
+);
 export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
   return (
     <>
