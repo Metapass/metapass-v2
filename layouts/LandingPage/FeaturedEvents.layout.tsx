@@ -64,106 +64,117 @@ export default function FeaturedEvents() {
     },
   ]);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  async function getPolygonFeaturedEvents() {
-    const featuredQuery = {
-      operationName: 'fetchFeaturedEvents',
-      query: `query fetchFeaturedEvents {
-              featuredEntities{
-                id
-                count
-                event{
-                    id
-                    title
-                    childAddress
-                    category
-                    link
-                    ticketsBought{
-                        id
-                    }
-                    image
-                    buyers{
-                        id
-                        
-                    }
-                    eventHost
-                    fee
-                    seats
-                    description
-                    date
-                    }
-                }
-              
-        }`,
-    };
-    try {
-      const res = await axios({
-        method: 'POST',
-        url: gqlEndpoint,
-        data: featuredQuery,
-        headers: {
-          'content-type': 'application/json',
-        },
-      });
+  // async function getPolygonFeaturedEvents() {
+  //   const featuredQuery = {
+  //     operationName: 'fetchFeaturedEvents',
+  //     query: `query fetchFeaturedEvents {
+  //             featuredEntities{
+  //               id
+  //               count
+  //               event{
+  //                   id
+  //                   title
+  //                   childAddress
+  //                   category
+  //                   link
+  //                   ticketsBought{
+  //                       id
+  //                   }
+  //                   image
+  //                   buyers{
+  //                       id
 
-      if (!!res.data?.errors?.length) {
-        throw new Error('Error fetching featured events');
-      }
-      return res.data;
-    } catch (error) {}
-  }
-  function UnicodeDecodeB64(str: any) {
-    return decodeURIComponent(atob(str));
-  }
-  const parseFeaturedEvents = (featuredEvents: Array<any>): Event[] => {
-    return featuredEvents.map((event: { event: any }) => {
-      let type = JSON.parse(UnicodeDecodeB64(event.event.category)).event_type;
-      let category: CategoryType = JSON.parse(
-        UnicodeDecodeB64(event.event.category),
-      );
-      let image: ImageType = JSON.parse(UnicodeDecodeB64(event.event.image));
-      let desc: DescriptionType = JSON.parse(
-        UnicodeDecodeB64(event.event.description),
-      );
-      // console.log(event.event.seats, event.event.buyers.length)
-      return {
-        id: event.event.id,
-        title: event.event.title,
-        childAddress: event.event.childAddress,
-        category: category,
-        image: image,
-        eventHost: event.event.eventHost,
-        fee: Number(event.event.fee) / 10 ** 18,
-        date: event.event.date,
-        description: desc,
-        seats: event.event.seats,
-        owner: event.event.eventHost,
-        link: event.event.link,
-        type: type,
-        tickets_available: event.event.seats - event.event.ticketsBought.length,
-        tickets_sold: event.event.ticketsBought.length,
-        buyers: event.event.buyers,
-        isHuddle: event.event.link.includes('huddle01'),
-        isSolana: false,
-      } as Event;
-    });
-  };
-  const getSolanaFetauredEvents = async (): Promise<Event[]> => {
-    const { data } = await axios.get('/api/solFeat');
-    return data.events;
-  };
+  //                   }
+  //                   eventHost
+  //                   fee
+  //                   seats
+  //                   description
+  //                   date
+  //                   }
+  //               }
+
+  //       }`,
+  //   };
+  //   try {
+  //     const res = await axios({
+  //       method: 'POST',
+  //       url: gqlEndpoint,
+  //       data: featuredQuery,
+  //       headers: {
+  //         'content-type': 'application/json',
+  //       },
+  //     });
+
+  //     if (!!res.data?.errors?.length) {
+  //       throw new Error('Error fetching featured events');
+  //     }
+  //     return res.data;
+  //   } catch (error) {}
+  // }
+  // function UnicodeDecodeB64(str: any) {
+  //   return decodeURIComponent(atob(str));
+  // }
+  // const parseFeaturedEvents = (featuredEvents: Array<any>): Event[] => {
+  //   return featuredEvents.map((event: { event: any }) => {
+  //     let type = JSON.parse(UnicodeDecodeB64(event.event.category)).event_type;
+  //     let category: CategoryType = JSON.parse(
+  //       UnicodeDecodeB64(event.event.category),
+  //     );
+  //     let image: ImageType = JSON.parse(UnicodeDecodeB64(event.event.image));
+  //     let desc: DescriptionType = JSON.parse(
+  //       UnicodeDecodeB64(event.event.description),
+  //     );
+  //     // console.log(event.event.seats, event.event.buyers.length)
+  //     return {
+  //       id: event.event.id,
+  //       title: event.event.title,
+  //       childAddress: event.event.childAddress,
+  //       category: category,
+  //       image: image,
+  //       eventHost: event.event.eventHost,
+  //       fee: Number(event.event.fee) / 10 ** 18,
+  //       date: event.event.date,
+  //       description: desc,
+  //       seats: event.event.seats,
+  //       owner: event.event.eventHost,
+  //       link: event.event.link,
+  //       type: type,
+  //       tickets_available: event.event.seats - event.event.ticketsBought.length,
+  //       tickets_sold: event.event.ticketsBought.length,
+  //       buyers: event.event.buyers,
+  //       isHuddle: event.event.link.includes('huddle01'),
+  //       isSolana: false,
+  //     } as Event;
+  //   });
+  // };
+  // const getSolanaFetauredEvents = async (): Promise<Event[]> => {
+  //   let data: Event[] = [];
+  //   const { data: event } = await axios.get(
+  //     'https://web-metapass-backend-pr-4.up.railway.app/api/featuredEvents',
+  //   );
+
+  //   let events = event;
+  //   console.log(events, 'events');
+  //   events.forEach((event: any) => {
+  //     data.push({
+  //       ...event,
+  //       category: JSON.parse(event.category),
+  //       image: JSON.parse(event.image),
+  //       description: JSON.parse(event.description),
+  //       owner: event.eventHost,
+  //       childAddress: event.eventPDA,
+  //       isSolana: true,
+  //     });
+  //   });
+  //   return data;
+  // };
   const getFeaturedEvents = async () => {
     let allEvents: Event[] = [];
-    const polygonEvents = await getPolygonFeaturedEvents();
-    const polygonData: Event[] = parseFeaturedEvents(
-      polygonEvents.data.featuredEntities,
+    let { data } = await axios.get(
+      `${process.env.NEXT_PUBLIC_MONGO_API}/getFeatEvents`,
     );
-    const solanaEvents: Event[] = await getSolanaFetauredEvents();
-    allEvents = [...polygonData, ...solanaEvents].sort((a, b) => {
-      return (
-        new Date(b.date.split('T')[0].split(':').join('/')).getTime() -
-        new Date(a.date.split('T')[0].split(':').join('/')).getTime()
-      );
-    });
+    allEvents = data;
+    console.log(allEvents, 'allEvents');
     setFeatEvents(allEvents);
   };
   useEffect(() => {
