@@ -25,7 +25,7 @@ export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
             style={{
               position: 'absolute',
               top: 0,
-              zIndex: -100,
+              zIndex: 0,
               minHeight: '100%',
               minWidth: '100%',
             }}
