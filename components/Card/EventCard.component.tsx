@@ -6,7 +6,7 @@ import { FaStar } from 'react-icons/fa';
 import twoDigit from 'two-digit';
 import { Event } from '../../types/Event.type';
 // import useMobileDetect from '../../utils/useMobileDetect';
-import LazyImage from '../Misc/LazyImage.component';
+// import LazyImage from '../Misc/LazyImage.component';
 
 // declare const window: any;
 import * as NextImage from 'next/image';
