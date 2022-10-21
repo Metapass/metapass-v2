@@ -74,18 +74,17 @@ import { ethers } from 'ethers';
 import { useUser } from '../../hooks/useUser';
 interface Props {
   mode?: string;
-  isOpen3: boolean;
-  onClose3: () => void;
-  onOpen3: () => void;
+  isOpen3?: boolean;
+  onClose3?: () => void;
+  onOpen3?: () => void;
 }
-export default function NavigationBar({
-  mode = 'dark',
-  isOpen3,
-  onOpen3,
-  onClose3,
-}: Props) {
+export default function NavigationBar({ mode = 'dark' }: Props) {
   const [address, setAddress] = useState<string>('');
-
+  const {
+    isOpen: isOpen3,
+    onOpen: onOpen3,
+    onClose: onClose3,
+  } = useDisclosure();
   const [balance, setBalance] = useState<string>('');
   const [isWalletLoading, setIsWalletLoading] = useState<boolean | null>(null);
   const { user: commonUser } = useUser();

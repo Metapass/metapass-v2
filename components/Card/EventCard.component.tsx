@@ -204,7 +204,8 @@ export default function EventCard({
         <LazyImage
           w='full'
           src={
-            event.image.gallery[0].slice(0, -3).concat('webp') ||
+            (event.image.gallery.length > 0 &&
+              event.image.gallery[0].slice(0, -3).concat('webp')) ||
             '/assets/gradient.png'
           }
           alt='event image'

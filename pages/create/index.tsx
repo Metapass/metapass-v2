@@ -684,7 +684,9 @@ const Create: NextPage = () => {
             </Box>
           </Box>
         ) : (
-          <Box textAlign={'center'}>Connect wallet before proceeding</Box>
+          <Box p={10} textAlign={'center'}>
+            Connect wallet before proceeding
+          </Box>
         )}
       </Box>
     </>

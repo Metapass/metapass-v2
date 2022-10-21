@@ -51,7 +51,7 @@ export default function CreateEventCTA({
           zIndex={2}
           position='relative'
         >
-          <Flex justify='center' ml='12'>
+          <Flex justify='center' ml='12' mt={16}>
             <Text
               textAlign='center'
               fontFamily='azonix'
