@@ -89,7 +89,6 @@ import {
   SolanaPrivateKeyProvider,
   SolanaWallet,
 } from '@web3auth/solana-provider';
-import { IoShareOutline } from 'react-icons/io5';
 import { OpenLoginUserWithMetadata, useUser } from '../../hooks/useUser';
 import resolveBalance from '../../hooks/useSolBalance';
 import Link from 'next/link';
