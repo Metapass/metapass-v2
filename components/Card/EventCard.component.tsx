@@ -208,7 +208,8 @@ export default function EventCard({
           layout='fill'
           objectFit='cover'
           src={
-            (event.image.gallery[0] &&
+
+            (event.image.gallery.length > 0 &&
               event.image.gallery[0].slice(0, -3).concat('webp')) ||
             '/assets/gradient.png'
           }
