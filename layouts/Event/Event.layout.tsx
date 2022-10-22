@@ -20,6 +20,7 @@ import {
   IconButton,
   Fade,
   useDisclosure,
+  Img,
 } from '@chakra-ui/react';
 import { useState, useContext, useEffect, Component, useRef } from 'react';
 import ReactPlayer from 'react-player';
@@ -918,7 +919,7 @@ export default function EventLayout({
                     );
                   }}
                 >
-                  <Image
+                  <Img
                     src={
                       event?.isSolana
                         ? '/assets/solscan.png'
