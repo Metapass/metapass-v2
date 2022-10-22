@@ -135,7 +135,7 @@ export async function getServerSideProps({
 }: GetServerSidePropsContext) {
   const { address } = query;
   const { data } = await axios.get(
-    `https://web-staging-0e5d.up.railway.app/api/getOgByEvent/${address}/title`,
+    `https://web-staging-0e5d.up.railway.app/api/getOgByEvent/${address}`,
   );
   res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=30');
   return {
