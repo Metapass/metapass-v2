@@ -1,5 +1,5 @@
 import { Box, Flex, useDisclosure } from '@chakra-ui/react';
-import type { NextPage } from 'next/types';
+import type { GetServerSidePropsContext, NextPage } from 'next/types';
 
 import { useEffect, useState } from 'react';
 import NavigationBar from '../../components/Navigation/NavigationBar.component';
@@ -14,37 +14,38 @@ import axios from 'axios';
 import { Event } from '../../types/Event.type';
 const EventLayout = dynamic(() => import('../../layouts/Event/Event.layout'));
 // declare const window: any;
-const Event: NextPage = () => {
-  const [featEvent, setFeatEvent] = useState<Event | null>({
-    id: '',
-    title: '',
-    childAddress: '',
-    category: {
-      event_type: '',
-      category: [''],
-    },
-    image: {
-      image: '',
-      gallery: [],
-      video: '',
-    },
-    eventHost: '',
-    fee: 0,
-    date: '',
-    description: {
-      short_desc: '',
-      long_desc: '',
-    },
-    seats: 0,
-    owner: '',
+const defaultEvent: Event = {
+  id: '',
+  title: '',
+  childAddress: '',
+  category: {
+    event_type: '',
+    category: [''],
+  },
+  image: {
+    image: '',
+    gallery: [],
+    video: '',
+  },
+  eventHost: '',
+  fee: 0,
+  date: '',
+  description: {
+    short_desc: '',
+    long_desc: '',
+  },
+  seats: 0,
+  owner: '',
 
-    type: '',
-    tickets_available: 0,
-    tickets_sold: 0,
-    buyers: [],
-    isHuddle: false,
-    isSolana: false,
-  });
+  type: '',
+  tickets_available: 0,
+  tickets_sold: 0,
+  buyers: [],
+  isHuddle: false,
+  isSolana: false,
+};
+const Event: NextPage = ({ ogdata }: any) => {
+  const [featEvent, setFeatEvent] = useState<Event>(defaultEvent);
   const [isInviteOnly, setInviteOnly] = useState<boolean>(false);
   const router = useRouter();
   const { address } = router.query;
@@ -70,45 +71,26 @@ const Event: NextPage = () => {
 
     fetchData();
   }, [address]);
-
+  // console.log(address, 'address');
   return (
     <Box minH='100vh' h='full' overflow='hidden' bg='blackAlpha.50'>
-      {featEvent && (
+      {
         <Head>
           {' '}
-          <title>{`https://web-staging-0e5d.up.railway.app/api/getOgByEvent/${address}/title`}</title>
-          <meta
-            name='twitter:image'
-            content={`https://web-staging-0e5d.up.railway.app/api/getOgByEvent/${address}/img`}
-          />
-          <meta
-            name='og:description'
-            content={`https://web-staging-0e5d.up.railway.app/api/getOgByEvent/${address}/desc`}
-          />
-          <meta
-            property='og:image'
-            itemProp='image'
-            content={`https://web-staging-0e5d.up.railway.app/api/getOgByEvent/${address}/img`}
-          />
-          <meta
-            property='og:title'
-            content={`Apply for ${featEvent.title} on Metapass!`}
-          />
+          <title>{ogdata.title}</title>
+          <meta name='twitter:image' content={ogdata.img} />
+          <meta name='og:description' content={ogdata.desc} />
+          <meta property='og:image' itemProp='image' content={ogdata.img} />
+          <meta property='og:title' content={ogdata.content} />
           <meta
             property='og:site_name'
             content={'https://app.metapasshq.xyz/'}
           />
-          <meta
-            name='twitter:title'
-            content={`https://web-staging-0e5d.up.railway.app/api/getOgByEvent/${address}/content`}
-          />
-          <meta
-            name='twitter:description'
-            content={`https://web-staging-0e5d.up.railway.app/api/getOgByEvent/${address}/desc`}
-          />
+          <meta name='twitter:title' content={ogdata.title} />
+          <meta name='twitter:description' content={ogdata.desc} />
           <meta name='twitter:card' content='summary_large_image'></meta>
         </Head>
-      )}
+      }
       <NavigationBar
         isOpen3={isOpen3}
         onOpen3={onOpen3}
@@ -126,8 +108,8 @@ const Event: NextPage = () => {
         experimental_spaceX='10'
       >
         <Box maxW='1000px' w='full'>
-          {featEvent ? (
-            <Skeleton isLoaded={featEvent.id != ''}>
+          {featEvent !== undefined ? (
+            <Skeleton isLoaded={!!featEvent?.id}>
               <EventLayout
                 isOpen3={isOpen3}
                 onOpen3={onOpen3}
@@ -137,12 +119,28 @@ const Event: NextPage = () => {
               />
             </Skeleton>
           ) : (
-            <Flex alignItems={'center'}>Event Doesn&apos;t Exist</Flex>
+            <Flex alignItems={'center'}>
+              Event Doesn&apos;t Exist{console.log(featEvent, 'featEvent')}
+            </Flex>
           )}
         </Box>
       </Flex>
     </Box>
   );
 };
+
+export async function getServerSideProps({
+  query,
+  res,
+}: GetServerSidePropsContext) {
+  const { address } = query;
+  const { data } = await axios.get(
+    `https://web-staging-0e5d.up.railway.app/api/getOgByEvent/${address}/title`,
+  );
+  res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=30');
+  return {
+    props: { ogdata: data },
+  };
+}
 
 export default Event;
