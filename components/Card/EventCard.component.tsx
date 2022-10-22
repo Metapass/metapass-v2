@@ -6,10 +6,10 @@ import { FaStar } from 'react-icons/fa';
 import twoDigit from 'two-digit';
 import { Event } from '../../types/Event.type';
 // import useMobileDetect from '../../utils/useMobileDetect';
-import LazyImage from '../Misc/LazyImage.component';
+// import LazyImage from '../Misc/LazyImage.component';
 
 // declare const window: any;
-
+import * as NextImage from 'next/image';
 export default function EventCard({
   event,
   isFeatured = false,
@@ -201,9 +201,14 @@ export default function EventCard({
       <AspectRatio ratio={428.42 / 180.98} w='full' bg='gray.100'>
         {/* 
   // @ts-ignore */}
-        <LazyImage
-          w='full'
+        <NextImage
+          loading='lazy'
+          // width='100%'
+          // height='auto'
+          layout='fill'
+          objectFit='cover'
           src={
+
             (event.image.gallery.length > 0 &&
               event.image.gallery[0].slice(0, -3).concat('webp')) ||
             '/assets/gradient.png'
