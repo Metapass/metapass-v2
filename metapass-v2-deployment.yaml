@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metapass-v2
+  labels:
+    app: metapass-v2
+spec:
+  selector:
+    matchLabels:
+      app: metapass-v2
+      tier: web
+  template:
+    metadata:
+      labels:
+        app: metapass-v2
+        tier: web
+    spec:
+      containers:
+        - name: metapass-v2
+          image: gcr.io/metapass-supabase/metapass-v2:v1
+          ports:
+            - containerPort: 3000

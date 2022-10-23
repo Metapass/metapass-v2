@@ -23,7 +23,7 @@ keys.json
 .env
 # misc
 .DS_Store
-
+*1.json
 *.pem
 .gitignore
 # debug
