@@ -85,12 +85,18 @@ const Event: NextPage = ({ ogdata }: any) => {
           <meta name='twitter:image' content={ogdata.img} />
           <meta name='og:description' content={ogdata.desc} />
           <meta property='og:image' itemProp='image' content={ogdata.img} />
-          <meta property='og:title' content={ogdata.content} />
+          <meta
+            property='og:title'
+            content={`Get your ticket to ${ogdata.title}`}
+          />
           <meta
             property='og:site_name'
             content={'https://app.metapasshq.xyz/'}
           />
-          <meta name='twitter:title' content={ogdata.title} />
+          <meta
+            name='twitter:title'
+            content={`Get your ticket to ${ogdata.title}`}
+          />
           <meta name='twitter:description' content={ogdata.desc} />
           <meta name='twitter:card' content='summary_large_image'></meta>
         </Head>
