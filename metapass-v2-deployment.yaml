@@ -18,5 +18,6 @@ spec:
       containers:
         - name: metapass-v2
           image: gcr.io/metapass-supabase/metapass-v2:v1
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000

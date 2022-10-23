@@ -1,29 +1,59 @@
 import { Box, Flex, useDisclosure } from '@chakra-ui/react';
-import type { GetServerSideProps, NextPage } from 'next';
-import {
-  CategoryType,
-  DescriptionType,
-  Event,
-  ImageType,
-} from '../../types/Event.type';
+import type {
+  // GetServerSidePropsContext,
+  GetStaticPropsContext,
+  NextPage,
+} from 'next/types';
+
 import { useEffect, useState } from 'react';
 import NavigationBar from '../../components/Navigation/NavigationBar.component';
-import { Skeleton } from '@chakra-ui/react';
-import axios from 'axios';
-import { gqlEndpoint } from '../../utils/subgraphApi';
-import { ethers } from 'ethers';
+import { Skeleton } from '@chakra-ui/skeleton';
+
 import { supabase } from '../../lib/config/supabaseConfig';
 import { useRouter } from 'next/router';
-import og from '../../OG.json';
+// import ogdata from '../../OG.json';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
+import axios from 'axios';
+import { Event } from '../../types/Event.type';
 const EventLayout = dynamic(() => import('../../layouts/Event/Event.layout'));
-declare const window: any;
-const Event: NextPage = ({ event, og }: any) => {
-  const [featEvent, setFeatEvent] = useState<Event>(event);
+// declare const window: any;
+const defaultEvent: Event = {
+  id: '',
+  title: '',
+  childAddress: '',
+  category: {
+    event_type: '',
+    category: [''],
+  },
+  image: {
+    image: '',
+    gallery: [],
+    video: '',
+  },
+  eventHost: '',
+  fee: 0,
+  date: '',
+  description: {
+    short_desc: '',
+    long_desc: '',
+  },
+  seats: 0,
+  owner: '',
+
+  type: '',
+  tickets_available: 0,
+  tickets_sold: 0,
+  buyers: [],
+  isHuddle: false,
+  isSolana: false,
+};
+const Event: NextPage = ({ ogdata }: any) => {
+  const [featEvent, setFeatEvent] = useState<Event>(defaultEvent);
   const [isInviteOnly, setInviteOnly] = useState<boolean>(false);
   const router = useRouter();
   const { address } = router.query;
+
   const {
     isOpen: isOpen3,
     onOpen: onOpen3,
@@ -31,6 +61,10 @@ const Event: NextPage = ({ event, og }: any) => {
   } = useDisclosure();
   useEffect(() => {
     async function fetchData() {
+      const resp = await axios.get(
+        `${process.env.NEXT_PUBLIC_MONGO_API}/getEventByAddress/${address}`,
+      );
+      setFeatEvent(resp.data);
       const { data, error } = await supabase
         .from('events')
         .select('inviteOnly')
@@ -41,27 +75,32 @@ const Event: NextPage = ({ event, og }: any) => {
 
     fetchData();
   }, [address]);
-
+  // console.log(address, 'address');
   return (
     <Box minH='100vh' h='full' overflow='hidden' bg='blackAlpha.50'>
-      <Head>
-        {' '}
-        <title>{event.title}</title>
-        <meta name='twitter:image' content={og.img} />
-        <meta name='og:description' content={og.desc} />
-        <meta property='og:image' itemProp='image' content={og.img} />
-        <meta
-          property='og:title'
-          content={`Apply for ${event.title} on Metapass!`}
-        />
-        <meta property='og:site_name' content={'https://app.metapasshq.xyz/'} />
-        <meta
-          name='twitter:title'
-          content={`Apply for ${event.title} on Metapass!`}
-        />
-        <meta name='twitter:description' content={og.desc} />
-        <meta name='twitter:card' content='summary_large_image'></meta>
-      </Head>
+      {
+        <Head>
+          {' '}
+          <title>{ogdata.title}</title>
+          <meta name='twitter:image' content={ogdata.img} />
+          <meta name='og:description' content={ogdata.desc} />
+          <meta property='og:image' itemProp='image' content={ogdata.img} />
+          <meta
+            property='og:title'
+            content={`Get your ticket to ${ogdata.title}`}
+          />
+          <meta
+            property='og:site_name'
+            content={'https://app.metapasshq.xyz/'}
+          />
+          <meta
+            name='twitter:title'
+            content={`Get your ticket to ${ogdata.title}`}
+          />
+          <meta name='twitter:description' content={ogdata.desc} />
+          <meta name='twitter:card' content='summary_large_image'></meta>
+        </Head>
+      }
       <NavigationBar
         isOpen3={isOpen3}
         onOpen3={onOpen3}
@@ -79,8 +118,8 @@ const Event: NextPage = ({ event, og }: any) => {
         experimental_spaceX='10'
       >
         <Box maxW='1000px' w='full'>
-          {featEvent ? (
-            <Skeleton isLoaded={featEvent.id !== ''}>
+          {featEvent !== undefined ? (
+            <Skeleton isLoaded={!!featEvent?.id}>
               <EventLayout
                 isOpen3={isOpen3}
                 onOpen3={onOpen3}
@@ -90,7 +129,9 @@ const Event: NextPage = ({ event, og }: any) => {
               />
             </Skeleton>
           ) : (
-            <Flex alignItems={'center'}>Event Doesn&apos;t Exist</Flex>
+            <Flex alignItems={'center'}>
+              Event Doesn&apos;t Exist{console.log(featEvent, 'featEvent')}
+            </Flex>
           )}
         </Box>
       </Flex>
@@ -98,161 +139,52 @@ const Event: NextPage = ({ event, og }: any) => {
   );
 };
 
-export default Event;
+// export async function getServerSideProps({
+//   query,
+//   res,
+// }: GetServerSidePropsContext) {
+//   const { address } = query;
+//   const { data } = await axios.get(
+//     `${process.env.NEXT_PUBLIC_MONGO_API}/getOgByEvent/${address}`,
+//   );
+//   res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=30');
+//   return {
+//     props: { ogdata: data },
+//   };
+// }
+// This function gets called at build time on server-side.
+// It may be called again, on a serverless function, if
+// revalidation is enabled and a new request comes in
+export async function getStaticProps({ params }: GetStaticPropsContext) {
+  if (!params?.address) throw new Error('No address provided');
+  const { data: ogdata } = await axios.get(
+    `${process.env.NEXT_PUBLIC_MONGO_API}/getOpenGraph/${params.address}`,
+  );
 
-export async function getServerSideProps({ query }: any) {
-  const address = query.address;
-  let parsedEvent;
-
-  async function getFeaturedEvents() {
-    const featuredQuery = {
-      operationName: 'fetchFeaturedEvents',
-      query: `query fetchFeaturedEvents {
-                childCreatedEntities(where:{id:"${String(
-                  address,
-                ).toLowerCase()}"}) {
-                    id
-                    title
-                    childAddress
-                    category
-                    ticketsBought{
-                        id
-                    }
-                    link
-                    description
-                    date
-                    fee
-                    venue
-                    image
-                    eventHost
-                    seats
-                    buyers{
-                        id
-                    }
-                }
-            }`,
-    };
-    try {
-      const res = await axios({
-        method: 'POST',
-        url: gqlEndpoint,
-        data: featuredQuery,
-        headers: {
-          'content-type': 'application/json',
-        },
-      });
-
-      if (!!res.data?.errors?.length) {
-        throw new Error('Error fetching featured events');
-      }
-      return res.data;
-    } catch (error) {
-      console.log('error', error);
-    }
-  }
-  function UnicodeDecodeB64(str: any): any {
-    if (str !== 'undefined') {
-      try {
-        return decodeURIComponent(Buffer.from(str, 'base64').toString());
-      } catch (error) {
-        return decodeURIComponent(Buffer.from(str, 'utf-8').toString());
-      }
-    } else {
-      return null;
-    }
-  }
-  const parseFeaturedEvents = (event: any) => {
-    if (event) {
-      let type: string = JSON.parse(
-        UnicodeDecodeB64(event.category),
-      ).event_type;
-      let category: CategoryType = JSON.parse(UnicodeDecodeB64(event.category));
-      let image: ImageType = JSON.parse(UnicodeDecodeB64(event.image));
-      let desc: DescriptionType = JSON.parse(
-        UnicodeDecodeB64(event.description),
-      );
-      let venue = null;
-
-      try {
-        venue = JSON.parse(UnicodeDecodeB64(event?.venue!));
-      } catch (e) {
-        venue = UnicodeDecodeB64(event.venue);
-      }
-
-      return {
-        id: event.id,
-        title: event.title,
-        childAddress: event.childAddress,
-        category: category,
-        image: image,
-        eventHost: event.eventHost,
-        fee: Number(event.fee) / 10 ** 18,
-        date: event.date,
-        description: desc,
-        seats: event.seats,
-        owner: event.eventHost,
-        link: event.link,
-        type: type,
-        venue: venue,
-        tickets_available: event.seats - event.ticketsBought?.length,
-        tickets_sold: event.ticketsBought?.length,
-        buyers: event.buyers,
-        slides: image.gallery,
-        isSolana: false,
-        isHuddle: event.link.includes('huddle01'),
-      } as Event;
-    } else {
-      return null;
-    }
-  };
-  const getSolanaEvents = async () => {
-    const event = await axios.get(
-      `${process.env.NEXT_PUBLIC_MONGO_API}/getEvent/${address}`,
-    );
-    if (event.data) {
-      const data = event.data;
-      let venue;
-      try {
-        venue = JSON.parse(data.venue);
-      } catch (e) {
-        venue = null;
-      }
-      return {
-        ...data,
-        venue: venue,
-        owner: data.eventHost,
-        childAddress: data.eventPDA as string,
-        category: JSON.parse(data.category),
-        image: JSON.parse(data.image),
-        description: JSON.parse(data.description),
-        isSolana: true,
-      };
-    } else {
-      return null;
-    }
-  };
-
-  if (address) {
-    const isEtherAddress = ethers.utils.isAddress(address);
-
-    if (isEtherAddress) {
-      const event = await getFeaturedEvents();
-      parsedEvent = parseFeaturedEvents(event.data.childCreatedEntities[0]);
-    } else {
-      parsedEvent = await getSolanaEvents();
-    }
-  }
-  let img = (og as any)[parsedEvent.childAddress || address];
-  console.log('img', img, parsedEvent.childAddress, address);
   return {
     props: {
-      event: parsedEvent,
-      og: img
-        ? img
-        : {
-            desc: `Apply for ${parsedEvent.title} on Metapass now!`,
-            img: `http://mp-og.vercel.app/${parsedEvent.title}`,
-          },
+      ogdata,
     },
+    // Next.js will attempt to re-generate the page:
+    // - When a request comes in
+    // - At most once every 10 seconds
+    revalidate: 600, // In seconds
   };
 }
+export async function getStaticPaths() {
+  const { data: eventAdresses } = await axios.get(
+    `${process.env.NEXT_PUBLIC_MONGO_API}/getEveryEventsAddress`,
+  );
+
+  // Get the paths we want to pre-render based on posts
+  const paths = eventAdresses.map((address: string) => ({
+    params: { address: address },
+  }));
+
+  // We'll pre-render only these paths at build time.
+  // { fallback: blocking } will server-render pages
+  // on-demand if the path doesn't exist.
+  return { paths, fallback: 'blocking' };
+}
+
+export default Event;
