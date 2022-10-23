@@ -1,5 +1,9 @@
 import { Box, Flex, useDisclosure } from '@chakra-ui/react';
-import type { GetServerSidePropsContext, NextPage } from 'next/types';
+import type {
+  // GetServerSidePropsContext,
+  GetStaticPropsContext,
+  NextPage,
+} from 'next/types';
 
 import { useEffect, useState } from 'react';
 import NavigationBar from '../../components/Navigation/NavigationBar.component';
@@ -58,7 +62,7 @@ const Event: NextPage = ({ ogdata }: any) => {
   useEffect(() => {
     async function fetchData() {
       const resp = await axios.get(
-        `https://web-staging-0e5d.up.railway.app/api/getEventByAddress/${address}`,
+        `${process.env.NEXT_PUBLIC_MONGO_API}/getEventByAddress/${address}`,
       );
       setFeatEvent(resp.data);
       const { data, error } = await supabase
@@ -129,18 +133,52 @@ const Event: NextPage = ({ ogdata }: any) => {
   );
 };
 
-export async function getServerSideProps({
-  query,
-  res,
-}: GetServerSidePropsContext) {
-  const { address } = query;
-  const { data } = await axios.get(
-    `https://web-staging-0e5d.up.railway.app/api/getOgByEvent/${address}`,
+// export async function getServerSideProps({
+//   query,
+//   res,
+// }: GetServerSidePropsContext) {
+//   const { address } = query;
+//   const { data } = await axios.get(
+//     `${process.env.NEXT_PUBLIC_MONGO_API}/getOgByEvent/${address}`,
+//   );
+//   res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=30');
+//   return {
+//     props: { ogdata: data },
+//   };
+// }
+// This function gets called at build time on server-side.
+// It may be called again, on a serverless function, if
+// revalidation is enabled and a new request comes in
+export async function getStaticProps({ params }: GetStaticPropsContext) {
+  if (!params?.address) throw new Error('No address provided');
+  const { data: ogdata } = await axios.get(
+    `${process.env.NEXT_PUBLIC_MONGO_API}/getOpenGraph/${params.address}`,
   );
-  res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=30');
+
   return {
-    props: { ogdata: data },
+    props: {
+      ogdata,
+    },
+    // Next.js will attempt to re-generate the page:
+    // - When a request comes in
+    // - At most once every 10 seconds
+    revalidate: 600, // In seconds
   };
+}
+export async function getStaticPaths() {
+  const { data: eventAdresses } = await axios.get(
+    `${process.env.NEXT_PUBLIC_MONGO_API}/getEveryEventsAddress`,
+  );
+
+  // Get the paths we want to pre-render based on posts
+  const paths = eventAdresses.map((address: string) => ({
+    params: { address: address },
+  }));
+
+  // We'll pre-render only these paths at build time.
+  // { fallback: blocking } will server-render pages
+  // on-demand if the path doesn't exist.
+  return { paths, fallback: 'blocking' };
 }
 
 export default Event;

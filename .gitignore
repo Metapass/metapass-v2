@@ -30,7 +30,7 @@ keys.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
+*1.json
 # local env files
 .env.local
 .env.development.local
