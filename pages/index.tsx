@@ -17,7 +17,7 @@ const Home: NextPage = () => {
     onOpen: onOpen3,
     onClose: onClose3,
   } = useDisclosure();
-
+  console.log('gcp updates!');
   return (
     <Box h='100vh' overflow='scroll'>
       <Head>

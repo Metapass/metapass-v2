@@ -15,9 +15,10 @@ spec:
         app: metapass-v2
         tier: web
     spec:
+      terminationGracePeriodSeconds: 30
       containers:
         - name: metapass-v2
-          image: gcr.io/metapass-supabase/metapass-v2:v1
+          image: gcr.io/metapass-supabase/metapass-v2:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
