@@ -18,6 +18,15 @@ jobs:
       run: 'gcloud info'
     - name: 'update gcloud'
       run: 'gcloud components update'
+  load-envs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install CLI
+        uses: dopplerhq/cli-action@v2
+      - name: Do something with the CLI
+        run: doppler secrets --only-names
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
   build-image:
     runs-on: ubuntu-latest
     steps:
