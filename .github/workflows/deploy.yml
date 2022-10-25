@@ -40,7 +40,7 @@ jobs:
       env:
         GCP_PROJECT: ${{secrets.GCP_PROJECT}}
     - name: Push docker Image to GCR
-      run: docker push docker push gcr.io/$GCP_PROJECT/metapass-v2:latest
+      run: docker push gcr.io/$GCP_PROJECT/metapass-v2:latest
       env:
         GCP_PROJECT: ${{secrets.GCP_PROJECT}}
     - name: Update pod with new container
