@@ -20,7 +20,7 @@ jobs:
           # Export base64 encoded google-services.json
           # into local bash variables
           name: Export Google Services Json
-          command: echo 'export GOOGLE_SERVICES_JSON="$GCLOUD_SERVICE_KEY"' >> $BASH_ENV
+          command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
       - run:
           # Decode the base64 string
           name: Decode Google Services Json
