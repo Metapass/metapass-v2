@@ -18,7 +18,7 @@ jobs:
       - run: node --version
       - run: |
           export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"
-          echo $GOOGLE_SERVICES_JSON | base64 -di > app/google-services.json 
+          echo $GOOGLE_SERVICES_JSON | base64 -di >> app/google-services.json 
           gcloud auth activate-service-account --key-file=${HOME}/app/google-services.json
           gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
           gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
