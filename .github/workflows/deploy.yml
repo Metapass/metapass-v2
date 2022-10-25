@@ -3,7 +3,7 @@ on:
     branches: ["gcp"]
     
 jobs:
-  job_id:
+  install-and-authenticate-gcloud:
     runs-on: ubuntu-latest
     steps:
     - id: 'auth'
@@ -18,3 +18,18 @@ jobs:
       run: 'gcloud info'
     - name: 'update gcloud'
       run: 'gcloud components update'
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Build docker image
+        run: docker build -t gcr.io/$GCP_PROJECT/metapass-v2:latest --platform linux/amd64 .
+        env:
+          GCP_PROJECT: ${{secrets.GCP_PROJECT}}
