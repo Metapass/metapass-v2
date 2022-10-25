@@ -31,7 +31,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
+      - name: Install CLI
+        uses: dopplerhq/cli-action@v2
+
+      - name: Load env
+        run: doppler secrets download --no-file --format env > .env
+        
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
         
@@ -42,3 +48,4 @@ jobs:
         run: docker build -t gcr.io/$GCP_PROJECT/metapass-v2:latest --platform linux/amd64 .
         env:
           GCP_PROJECT: ${{secrets.GCP_PROJECT}}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
