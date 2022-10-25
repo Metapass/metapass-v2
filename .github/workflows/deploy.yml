@@ -1,0 +1,20 @@
+on:
+  push:
+    branches: ["gcp"]
+    
+jobs:
+  job_id:
+    runs-on: ubuntu-latest
+    steps:
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v0'
+
+    - name: 'Use gcloud CLI'
+      run: 'gcloud info'
+    - name: 'update gcloud'
+      run: 'gcloud components update'
