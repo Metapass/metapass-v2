@@ -43,3 +43,5 @@ jobs:
       run: docker push docker push gcr.io/$GCP_PROJECT/metapass-v2:latest
       env:
         GCP_PROJECT: ${{secrets.GCP_PROJECT}}
+    - name: Update pod with new container
+      run: kubectl rollout restart deployment metapass-v2
