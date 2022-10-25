@@ -37,6 +37,8 @@ jobs:
 
       - name: Load env
         run: doppler secrets download --no-file --format env > .env
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
         
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -48,4 +50,3 @@ jobs:
         run: docker build -t gcr.io/$GCP_PROJECT/metapass-v2:latest --platform linux/amd64 .
         env:
           GCP_PROJECT: ${{secrets.GCP_PROJECT}}
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
