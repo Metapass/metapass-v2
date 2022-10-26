@@ -43,6 +43,9 @@ jobs:
     - name: Configure docker for GCR
       run: gcloud auth configure-docker -q
       
+    - uses: satackey/action-docker-layer-caching@v0.0.11
+      continue-on-error: true
+      
     - name: Build docker image
       run: docker build -t gcr.io/$GCP_PROJECT/metapass-v2:latest --platform linux/amd64 .
       env:
