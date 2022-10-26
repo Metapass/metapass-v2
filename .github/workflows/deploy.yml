@@ -35,15 +35,21 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
       
+    - name: Configure docker for GCR
+      run: gcloud auth configure-docker --account
+      
     - name: Build docker image
       run: docker build -t gcr.io/$GCP_PROJECT/metapass-v2:latest --platform linux/amd64 .
       env:
         GCP_PROJECT: ${{secrets.GCP_PROJECT}}
         
     - name: Push docker Image to GCR
-      run: gcloud auth configure-docker && docker push gcr.io/$GCP_PROJECT/metapass-v2:latest
+      run:  docker push gcr.io/$GCP_PROJECT/metapass-v2:latest
       env:
         GCP_PROJECT: ${{secrets.GCP_PROJECT}}
         
+    - name: Kubernetes CLI (kubectl)
+      uses: tale/kubectl-action@v1
+
     - name: Update pod with new container
       run: kubectl rollout restart deployment metapass-v2
