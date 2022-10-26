@@ -20,7 +20,7 @@ jobs:
     - id: 'get-credentials'
       uses: 'google-github-actions/get-gke-credentials@v0'
       with:
-        cluster_name: 'metapass-v2'
+        cluster_name: 'metapass-v2-cluster'
         location: 'asia-south1-a'
         
     - name: 'Use gcloud CLI'
