@@ -68,8 +68,8 @@ const Event: NextPage = ({ ogdata }: any) => {
       const { data, error } = await supabase
         .from('events')
         .select('inviteOnly')
-        .eq('contractAddress', address);
-
+        .eq('contractAddress', resp.data.childAddress);
+      // console.log(data, 'data', resp.data);
       data?.length !== 0 && setInviteOnly(data?.[0].inviteOnly);
     }
 
