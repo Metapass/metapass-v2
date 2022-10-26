@@ -16,11 +16,12 @@ jobs:
 
     - name: 'Set up Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v0'
-    - run: |- 
-        gcloud config set project $GCP_PROJECT |
-        gcloud container clusters get-credentials metapass-v2-cluster --zone asia-south1-a --project $GCP_PROJECT
-      env:
-        GCP_PROJECT: ${{secrets.GCP_PROJECT}}
+        
+    - id: 'get-credentials'
+      uses: 'google-github-actions/get-gke-credentials@v0'
+      with:
+        cluster_name: 'metapass-v2'
+        location: 'asia-south1-a'
         
     - name: 'Use gcloud CLI'
       run: 'gcloud info'
