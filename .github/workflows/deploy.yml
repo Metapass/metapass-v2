@@ -6,6 +6,9 @@ jobs:
   install-and-authenticate-gcloud:
     runs-on: ubuntu-latest
     steps:
+    - name: checkout
+      uses: actions/checkout@v3
+      
     - id: 'auth'
       uses: 'google-github-actions/auth@v0'
       with:
@@ -22,8 +25,6 @@ jobs:
       
     - name: check gcloud auth accounts
       run: gcloud auth list
-      
-    - uses: actions/checkout@v3
 
     - name: Install CLI
       uses: dopplerhq/cli-action@v2
