@@ -27,8 +27,7 @@ const client = createClient({
   provider,
   webSocketProvider,
 });
-
-// declare const window: any;
+declare const window: any;
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
@@ -45,13 +44,11 @@ function MyApp({ Component, pageProps }: AppProps) {
               <ContextProvider>
                 <Contract>
                   <Toaster />
-                  {/* <SafeHydrate> */}
                   <Chakra Component={Component} pageProps={pageProps}>
                     {' '}
                     {<Chatwoot />}
                     <NextNProgress color='#6451FB' />
                   </Chakra>
-                  {/* </SafeHydrate> */}
                 </Contract>
               </ContextProvider>
             </Web3Wrapper>
