@@ -36,7 +36,7 @@ jobs:
       uses: docker/setup-buildx-action@v2
       
     - name: Configure docker for GCR
-      run: gcloud auth configure-docker --account
+      run: gcloud auth configure-docker gcr.io
       
     - name: Build docker image
       run: docker build -t gcr.io/$GCP_PROJECT/metapass-v2:latest --platform linux/amd64 .
