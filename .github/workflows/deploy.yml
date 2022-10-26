@@ -1,72 +1,69 @@
 on:
   push:
-    branches: ["gcp"]
-    
+    branches: ['gcp']
+
 jobs:
   install-and-authenticate-gcloud:
     runs-on: ubuntu-latest
     steps:
-    - name: checkout
-      uses: actions/checkout@v3
-      
-    - id: 'auth'
-      uses: 'google-github-actions/auth@v0'
-      with:
-        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+      - name: checkout
+        uses: actions/checkout@v3
 
-    - name: 'Set up Cloud SDK'
-      uses: 'google-github-actions/setup-gcloud@v0'
-        
-    - id: 'get-credentials'
-      uses: 'google-github-actions/get-gke-credentials@v0'
-      with:
-        cluster_name: 'metapass-v2-cluster'
-        location: 'asia-south1-a'
-        
-    - name: 'Use gcloud CLI'
-      run: 'gcloud info'
-      
-    - name: 'update gcloud'
-      run: 'gcloud components update'
-      
-    - name: check gcloud auth accounts
-      run: gcloud auth list
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
-    - name: Install CLI
-      uses: dopplerhq/cli-action@v2
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
 
-    - name: Load env
-      run: doppler secrets download --no-file --format env > .env
-      env:
-        DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-        
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-        
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-      
-    - name: Configure docker for GCR
-      run: gcloud auth configure-docker -q
-      
-    - uses: satackey/action-docker-layer-caching@v0.0.11
-      continue-on-error: true
-      
-    - name: Build docker image
-      run: docker build -t gcr.io/$GCP_PROJECT/metapass-v2:latest --platform linux/amd64 .
-      env:
-        GCP_PROJECT: ${{secrets.GCP_PROJECT}}
-        
-    - name: Push docker Image to GCR
-      run:  docker push gcr.io/$GCP_PROJECT/metapass-v2:latest
-      env:
-        GCP_PROJECT: ${{secrets.GCP_PROJECT}}
-        
-    - name: Kubernetes CLI (kubectl)
-      uses: tale/kubectl-action@v1
-      
-    - name: Get pods
-      run: kubectl get pods
-      
-    - name: Update pod with new container
-      run: kubectl rollout restart deployment metapass-v2
+      - id: 'get-credentials'
+        uses: 'google-github-actions/get-gke-credentials@v0'
+        with:
+          cluster_name: 'metapass-v2-cluster'
+          location: 'asia-south1-a'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
+
+      - name: 'update gcloud'
+        run: 'gcloud components update'
+
+      - name: Check gcloud auth accounts
+        run: gcloud auth list
+
+      - name: Install CLI
+        uses: dopplerhq/cli-action@v2
+
+      - name: Load env
+        run: doppler secrets download --no-file --format env > .env
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Configure docker for GCR
+        run: gcloud auth configure-docker -q
+
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+
+      - name: Build docker image
+        run: docker build -t gcr.io/$GCP_PROJECT/metapass-v2:latest --platform linux/amd64 .
+        env:
+          GCP_PROJECT: ${{secrets.GCP_PROJECT}}
+
+      - name: Push docker Image to GCR
+        run: docker push gcr.io/$GCP_PROJECT/metapass-v2:latest
+        env:
+          GCP_PROJECT: ${{secrets.GCP_PROJECT}}
+
+      - name: Kubernetes CLI (kubectl)
+        uses: tale/kubectl-action@v1
+
+      - name: Update pod with new container
+        run: kubectl rollout restart deployment metapass-v2
