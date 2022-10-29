@@ -75,8 +75,9 @@ export const ticketToIPFS = async (
   date: string,
   person: string,
 ) => {
-  let parsedDate = date.split('T')[0];
+  let parsedDate = date.split('T')[0].split(':').join('/');
   const BASE_ENDPOINT = 'https://ticket-img-production-f075.up.railway.app';
+  // console.log('parsedDate', parsedDate);
   const res = await axios.get(
     `${BASE_ENDPOINT}/api/v2/2d/edit/hero_text=${title}&ticket_no=${ticketNumber.toString()}&venue=${person}&date=${
       months[moment(parsedDate).get('month')] +
