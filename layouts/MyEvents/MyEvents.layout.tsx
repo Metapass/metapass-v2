@@ -223,6 +223,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
             const data: TicketType[] = parseMyEvents(
               res.data.ticketBoughtEntities,
             );
+            console;
             setStore(data);
             setMyTickets(data);
           })
@@ -293,7 +294,10 @@ export default function MyEvents({ isOpen, onClose }: any) {
                         if (store) {
                           let filter = store.filter((tix: any) => {
                             const date = tix.event.date;
-                            let parsedDate = date.split('T')[0];
+                            let parsedDate = date
+                              .split('T')[0]
+                              .split(':')
+                              .join(' ');
                             let time = date.split('T')[1].split('-')[0];
                             return (
                               new Date(parsedDate + ' ' + time) > new Date()
