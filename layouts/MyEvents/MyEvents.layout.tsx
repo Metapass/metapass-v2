@@ -126,7 +126,6 @@ export default function MyEvents({ isOpen, onClose }: any) {
       let category: CategoryType = JSON.parse(ticket.category);
       let image: ImageType = JSON.parse(ticket.image);
       let desc: DescriptionType = JSON.parse(ticket.description);
-      const link = decryptLink(ticket.link);
 
       return {
         id: ticket.id,
@@ -146,7 +145,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
           description: desc,
           seats: ticket.seats,
           owner: ticket.eventHost,
-          link: link,
+          link: ticket.link,
           type: type,
           tickets_available: ticket.seats - ticket.buyers.length,
           tickets_sold: ticket.buyers.length,

@@ -10,6 +10,7 @@ import { supabase } from '../../lib/config/supabaseConfig';
 import { web3Context } from '../../utils/web3Context';
 import { Web3Auth } from '@web3auth/web3auth';
 import { useProvider } from 'wagmi';
+import { decryptLink } from '../../utils/linkResolvers';
 export default function TicketLayout({
   image,
   eventType,
@@ -170,7 +171,11 @@ export default function TicketLayout({
                   _focus={{}}
                   _active={{}}
                   onClick={() => {
-                    window.open(eventLink, '_blank');
+                    if (eventLink.includes('huddle')) {
+                      window.open(eventLink, '_blank');
+                    } else {
+                      window.open(decryptLink(eventLink), '_blank');
+                    }
                   }}
                   role='group'
                 >
