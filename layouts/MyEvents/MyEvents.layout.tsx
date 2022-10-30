@@ -88,6 +88,8 @@ export default function MyEvents({ isOpen, onClose }: any) {
         UnicodeDecodeB64(event.description),
       );
 
+      const link = decryptLink(event.link);
+
       return {
         id: ticket.id,
         ticketID: ticket.ticketID,
@@ -106,7 +108,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
           description: desc,
           seats: event.seats,
           owner: event.eventHost,
-          link: event.link,
+          link: link,
           type: type,
           tickets_available: event.seats - event.ticketsBought.length,
           tickets_sold: event.ticketsBought.length,
