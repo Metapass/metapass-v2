@@ -88,7 +88,13 @@ export default function MyEvents({ isOpen, onClose }: any) {
         UnicodeDecodeB64(event.description),
       );
 
-      const link = decryptLink(event.link);
+      let link = event.link;
+
+      if (!link.startsWith('https://')) {
+        console.log(link, 'before');
+        link = decryptLink(link);
+        console.log(link, 'after');
+      }
 
       return {
         id: ticket.id,
