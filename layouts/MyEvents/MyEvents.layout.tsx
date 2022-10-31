@@ -88,6 +88,14 @@ export default function MyEvents({ isOpen, onClose }: any) {
         UnicodeDecodeB64(event.description),
       );
 
+      let link = event.link;
+
+      if (!link.startsWith('https://')) {
+        console.log(link, 'before');
+        link = decryptLink(link);
+        console.log(link, 'after');
+      }
+
       return {
         id: ticket.id,
         ticketID: ticket.ticketID,
@@ -106,7 +114,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
           description: desc,
           seats: event.seats,
           owner: event.eventHost,
-          link: event.link,
+          link: link,
           type: type,
           tickets_available: event.seats - event.ticketsBought.length,
           tickets_sold: event.ticketsBought.length,
