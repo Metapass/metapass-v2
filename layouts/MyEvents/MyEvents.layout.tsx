@@ -134,7 +134,6 @@ export default function MyEvents({ isOpen, onClose }: any) {
       let category: CategoryType = JSON.parse(ticket.category);
       let image: ImageType = JSON.parse(ticket.image);
       let desc: DescriptionType = JSON.parse(ticket.description);
-      const link = decryptLink(ticket.link);
 
       return {
         id: ticket.id,
@@ -154,7 +153,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
           description: desc,
           seats: ticket.seats,
           owner: ticket.eventHost,
-          link: link,
+          link: ticket.link,
           type: type,
           tickets_available: ticket.seats - ticket.buyers.length,
           tickets_sold: ticket.buyers.length,
@@ -231,6 +230,7 @@ export default function MyEvents({ isOpen, onClose }: any) {
             const data: TicketType[] = parseMyEvents(
               res.data.ticketBoughtEntities,
             );
+            console;
             setStore(data);
             setMyTickets(data);
           })
@@ -301,7 +301,10 @@ export default function MyEvents({ isOpen, onClose }: any) {
                         if (store) {
                           let filter = store.filter((tix: any) => {
                             const date = tix.event.date;
-                            let parsedDate = date.split('T')[0];
+                            let parsedDate = date
+                              .split('T')[0]
+                              .split(':')
+                              .join(' ');
                             let time = date.split('T')[1].split('-')[0];
                             return (
                               new Date(parsedDate + ' ' + time) > new Date()

@@ -22,7 +22,7 @@ import {
   useDisclosure,
   Img,
 } from '@chakra-ui/react';
-import { useState, useContext, useEffect, Component, useRef } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import ReactPlayer from 'react-player';
 import { Event } from '../../types/Event.type';
 import '@uiw/react-md-editor/markdown-editor.css';
@@ -81,7 +81,7 @@ import SignUpModal from '../../components/Modals/SignUp.modal';
 import resolveDomains from '../../hooks/useDomain';
 import axios from 'axios';
 import { generateMetadata } from '../../utils/generateMetadata';
-import { useAccount, useProvider, useSigner } from 'wagmi';
+import { useAccount, useSigner } from 'wagmi';
 import { supabase } from '../../lib/config/supabaseConfig';
 import { RegisterFormModal } from '../../components/Modals/RegisterForm.modal';
 import { FiCheckCircle, FiShare } from 'react-icons/fi';
