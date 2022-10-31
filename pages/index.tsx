@@ -24,9 +24,7 @@ const Home: NextPage = () => {
         {' '}
         <meta
           name='twitter:image'
-          content={
-            'https://res.cloudinary.com/dev-connect/image/upload/v1645093690/img/embed_wqfswz.webp'
-          }
+          content={'https://storage.googleapis.com/mp-cdn/newembed.png'}
         />
         <title>MetaPass | Reimagining Events</title>
         <meta
@@ -34,6 +32,11 @@ const Home: NextPage = () => {
           content='Book NFT tickets for online and IRL events'
         ></meta>
         <meta property='og:title' content='MetaPass - Reimagining Events' />
+        <meta
+          property='og:image'
+          itemProp='image'
+          content={'https://storage.googleapis.com/mp-cdn/newembed.png'}
+        />
         <meta property='og:url' content='https://app.metapasshq.xyz' />
         <meta property='og:type' content='website' />
         <meta name='twitter:site' content='@metapasshq' />
