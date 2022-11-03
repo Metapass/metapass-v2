@@ -12,7 +12,7 @@ import {
 import { useEffect, useState } from 'react';
 import EventCard from '../../components/Card/EventCard.component';
 import { Event } from '../../types/Event.type';
-import sendToAirtable from '../../utils/sendToAirtable';
+// import sendToAirtable from '../../utils/sendToAirtable';
 import ScrollContainer from 'react-indiana-drag-scroll';
 
 import axios from 'axios';
