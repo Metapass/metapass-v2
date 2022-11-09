@@ -776,6 +776,20 @@ export default function EventLayout({
       }, 5000);
     }
   }, [hasBought]);
+  const datetouse = event.date.split('T')[0].split(':').reverse();
+  const timetouse = event.date?.split('T')[1];
+  const startTime =
+    event?.date?.split('T')[0]?.split(':').join('-') +
+    ' ' +
+    event?.date?.split('T')[1]?.split('-')[0];
+  const endTime =
+    event?.date.split('T')[0]?.split(':').join('-') +
+    ' ' +
+    event?.date?.split('T')[1]?.split('-')[1];
+  // console.log(
+  //   moment.utc(startTime).format('LT'),
+  //   moment.utc(endTime).format('LT'),
+  // );
 
   return (
     <>
@@ -1003,6 +1017,17 @@ export default function EventLayout({
               <Text fontSize='2xl' fontWeight='semibold'>
                 {event?.title}
               </Text>
+              <Box>
+                <Text color={'red.300'} fontWeight={600} fontSize='sm'>
+                  {datetouse[0]} {months[parseInt(datetouse[1])]} {'  '}{' '}
+                  {datetouse[2]}
+                  {', '}
+                  {moment.utc(startTime).local().format('LT') +
+                    ' - ' +
+                    moment.utc(endTime).local().format('LT')}
+                  {'  '}
+                </Text>
+              </Box>
 
               {/* <Flex mt="1" flexDirection="column"> */}
               <Flex
@@ -1024,6 +1049,7 @@ export default function EventLayout({
                 >
                   {event?.type || event?.category.event_type}
                 </Box>
+
                 <Box
                   boxShadow='0px 0px 31.1248px rgba(0, 0, 0, 0.08)'
                   rounded='full'
@@ -1222,7 +1248,22 @@ export default function EventLayout({
                 </Box>
               </Flex>
             </Box>
-
+            {/* <Box
+              display={{ base: 'block', md: 'none' }}
+              mt={{ base: '-8', md: '0' }}
+              mb='8'
+              ml='4'
+            >
+              <Text color={'red.300'} fontWeight={600} fontSize='sm'>
+                {datetouse[0]} {months[parseInt(datetouse[1])]} {'  '}{' '}
+                {datetouse[2]}
+                {', '}
+                {moment.utc(startTime).local().format('LT') +
+                  ' - ' +
+                  moment.utc(endTime).local().format('LT')}
+                {'  '}
+              </Text>
+            </Box> */}
             <Box
               w='full'
               mt={2}
@@ -1236,6 +1277,7 @@ export default function EventLayout({
               fontFamily='body'
               px='4'
               color='blackAlpha.700'
+              textAlign={{ base: 'center', lg: 'left' }}
               fontSize={{ base: 'sm', lg: 'md' }}
               display={{ base: 'none', md: 'block' }}
               minH={{ base: '4rem', md: 'auto' }}
@@ -1246,7 +1288,7 @@ export default function EventLayout({
               <Text fontWeight={'semibold'} decoration='underline' mb={2}>
                 Description:
               </Text>
-              <Box display={{ base: 'none', md: 'block' }}>
+              <Box display={{ base: 'block', md: 'block' }}>
                 <MarkdownPreview
                   style={{
                     fontSize: event?.description.long_desc ? '17px' : '14px',
@@ -1541,6 +1583,43 @@ export default function EventLayout({
                   </Flex>
                 </>
               )}
+            </Box>
+            <Box
+              w='full'
+              mt={2}
+              mb={{ base: '10px', md: '0' }}
+              noOfLines={6}
+              border='1px'
+              borderColor='blackAlpha.100'
+              boxShadow='0px 4.25554px 93.6219px rgba(0, 0, 0, 0.08)'
+              rounded='xl'
+              p='3'
+              fontFamily='body'
+              px='4'
+              color='blackAlpha.700'
+              textAlign={{ base: 'center', lg: 'left' }}
+              fontSize={{ base: 'sm', lg: 'md' }}
+              display={{ base: 'block', md: 'none' }}
+              minH={{ base: '4rem', md: 'auto' }}
+              maxH={{ base: '14rem', md: 'auto' }}
+              maxW='740px'
+              overflow='auto'
+            >
+              <Text fontWeight={'semibold'} decoration='underline' mb={2}>
+                Description:
+              </Text>
+              <Box display={{ base: 'block', md: 'block' }}>
+                <MarkdownPreview
+                  style={{
+                    fontSize: event?.description.long_desc ? '17px' : '14px',
+                    overflow: 'auto',
+                  }}
+                  source={
+                    event?.description.long_desc ||
+                    event?.description.short_desc
+                  }
+                />
+              </Box>
             </Box>
 
             {event?.venue?.name && (
