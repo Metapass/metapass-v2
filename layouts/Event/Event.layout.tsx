@@ -776,6 +776,9 @@ export default function EventLayout({
       }, 5000);
     }
   }, [hasBought]);
+  const datetouse = event.date.split('T')[0].split(':').reverse();
+  const timetouse = event.date?.split('T')[1];
+  // console.log(event.date?.split('T')[1].split('-'));
 
   return (
     <>
@@ -1003,6 +1006,12 @@ export default function EventLayout({
               <Text fontSize='2xl' fontWeight='semibold'>
                 {event?.title}
               </Text>
+              <Box>
+                <Text color={'gray.500'} fontWeight={600}>
+                  {timetouse},{'  '} {datetouse[0]}{' '}
+                  {months[parseInt(datetouse[1])]} {'  '} {datetouse[2]}
+                </Text>
+              </Box>
 
               {/* <Flex mt="1" flexDirection="column"> */}
               <Flex
@@ -1024,6 +1033,7 @@ export default function EventLayout({
                 >
                   {event?.type || event?.category.event_type}
                 </Box>
+
                 <Box
                   boxShadow='0px 0px 31.1248px rgba(0, 0, 0, 0.08)'
                   rounded='full'
@@ -1440,7 +1450,6 @@ export default function EventLayout({
                 </Text>
               </Box>
             </Flex>
-
             <Box
               mt='3'
               rounded='xl'
