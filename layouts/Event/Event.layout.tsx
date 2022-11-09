@@ -778,7 +778,18 @@ export default function EventLayout({
   }, [hasBought]);
   const datetouse = event.date.split('T')[0].split(':').reverse();
   const timetouse = event.date?.split('T')[1];
-  // console.log(event.date?.split('T')[1].split('-'));
+  const startTime =
+    event?.date?.split('T')[0]?.replaceAll(':', '-') +
+    ' ' +
+    event?.date?.split('T')[1]?.split('-')[0];
+  const endTime =
+    event?.date.split('T')[0]?.replaceAll(':', '-') +
+    ' ' +
+    event?.date?.split('T')[1]?.split('-')[1];
+  // console.log(
+  //   moment.utc(startTime).format('LT'),
+  //   moment.utc(endTime).format('LT'),
+  // );
 
   return (
     <>
@@ -1007,9 +1018,14 @@ export default function EventLayout({
                 {event?.title}
               </Text>
               <Box>
-                <Text color={'gray.500'} fontWeight={600}>
-                  {timetouse},{'  '} {datetouse[0]}{' '}
-                  {months[parseInt(datetouse[1])]} {'  '} {datetouse[2]}
+                <Text color={'red.300'} fontWeight={600} fontSize='sm'>
+                  {datetouse[0]} {months[parseInt(datetouse[1])]} {'  '}{' '}
+                  {datetouse[2]}
+                  {', '}
+                  {moment.utc(startTime).local().format('LT') +
+                    ' - ' +
+                    moment.utc(endTime).local().format('LT')}
+                  {'  '}
                 </Text>
               </Box>
 
@@ -1232,7 +1248,22 @@ export default function EventLayout({
                 </Box>
               </Flex>
             </Box>
-
+            {/* <Box
+              display={{ base: 'block', md: 'none' }}
+              mt={{ base: '-8', md: '0' }}
+              mb='8'
+              ml='4'
+            >
+              <Text color={'red.300'} fontWeight={600} fontSize='sm'>
+                {datetouse[0]} {months[parseInt(datetouse[1])]} {'  '}{' '}
+                {datetouse[2]}
+                {', '}
+                {moment.utc(startTime).local().format('LT') +
+                  ' - ' +
+                  moment.utc(endTime).local().format('LT')}
+                {'  '}
+              </Text>
+            </Box> */}
             <Box
               w='full'
               mt={2}
