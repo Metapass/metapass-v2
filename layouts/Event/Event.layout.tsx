@@ -779,11 +779,11 @@ export default function EventLayout({
   const datetouse = event.date.split('T')[0].split(':').reverse();
   const timetouse = event.date?.split('T')[1];
   const startTime =
-    event?.date?.split('T')[0]?.replaceAll(':', '-') +
+    event?.date?.split('T')[0]?.split(':').join('-') +
     ' ' +
     event?.date?.split('T')[1]?.split('-')[0];
   const endTime =
-    event?.date.split('T')[0]?.replaceAll(':', '-') +
+    event?.date.split('T')[0]?.split(':').join('-') +
     ' ' +
     event?.date?.split('T')[1]?.split('-')[1];
   // console.log(
