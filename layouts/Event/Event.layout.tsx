@@ -777,7 +777,6 @@ export default function EventLayout({
     }
   }, [hasBought]);
   const datetouse = event.date.split('T')[0].split(':').reverse();
-  const timetouse = event.date?.split('T')[1];
   const startTime =
     event?.date?.split('T')[0]?.split(':').join('-') +
     ' ' +
