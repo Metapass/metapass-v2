@@ -1,4 +1,4 @@
-import { Connection, clusterApiUrl, PublicKey } from '@solana/web3.js';
+import { Connection } from '@solana/web3.js';
 import { ethers } from 'ethers';
 import Web3 from 'web3';
 import { Chain } from '../types/blockchain.types';
