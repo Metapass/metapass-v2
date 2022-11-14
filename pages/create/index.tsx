@@ -26,7 +26,7 @@ const SubmitStep = dynamic(
 import { walletContext, WalletType } from '../../utils/walletContext';
 
 import { Event, VenueType } from '../../types/Event.type';
-import { ethers } from 'ethers';
+import { constants, ethers } from 'ethers';
 import abi from '../../utils/MetapassFactory.json';
 import MetapassABI from '../../utils/Metapass.json';
 import axios from 'axios';
@@ -217,6 +217,7 @@ const Create: NextPage = () => {
           event.date,
           b64EncodeUnicode(JSON.stringify(event.category)),
           'undefined',
+          constants.AddressZero,
         );
         txn.wait().then(async (res: any) => {
           let child = res.events.filter((e: any) => e.event === 'childEvent')[0]
