@@ -198,6 +198,7 @@ const Create: NextPage = () => {
             contractAddress: child,
             link: event.link,
             seats: event.seats,
+            title: event.title,
             walletAddress: wallet.address,
             date: event.date,
             description: JSON.stringify(event.description),
@@ -294,6 +295,7 @@ const Create: NextPage = () => {
           });
           await supabase.from('polygonevent').insert({
             contractAddress: child,
+            title: event.title,
             link: event.link,
             seats: event.seats,
             date: event.date,
