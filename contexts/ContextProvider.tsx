@@ -17,11 +17,11 @@ import {
 } from '@solana/wallet-adapter-wallets';
 import {
   WalletModalProvider,
-  useWalletModal,
+  // useWalletModal,
 } from '@solana/wallet-adapter-react-ui';
-import { useRouter } from 'next/router';
-import { AutoConnectProvider } from './AutoConnextProvider';
-import { clusterApiUrl } from '@solana/web3.js';
+// import { useRouter } from 'next/router';
+// import { AutoConnectProvider } from './AutoConnextProvider';
+// import { clusterApiUrl } from '@solana/web3.js';
 // import { AutoConnectProvider } from './AutoConnextProvider'
 
 // Default styles that can be overridden by your app
@@ -29,7 +29,7 @@ require('@solana/wallet-adapter-react-ui/styles.css');
 
 export const WalletContextProvider: FC = ({ children }) => {
   // If window exists and is on localhost, choose devnet, else choose mainnet
-  const network = clusterApiUrl('mainnet-beta');
+  const network = process.env.NEXT_PUBLIC_SOLANA!;
 
   const endpoint = useMemo(() => network, [network]);
   const wallets = useMemo(

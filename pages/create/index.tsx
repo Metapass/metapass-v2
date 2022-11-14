@@ -26,16 +26,16 @@ const SubmitStep = dynamic(
 import { walletContext, WalletType } from '../../utils/walletContext';
 
 import { Event, VenueType } from '../../types/Event.type';
-import { ethers } from 'ethers';
+import { constants, ethers } from 'ethers';
 import abi from '../../utils/MetapassFactory.json';
 import MetapassABI from '../../utils/Metapass.json';
 import axios from 'axios';
 import { supabase } from '../../lib/config/supabaseConfig';
 
 import { useMultichainProvider } from '../../hooks/useMultichainProvider';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from '@solana/wallet-adapter-react';
 import {
-  clusterApiUrl,
+  // clusterApiUrl,
   Connection,
   LAMPORTS_PER_SOL,
   PublicKey,
@@ -228,6 +228,7 @@ const Create: NextPage = () => {
           event.date,
           b64EncodeUnicode(JSON.stringify(event.category)),
           'undefined',
+          constants.AddressZero,
         );
         txn.wait().then(async (res: any) => {
           let child = res.events.filter((e: any) => e.event === 'childEvent')[0]
@@ -320,8 +321,8 @@ const Create: NextPage = () => {
     (async function () {
       const connection = new Connection(
         process.env.NEXT_PUBLIC_ENV == 'prod'
-          ? clusterApiUrl('mainnet-beta')
-          : clusterApiUrl('mainnet-beta'),
+          ? process.env.NEXT_PUBLIC_SOLANA!
+          : process.env.NEXT_PUBLIC_SOLANA!,
       );
       if (solanaWallet.publicKey) {
         const [hostPDA, hostBump] = await PublicKey.findProgramAddress(
@@ -342,8 +343,8 @@ const Create: NextPage = () => {
     console.log(wallet.publicKey, program);
     const connection = new Connection(
       process.env.NEXT_PUBLIC_ENV == 'prod'
-        ? clusterApiUrl('mainnet-beta')
-        : clusterApiUrl('mainnet-beta'),
+        ? process.env.NEXT_PUBLIC_SOLANA!
+        : process.env.NEXT_PUBLIC_SOLANA!,
     );
     setInTxn(true);
 
