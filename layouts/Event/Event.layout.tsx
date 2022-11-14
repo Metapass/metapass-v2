@@ -1019,7 +1019,7 @@ export default function EventLayout({
               </Text>
               <Box>
                 <Text color={'red.300'} fontWeight={600} fontSize='sm'>
-                  {datetouse[0]} {months[parseInt(datetouse[1])]} {'  '}{' '}
+                  {datetouse[0]} {months[parseInt(datetouse[1]) - 1]} {'  '}{' '}
                   {datetouse[2]}
                   {', '}
                   {moment.utc(startTime).local().format('LT') +

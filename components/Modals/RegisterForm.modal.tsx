@@ -37,6 +37,7 @@ import { QuestionComp } from '../Misc/question.component';
 import { RegistrationTemplate } from '../../utils/registrationtemplate';
 import { useUser } from '../../hooks/useUser';
 import { send } from '@metapasshq/msngr';
+import moment from 'moment';
 interface formNew {
   id: number;
   data: formType;
@@ -129,11 +130,23 @@ export const RegisterFormModal = ({
         toast.success('Details Uploaded');
         if (emails && emails.length > 0) {
           const date = event?.date as string;
+          const startTime =
+            date?.split('T')[0]?.split(':').join('-') +
+            ' ' +
+            date?.split('T')[1]?.split('-')[0];
+          const endTime =
+            date.split('T')[0]?.split(':').join('-') +
+            ' ' +
+            date?.split('T')[1]?.split('-')[1];
           const body = RegistrationTemplate(
             event?.title as string,
             new Date(
               Date.parse(date.split('T')[0].split(':').join('/')),
-            ).toDateString(),
+            ).toDateString() +
+              ', ' +
+              moment.utc(startTime).local().format('LT') +
+              ' - ' +
+              moment.utc(endTime).local().format('LT'),
             `https://www.google.com/maps/search/?api=1&query=${
               event?.venue?.name as string
             }`,
