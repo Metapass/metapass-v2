@@ -202,7 +202,7 @@ const Create: NextPage = () => {
             walletAddress: wallet.address,
             date: event.date,
             description: JSON.stringify(event.description),
-            images: JSON.stringify(event.image),
+            image: JSON.stringify(event.image),
             venue: JSON.stringify(event.venue),
             category: JSON.stringify(event.category),
           });
@@ -301,7 +301,7 @@ const Create: NextPage = () => {
             date: event.date,
             walletAddress: wallet.address,
             description: JSON.stringify(event.description),
-            images: JSON.stringify(event.image),
+            image: JSON.stringify(event.image),
             venue: JSON.stringify(event.venue),
             category: JSON.stringify(event.category),
           });
