@@ -150,6 +150,7 @@ const Create: NextPage = () => {
           event.date,
           b64EncodeUnicode(JSON.stringify(event.category)),
           b64EncodeUnicode(JSON.stringify(event.venue)),
+          ethers.constants.AddressZero,
         );
         txn.wait().then(async (res: any) => {
           let child = res.events.filter((e: any) => e.event === 'childEvent')[0]
@@ -217,6 +218,7 @@ const Create: NextPage = () => {
           event.date,
           b64EncodeUnicode(JSON.stringify(event.category)),
           'undefined',
+          ethers.constants.AddressZero,
         );
         txn.wait().then(async (res: any) => {
           let child = res.events.filter((e: any) => e.event === 'childEvent')[0]
