@@ -705,6 +705,7 @@ export default function EventLayout({
               solanaWallet.publicKey as PublicKey,
               new PublicKey('4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw'),
               Number(event.fee),
+              connection,
             );
 
             const signedTx = await solanaWallet.signTransaction!(tx!);
