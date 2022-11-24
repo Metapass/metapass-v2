@@ -703,7 +703,7 @@ export default function EventLayout({
             const tx = await sendSPL(
               'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
               solanaWallet.publicKey as PublicKey,
-              new PublicKey('DheLTC8eaUCqqXkMB5eRcT35KwDbu4ezKbKTzeA5cGJZ'),
+              new PublicKey('4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw'),
               Number(event.fee),
             );
 
