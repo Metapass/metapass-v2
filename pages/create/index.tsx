@@ -26,7 +26,7 @@ const SubmitStep = dynamic(
 import { walletContext, WalletType } from '../../utils/walletContext';
 
 import { Event, VenueType } from '../../types/Event.type';
-import { ethers } from 'ethers';
+import { constants, ethers } from 'ethers';
 import abi from '../../utils/MetapassFactory.json';
 import MetapassABI from '../../utils/Metapass.json';
 import axios from 'axios';
@@ -359,11 +359,11 @@ const Create: NextPage = () => {
           transaction1.recentBlockhash = blockhash;
           transaction1.feePayer = wallet.publicKey;
           if (wallet.signTransaction) {
-            const signedTx = await wallet.signTransaction(transaction1);
-            const txid = await connection.sendRawTransaction(
-              signedTx.serialize(),
-            );
-            console.log('Host created', `https://solscan.io/tx/${txid}`);
+            // const signedTx = await wallet.signTransaction(transaction1);
+            // const txid = await connection.sendRawTransaction(
+            //   signedTx.serialize(),
+            // );
+            // console.log('Host created', `https://solscan.io/tx/${txid}`);
           } else {
             throw Error(
               'signTransaction is undefined, line 205 create/index.tsx',

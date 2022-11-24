@@ -22,6 +22,7 @@ import {
   useDisclosure,
   Img,
 } from '@chakra-ui/react';
+import { Metaplex, walletAdapterIdentity } from '@metaplex-foundation/js';
 import { useState, useContext, useEffect, useRef } from 'react';
 import ReactPlayer from 'react-player';
 import { Event } from '../../types/Event.type';
@@ -68,6 +69,8 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddress,
   TOKEN_PROGRAM_ID,
+  createTransferInstruction,
+  getOrCreateAssociatedTokenAccount,
 } from '@solana/spl-token';
 import {
   // clusterApiUrl,
@@ -101,6 +104,7 @@ import resolveBalance from '../../hooks/useSolBalance';
 import Link from 'next/link';
 import Web3 from 'web3';
 import { useRouter } from 'next/router';
+import { sendSPL } from '../../utils/sendSpl';
 declare const window: any;
 interface SolanaWalletWithPublicKey extends SolanaWallet {
   publicKey: PublicKey;
@@ -126,6 +130,7 @@ export default function EventLayout({
 }) {
   const network = process.env.NEXT_PUBLIC_ALCHEMY_SOLANA as string;
   const connection = new Connection(network);
+  const metaplex = new Metaplex(connection);
   const [image, setImage] = useState(ToWebp(event?.image?.gallery[0]));
   const [mediaType, setMediaType] = useState(
     event?.image.video ? 'video' : 'image',
@@ -147,13 +152,14 @@ export default function EventLayout({
   const [solanaWallet, setSolanaWallet] = useState<
     SolanaWalletWithPublicKey | WalletContextState | null
   >(useWallet());
+  const w = useWallet();
   const router = useRouter();
   const { onCopy: onCopy1 } = useClipboard(
     `https://app.metapassh1.xyz/event/${router.query.address}`,
   );
   const mapContainerRef = useRef(null);
   const [web3, setWeb3, web3auth, setWeb3auth]: any = useContext(web3Context);
-
+  metaplex.use(walletAdapterIdentity(w));
   const [explorerLink, setExplorerLink] = useState<string>('');
   let opensea =
     process.env.NEXT_PUBLIC_ENV === 'dev'
@@ -251,7 +257,10 @@ export default function EventLayout({
         // setFormLoading(false)
       }
     })();
-  }, [wallet.type]);
+    if ((wallet.type = 'sol')) {
+      setSolanaWallet(w);
+    }
+  }, [wallet.type, w]);
 
   useEffect(() => {
     async function getData() {
@@ -525,165 +534,260 @@ export default function EventLayout({
         const customSPL = new PublicKey(
           'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         );
-        const getMetadata = async (mint: PublicKey): Promise<PublicKey> => {
-          return (
-            await PublicKey.findProgramAddress(
-              [
-                Buffer.from('metadata'),
-                TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-                mint.toBuffer(),
-              ],
-              TOKEN_METADATA_PROGRAM_ID,
-            )
-          )[0];
-        };
-
-        const getMasterEdition = async (
-          mint: PublicKey,
-        ): Promise<PublicKey> => {
-          return (
-            await PublicKey.findProgramAddress(
-              [
-                Buffer.from('metadata'),
-                TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-                mint.toBuffer(),
-                Buffer.from('edition'),
-              ],
-              TOKEN_METADATA_PROGRAM_ID,
-            )
-          )[0];
-        };
-
-        const mint = Keypair.generate();
-        const metadataAddress = await getMetadata(mint.publicKey);
-        const masterEdition = await getMasterEdition(mint.publicKey);
-        const NftTokenAccount: PublicKey = await getAssociatedTokenAddress(
-          mint.publicKey,
-          solanaWallet.publicKey as PublicKey,
-        );
-        const hostPDA: PublicKey = await getHostPDA(
-          new PublicKey(event?.eventHost),
-        );
-        const adminPDA: PublicKey = await getAdminPDA();
-
-        const hostCustomSplTokenAta = await getAssociatedTokenAddress(
-          customSPL,
-          new PublicKey(event?.eventHost), // the receiver
-        );
-        const adminCustomSplTokenATA = await getAssociatedTokenAddress(
-          customSPL,
-          new PublicKey('4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw'),
-        );
-        const senderCustomTokenATA: PublicKey = await getAssociatedTokenAddress(
-          customSPL,
-          solanaWallet.publicKey as PublicKey,
-        );
-        const accounts: MintTicketInstructionAccounts = {
-          mintAuthority: solanaWallet.publicKey as PublicKey,
-          eventAccount: new PublicKey(event?.childAddress),
-          mint: mint.publicKey,
-          metadata: metadataAddress,
-          tokenAccount: NftTokenAccount,
-          tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-          payer: solanaWallet.publicKey as PublicKey,
-          masterEdition: masterEdition,
-          eventHost: hostPDA,
-
-          eventHostKey: new PublicKey(event?.eventHost),
-          adminAccount: adminPDA,
-          adminKey: new PublicKey(
-            '4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw',
-          ),
-          customSplToken: customSPL,
-          customSplTokenProgram: TOKEN_PROGRAM_ID,
-          senderCustomSplTokenAta: senderCustomTokenATA,
-          hostCustomSplTokenAta: hostCustomSplTokenAta,
-          adminCustomTokenAta: adminCustomSplTokenATA,
-          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        };
-        toast.loading('Generating your unique ticket', {
-          duration: 5000,
-        });
-        const { img, fastimg } = await ticketToIPFS(
-          event?.title,
-          event?.tickets_sold + 1,
-          event?.image.image,
-          event?.date.split('T')[0],
-          wallet?.domain ||
-            wallet?.address?.substring(0, 4) +
-              '...' +
-              wallet?.address?.substring(wallet?.address?.length - 4),
-        );
-        const uri = await generateMetadata(event, img);
-
-        const transactionInstruction = createMintTicketInstruction(accounts, {
-          uri:
-            uri ||
-            'https://cdukzux2wfzaaxbnissg6emgojrtdxzw5klsqnpmqhcusvi.arweave.net/EOis0vqxcg_BcLUSkbxGG-c_mMx3zbq-lyg17IHFSVU',
-        });
-        const additionalComputeBudgetInstruction =
-          ComputeBudgetProgram.requestUnits({
-            units: 300000,
-            additionalFee: 0,
-          });
-        const transaction = new Transaction()
-          .add(additionalComputeBudgetInstruction)
-          .add(transactionInstruction);
-        console.log('tx', uri, 'uri');
-        const { blockhash } = await connection.getLatestBlockhash();
-        transaction.recentBlockhash = blockhash;
-        transaction.feePayer = solanaWallet.publicKey as PublicKey;
-        console.log('w', solanaWallet);
-        if (solanaWallet.signTransaction) {
-          try {
-            transaction.sign(mint);
-            const signedTx = await solanaWallet.signTransaction(transaction);
-            const txid = await connection.sendRawTransaction(
-              signedTx.serialize(),
-              {
-                preflightCommitment: 'finalized',
-                // skipPreflight: true,
-              },
-            );
-            await axios.post(`/api/buyTicket`, {
-              eventPDA: event?.childAddress,
-              publicKey: solanaWallet.publicKey?.toString(),
-            });
-
-            setExplorerLink(`https://solscan.io/tx/${txid}?cluster=${network}`);
-
-            setMintedImage(fastimg);
-            setHasBought(true);
-            setIsLoading(false);
-
-            event?.category.event_type == 'In-Person' &&
-              generateAndSendUUID(
-                event?.childAddress,
-                wallet.address as string,
-                event?.tickets_sold + 1,
-                fastimg,
-              ).then((uuid) => {
-                setQrId(String(uuid));
-              });
-          } catch (error) {
-            const e = error as Error;
-            if (e.message.includes('0x1')) {
-              toast.error("You don't have enough funds");
-            } else if (
-              e.message.includes(
-                'Attempt to debit an account but found no record of a prior credit.',
+        if (event?.fee === 0) {
+          const getMetadata = async (mint: PublicKey): Promise<PublicKey> => {
+            return (
+              await PublicKey.findProgramAddress(
+                [
+                  Buffer.from('metadata'),
+                  TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                  mint.toBuffer(),
+                ],
+                TOKEN_METADATA_PROGRAM_ID,
               )
-            ) {
-              toast.error("You don't have enough funds in your wallet");
-            }
-            console.log(
-              'Error in sending txn, line 323, Event.layout.tsx',
-              error,
+            )[0];
+          };
+
+          const getMasterEdition = async (
+            mint: PublicKey,
+          ): Promise<PublicKey> => {
+            return (
+              await PublicKey.findProgramAddress(
+                [
+                  Buffer.from('metadata'),
+                  TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                  mint.toBuffer(),
+                  Buffer.from('edition'),
+                ],
+                TOKEN_METADATA_PROGRAM_ID,
+              )
+            )[0];
+          };
+
+          const mint = Keypair.generate();
+          const metadataAddress = await getMetadata(mint.publicKey);
+          const masterEdition = await getMasterEdition(mint.publicKey);
+          const NftTokenAccount: PublicKey = await getAssociatedTokenAddress(
+            mint.publicKey,
+            solanaWallet.publicKey as PublicKey,
+          );
+          const hostPDA: PublicKey = await getHostPDA(
+            new PublicKey(event?.eventHost),
+          );
+          const adminPDA: PublicKey = await getAdminPDA();
+
+          const hostCustomSplTokenAta = await getAssociatedTokenAddress(
+            customSPL,
+            new PublicKey(event?.eventHost), // the receiver
+          );
+          const adminCustomSplTokenATA = await getAssociatedTokenAddress(
+            customSPL,
+            new PublicKey('4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw'),
+          );
+          const senderCustomTokenATA: PublicKey =
+            await getAssociatedTokenAddress(
+              customSPL,
+              solanaWallet.publicKey as PublicKey,
             );
-            setIsLoading(false);
+          const accounts: MintTicketInstructionAccounts = {
+            mintAuthority: solanaWallet.publicKey as PublicKey,
+            eventAccount: new PublicKey(event?.childAddress),
+            mint: mint.publicKey,
+            metadata: metadataAddress,
+            tokenAccount: NftTokenAccount,
+            tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+            payer: solanaWallet.publicKey as PublicKey,
+            masterEdition: masterEdition,
+            eventHost: hostPDA,
+
+            eventHostKey: new PublicKey(event?.eventHost),
+            adminAccount: adminPDA,
+            adminKey: new PublicKey(
+              '4ZVmtujXR4PQVT73r43AD3qKHoUgAvAcw69djR9UP5Pw',
+            ),
+            customSplToken: customSPL,
+            customSplTokenProgram: TOKEN_PROGRAM_ID,
+            senderCustomSplTokenAta: senderCustomTokenATA,
+            hostCustomSplTokenAta: hostCustomSplTokenAta,
+            adminCustomTokenAta: adminCustomSplTokenATA,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+          };
+          toast.loading('Generating your unique ticket', {
+            duration: 5000,
+          });
+          const { img, fastimg } = await ticketToIPFS(
+            event?.title,
+            event?.tickets_sold + 1,
+            event?.image.image,
+            event?.date.split('T')[0],
+            wallet?.domain ||
+              wallet?.address?.substring(0, 4) +
+                '...' +
+                wallet?.address?.substring(wallet?.address?.length - 4),
+          );
+          const uri = await generateMetadata(event, img);
+
+          const transactionInstruction = createMintTicketInstruction(accounts, {
+            uri:
+              uri ||
+              'https://cdukzux2wfzaaxbnissg6emgojrtdxzw5klsqnpmqhcusvi.arweave.net/EOis0vqxcg_BcLUSkbxGG-c_mMx3zbq-lyg17IHFSVU',
+          });
+          const additionalComputeBudgetInstruction =
+            ComputeBudgetProgram.requestUnits({
+              units: 300000,
+              additionalFee: 0,
+            });
+          const transaction = new Transaction()
+            .add(additionalComputeBudgetInstruction)
+            .add(transactionInstruction);
+          console.log('tx', uri, 'uri');
+          const { blockhash } = await connection.getLatestBlockhash();
+          transaction.recentBlockhash = blockhash;
+          transaction.feePayer = solanaWallet.publicKey as PublicKey;
+          console.log('w', solanaWallet);
+          if (solanaWallet.signTransaction) {
+            try {
+              transaction.sign(mint);
+              const signedTx = await solanaWallet.signTransaction(transaction);
+              const txid = await connection.sendRawTransaction(
+                signedTx.serialize(),
+                {
+                  preflightCommitment: 'finalized',
+                  // skipPreflight: true,
+                },
+              );
+              await axios.post(`/api/buyTicket`, {
+                eventPDA: event?.childAddress,
+                publicKey: solanaWallet.publicKey?.toString(),
+              });
+
+              setExplorerLink(
+                `https://solscan.io/tx/${txid}?cluster=${network}`,
+              );
+
+              setMintedImage(fastimg);
+              setHasBought(true);
+              setIsLoading(false);
+
+              event?.category.event_type == 'In-Person' &&
+                generateAndSendUUID(
+                  event?.childAddress,
+                  wallet.address as string,
+                  event?.tickets_sold + 1,
+                  fastimg,
+                ).then((uuid) => {
+                  setQrId(String(uuid));
+                });
+            } catch (error) {
+              const e = error as Error;
+              if (e.message.includes('0x1')) {
+                toast.error("You don't have enough funds");
+              } else if (
+                e.message.includes(
+                  'Attempt to debit an account but found no record of a prior credit.',
+                )
+              ) {
+                toast.error("You don't have enough funds in your wallet");
+              }
+              console.log(
+                'Error in sending txn, line 323, Event.layout.tsx',
+                error,
+              );
+              setIsLoading(false);
+            }
+          } else {
+            throw Error('signTransaction is undefined, event?.layout.tsx');
           }
         } else {
-          throw Error('signTransaction is undefined, event?.layout.tsx');
+          try {
+            const tx = await sendSPL(
+              'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+              solanaWallet.publicKey as PublicKey,
+              new PublicKey('DheLTC8eaUCqqXkMB5eRcT35KwDbu4ezKbKTzeA5cGJZ'),
+              Number(event.fee),
+            );
+
+            const signedTx = await solanaWallet.signTransaction!(tx!);
+            console.log(signedTx);
+
+            const signature = await connection.sendRawTransaction(
+              signedTx!.serialize(),
+            );
+            if (signature) {
+              const { img, fastimg } = await ticketToIPFS(
+                event?.title,
+                event?.tickets_sold + 1,
+                event?.image.image,
+                event?.date.split('T')[0],
+                wallet?.domain ||
+                  wallet?.address?.substring(0, 4) +
+                    '...' +
+                    wallet?.address?.substring(wallet?.address?.length - 4),
+              );
+              const uri = await generateMetadata(event, img);
+              const { response } = await metaplex.nfts().create({
+                uri: uri,
+                name: 'My NFT',
+                sellerFeeBasisPoints: 500, // Represents 5.00%.
+              });
+              await axios.post(`/api/buyTicket`, {
+                eventPDA: event?.childAddress,
+                publicKey: solanaWallet.publicKey?.toString(),
+              });
+              response.signature;
+              setExplorerLink(
+                `https://solscan.io/tx/${response.signature}?cluster=${network}`,
+              );
+              setMintedImage(fastimg);
+              setHasBought(true);
+              setIsLoading(false);
+            }
+
+            // if (solanaWallet.signTransaction) {
+            //
+            //
+
+            //       setExplorerLink(
+            //         `https://solscan.io/tx/${txid}?cluster=${network}`,
+            //       );
+
+            //       setMintedImage(fastimg);
+            //       setHasBought(true);
+            //       setIsLoading(false);
+
+            //       event?.category.event_type == 'In-Person' &&
+            //         generateAndSendUUID(
+            //           event?.childAddress,
+            //           wallet.address as string,
+            //           event?.tickets_sold + 1,
+            //           fastimg,
+            //         ).then((uuid) => {
+            //           setQrId(String(uuid));
+            //         });
+            //     } catch (error) {
+            //       const e = error as Error;
+            //       if (e.message.includes('0x1')) {
+            //         toast.error("You don't have enough funds");
+            //       } else if (
+            //         e.message.includes(
+            //           'Attempt to debit an account but found no record of a prior credit.',
+            //         )
+            //       ) {
+            //         toast.error("You don't have enough funds in your wallet");
+            //       }
+            //       console.log(
+            //         'Error in sending txn, line 323, Event.layout.tsx',
+            //         error,
+            //       );
+            //       setIsLoading(false);
+            //     }
+            //   } else {
+            //     throw Error('signTransaction is undefined, event?.layout.tsx');
+            //   }
+            // }
+          } catch (e) {
+            console.log(e);
+          }
         }
       } else {
         console.log(solanaWallet?.publicKey);
