@@ -15,10 +15,11 @@ export const sendSPL = async (
   fromPubKey: PublicKey,
   toPubKey: PublicKey,
   amount: number,
+  connection: Connection,
 ) => {
   try {
     console.log(mint, fromPubKey, toPubKey, amount);
-    const connection = new Connection(clusterApiUrl('mainnet-beta'));
+
     const token = new PublicKey(mint);
     const transaction = new Transaction();
     const fromTokenAccount = await getAssociatedTokenAddress(token, fromPubKey);
