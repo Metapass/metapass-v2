@@ -1740,7 +1740,7 @@ export default function EventLayout({
                 borderColor='blackAlpha.100'
                 boxShadow='0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)'
                 py='2'
-                maxW={{ base: 'auto', md: '"18rem"' }}
+                maxW={{ base: 'auto', md: '18rem' }}
               >
                 <Flex
                   justify='flex-end'
