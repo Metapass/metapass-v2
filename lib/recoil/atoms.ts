@@ -1,7 +1,11 @@
 import { atom } from 'recoil';
 import { formType } from '../../types/registerForm.types';
 import { defaultFormData } from '../constants';
-
+interface DisclosureProps {
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+}
 const stepAtom = atom<number>({
   key: 'stepAtom',
   default: 0,
@@ -25,5 +29,20 @@ const updateOnce = atom<boolean>({
   key: 'updateOnce',
   default: false,
 });
+const navDisclosure = atom<DisclosureProps>({
+  key: 'navDisclosure',
+  default: {
+    isOpen: false,
+    onOpen: () => {},
+    onClose: () => {},
+  },
+});
 
-export { stepAtom, inviteOnlyAtom, formDetails, updateOnce, dropDownForm };
+export {
+  stepAtom,
+  inviteOnlyAtom,
+  formDetails,
+  updateOnce,
+  dropDownForm,
+  navDisclosure,
+};

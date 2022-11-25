@@ -6,11 +6,11 @@ const SearchBar = dynamic(
   () => import('../../components/Elements/SearchBar.component'),
   { ssr: false },
 );
-export default function HeroCTA({ isOpen3, onOpen3, onClose3 }: any) {
+export default function HeroCTA() {
   return (
     <>
       {' '}
-      <NavigationBar isOpen3={isOpen3} onOpen3={onOpen3} onClose3={onClose3} />
+      <NavigationBar />
       <Box
         backgroundImage={`url("https://storage.googleapis.com/mp-cdn/gradient_txqbjd.webp")`}
         backgroundSize='cover'

@@ -89,8 +89,8 @@ import { supabase } from '../../lib/config/supabaseConfig';
 import { RegisterFormModal } from '../../components/Modals/RegisterForm.modal';
 import { FiCheckCircle, FiShare } from 'react-icons/fi';
 import { handleRegister } from '../../utils/helpers/handleRegister';
-import { useRecoilValue } from 'recoil';
-import { updateOnce } from '../../lib/recoil/atoms';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { navDisclosure, updateOnce } from '../../lib/recoil/atoms';
 
 import MapPinLine from '../../components/Misc/MapPinLine.component';
 import AcceptedModalComponent from '../../components/Modals/Accepted.modal';
@@ -161,6 +161,7 @@ export default function EventLayout({
   const [web3, setWeb3, web3auth, setWeb3auth]: any = useContext(web3Context);
   metaplex.use(walletAdapterIdentity(w));
   const [explorerLink, setExplorerLink] = useState<string>('');
+  const [navDisc, setNavDisc] = useRecoilState(navDisclosure);
   let opensea =
     process.env.NEXT_PUBLIC_ENV === 'dev'
       ? 'https://testnets.opensea.io/assets/mumbai'
@@ -843,6 +844,8 @@ export default function EventLayout({
     } else {
       wallet.type === null &&
         toast.error('Please make sure your wallet has loaded or is connected');
+
+      navDisc.onOpen();
     }
   };
   useEffect(() => {
@@ -1736,7 +1739,7 @@ export default function EventLayout({
                 borderColor='blackAlpha.100'
                 boxShadow='0px 3.98227px 87.61px rgba(0, 0, 0, 0.08)'
                 py='2'
-                maxW={{ base: 'auto', md: '"18rem"' }}
+                maxW={{ base: 'auto', md: '18rem' }}
               >
                 <Flex
                   justify='flex-end'
