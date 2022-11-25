@@ -12,12 +12,6 @@ const FeaturedEvents = dynamic(
 );
 declare const window: any;
 const Home: NextPage = () => {
-  const {
-    isOpen: isOpen3,
-    onOpen: onOpen3,
-    onClose: onClose3,
-  } = useDisclosure();
-
   return (
     <Box h='100vh' overflow='scroll'>
       <Head>
@@ -52,7 +46,7 @@ const Home: NextPage = () => {
           content='Book NFT tickets for online and IRL events'
         />
       </Head>
-      <HeroCTA isOpen3={isOpen3} onOpen3={onOpen3} onClose3={onClose3} />
+      <HeroCTA />
       <Box p={{ md: '2' }} />
       <FeaturedEvents />
     </Box>

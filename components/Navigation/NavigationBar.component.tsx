@@ -72,11 +72,10 @@ import { Web3Auth } from '@web3auth/web3auth';
 import * as Web3 from 'web3';
 import { ethers } from 'ethers';
 import { useUser } from '../../hooks/useUser';
+import { navDisclosure } from '../../lib/recoil/atoms';
+import { useRecoilState } from 'recoil';
 interface Props {
   mode?: string;
-  isOpen3?: boolean;
-  onClose3?: () => void;
-  onOpen3?: () => void;
 }
 export default function NavigationBar({ mode = 'dark' }: Props) {
   const [address, setAddress] = useState<string>('');
@@ -88,6 +87,8 @@ export default function NavigationBar({ mode = 'dark' }: Props) {
   const [balance, setBalance] = useState<string>('');
   const [isWalletLoading, setIsWalletLoading] = useState<boolean | null>(null);
   const { user: commonUser } = useUser();
+  const [navDisc, setNavDisc] = useRecoilState(navDisclosure);
+
   const user = supabase.auth.user() || commonUser;
 
   const [wallet, setWallet] =
@@ -397,7 +398,13 @@ export default function NavigationBar({ mode = 'dark' }: Props) {
       onClose1();
     }
   }, [address, onClose1, isOpen1]);
-
+  useEffect(() => {
+    setNavDisc({
+      isOpen: isOpen3,
+      onOpen: onOpen3,
+      onClose: onClose3,
+    });
+  }, [isOpen3, onOpen3, onClose3]);
   return (
     <>
       <Fade
