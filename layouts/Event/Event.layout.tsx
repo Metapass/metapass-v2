@@ -843,10 +843,9 @@ export default function EventLayout({
       }
     } else {
       wallet.type === null &&
-        toast.error(
-          'Please make sure your wallet has loaded or is connected',
-        ) &&
-        navDisc.onOpen();
+        toast.error('Please make sure your wallet has loaded or is connected');
+
+      navDisc.onOpen();
     }
   };
   useEffect(() => {
