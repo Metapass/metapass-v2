@@ -433,12 +433,16 @@ export default function NavigationBar({ mode = 'dark' }: Props) {
         {isOpen1 && (
           <Modal isOpen={isOpen1} onClose={onClose1}>
             <ModalOverlay />
-            <ModalContent rounded='xl'>
+            <ModalContent rounded='xl' mx='3%'>
               <ModalBody m={2} p={4}>
                 {mdcontent.map((item, index) => {
                   return !(index == 2) ? (
                     <Flex
                       key={index}
+                      display={{
+                        base: item.title === 'Metamask' ? 'none' : 'flex',
+                        md: 'flex',
+                      }}
                       w='full'
                       flexDirection='column'
                       alignItems='center'
@@ -486,6 +490,7 @@ export default function NavigationBar({ mode = 'dark' }: Props) {
                       onOpen={onOpen1}
                     >
                       <Flex
+                        display={{ base: 'none', md: 'flex' }}
                         key={index}
                         w='full'
                         flexDirection='column'
