@@ -194,6 +194,19 @@ const Create: NextPage = () => {
             Venue: JSON.stringify(event.venue),
             IRL: event.category.event_type === 'In-Person',
           });
+          await supabase.from('polygonevent').insert({
+            contractAddress: child,
+            link: event.link,
+            seats: event.seats,
+            childAddress: child,
+            title: event.title,
+            walletAddress: wallet.address,
+            date: event.date,
+            description: JSON.stringify(event.description),
+            image: JSON.stringify(event.image),
+            venue: JSON.stringify(event.venue),
+            category: JSON.stringify(event.category),
+          });
           setEventLink(`${window.location.origin}/event/${child}`);
           setIsPublished(true);
           setInTxn(false);
@@ -280,6 +293,19 @@ const Create: NextPage = () => {
             inviteOnly: isInviteOnly,
             Venue: JSON.stringify(event.venue),
             IRL: event.category.event_type === 'In-Person',
+          });
+          await supabase.from('polygonevent').insert({
+            contractAddress: child,
+            childAddress: child,
+            title: event.title,
+            link: event.link,
+            seats: event.seats,
+            date: event.date,
+            walletAddress: wallet.address,
+            description: JSON.stringify(event.description),
+            image: JSON.stringify(event.image),
+            venue: JSON.stringify(event.venue),
+            category: JSON.stringify(event.category),
           });
           setEventLink(`${window.location.origin}/event/${child}`);
           setIsPublished(true);
@@ -572,6 +598,7 @@ const Create: NextPage = () => {
               Venue: JSON.stringify(event.venue),
               IRL: event.category.event_type === 'In-Person',
             });
+
             setIsPublished(true);
             setInTxn(false);
             setFormData(defaultFormData);
