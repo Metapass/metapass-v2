@@ -1820,18 +1820,25 @@ export default function EventLayout({
                 >
                   <BoringAva address={event?.owner} />
                   <Box>
-                    <Text fontSize='14px' w='32'>
-                      {ensName
-                        ? ensName?.length > 15
-                          ? ensName?.slice(0, 6) + '...' + ensName?.slice(-6)
-                          : ensName ||
-                            event?.owner?.slice(0, 6) +
-                              '...' +
-                              event?.owner?.slice(-6)
-                        : event?.owner?.slice(0, 6) +
-                          '...' +
-                          event?.owner?.slice(-6)}
-                    </Text>
+                    {event.owner !==
+                    '6M8UEAAqSfDUBqMzxdXxgkTAyXZgKeD6shf1A7dvgnRk' ? (
+                      <Text fontSize='14px' w='32'>
+                        {ensName
+                          ? ensName?.length > 15
+                            ? ensName?.slice(0, 6) + '...' + ensName?.slice(-6)
+                            : ensName ||
+                              event?.owner?.slice(0, 6) +
+                                '...' +
+                                event?.owner?.slice(-6)
+                          : event?.owner?.slice(0, 6) +
+                            '...' +
+                            event?.owner?.slice(-6)}
+                      </Text>
+                    ) : (
+                      <Text fontSize='14px' w='32'>
+                        Abbas
+                      </Text>
+                    )}
                   </Box>
                 </Flex>
               </Flex>
