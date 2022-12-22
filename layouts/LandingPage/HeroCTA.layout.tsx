@@ -66,7 +66,7 @@ export default function HeroCTA() {
               w={{ base: '5', lg: '10' }}
               ml={{ base: '0', lg: '1' }}
               mt={{ base: '-12', lg: '-20' }}
-              src='https://d1fz5nl2y5xg38.cloudfront.net/assets/elements/sparkle.svg'
+              src='https://res.cloudinary.com/metapass/image/upload/v1671717042/sparkle_pjevmq.svg'
               alt='element'
             />
           </Flex>
